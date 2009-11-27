@@ -505,8 +505,9 @@ type Callback struct {
 	f func(w *GtkWidget, d unsafe.Pointer);
 }
 var funcs *vector.Vector;
+var loop bool = true;
 func pollEvents() {
-	for true {
+	for loop {
 		if (int(C._gtk_enter_callback) == 1) {
 			elem := funcs.At(int(C._gtk_callback_func_no));
 			f := elem.(*Callback);
@@ -533,4 +534,8 @@ func Init(args *[]string) {
 func Main() {
 	go pollEvents();
 	C.gtk_main();
+}
+func MainQuit() {
+	loop = false;
+	C.gtk_main_quit();
 }

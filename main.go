@@ -10,6 +10,9 @@ func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	(&gtk.GtkWindow{window.Widget}).SetTitle("GTK Go!");
+	window.Connect("destroy", func(widget *gtk.GtkWidget, data unsafe.Pointer){
+		gtk.MainQuit();
+	}, nil);
 
 	vbox := gtk.VBox(0, 1);
 
