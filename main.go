@@ -26,7 +26,16 @@ func main() {
 	button := gtk.ButtonWithLabel("こんにちわ！こんにちわ！");
 	button.Connect("clicked", func(widget *gtk.GtkWidget, data unsafe.Pointer){
 		println("button clicked");
-		println((&gtk.GtkButton{button.Widget}).GetLabel());
+		/*
+		dialog := gtk.MessageDialog(
+			&gtk.GtkWindow{widget.GetTopLevel().Widget},
+			gtk.GTK_DIALOG_MODAL,
+			gtk.GTK_MESSAGE_INFO,
+			gtk.GTK_BUTTONS_OK,
+			(&gtk.GtkEntry{entry.Widget}).GetText());
+		(&gtk.GtkDialog{dialog.Widget}).Run();
+		*/
+		println((&gtk.GtkEntry{entry.Widget}).GetText());
 	}, nil);
 	vbox.Add(button);
 

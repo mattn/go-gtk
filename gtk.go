@@ -47,6 +47,23 @@ static void _gtk_window_set_title(GtkWidget* widget, char* title) {
 	gtk_window_set_title(GTK_WINDOW(widget), (gchar*)title);
 }
 
+static void _gtk_window_set_transient_for(GtkWidget* widget, GtkWidget *parent) {
+	gtk_window_set_transient_for(GTK_WINDOW(widget), GTK_WINDOW(parent));
+}
+
+static int _gtk_dialog_run(GtkWidget* dialog) {
+	return gtk_dialog_run(GTK_DIALOG(dialog));
+}
+
+static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, char *message) {
+	return gtk_message_dialog_new(
+			GTK_WINDOW(parent),
+			flags,
+			type,
+			buttons,
+			(gchar*)message, NULL);
+}
+
 static char* _gtk_entry_get_text(GtkWidget* widget) {
 	return (char*)gtk_entry_get_text(GTK_ENTRY(widget));
 }
@@ -101,6 +118,15 @@ func (v *GtkWidget) Connect(s string, f func(widget *GtkWidget, data unsafe.Poin
 	funcs.Push(&Callback{f});
 	C._gtk_signal_connect(v.Widget, C.CString(s), C.int(funcs.Len())-1, unsafe.Pointer(data));
 } // GtkContainer
+func (v *GtkWidget) GetTopLevel() *GtkWidget {
+	return &GtkWidget{ C.gtk_widget_get_toplevel(v.Widget) };
+}
+func (v *GtkWidget) HideOnDelete() {
+	C.gtk_widget_hide_on_delete(v.Widget);
+}
+func (v *GtkWidget) QueueResize() {
+	C.gtk_widget_queue_resize(v.Widget);
+}
 
 // TODO
 // gtk_widget_destroyed
@@ -188,7 +214,6 @@ func (v *GtkWidget) Connect(s string, f func(widget *GtkWidget, data unsafe.Poin
 // gtk_widget_add_events
 // gtk_widget_set_extension_events
 // gtk_widget_get_extension_events
-// gtk_widget_get_toplevel
 // gtk_widget_get_ancestor
 // gtk_widget_get_colormap
 // gtk_widget_get_visual
@@ -269,7 +294,8 @@ func (v *GtkWidget) Connect(s string, f func(widget *GtkWidget, data unsafe.Poin
 // GtkWindow
 //-----------------------------------------------------------------------
 const (
-	GTK_WINDOW_TOPLEVEL = 0
+	GTK_WINDOW_TOPLEVEL = 0;
+	GTK_WINDOW_POPUP = 1;
 );
 type GtkWindow GtkWidget;
 func Window(t int) *GtkWidget {
@@ -277,6 +303,9 @@ func Window(t int) *GtkWidget {
 }
 func (v *GtkWindow) GetTitle() string { return C.GoString(C._gtk_window_get_title(v.Widget)); }
 func (v *GtkWindow) SetTitle(title string) { C._gtk_window_set_title(v.Widget, C.CString(title)); }
+func (v *GtkWindow) SetTransientFor(parent *GtkWindow) {
+	C._gtk_window_set_transient_for(v.Widget, parent.Widget);
+}
 // TODO
 // gtk_window_set_wmclass
 // gtk_window_set_role
@@ -381,6 +410,49 @@ func (v *GtkWindow) SetTitle(title string) { C._gtk_window_set_title(v.Widget, C
 // gtk_window_group_list_windows
 // gtk_window_remove_embedded_xid
 // gtk_window_add_embedded_xid
+
+//-----------------------------------------------------------------------
+// GtkDialog
+//-----------------------------------------------------------------------
+const (
+	GTK_DIALOG_MODAL               = 1 << 0; /* call gtk_window_set_modal (win, TRUE) */
+	GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1; /* call gtk_window_set_destroy_with_parent () */
+	GTK_DIALOG_NO_SEPARATOR        = 1 << 2; /* no separator bar above buttons */
+)
+type GtkDialog GtkWidget;
+func (v *GtkDialog) Run() int {
+	return int(C._gtk_dialog_run(v.Widget));
+}
+
+//-----------------------------------------------------------------------
+// GtkMessageDialog
+//-----------------------------------------------------------------------
+const (
+	GTK_MESSAGE_INFO = 0;
+	GTK_MESSAGE_WARNING = 1;
+	GTK_MESSAGE_QUESTION = 2;
+	GTK_MESSAGE_ERROR = 3;
+	GTK_MESSAGE_OTHER = 4;
+)
+const (
+  GTK_BUTTONS_NONE = 0;
+  GTK_BUTTONS_OK = 1;
+  GTK_BUTTONS_CLOSE = 2;
+  GTK_BUTTONS_CANCEL = 3;
+  GTK_BUTTONS_YES_NO = 4;
+  GTK_BUTTONS_OK_CANCEL = 5;
+)
+type GtkMessageDialog GtkDialog;
+func MessageDialog(parent *GtkWindow, flag int, t int, button int, message string) *GtkWidget {
+	return &GtkWidget{
+		C._gtk_message_dialog_new(
+				parent.Widget,
+				C.GtkDialogFlags(flag),
+				C.GtkMessageType(t),
+				C.GtkButtonsType(button),
+				C.CString(message))
+	};
+}
 
 //-----------------------------------------------------------------------
 // GtkBox
