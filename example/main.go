@@ -23,6 +23,8 @@ func main() {
 	entry.SetLabel("Hello world");
 	gtk.Add(vbox, entry);
 
+	buttons := gtk.HBox(0,1);
+
 	button := gtk.ButtonWithLabel("Button with label");
 	button.Clicked(func() {
 		println("button clicked");
@@ -38,7 +40,20 @@ func main() {
 		println(button.GetLabel());
 		println("entry text is: ", entry.GetLabel());
 	});
-	gtk.Add(vbox, button);
+	gtk.Add(buttons, button);
+
+	opendialog := gtk.ButtonWithLabel("Press button to see dialog bug");
+	opendialog.Clicked(func () {
+		println("testing a dialog...");
+		d := gtk.MessageDialog(window,
+			gtk.GTK_DIALOG_MODAL, gtk.GTK_MESSAGE_INFO, gtk.GTK_BUTTONS_OK,
+			"Don't panic!");
+		// d.Response(func () {println("You panicked!")});
+		d.Run();
+	});
+	gtk.Add(buttons, opendialog);
+
+	gtk.Add(vbox, buttons);
 	gtk.Add(window, vbox);
 
 	gtk.ShowAll(window);
