@@ -12,6 +12,5 @@ include $(GOROOT)/src/Make.pkg
 	$(GC) $*.go
 	$(LD) -o $@ $*.$O
 
-example:
-	@export LD_LIBRARY_PATH=/usr/local/lib;  ¥
-	./main
+example: install
+	cd example && make
