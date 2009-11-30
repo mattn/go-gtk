@@ -106,25 +106,28 @@ import "container/vector";
 //-----------------------------------------------------------------------
 type Widget interface {
 	ToGtkWidget() *C.GtkWidget;
+	Add(w Widget);
 }
 type GtkWidget struct {
 	Widget *C.GtkWidget;
 }
-func (v *GtkWidget) ToGtkWidget() *C.GtkWidget { return v.Widget }
+func (v GtkWidget) ToGtkWidget() *C.GtkWidget { return v.Widget }
 func Hide(v Widget) { C.gtk_widget_hide(v.ToGtkWidget()) }
 func HideAll(v Widget) { C.gtk_widget_hide_all(v.ToGtkWidget()) }
 func Show(v Widget) { C.gtk_widget_show(v.ToGtkWidget()) }
 func ShowAll(v Widget) { C.gtk_widget_show_all(v.ToGtkWidget()) }
 func ShowNow(v Widget) { C.gtk_widget_show_now(v.ToGtkWidget()) }
 func Destroy(v Widget) { C.gtk_widget_destroy(v.ToGtkWidget()) }
-func Add(v, w Widget) { C._gtk_container_add(v.ToGtkWidget(), w.ToGtkWidget()) }
+func (v GtkWidget) Add(w Widget) {
+	C._gtk_container_add(v.ToGtkWidget(), w.ToGtkWidget());
+}
 func Connect(v Widget, s string, f func()) {
 	funcs.Push(&Callback{f});
 	C._gtk_signal_connect(v.ToGtkWidget(), C.CString(s),
 		                    C.int(funcs.Len())-1, nil);
 } // GtkContainer
 func GetTopLevel(v Widget) Widget {
-	return &GtkWidget{ C.gtk_widget_get_toplevel(v.ToGtkWidget()) };
+	return GtkWidget{ C.gtk_widget_get_toplevel(v.ToGtkWidget()) };
 }
 func HideOnDelete(v Widget) {
 	C.gtk_widget_hide_on_delete(v.ToGtkWidget());
@@ -306,14 +309,13 @@ type WindowLike interface {
 	Labelled;
 	SetTransientFor(parent WindowLike);
 }
-type GtkWindow GtkWidget;
-func (v *GtkWindow) ToGtkWidget() *C.GtkWidget { return v.Widget }
+type GtkWindow struct { GtkWidget; }
 func Window(t int) WindowLike {
-	return &GtkWindow{ C.gtk_window_new(C.GtkWindowType(t)) };
+	return GtkWindow{ GtkWidget { C.gtk_window_new(C.GtkWindowType(t)) } };
 }
-func (v *GtkWindow) GetLabel() string { return C.GoString(C._gtk_window_get_title(v.Widget)); }
-func (v *GtkWindow) SetLabel(title string) { C._gtk_window_set_title(v.Widget, C.CString(title)); }
-func (v *GtkWindow) SetTransientFor(parent WindowLike) {
+func (v GtkWindow) GetLabel() string { return C.GoString(C._gtk_window_get_title(v.Widget)); }
+func (v GtkWindow) SetLabel(title string) { C._gtk_window_set_title(v.Widget, C.CString(title)); }
+func (v GtkWindow) SetTransientFor(parent WindowLike) {
 	C._gtk_window_set_transient_for(v.Widget, parent.ToGtkWidget());
 }
 // TODO
@@ -434,12 +436,11 @@ type Dialog interface {
 	Run() int;
 	Response(func ());
 }
-func (v *GtkDialog) ToGtkWidget() *C.GtkWidget { return v.Widget }
-type GtkDialog GtkWidget;
-func (v *GtkDialog) Run() int {
+type GtkDialog struct { GtkWidget };
+func (v GtkDialog) Run() int {
 	return int(C._gtk_dialog_run(v.Widget));
 }
-func (v *GtkDialog) Response(response func ()) {
+func (v GtkDialog) Response(response func ()) {
 	Connect(v, "response", response);
 }
 
@@ -464,14 +465,14 @@ const (
 type GtkMessageDialog GtkDialog;
 func MessageDialog(parent WindowLike, flag int, t int, button int,
                    message string) Dialog {
-	return &GtkDialog{
+	return GtkDialog { GtkWidget {
 		C._gtk_message_dialog_new(
 			parent.ToGtkWidget(),
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(button),
 			C.CString(message))
-	};
+		}};
 }
 
 //-----------------------------------------------------------------------
@@ -483,12 +484,11 @@ type Packable interface {
 	PackEnd(child Widget, expand int, fill int, padding int);
 }
 
-type GtkBox GtkWidget;
-func (v *GtkBox) ToGtkWidget() *C.GtkWidget { return v.Widget }
-func (v *GtkBox) PackStart(child Widget, expand int, fill int, padding int) {
+type GtkBox struct { GtkWidget };
+func (v GtkBox) PackStart(child Widget, expand int, fill int, padding int) {
 	C._gtk_box_pack_start(v.Widget, child.ToGtkWidget(), C.int(expand), C.int(fill), C.int(padding));
 }
-func (v *GtkBox) PackEnd(child Widget, expand int, fill int, padding int) {
+func (v GtkBox) PackEnd(child Widget, expand int, fill int, padding int) {
 	C._gtk_box_pack_end(v.Widget, child.ToGtkWidget(), C.int(expand), C.int(fill), C.int(padding));
 }
 // TODO
@@ -505,22 +505,27 @@ func (v *GtkBox) PackEnd(child Widget, expand int, fill int, padding int) {
 //-----------------------------------------------------------------------
 // GtkVBox
 //-----------------------------------------------------------------------
-func VBox(homogeneous int, spacing int) Packable { return &GtkBox{ C.gtk_vbox_new(C.gboolean(homogeneous), C.gint(spacing)) }; }
+func VBox(homogeneous int, spacing int) Packable {
+	return GtkBox{ GtkWidget {
+			C.gtk_vbox_new(C.gboolean(homogeneous), C.gint(spacing)) }};
+}
 
 //-----------------------------------------------------------------------
 // GtkHBox
 //-----------------------------------------------------------------------
 type GtkHBox GtkBox;
-func HBox(homogeneous int, spacing int) Packable { return &GtkBox{ C.gtk_hbox_new(C.gboolean(homogeneous), C.gint(spacing)) }; }
+func HBox(homogeneous int, spacing int) Packable {
+	return GtkBox{ GtkWidget {
+			C.gtk_hbox_new(C.gboolean(homogeneous), C.gint(spacing)) }};
+}
 
 //-----------------------------------------------------------------------
 // GtkEntry
 //-----------------------------------------------------------------------
-type GtkEntry GtkWidget;
-func (v *GtkEntry) ToGtkWidget() *C.GtkWidget { return v.Widget }
-func Entry() Labelled { return &GtkEntry{ C.gtk_entry_new() }; }
-func (v *GtkEntry) GetLabel() string { return C.GoString(C._gtk_entry_get_text(v.Widget)); }
-func (v *GtkEntry) SetLabel(text string) { C._gtk_entry_set_text(v.Widget, C.CString(text)); }
+type GtkEntry struct { GtkWidget; }
+func Entry() Labelled { return GtkEntry{ GtkWidget { C.gtk_entry_new()} }; }
+func (v GtkEntry) GetLabel() string { return C.GoString(C._gtk_entry_get_text(v.Widget)); }
+func (v GtkEntry) SetLabel(text string) { C._gtk_entry_set_text(v.Widget, C.CString(text)); }
 
 //-----------------------------------------------------------------------
 // GtkLabel
@@ -530,13 +535,14 @@ type Labelled interface {
 	GetLabel() string;
 	SetLabel(label string);
 }
-func (v *GtkLabel) ToGtkWidget() *C.GtkWidget { return v.Widget }
+type GtkLabel struct { GtkWidget; }
+func Label(label string) Labelled {
+	return GtkLabel{ GtkWidget {
+			C.gtk_label_new(C.to_gcharptr(C.CString(label))) }};
+}
 
-type GtkLabel GtkWidget;
-func Label(label string) Labelled { return &GtkLabel{ C.gtk_label_new(C.to_gcharptr(C.CString(label))) }; }
-
-func (v *GtkLabel) GetLabel() string { return C.GoString(C._gtk_label_get_text(v.Widget)); }
-func (v *GtkLabel) SetLabel(label string) { C._gtk_label_set_text(v.Widget, C.CString(label)); }
+func (v GtkLabel) GetLabel() string { return C.GoString(C._gtk_label_get_text(v.Widget)); }
+func (v GtkLabel) SetLabel(label string) { C._gtk_label_set_text(v.Widget, C.CString(label)); }
 // TODO
 // gtk_label_new_with_mnemonic
 // gtk_label_set_attributes
@@ -592,15 +598,17 @@ type Clickable interface {
 	Widget;
 	Clicked(func()); // this is a very simple interface...
 }
-func (v *GtkButton) ToGtkWidget() *C.GtkWidget { return v.Widget }
-func (v *GtkButton) Clicked(onclick func()) {
+func (v GtkButton) Clicked(onclick func()) {
 	Connect(v, "clicked", onclick);
 }
-type GtkButton GtkWidget;
-func Button() ButtonLike { return &GtkButton{ C.gtk_button_new() }; }
-func ButtonWithLabel(label string) ButtonLike { return &GtkButton{ C.gtk_button_new_with_label(C.to_gcharptr(C.CString(label))) }; }
-func (v *GtkButton) GetLabel() string { return C.GoString(C._gtk_button_get_label(v.Widget)); }
-func (v *GtkButton) SetLabel(label string) { C._gtk_button_set_label(v.Widget, C.CString(label)); }
+type GtkButton struct { GtkWidget; }
+func Button() ButtonLike { return GtkButton{ GtkWidget {C.gtk_button_new()} }; }
+func ButtonWithLabel(label string) ButtonLike {
+	return GtkButton{ GtkWidget {
+			C.gtk_button_new_with_label(C.to_gcharptr(C.CString(label))) }};
+}
+func (v GtkButton) GetLabel() string { return C.GoString(C._gtk_button_get_label(v.Widget)); }
+func (v GtkButton) SetLabel(label string) { C._gtk_button_set_label(v.Widget, C.CString(label)); }
 // TODO
 // gtk_button_new_from_stock
 // gtk_button_new_with_mnemonic
