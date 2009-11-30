@@ -4,25 +4,26 @@ package gtk
 #include <gtk/gtk.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-int _gtk_callback_count = 0;
-int _gtk_callback_index = 0;
-int _gtk_callback_func_no[200];
+uintptr_t _gtk_callback_count = 0;
+uintptr_t _gtk_callback_index = 0;
+uintptr_t _gtk_callback_func_no[200];
 GtkWidget* _gtk_callback_widget[200];
 void* _gtk_callback_data[200];
 int _gtk_callback_fire[200];
 static void _callback(GtkWidget* w, void* data1, void* data2) {
 	if (GTK_IS_DIALOG(w)) {
 		// data1 is dialog response.
-		_gtk_callback_index = (int)data2;
+		_gtk_callback_index = (uintptr_t)data2;
 	} else {
-		_gtk_callback_index = (int)data1;
+		_gtk_callback_index = (uintptr_t)data1;
 	}
 	_gtk_callback_fire[_gtk_callback_index-1] = 0;
 	_gtk_callback_fire[1] = 0;
 	_gtk_callback_fire[2] = 0;
 	_gtk_callback_fire[3] = 0;
-	printf("index=%d\n", (int)_gtk_callback_index);
+	printf("index=%ld\n", (long)_gtk_callback_index);
 }
 
 static void _gtk_init(void* argc, void* argv) {
@@ -35,7 +36,7 @@ static void _gtk_container_add(GtkWidget* container, GtkWidget* widget) {
 
 static long _gtk_signal_connect(GtkWidget* widget, char* name, int func_no, void* data) {
 	_gtk_callback_func_no[_gtk_callback_count++] = func_no;
-	printf("count=%d\n", _gtk_callback_count);
+	printf("count=%ld\n", (long)_gtk_callback_count);
 	return gtk_signal_connect_full(GTK_OBJECT(widget), name, GTK_SIGNAL_FUNC(_callback), 0, (void*)_gtk_callback_count, 0, 0, 1);
 }
 
