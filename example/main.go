@@ -34,25 +34,13 @@ func main() {
 			gtk.GTK_MESSAGE_INFO,
 			gtk.GTK_BUTTONS_OK,
 			entry.GetLabel());
-		gtk.HideOnDelete(dialog);
+		dialog.Response(func() {
+			println("Dialog OK!")
+		});
 		dialog.Run();
 		gtk.Destroy(dialog);
 	});
 	buttons.Add(button);
-
-	opendialog := gtk.ButtonWithLabel("Press button to see dialog bug");
-	opendialog.Clicked(func () {
-		println("testing a dialog...");
-		dialog := gtk.MessageDialog(window,
-			gtk.GTK_DIALOG_MODAL,
-			gtk.GTK_MESSAGE_INFO,
-			gtk.GTK_BUTTONS_OK,
-			"Don't panic!");
-		// dialog.Response(func () {println("You panicked!")});
-		dialog.Run();
-		gtk.Destroy(dialog);
-	});
-	buttons.Add(opendialog);
 
 	vbox.Add(buttons);
 	window.Add(vbox);

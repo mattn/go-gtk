@@ -10,16 +10,14 @@ typedef struct {
 	void* data;
 } _callback_struct;
 
-int _gtk_enter_callback = 0;
-int _gtk_callback_func_no = -1;
-GtkWidget* _gtk_callback_widget = NULL;
-void* _gtk_callback_data = NULL;
+int _gtk_callback_count = 0;
+int _gtk_callback_index = 0;
+int _gtk_callback_func_no[200];
+GtkWidget* _gtk_callback_widget[200];
+void* _gtk_callback_data[200];
 static void _callback(GtkWidget* w, void* data) {
-	_callback_struct* s = (_callback_struct*)data;
-	_gtk_callback_func_no = s->func_no;
-	_gtk_callback_widget = w;
-	_gtk_callback_data = s->data;
-	_gtk_enter_callback = 1;
+	printf("index=%d\n", (int)data);
+	_gtk_callback_index = (int)data;
 }
 
 static void _gtk_init(void* argc, void* argv) {
@@ -31,10 +29,9 @@ static void _gtk_container_add(GtkWidget* container, GtkWidget* widget) {
 }
 
 static long _gtk_signal_connect(GtkWidget* widget, char* name, int func_no, void* data) {
-	_callback_struct* s = (_callback_struct*)malloc(sizeof(_callback_struct));
-	s->func_no = func_no;
-	s->data = data;
-	return gtk_signal_connect_full(GTK_OBJECT(widget), name, GTK_SIGNAL_FUNC(_callback), 0, s, 0, 0, 0);
+	_gtk_callback_func_no[_gtk_callback_count++] = func_no;
+	printf("count=%d\n", _gtk_callback_count);
+	return gtk_signal_connect_full(GTK_OBJECT(widget), name, GTK_SIGNAL_FUNC(_callback), 0, (void*)_gtk_callback_count, 0, 0, 0);
 }
 
 static char* _gtk_window_get_title(GtkWidget* widget) {
@@ -690,11 +687,12 @@ func pollEvents() {
 		if use_gtk_main == false {
 			C.gtk_main_iteration_do(C.gboolean(1));
 		}
-		if (int(C._gtk_enter_callback) == 1) {
-			elem := funcs.At(int(C._gtk_callback_func_no));
+		if (int(C._gtk_callback_index) > 0) {
+			//println(int(C._gtk_callback_index));
+			elem := funcs.At(int(C._gtk_callback_func_no[C._gtk_callback_index-1]));
 			f := elem.(*Callback);
 			f.f();
-			C._gtk_enter_callback = C.int(0);
+			//C._gtk_callback_index = C.int(0);
 		}
 		time.Sleep(1);
 	}
