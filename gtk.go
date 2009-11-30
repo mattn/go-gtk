@@ -123,14 +123,14 @@ func Connect(v Widget, s string, f func()) {
 	C._gtk_signal_connect(v.ToGtkWidget(), C.CString(s),
 		                    C.int(funcs.Len())-1, nil);
 } // GtkContainer
-func (v *GtkWidget) GetTopLevel() *GtkWidget {
-	return &GtkWidget{ C.gtk_widget_get_toplevel(v.Widget) };
+func GetTopLevel(v Widget) Widget {
+	return &GtkWidget{ C.gtk_widget_get_toplevel(v.ToGtkWidget()) };
 }
-func (v *GtkWidget) HideOnDelete() {
-	C.gtk_widget_hide_on_delete(v.Widget);
+func HideOnDelete(v Widget) {
+	C.gtk_widget_hide_on_delete(v.ToGtkWidget());
 }
-func (v *GtkWidget) QueueResize() {
-	C.gtk_widget_queue_resize(v.Widget);
+func QueueResize(v Widget) {
+	C.gtk_widget_queue_resize(v.ToGtkWidget());
 }
 
 // TODO
@@ -302,15 +302,19 @@ const (
 	GTK_WINDOW_TOPLEVEL = 0;
 	GTK_WINDOW_POPUP = 1;
 );
+type WindowLike interface {
+	Labelled;
+	SetTransientFor(parent WindowLike);
+}
 type GtkWindow GtkWidget;
 func (v *GtkWindow) ToGtkWidget() *C.GtkWidget { return v.Widget }
-func Window(t int) Labelled {
+func Window(t int) WindowLike {
 	return &GtkWindow{ C.gtk_window_new(C.GtkWindowType(t)) };
 }
 func (v *GtkWindow) GetLabel() string { return C.GoString(C._gtk_window_get_title(v.Widget)); }
 func (v *GtkWindow) SetLabel(title string) { C._gtk_window_set_title(v.Widget, C.CString(title)); }
-func (v *GtkWindow) SetTransientFor(parent *GtkWindow) {
-	C._gtk_window_set_transient_for(v.Widget, parent.Widget);
+func (v *GtkWindow) SetTransientFor(parent WindowLike) {
+	C._gtk_window_set_transient_for(v.Widget, parent.ToGtkWidget());
 }
 // TODO
 // gtk_window_set_wmclass
@@ -425,9 +429,18 @@ const (
 	GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1; /* call gtk_window_set_destroy_with_parent () */
 	GTK_DIALOG_NO_SEPARATOR        = 1 << 2; /* no separator bar above buttons */
 )
+type Dialog interface {
+	Widget;
+	Run() int;
+	Response(func ());
+}
+func (v *GtkDialog) ToGtkWidget() *C.GtkWidget { return v.Widget }
 type GtkDialog GtkWidget;
 func (v *GtkDialog) Run() int {
 	return int(C._gtk_dialog_run(v.Widget));
+}
+func (v *GtkDialog) Response(response func ()) {
+	Connect(v, "response", response);
 }
 
 //-----------------------------------------------------------------------
@@ -449,14 +462,15 @@ const (
 	GTK_BUTTONS_OK_CANCEL = 5;
 )
 type GtkMessageDialog GtkDialog;
-func MessageDialog(parent *GtkWindow, flag int, t int, button int, message string) *GtkWidget {
-	return &GtkWidget{
+func MessageDialog(parent WindowLike, flag int, t int, button int,
+                   message string) Dialog {
+	return &GtkDialog{
 		C._gtk_message_dialog_new(
-				parent.Widget,
-				C.GtkDialogFlags(flag),
-				C.GtkMessageType(t),
-				C.GtkButtonsType(button),
-				C.CString(message))
+			parent.ToGtkWidget(),
+			C.GtkDialogFlags(flag),
+			C.GtkMessageType(t),
+			C.GtkButtonsType(button),
+			C.CString(message))
 	};
 }
 
@@ -580,7 +594,7 @@ type Clickable interface {
 }
 func (v *GtkButton) ToGtkWidget() *C.GtkWidget { return v.Widget }
 func (v *GtkButton) Clicked(onclick func()) {
-	Connect(v, "clicked", func(){ onclick() });
+	Connect(v, "clicked", onclick);
 }
 type GtkButton GtkWidget;
 func Button() ButtonLike { return &GtkButton{ C.gtk_button_new() }; }
