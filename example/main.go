@@ -14,10 +14,10 @@ func main() {
 		gtk.MainQuit();
 	});
 
-	vbox := gtk.VBox(0,1);
+	vbox := gtk.VBox(false, true);
 
 	label := gtk.Label("Label");
-	vbox.PackStart(label, 0, 1, 0);
+	vbox.PackStart(label, false, true, 0);
 
 	entry := gtk.Entry();
 	entry.SetLabel("Hello world");
@@ -25,18 +25,16 @@ func main() {
 
 	button := gtk.ButtonWithLabel("Button with label");
 	button.Clicked(func() {
-		println("button clicked");
-		/*
+		print("button clicked: ", button.GetLabel(), "\n");
 		dialog := gtk.MessageDialog(
-			&gtk.GtkWindow{widget.GetTopLevel().Widget},
+			&gtk.GtkWindow{gtk.GetTopLevel(button).ToGtkWidget()},
 			gtk.GTK_DIALOG_MODAL,
 			gtk.GTK_MESSAGE_INFO,
 			gtk.GTK_BUTTONS_OK,
-			(&gtk.GtkEntry{entry.Widget}).GetText());
+			entry.GetLabel());
+		gtk.HideOnDelete(dialog);
 		(&gtk.GtkDialog{dialog.Widget}).Run();
-		*/
-		println(button.GetLabel());
-		println("entry text is: ", entry.GetLabel());
+		gtk.Destroy(dialog);
 	});
 	gtk.Add(vbox, button);
 	gtk.Add(window, vbox);
