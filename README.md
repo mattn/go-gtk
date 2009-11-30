@@ -23,5 +23,5 @@ LICENSE:
 AUTHORS:
 --------
 
-  Yasuhiro Matsumoto
-  David Roundy
+  * Yasuhiro Matsumoto
+  * David Roundy
