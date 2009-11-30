@@ -441,12 +441,12 @@ const (
 	GTK_MESSAGE_OTHER = 4;
 )
 const (
-  GTK_BUTTONS_NONE = 0;
-  GTK_BUTTONS_OK = 1;
-  GTK_BUTTONS_CLOSE = 2;
-  GTK_BUTTONS_CANCEL = 3;
-  GTK_BUTTONS_YES_NO = 4;
-  GTK_BUTTONS_OK_CANCEL = 5;
+	GTK_BUTTONS_NONE = 0;
+	GTK_BUTTONS_OK = 1;
+	GTK_BUTTONS_CLOSE = 2;
+	GTK_BUTTONS_CANCEL = 3;
+	GTK_BUTTONS_YES_NO = 4;
+	GTK_BUTTONS_OK_CANCEL = 5;
 )
 type GtkMessageDialog GtkDialog;
 func MessageDialog(parent *GtkWindow, flag int, t int, button int, message string) *GtkWidget {

@@ -25,3 +25,48 @@ AUTHORS:
 
   * Yasuhiro Matsumoto
   * David Roundy
+
+GOAL:
+-----
+
+  Hopefully support following widgets and methods enough to run general application. 
+
+    GtkAccelLabel
+    GtkButton
+    GtkCheckButton
+    GtkColorButton
+    GtkComboBox
+    GtkComboBoxEntry
+    GtkEntry
+    GtkFileChooserButton
+    GtkFontButton
+    GtkFrame
+    GtkIconView
+    GtkImage
+    GtkLabel
+    GtkLinkButton
+    GtkMenuBar
+    GtkNotebook
+    GtkPaned
+    GtkVolumeButton
+    GtkPageSetupUnixDialog
+    GtkPrintUnixDialog
+    GtkProgressBar
+    GtkRadioButton
+    GtkRecentChooserDialog
+    GtkScale
+    GtkScrolledWindow
+    GtkSeparator
+    GtkSpinButton
+    GtkStatusbar
+    GtkTextView
+    GtkToggleButton
+    GtkToolbar
+    GtkTreeView
+    GtkWindow
+    GtkMessageDialog
+    GtkAssistant
+    GtkFontSelectionDialog
+    GtkColorSelectionDialog
+    GtkFileChooserDialog
+
