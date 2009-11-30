@@ -5,19 +5,24 @@ package gtk
 #include <unistd.h>
 #include <stdlib.h>
 
-typedef struct {
-	int func_no;
-	void* data;
-} _callback_struct;
-
 int _gtk_callback_count = 0;
 int _gtk_callback_index = 0;
 int _gtk_callback_func_no[200];
 GtkWidget* _gtk_callback_widget[200];
 void* _gtk_callback_data[200];
-static void _callback(GtkWidget* w, void* data) {
-	printf("index=%d\n", (int)data);
-	_gtk_callback_index = (int)data;
+int _gtk_callback_fire[200];
+static void _callback(GtkWidget* w, void* data1, void* data2) {
+	if (GTK_IS_DIALOG(w)) {
+		// data1 is dialog response.
+		_gtk_callback_index = (int)data2;
+	} else {
+		_gtk_callback_index = (int)data1;
+	}
+	_gtk_callback_fire[_gtk_callback_index-1] = 0;
+	_gtk_callback_fire[1] = 0;
+	_gtk_callback_fire[2] = 0;
+	_gtk_callback_fire[3] = 0;
+	printf("index=%d\n", (int)_gtk_callback_index);
 }
 
 static void _gtk_init(void* argc, void* argv) {
@@ -31,7 +36,7 @@ static void _gtk_container_add(GtkWidget* container, GtkWidget* widget) {
 static long _gtk_signal_connect(GtkWidget* widget, char* name, int func_no, void* data) {
 	_gtk_callback_func_no[_gtk_callback_count++] = func_no;
 	printf("count=%d\n", _gtk_callback_count);
-	return gtk_signal_connect_full(GTK_OBJECT(widget), name, GTK_SIGNAL_FUNC(_callback), 0, (void*)_gtk_callback_count, 0, 0, 0);
+	return gtk_signal_connect_full(GTK_OBJECT(widget), name, GTK_SIGNAL_FUNC(_callback), 0, (void*)_gtk_callback_count, 0, 0, 1);
 }
 
 static char* _gtk_window_get_title(GtkWidget* widget) {
@@ -109,7 +114,6 @@ static void _gtk_box_pack_end(GtkWidget* box, GtkWidget* child, gboolean expand,
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 */
 import "C";
-import "time";
 import "unsafe";
 import "runtime";
 import "container/vector";
@@ -687,14 +691,13 @@ func pollEvents() {
 		if use_gtk_main == false {
 			C.gtk_main_iteration_do(C.gboolean(1));
 		}
-		if (int(C._gtk_callback_index) > 0) {
-			//println(int(C._gtk_callback_index));
-			elem := funcs.At(int(C._gtk_callback_func_no[C._gtk_callback_index-1]));
+		index := C._gtk_callback_index;
+		if int(index) > 0 && C._gtk_callback_fire[index-1] == 0 {
+			elem := funcs.At(int(C._gtk_callback_func_no[index-1]));
 			f := elem.(*Callback);
 			f.f();
-			//C._gtk_callback_index = C.int(0);
+			C._gtk_callback_fire[index-1] = C.int(1);
 		}
-		time.Sleep(1);
 	}
 }
 
