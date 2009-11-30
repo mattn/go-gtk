@@ -6,6 +6,7 @@ package gtk
 #include <stdlib.h>
 
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
+//static gboolean to_gboolean(bool b) { return (gboolean)b; }
 
 typedef struct {
 	int func_no;
@@ -80,6 +81,22 @@ static void _gtk_label_set_text(GtkWidget* widget, char* text) {
 	gtk_label_set_text(GTK_LABEL(widget), (gchar*)text);
 }
 
+static GtkWidget* _gtk_accel_label_get_accel_widget(GtkWidget* widget) {
+	return gtk_accel_label_get_accel_widget(GTK_ACCEL_LABEL(widget));
+}
+
+static guint _gtk_accel_label_get_accel_width(GtkWidget* widget) {
+	return gtk_accel_label_get_accel_width(GTK_ACCEL_LABEL(widget));
+}
+
+static void _gtk_accel_label_set_accel_widget(GtkWidget* label, GtkWidget* widget) {
+	gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), widget);
+}
+
+static gboolean _gtk_accel_label_refetch(GtkWidget* widget) {
+	return gtk_accel_label_refetch(GTK_ACCEL_LABEL(widget));
+}
+
 static char* _gtk_button_get_label(GtkWidget* widget) {
 	return (char*)gtk_button_get_label(GTK_BUTTON(widget));
 }
@@ -88,11 +105,11 @@ static void _gtk_button_set_label(GtkWidget* widget, char* label) {
 	gtk_button_set_label(GTK_BUTTON(widget), (gchar*)label);
 }
 
-static void _gtk_box_pack_start(GtkWidget* box, GtkWidget* child, int expand, int fill, int padding) {
+static void _gtk_box_pack_start(GtkWidget* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding) {
 	gtk_box_pack_start(GTK_BOX(box), child, expand, fill, padding);
 }
 
-static void _gtk_box_pack_end(GtkWidget* box, GtkWidget* child, int expand, int fill, int padding) {
+static void _gtk_box_pack_end(GtkWidget* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding) {
 	gtk_box_pack_end(GTK_BOX(box), child, expand, fill, padding);
 }
 */
@@ -100,6 +117,9 @@ import "C";
 import "time";
 import "unsafe";
 import "container/vector";
+
+func bool2int(b bool) int { if b { return 1 } return 0 }
+func int2bool(i int) bool { if i != 0 { return true } return false }
 
 //-----------------------------------------------------------------------
 // GtkWidget
@@ -465,17 +485,17 @@ func MessageDialog(parent *GtkWindow, flag int, t int, button int, message strin
 //-----------------------------------------------------------------------
 type Packable interface {
 	Widget;
-	PackStart(child Widget, expand int, fill int, padding int);
-	PackEnd(child Widget, expand int, fill int, padding int);
+	PackStart(child Widget, expand bool, fill bool, padding uint);
+	PackEnd(child Widget, expand bool, fill bool, padding uint);
 }
 
 type GtkBox GtkWidget;
 func (v *GtkBox) ToGtkWidget() *C.GtkWidget { return v.Widget }
-func (v *GtkBox) PackStart(child Widget, expand int, fill int, padding int) {
-	C._gtk_box_pack_start(v.Widget, child.ToGtkWidget(), C.int(expand), C.int(fill), C.int(padding));
+func (v *GtkBox) PackStart(child Widget, expand bool, fill bool, padding uint) {
+	C._gtk_box_pack_start(v.Widget, child.ToGtkWidget(), C.gboolean(bool2int(expand)), C.gboolean(bool2int(fill)), C.guint(padding));
 }
-func (v *GtkBox) PackEnd(child Widget, expand int, fill int, padding int) {
-	C._gtk_box_pack_end(v.Widget, child.ToGtkWidget(), C.int(expand), C.int(fill), C.int(padding));
+func (v *GtkBox) PackEnd(child Widget, expand bool, fill bool, padding uint) {
+	C._gtk_box_pack_end(v.Widget, child.ToGtkWidget(), C.gboolean(bool2int(expand)), C.gboolean(bool2int(fill)), C.guint(padding));
 }
 // TODO
 // gtk_box_pack_start_defaults
@@ -491,13 +511,13 @@ func (v *GtkBox) PackEnd(child Widget, expand int, fill int, padding int) {
 //-----------------------------------------------------------------------
 // GtkVBox
 //-----------------------------------------------------------------------
-func VBox(homogeneous int, spacing int) Packable { return &GtkBox{ C.gtk_vbox_new(C.gboolean(homogeneous), C.gint(spacing)) }; }
+func VBox(homogeneous bool, spacing bool) Packable { return &GtkBox{ C.gtk_vbox_new(C.gboolean(bool2int(homogeneous)), C.gint(bool2int(spacing))) }; }
 
 //-----------------------------------------------------------------------
 // GtkHBox
 //-----------------------------------------------------------------------
 type GtkHBox GtkBox;
-func HBox(homogeneous int, spacing int) Packable { return &GtkBox{ C.gtk_hbox_new(C.gboolean(homogeneous), C.gint(spacing)) }; }
+func HBox(homogeneous bool, spacing bool) Packable { return &GtkBox{ C.gtk_hbox_new(C.gboolean(bool2int(homogeneous)), C.gint(bool2int(spacing))) }; }
 
 //-----------------------------------------------------------------------
 // GtkEntry
@@ -565,6 +585,24 @@ func (v *GtkLabel) SetLabel(label string) { C._gtk_label_set_text(v.Widget, C.CS
 // gtk_label_get_track_visited_links
 // gtk_label_get
 // gtk_label_parse_uline
+
+//-----------------------------------------------------------------------
+// GtkAccelLabel
+//-----------------------------------------------------------------------
+type AccelLabelled interface {
+	Widget; // labels are Widgets!
+	GetAccelWidget() *GtkWidget;
+	SetAccelWidget(*GtkWidget);
+}
+func (v *GtkAccelLabel) ToGtkWidget() *C.GtkWidget { return v.Widget }
+
+type GtkAccelLabel GtkWidget;
+func AccelLabel(label string) AccelLabelled { return &GtkAccelLabel{ C.gtk_accel_label_new(C.to_gcharptr(C.CString(label))) }; }
+
+func (v *GtkAccelLabel) GetAccelWidget() *GtkWidget { return &GtkWidget{ C._gtk_accel_label_get_accel_widget(v.Widget) }; }
+func (v *GtkAccelLabel) GetAccelWidth() uint { return uint(C._gtk_accel_label_get_accel_width(v.Widget)); }
+func (v *GtkAccelLabel) SetAccelWidget(w *GtkWidget) { C._gtk_accel_label_set_accel_widget(v.Widget, w.Widget); }
+func (v *GtkAccelLabel) Refetch() bool { return int2bool(int(C._gtk_accel_label_refetch(v.Widget))); }
 
 //-----------------------------------------------------------------------
 // GtkButton
