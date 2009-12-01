@@ -550,6 +550,39 @@ func (v GtkEntry) GetLabel() string { return C.GoString(C._gtk_entry_get_text(v.
 func (v GtkEntry) SetLabel(text string) { C._gtk_entry_set_text(v.Widget, C.CString(text)); }
 
 //-----------------------------------------------------------------------
+// GtkImage
+//-----------------------------------------------------------------------
+const (
+	GTK_ICON_SIZE_INVALID = 0;
+	GTK_ICON_SIZE_MENU = 1;
+	GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
+	GTK_ICON_SIZE_LARGE_TOOLBAR = 3;
+	GTK_ICON_SIZE_BUTTON = 4;
+	GTK_ICON_SIZE_DND = 5;
+	GTK_ICON_SIZE_DIALOG = 6;
+)
+type ImageLike interface {
+	Widget; // images are Widgets!
+}
+type GtkImage struct { GtkWidget; }
+func Image() ImageLike {
+	return GtkImage{ GtkWidget {
+		C.gtk_image_new()
+	}};
+}
+func ImageFromFile(filename string) ImageLike {
+	return GtkImage{ GtkWidget {
+		C.gtk_image_new_from_file(C.to_gcharptr(C.CString(filename)))
+	}};
+}
+func ImageFromStock(stock_id string, size int) ImageLike {
+	return GtkImage{ GtkWidget {
+		C.gtk_image_new_from_stock(C.to_gcharptr(C.CString(stock_id)), C.GtkIconSize(size))
+	}};
+}
+
+// TODO
+//-----------------------------------------------------------------------
 // GtkLabel
 //-----------------------------------------------------------------------
 type Labelled interface {

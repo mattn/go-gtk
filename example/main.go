@@ -3,6 +3,7 @@ package main
 import (
   "os";
   "gtk";
+  "path";
 )
 
 func main() {
@@ -14,14 +15,20 @@ func main() {
 		gtk.MainQuit();
 	});
 
+	dir, _ := path.Split(os.Args[0]);
+	imagefile := path.Join(dir, "../data/go-gtk-logo.png"); 
+
 	vbox := gtk.VBox(false, 1);
 
-	label := gtk.Label("Label");
+	label := gtk.Label("Go Binding for GTK");
 	vbox.PackStart(label, false, true, 0);
 
 	entry := gtk.Entry();
 	entry.SetLabel("Hello world");
 	vbox.Add(entry);
+
+	image := gtk.ImageFromFile(imagefile);
+	vbox.Add(image);
 
 	buttons := gtk.HBox(false, 1);
 
