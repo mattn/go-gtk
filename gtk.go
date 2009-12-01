@@ -105,6 +105,38 @@ static void _gtk_button_set_label(GtkWidget* widget, char* label) {
 	gtk_button_set_label(GTK_BUTTON(widget), (gchar*)label);
 }
 
+static char* _gtk_font_button_get_title(GtkWidget* widget) {
+	return (char*)gtk_font_button_get_title(GTK_FONT_BUTTON(widget));
+}
+
+static void _gtk_font_button_set_title(GtkWidget* widget, char* title) {
+	gtk_font_button_set_title(GTK_FONT_BUTTON(widget), (gchar*)title);
+}
+
+static gboolean _gtk_font_button_get_use_size(GtkWidget* widget) {
+	return gtk_font_button_get_use_size(GTK_FONT_BUTTON(widget));
+}
+
+static void _gtk_font_button_set_use_size(GtkWidget* widget, gboolean use_size) {
+	gtk_font_button_set_use_size(GTK_FONT_BUTTON(widget), use_size);
+}
+
+static char* _gtk_font_button_get_font_name(GtkWidget* widget) {
+	return (char*)gtk_font_button_get_font_name(GTK_FONT_BUTTON(widget));
+}
+
+static void _gtk_font_button_set_font_name(GtkWidget* widget, char* fontname) {
+	gtk_font_button_set_font_name(GTK_FONT_BUTTON(widget), (gchar*)fontname);
+}
+
+static gboolean _gtk_font_button_get_show_size(GtkWidget* widget) {
+	return gtk_font_button_get_show_size(GTK_FONT_BUTTON(widget));
+}
+
+static void _gtk_font_button_set_show_size(GtkWidget* widget, gboolean show_size) {
+	gtk_font_button_set_show_size(GTK_FONT_BUTTON(widget), show_size);
+}
+
 static void _gtk_box_pack_start(GtkWidget* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding) {
 	gtk_box_pack_start(GTK_BOX(box), child, expand, fill, padding);
 }
@@ -708,7 +740,30 @@ func (v GtkButton) SetLabel(label string) { C._gtk_button_set_label(v.Widget, C.
 // gtk_button_get_image_position
 
 //-----------------------------------------------------------------------
+// GtkFontButton
+//-----------------------------------------------------------------------
+func (v GtkFontButton) Clicked(onclick func()) {
+	Connect(v, "clicked", onclick);
+}
+type GtkFontButton struct { GtkWidget; }
+func FontButton() ButtonLike { return GtkButton{ GtkWidget {C.gtk_font_button_new()} }; }
+func FontButtonWithFont(fontname string) ButtonLike {
+	return GtkButton{ GtkWidget {
+		C.gtk_font_button_new_with_font(C.to_gcharptr(C.CString(fontname)))
+	}};
+}
+func (v GtkFontButton) GetTitle() string { return C.GoString(C._gtk_font_button_get_title(v.Widget)); }
+func (v GtkFontButton) SetTitle(title string) { C._gtk_font_button_set_title(v.Widget, C.CString(title)); }
+func (v GtkFontButton) GetUseSize() bool { return gboolean2bool(C._gtk_font_button_get_use_size(v.Widget)); }
+func (v GtkFontButton) SetUseSize(use_size bool) { C._gtk_font_button_set_use_size(v.Widget, bool2gboolean(use_size)); }
+func (v GtkFontButton) GetFontName() string { return C.GoString(C._gtk_font_button_get_font_name(v.Widget)); }
+func (v GtkFontButton) SetFontName(fontname string) { C._gtk_font_button_set_font_name(v.Widget, C.CString(fontname)); }
+func (v GtkFontButton) GetShowSize() bool { return gboolean2bool(C._gtk_font_button_get_show_size(v.Widget)); }
+func (v GtkFontButton) SetShowSize(show_size bool) { C._gtk_font_button_set_show_size(v.Widget, bool2gboolean(show_size)); }
+// TODO
+//-----------------------------------------------------------------------
 // Events
+//-----------------------------------------------------------------------
 var use_gtk_main bool = false;
 
 // the go-gtk Callback is simpler than the one in C, because we have

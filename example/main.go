@@ -49,6 +49,9 @@ func main() {
 	});
 	buttons.Add(button);
 
+	fontbutton := gtk.FontButton();
+	buttons.Add(fontbutton);
+
 	vbox.Add(buttons);
 	window.Add(vbox);
 
