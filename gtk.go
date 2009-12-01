@@ -5,6 +5,16 @@ package gtk
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdarg.h>
+
+typedef struct {
+    int func_no;
+	GtkWidget* widget;
+    void* data;
+	int args_no;
+	int index;
+    GSignalQuery query;
+} callback_info;
 
 uintptr_t _gtk_callback_count = 0;
 uintptr_t _gtk_callback_index = 0;
@@ -12,19 +22,36 @@ uintptr_t _gtk_callback_func_no[200];
 GtkWidget* _gtk_callback_widget[200];
 void* _gtk_callback_data[200];
 int _gtk_callback_fire[200];
-static void _callback(GtkWidget* w, void* data1, void* data2) {
-	if (GTK_IS_DIALOG(w)) {
-		// data1 is dialog response.
-		_gtk_callback_index = (uintptr_t)data2;
-	} else {
-		_gtk_callback_index = (uintptr_t)data1;
+
+#ifdef __x86_64__
+static int _callback(void *data, ...);
+asm(
+".text\n"
+"	.type _callback_amd64, @function\n"
+"_callback_amd64:\n"
+"	movq	$1, %rax\n"
+"	jmp	_callback\n"
+"	.size	_callback_amd64, . - _callback_amd64\n"
+);
+#else
+static void _callback(void *data, ...) {
+    va_list ap;
+    callback_info *cbi = (callback_info*) data;
+	int i;
+
+    va_start(ap, data);
+    for (i = 0; i < cbi->args_no; i++) {
+		// TODO
 	}
+    va_end(ap);
+
+	_gtk_callback_index = cbi->index;
+   	_gtk_callback_widget[_gtk_callback_index-1] = cbi->widget;
+	_gtk_callback_func_no[_gtk_callback_index-1] = cbi->func_no;
 	_gtk_callback_fire[_gtk_callback_index-1] = 0;
-	_gtk_callback_fire[1] = 0;
-	_gtk_callback_fire[2] = 0;
-	_gtk_callback_fire[3] = 0;
-	printf("index=%ld\n", (long)_gtk_callback_index);
+	printf("foo %d\n", _gtk_callback_index);
 }
+#endif
 
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
@@ -34,10 +61,24 @@ static void _gtk_container_add(GtkWidget* container, GtkWidget* widget) {
 	gtk_container_add(GTK_CONTAINER(container), widget);
 }
 
+static void free_callback_info(gpointer data, GClosure *closure) {
+	g_slice_free(callback_info, data);
+}
+
 static long _gtk_signal_connect(GtkWidget* widget, char* name, int func_no, void* data) {
-	_gtk_callback_func_no[_gtk_callback_count++] = func_no;
-	printf("count=%ld\n", (long)_gtk_callback_count);
-	return gtk_signal_connect_full(GTK_OBJECT(widget), name, GTK_SIGNAL_FUNC(_callback), 0, (void*)_gtk_callback_count, 0, 0, 1);
+	static int index = 0;
+    GSignalQuery query;
+    callback_info* cbi;
+    guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(widget));
+    g_signal_query(signal_id, &query);
+    cbi = g_slice_new(callback_info);
+	cbi->func_no = func_no;
+	cbi->widget = widget;
+	cbi->args_no = query.n_params;
+	cbi->data = data;
+	cbi->index = index;
+	index++;
+    return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 }
 
 static char* _gtk_window_get_title(GtkWidget* widget) {
