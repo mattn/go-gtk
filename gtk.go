@@ -6,22 +6,27 @@ package gtk
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include <string.h>
 
 typedef struct {
+	char name[256];
     int func_no;
 	GtkWidget* widget;
-    void* data;
+    uintptr_t* data;
+	uintptr_t** args;
 	int args_no;
 	int index;
     GSignalQuery query;
+	int fire;
 } callback_info;
 
-uintptr_t _gtk_callback_count = 0;
-uintptr_t _gtk_callback_index = 0;
-uintptr_t _gtk_callback_func_no[200];
-GtkWidget* _gtk_callback_widget[200];
-void* _gtk_callback_data[200];
-int _gtk_callback_fire[200];
+callback_info* current_callback_info;
+static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
+	return cbi->args[idx];
+}
+static void callback_info_free_args(callback_info* cbi) {
+	free(cbi->args);
+}
 
 #ifdef __x86_64__
 static int _callback(void *data, ...);
@@ -39,17 +44,14 @@ static void _callback(void *data, ...) {
     callback_info *cbi = (callback_info*) data;
 	int i;
 
+	cbi->fire = 0;
+	cbi->args = (uintptr_t**)malloc(sizeof(uintptr_t*)*cbi->args_no);
     va_start(ap, data);
     for (i = 0; i < cbi->args_no; i++) {
-		// TODO
+		cbi->args[i] = va_arg(ap, void*);
 	}
     va_end(ap);
-
-	_gtk_callback_index = cbi->index;
-   	_gtk_callback_widget[_gtk_callback_index-1] = cbi->widget;
-	_gtk_callback_func_no[_gtk_callback_index-1] = cbi->func_no;
-	_gtk_callback_fire[_gtk_callback_index-1] = 0;
-	printf("foo %d\n", _gtk_callback_index);
+	current_callback_info = cbi;
 }
 #endif
 
@@ -72,6 +74,7 @@ static long _gtk_signal_connect(GtkWidget* widget, char* name, int func_no, void
     guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(widget));
     g_signal_query(signal_id, &query);
     cbi = g_slice_new(callback_info);
+	strcpy(cbi->name, name);
 	cbi->func_no = func_no;
 	cbi->widget = widget;
 	cbi->args_no = query.n_params;
@@ -198,36 +201,48 @@ func gboolean2bool(b C.gboolean) bool { if b != 0 { return true } return false }
 //-----------------------------------------------------------------------
 // GtkWidget
 //-----------------------------------------------------------------------
-type Widget interface {
+type WidgetLike interface {
 	ToGtkWidget() *C.GtkWidget;
-	Add(w Widget);
+	Hide();
+	HideAll();
+	Show();
+	ShowAll();
+	ShowNow();
+	Destroy();
+	Connect(s string, f CallbackFunc, data unsafe.Pointer);
+	GetTopLevel() *GtkWidget;
+	GetTopLevelAsWindow() *GtkWindow;
+	HideOnDelete();
+	QueueResize();
 }
 type GtkWidget struct {
 	Widget *C.GtkWidget;
 }
 func (v GtkWidget) ToGtkWidget() *C.GtkWidget { return v.Widget }
-func Hide(v Widget) { C.gtk_widget_hide(v.ToGtkWidget()) }
-func HideAll(v Widget) { C.gtk_widget_hide_all(v.ToGtkWidget()) }
-func Show(v Widget) { C.gtk_widget_show(v.ToGtkWidget()) }
-func ShowAll(v Widget) { C.gtk_widget_show_all(v.ToGtkWidget()) }
-func ShowNow(v Widget) { C.gtk_widget_show_now(v.ToGtkWidget()) }
-func Destroy(v Widget) { C.gtk_widget_destroy(v.ToGtkWidget()) }
-func (v GtkWidget) Add(w Widget) {
-	C._gtk_container_add(v.ToGtkWidget(), w.ToGtkWidget());
-}
-func Connect(v Widget, s string, f func()) {
+func (v GtkWidget) Hide() { C.gtk_widget_hide(v.Widget) }
+func (v GtkWidget) HideAll() { C.gtk_widget_hide_all(v.Widget) }
+func (v GtkWidget) Show() { C.gtk_widget_show(v.Widget) }
+func (v GtkWidget) ShowAll() { C.gtk_widget_show_all(v.Widget) }
+func (v GtkWidget) ShowNow() { C.gtk_widget_show_now(v.Widget) }
+func (v GtkWidget) Destroy() { C.gtk_widget_destroy(v.Widget) }
+func (v GtkWidget) Connect(s string, f CallbackFunc, data unsafe.Pointer) {
 	funcs.Push(&Callback{f});
-	C._gtk_signal_connect(v.ToGtkWidget(), C.CString(s),
-		                    C.int(funcs.Len())-1, nil);
-} // GtkContainer
-func GetTopLevel(v Widget) GtkWidget {
-	return GtkWidget{ C.gtk_widget_get_toplevel(v.ToGtkWidget()) };
+	C._gtk_signal_connect(v.Widget, C.CString(s),
+		                    C.int(funcs.Len())-1, data);
 }
-func HideOnDelete(v Widget) {
-	C.gtk_widget_hide_on_delete(v.ToGtkWidget());
+func (v GtkWidget) GetTopLevel() *GtkWidget {
+	return &GtkWidget{ C.gtk_widget_get_toplevel(v.Widget) };
 }
-func QueueResize(v Widget) {
-	C.gtk_widget_queue_resize(v.ToGtkWidget());
+func (v GtkWidget) GetTopLevelAsWindow() *GtkWindow {
+	return &GtkWindow { GtkContainer { GtkWidget {
+		C.gtk_widget_get_toplevel(v.Widget)
+	}}};
+}
+func (v GtkWidget) HideOnDelete() {
+	C.gtk_widget_hide_on_delete(v.Widget);
+}
+func (v GtkWidget) QueueResize() {
+	C.gtk_widget_queue_resize(v.Widget);
 }
 
 // TODO
@@ -393,6 +408,18 @@ func QueueResize(v Widget) {
 // gtk_requisition_free
 
 //-----------------------------------------------------------------------
+// GtkContainer
+//-----------------------------------------------------------------------
+type ContainerLike interface {
+	WidgetLike;
+	Add(w WidgetLike);
+}
+type GtkContainer struct { GtkWidget; }
+func (v GtkContainer) Add(w WidgetLike) {
+	C._gtk_container_add(v.ToGtkWidget(), w.ToGtkWidget());
+}
+
+//-----------------------------------------------------------------------
 // GtkWindow
 //-----------------------------------------------------------------------
 const (
@@ -400,15 +427,19 @@ const (
 	GTK_WINDOW_POPUP = 1;
 );
 type WindowLike interface {
-	Labelled;
+	ContainerLike;
 	SetTransientFor(parent WindowLike);
+	GetTitle() string;
+	SetTitle(title string);
 }
-type GtkWindow struct { GtkWidget; }
-func Window(t int) WindowLike {
-	return GtkWindow{ GtkWidget { C.gtk_window_new(C.GtkWindowType(t)) } };
+type GtkWindow struct { GtkContainer; }
+func Window(t int) *GtkWindow {
+	return &GtkWindow{ GtkContainer { GtkWidget {
+		C.gtk_window_new(C.GtkWindowType(t))
+	}}};
 }
-func (v GtkWindow) GetLabel() string { return C.GoString(C._gtk_window_get_title(v.Widget)); }
-func (v GtkWindow) SetLabel(title string) { C._gtk_window_set_title(v.Widget, C.CString(title)); }
+func (v GtkWindow) GetTitle() string { return C.GoString(C._gtk_window_get_title(v.Widget)); }
+func (v GtkWindow) SetTitle(title string) { C._gtk_window_set_title(v.Widget, C.CString(title)); }
 func (v GtkWindow) SetTransientFor(parent WindowLike) {
 	C._gtk_window_set_transient_for(v.Widget, parent.ToGtkWidget());
 }
@@ -525,17 +556,19 @@ const (
 	GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1; /* call gtk_window_set_destroy_with_parent () */
 	GTK_DIALOG_NO_SEPARATOR        = 1 << 2; /* no separator bar above buttons */
 )
-type Dialog interface {
-	Widget;
+type DialogLike interface {
+	WidgetLike;
 	Run() int;
-	Response(func ());
+	Response(CallbackFunc);
 }
-type GtkDialog struct { GtkWidget };
+type GtkDialog struct {
+	GtkWindow
+};
 func (v GtkDialog) Run() int {
 	return int(C._gtk_dialog_run(v.Widget));
 }
-func (v GtkDialog) Response(response func ()) {
-	Connect(v, "response", response);
+func (v GtkDialog) Response(response CallbackFunc, data unsafe.Pointer) {
+	v.Connect("response", response, data);
 }
 
 //-----------------------------------------------------------------------
@@ -556,32 +589,36 @@ const (
 	GTK_BUTTONS_YES_NO = 4;
 	GTK_BUTTONS_OK_CANCEL = 5;
 )
-type GtkMessageDialog GtkDialog;
+type GtkMessageDialog struct {
+	GtkDialog
+};
 func MessageDialog(parent WindowLike, flag int, t int, button int,
-                   message string) Dialog {
-	return GtkDialog { GtkWidget {
+                   message string) *GtkMessageDialog {
+	return &GtkMessageDialog { GtkDialog { GtkWindow { GtkContainer { GtkWidget {
 		C._gtk_message_dialog_new(
 			parent.ToGtkWidget(),
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(button),
 			C.CString(message))
-	}};
+	}}}}};
 }
  
 //-----------------------------------------------------------------------
 // GtkBox
 //-----------------------------------------------------------------------
 type Packable interface {
-	Widget;
-	PackStart(child Widget, expand bool, fill bool, padding uint);
-	PackEnd(child Widget, expand bool, fill bool, padding uint);
+	ContainerLike;
+	PackStart(child WidgetLike, expand bool, fill bool, padding uint);
+	PackEnd(child WidgetLike, expand bool, fill bool, padding uint);
 }
-type GtkBox struct { GtkWidget };
-func (v GtkBox) PackStart(child Widget, expand bool, fill bool, padding uint) {
+type GtkBox struct {
+	GtkContainer
+};
+func (v GtkBox) PackStart(child WidgetLike, expand bool, fill bool, padding uint) {
 	C._gtk_box_pack_start(v.Widget, child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding));
 }
-func (v GtkBox) PackEnd(child Widget, expand bool, fill bool, padding uint) {
+func (v GtkBox) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
 	C._gtk_box_pack_end(v.Widget, child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding));
 }
 // TODO
@@ -598,29 +635,40 @@ func (v GtkBox) PackEnd(child Widget, expand bool, fill bool, padding uint) {
 //-----------------------------------------------------------------------
 // GtkVBox
 //-----------------------------------------------------------------------
-func VBox(homogeneous bool, spacing uint) Packable {
-	return GtkBox{ GtkWidget {
+func VBox(homogeneous bool, spacing uint) *GtkBox {
+	return &GtkBox{ GtkContainer { GtkWidget {
 		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing))
-	}};
+	}}};
 }
 
 //-----------------------------------------------------------------------
 // GtkHBox
 //-----------------------------------------------------------------------
 type GtkHBox GtkBox;
-func HBox(homogeneous bool, spacing uint) Packable {
-	return GtkBox{ GtkWidget {
+func HBox(homogeneous bool, spacing uint) *GtkBox {
+	return &GtkBox{ GtkContainer { GtkWidget {
 		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing))
-	}};
+	}}};
 }
 
 //-----------------------------------------------------------------------
 // GtkEntry
 //-----------------------------------------------------------------------
-type GtkEntry struct { GtkWidget; }
-func Entry() Labelled { return GtkEntry{ GtkWidget { C.gtk_entry_new()} }; }
-func (v GtkEntry) GetLabel() string { return C.GoString(C._gtk_entry_get_text(v.Widget)); }
-func (v GtkEntry) SetLabel(text string) { C._gtk_entry_set_text(v.Widget, C.CString(text)); }
+type TextInputLike interface {
+	WidgetLike;
+	GetText() string;
+	SetText(label string);
+}
+type GtkEntry struct {
+	GtkWidget;
+}
+func Entry() *GtkEntry {
+	return &GtkEntry{ GtkWidget {
+		C.gtk_entry_new()
+	}};
+}
+func (v GtkEntry) GetText() string { return C.GoString(C._gtk_entry_get_text(v.Widget)); }
+func (v GtkEntry) SetText(text string) { C._gtk_entry_set_text(v.Widget, C.CString(text)); }
 
 //-----------------------------------------------------------------------
 // GtkImage
@@ -635,21 +683,23 @@ const (
 	GTK_ICON_SIZE_DIALOG = 6;
 )
 type ImageLike interface {
-	Widget; // images are Widgets!
+	WidgetLike;
 }
-type GtkImage struct { GtkWidget; }
-func Image() ImageLike {
-	return GtkImage{ GtkWidget {
+type GtkImage struct {
+	GtkWidget;
+}
+func Image() *GtkImage {
+	return &GtkImage{ GtkWidget {
 		C.gtk_image_new()
 	}};
 }
-func ImageFromFile(filename string) ImageLike {
-	return GtkImage{ GtkWidget {
+func ImageFromFile(filename string) *GtkImage {
+	return &GtkImage{ GtkWidget {
 		C.gtk_image_new_from_file(C.to_gcharptr(C.CString(filename)))
 	}};
 }
-func ImageFromStock(stock_id string, size int) ImageLike {
-	return GtkImage{ GtkWidget {
+func ImageFromStock(stock_id string, size int) *GtkImage {
+	return &GtkImage{ GtkWidget {
 		C.gtk_image_new_from_stock(C.to_gcharptr(C.CString(stock_id)), C.GtkIconSize(size))
 	}};
 }
@@ -658,14 +708,16 @@ func ImageFromStock(stock_id string, size int) ImageLike {
 //-----------------------------------------------------------------------
 // GtkLabel
 //-----------------------------------------------------------------------
-type Labelled interface {
-	Widget; // labels are Widgets!
+type LabelLike interface {
+	WidgetLike;
 	GetLabel() string;
 	SetLabel(label string);
 }
-type GtkLabel struct { GtkWidget; }
-func Label(label string) Labelled {
-	return GtkLabel{ GtkWidget {
+type GtkLabel struct {
+	GtkWidget;
+}
+func Label(label string) *GtkLabel {
+	return &GtkLabel{ GtkWidget {
 		C.gtk_label_new(C.to_gcharptr(C.CString(label)))
 	}};
 }
@@ -719,15 +771,15 @@ func (v GtkLabel) SetLabel(label string) { C._gtk_label_set_text(v.Widget, C.CSt
 // GtkAccelLabel
 //-----------------------------------------------------------------------
 type AccelLabelled interface {
-	Widget; // labels are Widgets!
+	WidgetLike;
 	GetAccelWidget() GtkWidget;
 	SetAccelWidget(GtkWidget);
 }
 type GtkAccelLabel struct {
 	GtkWidget;
 }
-func AccelLabel(label string) AccelLabelled {
-	return GtkAccelLabel{ GtkWidget {
+func AccelLabel(label string) *GtkAccelLabel {
+	return &GtkAccelLabel{ GtkWidget {
 		C.gtk_accel_label_new(C.to_gcharptr(C.CString(label)))
 	}};
 }
@@ -739,24 +791,28 @@ func (v GtkAccelLabel) Refetch() bool { return gboolean2bool(C._gtk_accel_label_
 //-----------------------------------------------------------------------
 // GtkButton
 //-----------------------------------------------------------------------
-type ButtonLike interface { // Buttons are Labelled Widgets!
-	Widget;
+type ButtonLike interface { // Buttons are LabelLike Widgets!
+	LabelLike;
 	// the following should be just Clickable; ...
-	Clicked(func()); // this is a very simple interface...
-	GetLabel() string;
-	SetLabel(label string);
+	Clicked(CallbackFunc, unsafe.Pointer); // this is a very simple interface...
 }
 type Clickable interface {
-	Widget;
-	Clicked(func()); // this is a very simple interface...
+	WidgetLike;
+	Clicked(CallbackFunc, unsafe.Pointer); // this is a very simple interface...
 }
-func (v GtkButton) Clicked(onclick func()) {
-	Connect(v, "clicked", onclick);
+func (v GtkButton) Clicked(onclick CallbackFunc, data unsafe.Pointer) {
+	v.Connect("clicked", onclick, data);
 }
-type GtkButton struct { GtkWidget; }
-func Button() ButtonLike { return GtkButton{ GtkWidget {C.gtk_button_new()} }; }
-func ButtonWithLabel(label string) ButtonLike {
-	return GtkButton{ GtkWidget {
+type GtkButton struct {
+	GtkWidget;
+}
+func Button() *GtkButton {
+	return &GtkButton{ GtkWidget {
+		C.gtk_button_new()
+	}};
+}
+func ButtonWithLabel(label string) *GtkButton {
+	return &GtkButton{ GtkWidget {
 		C.gtk_button_new_with_label(C.to_gcharptr(C.CString(label)))
 	}};
 }
@@ -783,15 +839,18 @@ func (v GtkButton) SetLabel(label string) { C._gtk_button_set_label(v.Widget, C.
 //-----------------------------------------------------------------------
 // GtkFontButton
 //-----------------------------------------------------------------------
-func (v GtkFontButton) Clicked(onclick func()) {
-	Connect(v, "clicked", onclick);
+type GtkFontButton struct {
+	GtkButton;
 }
-type GtkFontButton struct { GtkWidget; }
-func FontButton() ButtonLike { return GtkButton{ GtkWidget {C.gtk_font_button_new()} }; }
-func FontButtonWithFont(fontname string) ButtonLike {
-	return GtkButton{ GtkWidget {
+func FontButton() *GtkFontButton {
+	return &GtkFontButton{ GtkButton { GtkWidget {
+		C.gtk_font_button_new()
+	}}};
+}
+func FontButtonWithFont(fontname string) *GtkFontButton {
+	return &GtkFontButton{ GtkButton { GtkWidget {
 		C.gtk_font_button_new_with_font(C.to_gcharptr(C.CString(fontname)))
-	}};
+	}}};
 }
 func (v GtkFontButton) GetTitle() string { return C.GoString(C._gtk_font_button_get_title(v.Widget)); }
 func (v GtkFontButton) SetTitle(title string) { C._gtk_font_button_set_title(v.Widget, C.CString(title)); }
@@ -811,8 +870,9 @@ var use_gtk_main bool = false;
 // full closures, so there is never a need to pass additional data via
 // a void * pointer.  Where you might have wanted to do that, you can
 // instead just use func () { ... using data } to pass the data in.
+type CallbackFunc func(*GtkWidget, []unsafe.Pointer);
 type Callback struct {
-	f func();
+	f CallbackFunc;
 }
 var funcs *vector.Vector;
 var main_loop bool = true;
@@ -821,12 +881,18 @@ func pollEvents() {
 		if use_gtk_main == false {
 			C.gtk_main_iteration_do(C.gboolean(1));
 		}
-		index := C._gtk_callback_index;
-		if int(index) > 0 && C._gtk_callback_fire[index-1] == 0 {
-			elem := funcs.At(int(C._gtk_callback_func_no[index-1]));
+		//index := C._gtk_callback_index;
+		cbi := C.current_callback_info;
+		if cbi != nil && cbi.fire == C.int(0) {
+			elem := funcs.At(int(cbi.func_no));
+			args := make([]unsafe.Pointer, cbi.args_no);
+			for i := C.int(0); i < cbi.args_no; i++ {
+				args[i] = unsafe.Pointer(C.callback_info_get_arg(cbi, C.int(i)));
+			}
 			f := elem.(*Callback);
-			f.f();
-			C._gtk_callback_fire[index-1] = C.int(1);
+			f.f(&GtkWidget{cbi.widget}, args);
+			cbi.fire = C.int(1);
+			C.callback_info_free_args(cbi);
 		}
 	}
 }
