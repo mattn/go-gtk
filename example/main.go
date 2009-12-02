@@ -32,7 +32,6 @@ func main() {
 	vbox.Add(image);
 
 	buttons := gtk.HBox(false, 1);
-
 	button := gtk.ButtonWithLabel("Button with label");
 	button.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 		print("button clicked: ", button.GetLabel(), "\n");
@@ -59,8 +58,32 @@ func main() {
 		print("show_size: ", fontbutton.GetShowSize(), "\n");
 	}, nil);
 	buttons.Add(fontbutton);
+	vbox.Add(buttons);
+
+	buttons = gtk.HBox(false, 1);
+
+	togglebutton := gtk.ToggleButtonWithLabel("ToggleButton with label");
+	togglebutton.Connect("toggled", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		if togglebutton.GetActive() {
+			togglebutton.SetLabel("ToggleButton ON!");
+		} else {
+			togglebutton.SetLabel("ToggleButton OFF!");
+		}
+	}, nil);
+	buttons.Add(togglebutton);
+
+	checkbutton := gtk.CheckButtonWithLabel("CheckButton with label");
+	checkbutton.Connect("toggled", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		if checkbutton.GetActive() {
+			checkbutton.SetLabel("CheckButton CHECKED!");
+		} else {
+			checkbutton.SetLabel("CheckButton UNCHECKED!");
+		}
+	}, nil);
+	buttons.Add(checkbutton);
 
 	vbox.Add(buttons);
+
 	window.Add(vbox);
 
 	window.ShowAll();

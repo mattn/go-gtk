@@ -149,6 +149,30 @@ static void _gtk_button_set_label(GtkWidget* widget, char* label) {
 	gtk_button_set_label(GTK_BUTTON(widget), (gchar*)label);
 }
 
+static gboolean _gtk_toggle_button_get_mode(GtkWidget* widget) {
+	return gtk_toggle_button_get_mode(GTK_TOGGLE_BUTTON(widget));
+}
+
+static void _gtk_toggle_button_set_mode(GtkWidget* widget, gboolean draw_indicator) {
+	gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(widget), draw_indicator);
+}
+
+static gboolean _gtk_toggle_button_get_active(GtkWidget* widget) {
+	return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
+}
+
+static void _gtk_toggle_button_set_active(GtkWidget* widget, gboolean draw_indicator) {
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), draw_indicator);
+}
+
+static gboolean _gtk_toggle_button_get_inconsistent(GtkWidget* widget) {
+	return gtk_toggle_button_get_inconsistent(GTK_TOGGLE_BUTTON(widget));
+}
+
+static void _gtk_toggle_button_set_inconsistent(GtkWidget* widget, gboolean draw_indicator) {
+	gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(widget), draw_indicator);
+}
+
 static char* _gtk_font_button_get_title(GtkWidget* widget) {
 	return (char*)gtk_font_button_get_title(GTK_FONT_BUTTON(widget));
 }
@@ -770,7 +794,7 @@ func (v GtkLabel) SetLabel(label string) { C._gtk_label_set_text(v.Widget, C.CSt
 //-----------------------------------------------------------------------
 // GtkAccelLabel
 //-----------------------------------------------------------------------
-type AccelLabelled interface {
+type AccelLabelLike interface {
 	WidgetLike;
 	GetAccelWidget() GtkWidget;
 	SetAccelWidget(GtkWidget);
@@ -837,18 +861,81 @@ func (v GtkButton) SetLabel(label string) { C._gtk_button_set_label(v.Widget, C.
 // gtk_button_get_image_position
 
 //-----------------------------------------------------------------------
+// GtkToggleButton
+//-----------------------------------------------------------------------
+type GtkToggleButton struct {
+	GtkButton;
+}
+func ToggleButton() *GtkToggleButton {
+	return &GtkToggleButton{ GtkButton { GtkWidget {
+		C.gtk_toggle_button_new()
+	}}};
+}
+func ToggleButtonWithLabel(label string) *GtkToggleButton {
+	return &GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_toggle_button_new_with_label(C.to_gcharptr(C.CString(label)))
+	}}};
+}
+func ToggleButtonWithMnemonic(label string) *GtkToggleButton {
+	return &GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(C.CString(label)))
+	}}};
+}
+func (v GtkToggleButton) GetMode() bool {
+	return gboolean2bool(C._gtk_toggle_button_get_mode(v.Widget));
+}
+func (v GtkToggleButton) SetMode(draw_indicator bool) {
+	C._gtk_toggle_button_set_mode(v.Widget, bool2gboolean(draw_indicator));
+}
+func (v GtkToggleButton) GetActive() bool {
+	return gboolean2bool(C._gtk_toggle_button_get_active(v.Widget));
+}
+func (v GtkToggleButton) SetActive(is_active bool) {
+	C._gtk_toggle_button_set_active(v.Widget, bool2gboolean(is_active));
+}
+func (v GtkToggleButton) GetInconsistent() bool {
+	return gboolean2bool(C._gtk_toggle_button_get_inconsistent(v.Widget));
+}
+func (v GtkToggleButton) SetInconsistent(setting bool) {
+	C._gtk_toggle_button_set_inconsistent(v.Widget, bool2gboolean(setting));
+}
+// TODO
+//-----------------------------------------------------------------------
+// GtkCheckButton
+//-----------------------------------------------------------------------
+type GtkCheckButton struct {
+	GtkToggleButton;
+}
+func CheckButton() *GtkCheckButton {
+	return &GtkCheckButton{ GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_check_button_new()
+	}}}};
+}
+func CheckButtonWithLabel(label string) *GtkCheckButton {
+	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_check_button_new_with_label(C.to_gcharptr(C.CString(label)))
+	}}}};
+}
+func CheckButtonWithMnemonic(label string) *GtkCheckButton {
+	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(C.CString(label)))
+	}}}};
+}
+//func (v GtkCheckButton) GetProps() string { return C.GoString(C._gtk_font_button_get_title(v.Widget)); }
+// TODO
+//-----------------------------------------------------------------------
 // GtkFontButton
 //-----------------------------------------------------------------------
 type GtkFontButton struct {
 	GtkButton;
 }
 func FontButton() *GtkFontButton {
-	return &GtkFontButton{ GtkButton { GtkWidget {
+	return &GtkFontButton { GtkButton { GtkWidget {
 		C.gtk_font_button_new()
 	}}};
 }
 func FontButtonWithFont(fontname string) *GtkFontButton {
-	return &GtkFontButton{ GtkButton { GtkWidget {
+	return &GtkFontButton { GtkButton { GtkWidget {
 		C.gtk_font_button_new_with_font(C.to_gcharptr(C.CString(fontname)))
 	}}};
 }
