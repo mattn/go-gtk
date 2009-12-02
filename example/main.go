@@ -16,10 +16,16 @@ func main() {
 		gtk.MainQuit();
 	}, nil);
 
+	//--------------------------------------------------------
+	// GtkVBox
+	//--------------------------------------------------------
+	vbox := gtk.VBox(false, 1);
+
+	//--------------------------------------------------------
+	// GtkImage
+	//--------------------------------------------------------
 	dir, _ := path.Split(os.Args[0]);
 	imagefile := path.Join(dir, "../data/go-gtk-logo.png"); 
-
-	vbox := gtk.VBox(false, 1);
 
 	label := gtk.Label("Go Binding for GTK");
 	vbox.PackStart(label, false, true, 0);
@@ -31,7 +37,14 @@ func main() {
 	image := gtk.ImageFromFile(imagefile);
 	vbox.Add(image);
 
+	//--------------------------------------------------------
+	// GtkHBox
+	//--------------------------------------------------------
 	buttons := gtk.HBox(false, 1);
+
+	//--------------------------------------------------------
+	// GtkButton
+	//--------------------------------------------------------
 	button := gtk.ButtonWithLabel("Button with label");
 	button.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 		print("button clicked: ", button.GetLabel(), "\n");
@@ -50,6 +63,9 @@ func main() {
 	}, nil);
 	buttons.Add(button);
 
+	//--------------------------------------------------------
+	// GtkFontButton
+	//--------------------------------------------------------
 	fontbutton := gtk.FontButton();
 	fontbutton.Connect("font-set", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 		print("title: ", fontbutton.GetTitle(), "\n");
@@ -62,6 +78,9 @@ func main() {
 
 	buttons = gtk.HBox(false, 1);
 
+	//--------------------------------------------------------
+	// GtkToggleButton
+	//--------------------------------------------------------
 	togglebutton := gtk.ToggleButtonWithLabel("ToggleButton with label");
 	togglebutton.Connect("toggled", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 		if togglebutton.GetActive() {
@@ -72,6 +91,9 @@ func main() {
 	}, nil);
 	buttons.Add(togglebutton);
 
+	//--------------------------------------------------------
+	// GtkCheckButton
+	//--------------------------------------------------------
 	checkbutton := gtk.CheckButtonWithLabel("CheckButton with label");
 	checkbutton.Connect("toggled", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 		if checkbutton.GetActive() {
@@ -81,8 +103,16 @@ func main() {
 		}
 	}, nil);
 	buttons.Add(checkbutton);
-
 	vbox.Add(buttons);
+
+	combos := gtk.HBox(false, 1);
+
+	comboboxentry := gtk.ComboBoxEntryNewText();
+	comboboxentry.Connect("changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		//comboboxentry...
+	}, nil);
+	combos.Add(comboboxentry);
+	vbox.Add(combos);
 
 	window.Add(vbox);
 

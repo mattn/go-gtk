@@ -173,6 +173,14 @@ static void _gtk_toggle_button_set_inconsistent(GtkWidget* widget, gboolean draw
 	gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(widget), draw_indicator);
 }
 
+static gboolean _gtk_combo_box_entry_get_text_column(GtkWidget* widget) {
+	return gtk_combo_box_entry_get_text_column(GTK_COMBO_BOX_ENTRY(widget));
+}
+
+static void _gtk_combo_box_entry_set_text_column(GtkWidget* widget, gint text_column) {
+	gtk_combo_box_entry_set_text_column(GTK_COMBO_BOX_ENTRY(widget), text_column);
+}
+
 static char* _gtk_font_button_get_title(GtkWidget* widget) {
 	return (char*)gtk_font_button_get_title(GTK_FONT_BUTTON(widget));
 }
@@ -255,7 +263,9 @@ func (v GtkWidget) Connect(s string, f CallbackFunc, data unsafe.Pointer) {
 		                    C.int(funcs.Len())-1, data);
 }
 func (v GtkWidget) GetTopLevel() *GtkWidget {
-	return &GtkWidget{ C.gtk_widget_get_toplevel(v.Widget) };
+	return &GtkWidget {
+		C.gtk_widget_get_toplevel(v.Widget)
+	};
 }
 func (v GtkWidget) GetTopLevelAsWindow() *GtkWindow {
 	return &GtkWindow { GtkContainer { GtkWidget {
@@ -458,7 +468,7 @@ type WindowLike interface {
 }
 type GtkWindow struct { GtkContainer; }
 func Window(t int) *GtkWindow {
-	return &GtkWindow{ GtkContainer { GtkWidget {
+	return &GtkWindow { GtkContainer { GtkWidget {
 		C.gtk_window_new(C.GtkWindowType(t))
 	}}};
 }
@@ -594,6 +604,7 @@ func (v GtkDialog) Run() int {
 func (v GtkDialog) Response(response CallbackFunc, data unsafe.Pointer) {
 	v.Connect("response", response, data);
 }
+// TODO
 
 //-----------------------------------------------------------------------
 // GtkMessageDialog
@@ -627,6 +638,7 @@ func MessageDialog(parent WindowLike, flag int, t int, button int,
 			C.CString(message))
 	}}}}};
 }
+// TODO
  
 //-----------------------------------------------------------------------
 // GtkBox
@@ -660,20 +672,22 @@ func (v GtkBox) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) 
 // GtkVBox
 //-----------------------------------------------------------------------
 func VBox(homogeneous bool, spacing uint) *GtkBox {
-	return &GtkBox{ GtkContainer { GtkWidget {
+	return &GtkBox { GtkContainer { GtkWidget {
 		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing))
 	}}};
 }
+// TODO
 
 //-----------------------------------------------------------------------
 // GtkHBox
 //-----------------------------------------------------------------------
 type GtkHBox GtkBox;
 func HBox(homogeneous bool, spacing uint) *GtkBox {
-	return &GtkBox{ GtkContainer { GtkWidget {
+	return &GtkBox { GtkContainer { GtkWidget {
 		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing))
 	}}};
 }
+// TODO
 
 //-----------------------------------------------------------------------
 // GtkEntry
@@ -687,12 +701,13 @@ type GtkEntry struct {
 	GtkWidget;
 }
 func Entry() *GtkEntry {
-	return &GtkEntry{ GtkWidget {
+	return &GtkEntry { GtkWidget {
 		C.gtk_entry_new()
 	}};
 }
 func (v GtkEntry) GetText() string { return C.GoString(C._gtk_entry_get_text(v.Widget)); }
 func (v GtkEntry) SetText(text string) { C._gtk_entry_set_text(v.Widget, C.CString(text)); }
+// TODO
 
 //-----------------------------------------------------------------------
 // GtkImage
@@ -713,22 +728,22 @@ type GtkImage struct {
 	GtkWidget;
 }
 func Image() *GtkImage {
-	return &GtkImage{ GtkWidget {
+	return &GtkImage { GtkWidget {
 		C.gtk_image_new()
 	}};
 }
 func ImageFromFile(filename string) *GtkImage {
-	return &GtkImage{ GtkWidget {
+	return &GtkImage { GtkWidget {
 		C.gtk_image_new_from_file(C.to_gcharptr(C.CString(filename)))
 	}};
 }
 func ImageFromStock(stock_id string, size int) *GtkImage {
-	return &GtkImage{ GtkWidget {
+	return &GtkImage { GtkWidget {
 		C.gtk_image_new_from_stock(C.to_gcharptr(C.CString(stock_id)), C.GtkIconSize(size))
 	}};
 }
-
 // TODO
+
 //-----------------------------------------------------------------------
 // GtkLabel
 //-----------------------------------------------------------------------
@@ -741,11 +756,10 @@ type GtkLabel struct {
 	GtkWidget;
 }
 func Label(label string) *GtkLabel {
-	return &GtkLabel{ GtkWidget {
+	return &GtkLabel { GtkWidget {
 		C.gtk_label_new(C.to_gcharptr(C.CString(label)))
 	}};
 }
-
 func (v GtkLabel) GetLabel() string { return C.GoString(C._gtk_label_get_text(v.Widget)); }
 func (v GtkLabel) SetLabel(label string) { C._gtk_label_set_text(v.Widget, C.CString(label)); }
 // TODO
@@ -803,7 +817,7 @@ type GtkAccelLabel struct {
 	GtkWidget;
 }
 func AccelLabel(label string) *GtkAccelLabel {
-	return &GtkAccelLabel{ GtkWidget {
+	return &GtkAccelLabel { GtkWidget {
 		C.gtk_accel_label_new(C.to_gcharptr(C.CString(label)))
 	}};
 }
@@ -811,6 +825,8 @@ func (v GtkAccelLabel) GetAccelWidget() GtkWidget { return GtkWidget{ C._gtk_acc
 func (v GtkAccelLabel) GetAccelWidth() uint { return uint(C._gtk_accel_label_get_accel_width(v.Widget)); }
 func (v GtkAccelLabel) SetAccelWidget(w GtkWidget) { C._gtk_accel_label_set_accel_widget(v.Widget, w.Widget); }
 func (v GtkAccelLabel) Refetch() bool { return gboolean2bool(C._gtk_accel_label_refetch(v.Widget)); }
+// TODO
+// gtk_accel_label_set_accel_closure
 
 //-----------------------------------------------------------------------
 // GtkButton
@@ -831,12 +847,12 @@ type GtkButton struct {
 	GtkWidget;
 }
 func Button() *GtkButton {
-	return &GtkButton{ GtkWidget {
+	return &GtkButton { GtkWidget {
 		C.gtk_button_new()
 	}};
 }
 func ButtonWithLabel(label string) *GtkButton {
-	return &GtkButton{ GtkWidget {
+	return &GtkButton { GtkWidget {
 		C.gtk_button_new_with_label(C.to_gcharptr(C.CString(label)))
 	}};
 }
@@ -867,7 +883,7 @@ type GtkToggleButton struct {
 	GtkButton;
 }
 func ToggleButton() *GtkToggleButton {
-	return &GtkToggleButton{ GtkButton { GtkWidget {
+	return &GtkToggleButton { GtkButton { GtkWidget {
 		C.gtk_toggle_button_new()
 	}}};
 }
@@ -899,7 +915,8 @@ func (v GtkToggleButton) GetInconsistent() bool {
 func (v GtkToggleButton) SetInconsistent(setting bool) {
 	C._gtk_toggle_button_set_inconsistent(v.Widget, bool2gboolean(setting));
 }
-// TODO
+// FINISH
+
 //-----------------------------------------------------------------------
 // GtkCheckButton
 //-----------------------------------------------------------------------
@@ -907,7 +924,7 @@ type GtkCheckButton struct {
 	GtkToggleButton;
 }
 func CheckButton() *GtkCheckButton {
-	return &GtkCheckButton{ GtkToggleButton { GtkButton { GtkWidget {
+	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
 		C.gtk_check_button_new()
 	}}}};
 }
@@ -923,6 +940,7 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 }
 //func (v GtkCheckButton) GetProps() string { return C.GoString(C._gtk_font_button_get_title(v.Widget)); }
 // TODO
+
 //-----------------------------------------------------------------------
 // GtkFontButton
 //-----------------------------------------------------------------------
@@ -947,7 +965,32 @@ func (v GtkFontButton) GetFontName() string { return C.GoString(C._gtk_font_butt
 func (v GtkFontButton) SetFontName(fontname string) { C._gtk_font_button_set_font_name(v.Widget, C.CString(fontname)); }
 func (v GtkFontButton) GetShowSize() bool { return gboolean2bool(C._gtk_font_button_get_show_size(v.Widget)); }
 func (v GtkFontButton) SetShowSize(show_size bool) { C._gtk_font_button_set_show_size(v.Widget, bool2gboolean(show_size)); }
-// TODO
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkComboBoxEntry
+//-----------------------------------------------------------------------
+type GtkComboBoxEntry struct {
+	GtkWidget;
+}
+func ComboBoxEntry() *GtkComboBoxEntry {
+	return &GtkComboBoxEntry { GtkWidget {
+		C.gtk_combo_box_entry_new()
+	}};
+}
+func ComboBoxEntryNewText() *GtkComboBoxEntry {
+	return &GtkComboBoxEntry { GtkWidget {
+		C.gtk_combo_box_entry_new_text()
+	}};
+}
+func (v GtkComboBoxEntry) GetTextColumn() int {
+	return int(C._gtk_combo_box_entry_get_text_column(v.Widget));
+}
+func (v GtkComboBoxEntry) SetTextColumn(text_column int) {
+	C._gtk_combo_box_entry_set_text_column(v.Widget, C.gint(text_column));
+}
+// FINISH
+
 //-----------------------------------------------------------------------
 // Events
 //-----------------------------------------------------------------------
