@@ -220,6 +220,12 @@ static void _gtk_box_pack_start(GtkWidget* box, GtkWidget* child, gboolean expan
 static void _gtk_box_pack_end(GtkWidget* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding) {
 	gtk_box_pack_end(GTK_BOX(box), child, expand, fill, padding);
 }
+static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, void* iter, void* path) {
+	return gtk_tree_model_get_iter(tree_model, (GtkTreeIter*)iter, (GtkTreePath*)path);
+}
+static GtkTreePath* _gtk_tree_model_get_path(GtkTreeModel* tree_model, GtkTreeIter* iter) {
+	return gtk_tree_model_get_path(tree_model, iter);
+}
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 static char* to_charptr(gchar* s) { return (char*)s; }
 */
@@ -1058,6 +1064,75 @@ func (v GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
 	return gboolean2bool(C.gtk_tree_path_is_descendant(v.TreePath, ancestor.TreePath));
 }
 // FINISH
+
+//-----------------------------------------------------------------------
+// GtkTreeIter
+//-----------------------------------------------------------------------
+type GtkTreeIter struct {
+	TreeIter *C.GtkTreeIter;
+}
+func (v GtkTreeIter) Copy() *GtkTreeIter {
+	return &GtkTreeIter { C.gtk_tree_iter_copy(v.TreeIter) };
+}
+func (v GtkTreeIter) Free() {
+	C.gtk_tree_iter_free(v.TreeIter);
+}
+
+//-----------------------------------------------------------------------
+// GtkTreeModel
+//-----------------------------------------------------------------------
+const (
+	GTK_TREE_MODEL_ITERS_PERSIST = 1 << 0;
+	GTK_TREE_MODEL_LIST_ONLY     = 1 << 1;
+)
+type GtkTreeModel struct {
+	TreeModel *C.GtkTreeModel;
+}
+func (v GtkTreeModel) GetFlags() int {
+	return int(C.gtk_tree_model_get_flags(v.TreeModel));
+}
+func (v GtkTreeModel) GetNColumns() int {
+	return int(C.gtk_tree_model_get_n_columns(v.TreeModel));
+}
+func (v GtkTreeModel) GetIter(iter *GtkTreeIter, path *GtkTreePath) bool {
+	var iter_ C.GtkTreeIter;
+	var path_ C.GtkTreePath;
+	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, unsafe.Pointer(&iter_), unsafe.Pointer(&path_)));
+	*iter = GtkTreeIter { &iter_ };
+	*path = GtkTreePath { &path_ };
+	return ret;
+}
+func (v GtkTreeModel) GetIterFromString(iter *GtkTreeIter, path_string string) bool {
+	var iter_ C.GtkTreeIter;
+	ret := gboolean2bool(C.gtk_tree_model_get_iter_from_string(v.TreeModel, iter.TreeIter, C.to_gcharptr(C.CString(path_string))));
+	*iter = GtkTreeIter { &iter_ };
+	return ret;
+}
+func (v GtkTreeModel) GetStringFromIter(iter *GtkTreeIter) string {
+	return C.GoString(C.to_charptr(C.gtk_tree_model_get_string_from_iter(v.TreeModel, iter.TreeIter)));
+}
+func (v GtkTreeModel) GetIterFirst(iter *GtkTreeIter) bool {
+	var iter_ C.GtkTreeIter;
+	ret := gboolean2bool(C.gtk_tree_model_get_iter_first(v.TreeModel, iter.TreeIter));
+	*iter = GtkTreeIter { &iter_ };
+	return ret;
+}
+func (v GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
+	return &GtkTreePath { C._gtk_tree_model_get_path(v.TreeModel, iter.TreeIter) };
+}
+// TODO
+// gtk_tree_model_get_value
+// gtk_tree_model_iter_next
+// gtk_tree_model_iter_children
+// gtk_tree_model_iter_has_child
+// gtk_tree_model_iter_n_children
+// gtk_tree_model_iter_nth_child
+// gtk_tree_model_iter_parent
+// gtk_tree_model_ref_node
+// gtk_tree_model_unref_node
+// gtk_tree_model_get
+// gtk_tree_model_get_valist
+// gtk_tree_model_foreach
 
 //-----------------------------------------------------------------------
 // Events
