@@ -90,3 +90,89 @@ pre.code {
 	width: 500px;
 }
 
+blockquote.code {
+ border-bottom    : 1px solid #777777;
+ border-left      : 5px solid #777777;
+ border-right     : 1px solid #777777;
+ border-top       : 1px solid #777777;
+ background       : #555555;
+ color            : #ffffff;
+ display          : block;
+ font-family      : monospace;
+ font-size        : small;
+ width            : 100%;
+ padding-top      : 0.2em;
+ padding-bottom   : 1.2em;
+ padding-left     : 0.5em;
+ padding-right    : 0em;
+ overflow         : auto;
+ white-space      : nowrap;
+ margin-left      : 0px;
+}
+.code .Comment {
+ color: #aaaaaa;
+}
+.code .Constant,
+.code .String,
+.code .Character,
+.code .Number,
+.code .Boolean,
+.code .Float {
+ color: #aa7777;
+}
+.code .Identifier,
+.code .Function {
+ color: #77aa77;
+}
+.code .Statement,
+.code .Conditional,
+.code .Repeat,
+.code .Label,
+.code .Operator,
+.code .Keyword,
+.code .Exception {
+ color: #77aaaa;
+}
+.code .PreProc,
+.code .Include,
+.code .Define,
+.code .Macro,
+.code .PreCondit {
+ color: #aaffff;
+}
+.code .Type,
+.code .StorageClass,
+.code .Structure,
+.code .Typedef {
+ color: #aaaa55;
+}
+.code .Special,
+.code .SpecialChar,
+.code .Tag,
+.code .Delimiter,
+.code .SpecialComment,
+.code .Debug {
+ color: #777777;
+}
+.code .Underlined {
+ color: #00ff00; /* TODO */
+ text-decoration: underline;
+}
+.code .Ignore {
+ color: #777777; /* TODO */
+}
+.code .Error {
+ color: #ffffff; /* TODO */
+ background-color: #ff0000; /* TODO */
+}
+.code .Todo {
+ color: #0000ff; /* TODO */
+}
+.code .Folded {
+ color: #aaffff;
+ background-color: #999999;
+}
+.code .Cursor {
+ color: #555555;
+ background-color: #ffffff;
+}
