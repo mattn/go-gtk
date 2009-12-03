@@ -221,6 +221,7 @@ static void _gtk_box_pack_end(GtkWidget* box, GtkWidget* child, gboolean expand,
 	gtk_box_pack_end(GTK_BOX(box), child, expand, fill, padding);
 }
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
+static char* to_charptr(gchar* s) { return (char*)s; }
 */
 import "C";
 import "unsafe";
@@ -988,6 +989,73 @@ func (v GtkComboBoxEntry) GetTextColumn() int {
 }
 func (v GtkComboBoxEntry) SetTextColumn(text_column int) {
 	C._gtk_combo_box_entry_set_text_column(v.Widget, C.gint(text_column));
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkTreePath
+//-----------------------------------------------------------------------
+type GtkTreePath struct {
+	TreePath *C.GtkTreePath;
+}
+func TreePath() *GtkTreePath {
+	return &GtkTreePath {
+		C.gtk_tree_path_new()
+	};
+}
+func TreePathFromString(path string) *GtkTreePath {
+	return &GtkTreePath {
+		C.gtk_tree_path_new_from_string(C.to_gcharptr(C.CString(path)))
+	};
+}
+func TreePathNewFirst() *GtkTreePath {
+	return &GtkTreePath {
+		C.gtk_tree_path_new_first()
+	};
+}
+func (v GtkTreePath) String() string {
+	return C.GoString(C.to_charptr(C.gtk_tree_path_to_string(v.TreePath)));
+}
+func (v GtkTreePath) AppendIndex(index int) {
+	C.gtk_tree_path_append_index(v.TreePath, C.gint(index));
+}
+func (v GtkTreePath) PrependIndex(index int) {
+	C.gtk_tree_path_prepend_index(v.TreePath, C.gint(index));
+}
+func (v GtkTreePath) GetDepth() int {
+	return int(C.gtk_tree_path_get_depth(v.TreePath));
+}
+//func (v GtkTreePath) GetIndices() *int {
+//	return *int(C.gtk_tree_path_get_indices(v.TreePath));
+//}
+func (v GtkTreePath) Free() {
+	C.gtk_tree_path_free(v.TreePath);
+}
+func (v GtkTreePath) Copy() *GtkTreePath {
+	return &GtkTreePath {
+		C.gtk_tree_path_copy(v.TreePath)
+	};
+}
+func (v GtkTreePath) Compare(w GtkTreePath) int {
+	return int(C.gtk_tree_path_compare(v.TreePath, w.TreePath));
+}
+func (v GtkTreePath) Next() {
+	C.gtk_tree_path_next(v.TreePath);
+}
+func (v GtkTreePath) Prev() bool {
+	return gboolean2bool(C.gtk_tree_path_prev(v.TreePath));
+}
+func (v GtkTreePath) Up() bool {
+	return gboolean2bool(C.gtk_tree_path_up(v.TreePath));
+}
+func (v GtkTreePath) Down() {
+	C.gtk_tree_path_down(v.TreePath);
+}
+func (v GtkTreePath) IsAncestor(descendant GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_path_is_ancestor(v.TreePath, descendant.TreePath));
+}
+func (v GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_path_is_descendant(v.TreePath, ancestor.TreePath));
 }
 // FINISH
 
