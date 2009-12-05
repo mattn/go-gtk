@@ -126,6 +126,7 @@ func main() {
 	combobox.AppendText("Peach");
 	combobox.AppendText("Banana");
 	combobox.AppendText("Apple");
+	combobox.SetActive(1);
 	combobox .Connect("changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 		print("value: ", combobox.GetActiveText(), "\n");
 	}, nil);
@@ -133,8 +134,19 @@ func main() {
 
 	vbox.Add(combos);
 
-	window.Add(vbox);
+	//--------------------------------------------------------
+	// GtkStatusbar
+	//--------------------------------------------------------
+	statusbar := gtk.Statusbar();
+	context_id := statusbar.GetContextId("go-gtk");
+	statusbar.Push(context_id, "GTK binding for Go!");
 
+	vbox.Add(statusbar);
+
+	//--------------------------------------------------------
+	// Event
+	//--------------------------------------------------------
+	window.Add(vbox);
 	window.ShowAll();
 	gtk.Main();
 }

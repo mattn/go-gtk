@@ -320,13 +320,33 @@ static void _gtk_box_pack_start(GtkWidget* box, GtkWidget* child, gboolean expan
 static void _gtk_box_pack_end(GtkWidget* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding) {
 	gtk_box_pack_end(GTK_BOX(box), child, expand, fill, padding);
 }
+
 static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, GtkTreeIter* iter, void* path) {
 	return gtk_tree_model_get_iter(tree_model, iter, (GtkTreePath*)path);
 }
+
 static GtkTreePath* _gtk_tree_model_get_path(GtkTreeModel* tree_model, GtkTreeIter* iter) {
 	return gtk_tree_model_get_path(tree_model, iter);
 }
+
+static guint _gtk_statusbar_get_context_id(GtkWidget* widget, char* context_description) {
+	return gtk_statusbar_get_context_id(GTK_STATUSBAR(widget), context_description);
+}
+
+static guint _gtk_statusbar_push(GtkWidget* widget, guint context_id, const char *text) {
+	return gtk_statusbar_push(GTK_STATUSBAR(widget), context_id, text);
+}
+
+static void _gtk_statusbar_pop(GtkWidget* widget, guint context_id) {
+	gtk_statusbar_pop(GTK_STATUSBAR(widget), context_id);
+}
+
+static void _gtk_statusbar_remove(GtkWidget* widget, guint context_id, guint message_id) {
+	gtk_statusbar_remove(GTK_STATUSBAR(widget), context_id, message_id);
+}
+
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
+
 static char* to_charptr(gchar* s) { return (char*)s; }
 */
 import "C";
@@ -1339,6 +1359,37 @@ func (v GtkComboBoxEntry) GetTextColumn() int {
 }
 func (v GtkComboBoxEntry) SetTextColumn(text_column int) {
 	C._gtk_combo_box_entry_set_text_column(v.Widget, C.gint(text_column));
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkStatusbar
+//-----------------------------------------------------------------------
+type GtkStatusbar struct {
+	GtkHBox;
+}
+func Statusbar() *GtkStatusbar {
+	return &GtkStatusbar { GtkHBox { GtkContainer { GtkWidget {
+		C.gtk_statusbar_new()
+	}}}};
+}
+func (v GtkStatusbar) GetContextId(content_description string) uint {
+	return uint(C._gtk_statusbar_get_context_id(v.Widget, C.CString(content_description)));
+}
+func (v GtkStatusbar) Push(context_id uint, text string) {
+	C._gtk_statusbar_push(v.Widget, C.guint(context_id), C.CString(text));
+}
+func (v GtkStatusbar) Pop(context_id uint) {
+	C._gtk_statusbar_pop(v.Widget, C.guint(context_id));
+}
+func (v GtkStatusbar) Remove(context_id uint, message_id uint) {
+	C._gtk_statusbar_remove(v.Widget, C.guint(context_id), C.guint(message_id));
+}
+func (v GtkStatusbar) GetHasResizeGrip() bool {
+	return gboolean2bool(C._gtk_combo_box_get_add_tearoffs(v.Widget));
+}
+func (v GtkStatusbar) SetHasResizeGrip(add_tearoffs bool) {
+	C._gtk_combo_box_set_add_tearoffs(v.Widget, bool2gboolean(add_tearoffs));
 }
 // FINISH
 
