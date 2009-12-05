@@ -1069,6 +1069,30 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 // TODO
 
 //-----------------------------------------------------------------------
+// GtkRadioButton
+//-----------------------------------------------------------------------
+//type GtkRadioButton struct {
+//	GtkCheckButton;
+//}
+//func RadioButton() *GtkRadioButton {
+//	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+//		C.gtk_radio_button_new()
+//	}}}}};
+//}
+//func RadioButtonWithLabel(label string) *GtkRadioButton {
+//	return &GtkRadioButton { GtkToggleButton { GtkButton { GtkWidget {
+//		C.gtk_radio_button_new_with_label(C.to_gcharptr(C.CString(label)))
+//	}}}};
+//}
+//func RadioButtonWithMnemonic(label string) *GtkRadioButton {
+//	return &GtkRadioButton { GtkToggleButton { GtkButton { GtkWidget {
+//		C.gtk_radio_button_new_with_mnemonic(C.to_gcharptr(C.CString(label)))
+//	}}}};
+//}
+//func (v GtkRadioButton) GetProps() string { return C.GoString(C._gtk_font_button_get_title(v.Widget)); }
+// TODO
+
+//-----------------------------------------------------------------------
 // GtkFontButton
 //-----------------------------------------------------------------------
 type GtkFontButton struct {
