@@ -173,7 +173,107 @@ static void _gtk_toggle_button_set_inconsistent(GtkWidget* widget, gboolean draw
 	gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(widget), draw_indicator);
 }
 
-static gboolean _gtk_combo_box_entry_get_text_column(GtkWidget* widget) {
+static gint _gtk_combo_box_get_wrap_width(GtkWidget* widget) {
+	return gtk_combo_box_get_wrap_width(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_wrap_width(GtkWidget* widget, gint width) {
+	gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(widget), width);
+}
+
+static void _gtk_combo_box_append_text(GtkWidget* widget, char* text) {
+	gtk_combo_box_append_text(GTK_COMBO_BOX(widget), text);
+}
+
+static void _gtk_combo_box_insert_text(GtkWidget* widget, gint position, char* text) {
+	gtk_combo_box_insert_text(GTK_COMBO_BOX(widget), position, text);
+}
+
+static void _gtk_combo_box_prepend_text(GtkWidget* widget, char* text) {
+	gtk_combo_box_prepend_text(GTK_COMBO_BOX(widget), text);
+}
+
+static void _gtk_combo_box_remove_text(GtkWidget* widget, gint position) {
+	gtk_combo_box_remove_text(GTK_COMBO_BOX(widget), position);
+}
+
+static char* _gtk_combo_box_get_active_text(GtkWidget* widget) {
+	return gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+}
+
+static gint _gtk_combo_box_get_active(GtkWidget* widget) {
+	return gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_active(GtkWidget* widget, gint index_) {
+	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), index_);
+}
+
+static char* _gtk_combo_box_get_title(GtkWidget* widget) {
+	return (char*)gtk_combo_box_get_title(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_title(GtkWidget* widget, char* title) {
+	gtk_combo_box_set_title(GTK_COMBO_BOX(widget), title);
+}
+
+static GtkTreeModel* _gtk_combo_box_get_model(GtkWidget* widget) {
+	return (GtkTreeModel*)gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_model(GtkWidget* widget, GtkTreeModel* model) {
+	gtk_combo_box_set_model(GTK_COMBO_BOX(widget), model);
+}
+
+static gboolean _gtk_combo_box_get_focus_on_click(GtkWidget* widget) {
+	return gtk_combo_box_get_focus_on_click(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_focus_on_click(GtkWidget* widget, gboolean focus_on_click) {
+	gtk_combo_box_set_focus_on_click(GTK_COMBO_BOX(widget), focus_on_click);
+}
+
+static gboolean _gtk_combo_box_get_active_iter(GtkWidget* widget, GtkTreeIter* iter) {
+	return gtk_combo_box_get_active_iter(GTK_COMBO_BOX(widget), iter);
+}
+
+static void _gtk_combo_box_set_active_iter(GtkWidget* widget, GtkTreeIter* iter) {
+	gtk_combo_box_set_active_iter(GTK_COMBO_BOX(widget), iter);
+}
+
+static void _gtk_combo_box_popup(GtkWidget* widget) {
+	return gtk_combo_box_popup(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_popdown(GtkWidget* widget) {
+	return gtk_combo_box_popdown(GTK_COMBO_BOX(widget));
+}
+
+static gboolean _gtk_combo_box_get_add_tearoffs(GtkWidget* widget) {
+	return gtk_combo_box_get_add_tearoffs(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_add_tearoffs(GtkWidget* widget, gboolean add_tearoffs) {
+	gtk_combo_box_set_add_tearoffs(GTK_COMBO_BOX(widget), add_tearoffs);
+}
+
+static gint _gtk_combo_box_get_row_span_column(GtkWidget* widget) {
+	return gtk_combo_box_get_row_span_column(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_row_span_column(GtkWidget* widget, gint row_span) {
+	gtk_combo_box_set_row_span_column(GTK_COMBO_BOX(widget), row_span);
+}
+
+static gint _gtk_combo_box_get_column_span_column(GtkWidget* widget) {
+	return gtk_combo_box_get_column_span_column(GTK_COMBO_BOX(widget));
+}
+
+static void _gtk_combo_box_set_column_span_column(GtkWidget* widget, gint column_span) {
+	gtk_combo_box_set_column_span_column(GTK_COMBO_BOX(widget), column_span);
+}
+
+static gint _gtk_combo_box_entry_get_text_column(GtkWidget* widget) {
 	return gtk_combo_box_entry_get_text_column(GTK_COMBO_BOX_ENTRY(widget));
 }
 
@@ -220,8 +320,8 @@ static void _gtk_box_pack_start(GtkWidget* box, GtkWidget* child, gboolean expan
 static void _gtk_box_pack_end(GtkWidget* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding) {
 	gtk_box_pack_end(GTK_BOX(box), child, expand, fill, padding);
 }
-static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, void* iter, void* path) {
-	return gtk_tree_model_get_iter(tree_model, (GtkTreeIter*)iter, (GtkTreePath*)path);
+static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, GtkTreeIter* iter, void* path) {
+	return gtk_tree_model_get_iter(tree_model, iter, (GtkTreePath*)path);
 }
 static GtkTreePath* _gtk_tree_model_get_path(GtkTreeModel* tree_model, GtkTreeIter* iter) {
 	return gtk_tree_model_get_path(tree_model, iter);
@@ -975,30 +1075,6 @@ func (v GtkFontButton) SetShowSize(show_size bool) { C._gtk_font_button_set_show
 // FINISH
 
 //-----------------------------------------------------------------------
-// GtkComboBoxEntry
-//-----------------------------------------------------------------------
-type GtkComboBoxEntry struct {
-	GtkWidget;
-}
-func ComboBoxEntry() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry { GtkWidget {
-		C.gtk_combo_box_entry_new()
-	}};
-}
-func ComboBoxEntryNewText() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry { GtkWidget {
-		C.gtk_combo_box_entry_new_text()
-	}};
-}
-func (v GtkComboBoxEntry) GetTextColumn() int {
-	return int(C._gtk_combo_box_entry_get_text_column(v.Widget));
-}
-func (v GtkComboBoxEntry) SetTextColumn(text_column int) {
-	C._gtk_combo_box_entry_set_text_column(v.Widget, C.gint(text_column));
-}
-// FINISH
-
-//-----------------------------------------------------------------------
 // GtkTreePath
 //-----------------------------------------------------------------------
 type GtkTreePath struct {
@@ -1097,15 +1173,15 @@ func (v GtkTreeModel) GetNColumns() int {
 func (v GtkTreeModel) GetIter(iter *GtkTreeIter, path *GtkTreePath) bool {
 	var iter_ C.GtkTreeIter;
 	var path_ C.GtkTreePath;
-	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, unsafe.Pointer(&iter_), unsafe.Pointer(&path_)));
-	*iter = GtkTreeIter { &iter_ };
-	*path = GtkTreePath { &path_ };
+	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter_, unsafe.Pointer(&path_)));
+	iter.TreeIter = &iter_;
+	path.TreePath = &path_;
 	return ret;
 }
 func (v GtkTreeModel) GetIterFromString(iter *GtkTreeIter, path_string string) bool {
 	var iter_ C.GtkTreeIter;
 	ret := gboolean2bool(C.gtk_tree_model_get_iter_from_string(v.TreeModel, iter.TreeIter, C.to_gcharptr(C.CString(path_string))));
-	*iter = GtkTreeIter { &iter_ };
+	iter.TreeIter = &iter_;
 	return ret;
 }
 func (v GtkTreeModel) GetStringFromIter(iter *GtkTreeIter) string {
@@ -1114,7 +1190,7 @@ func (v GtkTreeModel) GetStringFromIter(iter *GtkTreeIter) string {
 func (v GtkTreeModel) GetIterFirst(iter *GtkTreeIter) bool {
 	var iter_ C.GtkTreeIter;
 	ret := gboolean2bool(C.gtk_tree_model_get_iter_first(v.TreeModel, iter.TreeIter));
-	*iter = GtkTreeIter { &iter_ };
+	iter.TreeIter = &iter_;
 	return ret;
 }
 func (v GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
@@ -1133,6 +1209,138 @@ func (v GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
 // gtk_tree_model_get
 // gtk_tree_model_get_valist
 // gtk_tree_model_foreach
+
+//-----------------------------------------------------------------------
+// GtkComboBox
+//-----------------------------------------------------------------------
+type GtkComboBox struct {
+	GtkContainer;
+}
+func ComboBox() *GtkComboBox {
+	return &GtkComboBox { GtkContainer { GtkWidget {
+		C.gtk_combo_box_new()
+	}}};
+}
+func ComboBoxWithModel(model *GtkTreeModel) *GtkComboBox {
+	return &GtkComboBox { GtkContainer { GtkWidget {
+		C.gtk_combo_box_new_with_model(model.TreeModel)
+	}}};
+}
+func ComboBoxNewText() *GtkComboBox {
+	return &GtkComboBox { GtkContainer { GtkWidget {
+		C.gtk_combo_box_new_text()
+	}}};
+}
+func (v GtkComboBox) GetWrapWidth() int {
+	return int(C._gtk_combo_box_get_wrap_width(v.Widget));
+}
+func (v GtkComboBox) SetWrapWidth(width int) {
+	C._gtk_combo_box_set_wrap_width(v.Widget, C.gint(width));
+}
+func (v GtkComboBox) AppendText(text string) {
+	C._gtk_combo_box_append_text(v.Widget, C.CString(text));
+}
+func (v GtkComboBox) InsertText(text string, position int) {
+	C._gtk_combo_box_insert_text(v.Widget, C.gint(position), C.CString(text));
+}
+func (v GtkComboBox) PrependText(text string) {
+	C._gtk_combo_box_prepend_text(v.Widget, C.CString(text));
+}
+func (v GtkComboBox) RemoveText(position int) {
+	C._gtk_combo_box_remove_text(v.Widget, C.gint(position));
+}
+func (v GtkComboBox) GetActiveText() string {
+	return C.GoString(C._gtk_combo_box_get_active_text(v.Widget));
+}
+func (v GtkComboBox) GetActive() int {
+	return int(C._gtk_combo_box_get_active(v.Widget));
+}
+func (v GtkComboBox) SetActive(width int) {
+	C._gtk_combo_box_set_active(v.Widget, C.gint(width));
+}
+func (v GtkComboBox) GetTitle() string {
+	return C.GoString(C._gtk_combo_box_get_title(v.Widget));
+}
+func (v GtkComboBox) SetTitle(title string) {
+	C._gtk_combo_box_set_title(v.Widget, C.CString(title));
+}
+func (v GtkComboBox) GetModel() *GtkTreeModel {
+	return &GtkTreeModel {
+		C._gtk_combo_box_get_model(v.Widget)
+	};
+}
+func (v GtkComboBox) SetModel(model *GtkTreeModel) {
+	C._gtk_combo_box_set_model(v.Widget, model.TreeModel);
+}
+func (v GtkComboBox) GetFocusOnClick() bool {
+	return gboolean2bool(C._gtk_combo_box_get_focus_on_click(v.Widget));
+}
+func (v GtkComboBox) SetFocusOnClick(focus_on_click bool) {
+	C._gtk_combo_box_set_focus_on_click(v.Widget, bool2gboolean(focus_on_click));
+}
+func (v GtkComboBox) GetActiveIter(iter *GtkTreeIter) bool {
+	var iter_ C.GtkTreeIter;
+	ret := gboolean2bool(C._gtk_combo_box_get_active_iter(v.Widget, &iter_));
+	iter.TreeIter = &iter_;
+	return ret;
+}
+func (v GtkComboBox) SetActiveIter(iter *GtkTreeIter) {
+	C._gtk_combo_box_set_active_iter(v.Widget, iter.TreeIter);
+}
+func (v GtkComboBox) Popup() {
+	C._gtk_combo_box_popup(v.Widget);
+}
+func (v GtkComboBox) Popdown() {
+	C._gtk_combo_box_popdown(v.Widget);
+}
+func (v GtkComboBox) GetAddTearoffs() bool {
+	return gboolean2bool(C._gtk_combo_box_get_add_tearoffs(v.Widget));
+}
+func (v GtkComboBox) SetAddTearoffs(add_tearoffs bool) {
+	C._gtk_combo_box_set_add_tearoffs(v.Widget, bool2gboolean(add_tearoffs));
+}
+func (v GtkComboBox) GetRowSpanColumn() int {
+	return int(C._gtk_combo_box_get_row_span_column(v.Widget));
+}
+func (v GtkComboBox) SetRowSpanColumn(row_span int) {
+	C._gtk_combo_box_set_row_span_column(v.Widget, C.gint(row_span));
+}
+func (v GtkComboBox) GetColumnSpanColumn() int {
+	return int(C._gtk_combo_box_get_column_span_column(v.Widget));
+}
+func (v GtkComboBox) SetColumnSpanColumn(column_span int) {
+	C._gtk_combo_box_set_column_span_column(v.Widget, C.gint(column_span));
+}
+// TODO
+// gtk_combo_box_get_popup_accessible
+// gtk_combo_box_get_row_separator_func
+// gtk_combo_box_set_row_separator_func
+// gtk_combo_box_set_button_sensitivity
+// gtk_combo_box_get_button_sensitivity
+
+//-----------------------------------------------------------------------
+// GtkComboBoxEntry
+//-----------------------------------------------------------------------
+type GtkComboBoxEntry struct {
+	GtkComboBox;
+}
+func ComboBoxEntry() *GtkComboBoxEntry {
+	return &GtkComboBoxEntry { GtkComboBox { GtkContainer { GtkWidget {
+		C.gtk_combo_box_entry_new()
+	}}}};
+}
+func ComboBoxEntryNewText() *GtkComboBoxEntry {
+	return &GtkComboBoxEntry { GtkComboBox { GtkContainer { GtkWidget {
+		C.gtk_combo_box_entry_new_text()
+	}}}};
+}
+func (v GtkComboBoxEntry) GetTextColumn() int {
+	return int(C._gtk_combo_box_entry_get_text_column(v.Widget));
+}
+func (v GtkComboBoxEntry) SetTextColumn(text_column int) {
+	C._gtk_combo_box_entry_set_text_column(v.Widget, C.gint(text_column));
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // Events

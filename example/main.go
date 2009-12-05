@@ -107,11 +107,30 @@ func main() {
 
 	combos := gtk.HBox(false, 1);
 
+	//--------------------------------------------------------
+	// GtkComboBoxEntry
+	//--------------------------------------------------------
 	comboboxentry := gtk.ComboBoxEntryNewText();
+	comboboxentry.AppendText("Monkey");
+	comboboxentry.AppendText("Tiger");
+	comboboxentry.AppendText("Elephant");
 	comboboxentry.Connect("changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
-		//comboboxentry...
+		print("value: ", comboboxentry.GetActiveText(), "\n");
 	}, nil);
 	combos.Add(comboboxentry);
+
+	//--------------------------------------------------------
+	// GtkComboBox
+	//--------------------------------------------------------
+	combobox := gtk.ComboBoxNewText();
+	combobox.AppendText("Peach");
+	combobox.AppendText("Banana");
+	combobox.AppendText("Apple");
+	combobox .Connect("changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		print("value: ", combobox.GetActiveText(), "\n");
+	}, nil);
+	combos.Add(combobox);
+
 	vbox.Add(combos);
 
 	window.Add(vbox);
