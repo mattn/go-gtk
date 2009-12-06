@@ -1,3 +1,7 @@
+all:
+	cd glib && make
+	cd gtk && make
+
 install:
 	cd glib && make install
 	cd gtk && make install
