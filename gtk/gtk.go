@@ -353,6 +353,30 @@ static void _gtk_radio_button_set_group(GtkWidget* widget, GSList* group) {
 	gtk_radio_button_set_group(GTK_RADIO_BUTTON(widget), group);
 }
 
+static char* _gtk_frame_get_label(GtkWidget* widget) {
+	return (char*)gtk_frame_get_label(GTK_FRAME(widget));
+}
+
+static void _gtk_frame_set_label(GtkWidget* widget, char* label) {
+	gtk_frame_set_label(GTK_FRAME(widget), (gchar*)label);
+}
+
+static GtkWidget* _gtk_frame_get_label_widget(GtkWidget* widget) {
+	return gtk_frame_get_label_widget(GTK_FRAME(widget));
+}
+
+static void _gtk_frame_set_label_widget(GtkWidget* widget, GtkWidget* label_widget) {
+	gtk_frame_set_label_widget(GTK_FRAME(widget), label_widget);
+}
+
+static void _gtk_frame_get_label_align(GtkWidget* widget, gfloat *xalign, gfloat *yalign) {
+	gtk_frame_get_label_align(GTK_FRAME(widget), xalign, yalign);
+}
+
+static void _gtk_frame_set_label_align(GtkWidget* widget, gfloat xalign, gfloat yalign) {
+	gtk_frame_set_label_align(GTK_FRAME(widget), xalign, yalign);
+}
+
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
 static char* to_charptr(gchar* s) { return (char*)s; }
@@ -1097,7 +1121,6 @@ func RadioButton(group *glib.GSList) *GtkRadioButton {
 		C.gtk_radio_button_new(nil)
 	}}}}};
 }
-//GtkWidget* gtk_radio_button_new_from_widget               (GtkRadioButton *radio_group_member);
 func RadioButtonWithLabel(group *glib.GSList, label string) *GtkRadioButton {
 	if group != nil {
 		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
@@ -1119,6 +1142,10 @@ func (v GtkRadioButton) SetGroup(group *glib.GSList) {
 	}
 }
 // TODO
+// gtk_radio_button_new_from_widget
+// gtk_radio_button_new_with_label_from_widget
+// gtk_radio_button_new_with_mnemonic
+// gtk_radio_button_new_with_mnemonic_from_widget
 
 //-----------------------------------------------------------------------
 // GtkFontButton
@@ -1444,6 +1471,46 @@ func (v GtkStatusbar) SetHasResizeGrip(add_tearoffs bool) {
 	C._gtk_combo_box_set_add_tearoffs(v.Widget, bool2gboolean(add_tearoffs));
 }
 // FINISH
+
+//-----------------------------------------------------------------------
+// GtkFrame
+//-----------------------------------------------------------------------
+const (
+	GTK_SHADOW_NONE = 0;
+	GTK_SHADOW_IN = 1;
+	GTK_SHADOW_OUT = 2;
+	GTK_SHADOW_ETCHED_IN = 3;
+	GTK_SHADOW_ETCHED_OUT = 4;
+)
+type GtkFrame struct {
+	GtkContainer;
+}
+func Frame(label string) *GtkFrame {
+	return &GtkFrame { GtkContainer { GtkWidget {
+		C.gtk_frame_new(C.to_gcharptr(C.CString(label)))
+	}}};
+}
+func (v GtkFrame) GetLabel() string { return C.GoString(C._gtk_frame_get_label(v.Widget)); }
+func (v GtkFrame) SetLabel(label string) { C._gtk_frame_set_label(v.Widget, C.CString(label)); }
+func (v GtkFrame) GetLabelWidget() LabelLike {
+	return &GtkLabel { GtkWidget {
+		C._gtk_frame_get_label_widget(v.Widget)
+	}};
+}
+func (v GtkFrame) SetLabelWidget(label_widget *LabelLike) {
+	C._gtk_frame_set_label_widget(v.Widget, label_widget.ToGtkWidget());
+}
+func (v GtkFrame) GetLabelAlign() (xalign, yalign float) {
+	var xalign_, yalign_ C.gfloat;
+	C._gtk_frame_get_label_align(v.Widget, &xalign_, &yalign_);
+	return float(xalign_), float(yalign_);
+}
+func (v GtkFrame) SetLabelAlign(xalign, yalign float) {
+	C._gtk_frame_set_label_align(v.Widget, C.gfloat(xalign), C.gfloat(yalign));
+}
+// TODO
+// gtk_frame_get_shadow_type
+// gtk_frame_set_shadow_type
 
 //-----------------------------------------------------------------------
 // Events
