@@ -1,16 +1,10 @@
-include $(GOROOT)/src/Make.$(GOARCH)
+install:
+	cd glib && make install
+	cd gtk && make install
 
-TARG     = gtk
-CGOFILES = gtk.go
-
-CGO_CFLAGS  = `pkg-config --cflags gtk+-2.0` $(RUNTIME_CFLAGS)
-CGO_LDFLAGS = `pkg-config --libs gtk+-2.0`
-
-include $(GOROOT)/src/Make.pkg
-
-%: install %.go
-	$(GC) $*.go
-	$(LD) -o $@ $*.$O
+clean:
+	cd glib && make clean
+	cd gtk && make clean
 
 example: install
 	cd example && make

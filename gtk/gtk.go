@@ -345,11 +345,24 @@ static void _gtk_statusbar_remove(GtkWidget* widget, guint context_id, guint mes
 	gtk_statusbar_remove(GTK_STATUSBAR(widget), context_id, message_id);
 }
 
+static GSList* _gtk_radio_button_get_group(GtkWidget *widget) {
+	return gtk_radio_button_get_group(GTK_RADIO_BUTTON(widget));
+}
+
+static void _gtk_radio_button_set_group(GtkWidget* widget, GSList* group) {
+	gtk_radio_button_set_group(GTK_RADIO_BUTTON(widget), group);
+}
+
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
 static char* to_charptr(gchar* s) { return (char*)s; }
+
+static GSList* to_gslist(void* gs) {
+	return (GSList*)gs;
+}
 */
 import "C";
+import "glib";
 import "unsafe";
 import "runtime";
 import "container/vector";
@@ -1071,25 +1084,40 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 //-----------------------------------------------------------------------
 // GtkRadioButton
 //-----------------------------------------------------------------------
-//type GtkRadioButton struct {
-//	GtkCheckButton;
-//}
-//func RadioButton() *GtkRadioButton {
-//	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-//		C.gtk_radio_button_new()
-//	}}}}};
-//}
-//func RadioButtonWithLabel(label string) *GtkRadioButton {
-//	return &GtkRadioButton { GtkToggleButton { GtkButton { GtkWidget {
-//		C.gtk_radio_button_new_with_label(C.to_gcharptr(C.CString(label)))
-//	}}}};
-//}
-//func RadioButtonWithMnemonic(label string) *GtkRadioButton {
-//	return &GtkRadioButton { GtkToggleButton { GtkButton { GtkWidget {
-//		C.gtk_radio_button_new_with_mnemonic(C.to_gcharptr(C.CString(label)))
-//	}}}};
-//}
-//func (v GtkRadioButton) GetProps() string { return C.GoString(C._gtk_font_button_get_title(v.Widget)); }
+type GtkRadioButton struct {
+	GtkCheckButton;
+}
+func RadioButton(group *glib.GSList) *GtkRadioButton {
+	if group != nil {
+		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToGSList())))
+		}}}}};
+	}
+	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_radio_button_new(nil)
+	}}}}};
+}
+//GtkWidget* gtk_radio_button_new_from_widget               (GtkRadioButton *radio_group_member);
+func RadioButtonWithLabel(group *glib.GSList, label string) *GtkRadioButton {
+	if group != nil {
+		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToGSList())), C.to_gcharptr(C.CString(label)))
+		}}}}};
+	}
+	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(C.CString(label)))
+	}}}}};
+}
+func (v GtkRadioButton) GetGroup() *glib.GSList {
+	return glib.FromGSList(unsafe.Pointer(C._gtk_radio_button_get_group(v.Widget)));
+}
+func (v GtkRadioButton) SetGroup(group *glib.GSList) {
+	if group != nil {
+		C._gtk_radio_button_set_group(v.Widget, C.to_gslist(unsafe.Pointer(group)));
+	} else {
+		C._gtk_radio_button_set_group(v.Widget, nil);
+	}
+}
 // TODO
 
 //-----------------------------------------------------------------------
