@@ -377,9 +377,27 @@ static void _gtk_frame_set_label_align(GtkWidget* widget, gfloat xalign, gfloat 
 	gtk_frame_set_label_align(GTK_FRAME(widget), xalign, yalign);
 }
 
+static GtkShadowType _gtk_frame_get_shadow_type(GtkWidget* widget) {
+	return gtk_frame_get_shadow_type(GTK_FRAME(widget));
+}
+
+static void _gtk_frame_set_shadow_type(GtkWidget* widget, GtkShadowType shadow_type) {
+	gtk_frame_set_shadow_type(GTK_FRAME(widget), shadow_type);
+}
+
+static void _gtk_scrolled_window_set_hadjustment(GtkWidget* widget, GtkAdjustment* hadjustment) {
+	gtk_scrolled_window_set_hadjustment(GTK_SCROLLED_WINDOW(widget), hadjustment);
+}
+
+static void _gtk_scrolled_window_set_vadjustment(GtkWidget* widget, GtkAdjustment* vadjustment) {
+	gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(widget), vadjustment);
+}
+
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
 static char* to_charptr(gchar* s) { return (char*)s; }
+
+static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -393,6 +411,15 @@ import "container/vector";
 
 func bool2gboolean(b bool) C.gboolean { if b { return C.gboolean(1) } return C.gboolean(0) }
 func gboolean2bool(b C.gboolean) bool { if b != 0 { return true } return false }
+
+//-----------------------------------------------------------------------
+// GtkObject
+//-----------------------------------------------------------------------
+type ObjectLike interface {
+}
+type GtkObject struct {
+	Object *C.GtkObject;
+}
 
 //-----------------------------------------------------------------------
 // GtkWidget
@@ -1508,9 +1535,82 @@ func (v GtkFrame) GetLabelAlign() (xalign, yalign float) {
 func (v GtkFrame) SetLabelAlign(xalign, yalign float) {
 	C._gtk_frame_set_label_align(v.Widget, C.gfloat(xalign), C.gfloat(yalign));
 }
+func (v GtkFrame) GetShadowType() int {
+	return int(C._gtk_frame_get_shadow_type(v.Widget));
+}
+func (v GtkFrame) SetShadowType(shadow_type int) {
+	C._gtk_frame_set_shadow_type(v.Widget, C.GtkShadowType(shadow_type));
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkAdjustment
+//-----------------------------------------------------------------------
+type GtkAdjustment struct {
+	Adjustment *C.GtkAdjustment;
+}
+func Adjustment(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) *GtkAdjustment {
+	return &GtkAdjustment {
+		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))
+	};
+}
+func (v GtkAdjustment) GetValue() float64 {
+	return float64(C.gtk_adjustment_get_value(v.Adjustment));
+}
+func (v GtkAdjustment) SetValue(value float64) {
+	C.gtk_adjustment_set_value(v.Adjustment, C.gdouble(value));
+}
+func (v GtkAdjustment) GetLower() float64 {
+	return float64(C.gtk_adjustment_get_lower(v.Adjustment));
+}
+func (v GtkAdjustment) SetLower(lower float64) {
+	C.gtk_adjustment_set_lower(v.Adjustment, C.gdouble(lower));
+}
+func (v GtkAdjustment) GetUpper() float64 {
+	return float64(C.gtk_adjustment_get_upper(v.Adjustment));
+}
+func (v GtkAdjustment) SetUpper(upper float64) {
+	C.gtk_adjustment_set_upper(v.Adjustment, C.gdouble(upper));
+}
+func (v GtkAdjustment) GetStepIncrement() float64 {
+	return float64(C.gtk_adjustment_get_step_increment(v.Adjustment));
+}
+func (v GtkAdjustment) SetStepIncrement(step_increment float64) {
+	C.gtk_adjustment_set_step_increment(v.Adjustment, C.gdouble(step_increment));
+}
+func (v GtkAdjustment) GetPageIncrement() float64 {
+	return float64(C.gtk_adjustment_get_page_increment(v.Adjustment));
+}
+func (v GtkAdjustment) SetPageIncrement(page_increment float64) {
+	C.gtk_adjustment_set_page_increment(v.Adjustment, C.gdouble(page_increment));
+}
+func (v GtkAdjustment) GetPageSize() float64 {
+	return float64(C.gtk_adjustment_get_page_size(v.Adjustment));
+}
+func (v GtkAdjustment) SetPageSize(page_size float64) {
+	C.gtk_adjustment_set_page_size(v.Adjustment, C.gdouble(page_size));
+}
+func (v GtkAdjustment) Configure(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) {
+	C.gtk_adjustment_configure(v.Adjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size));
+}
+//-----------------------------------------------------------------------
+// GtkScrolledWindow
+//-----------------------------------------------------------------------
+type GtkScrolledWindow struct {
+	GtkContainer;
+}
+func ScrolledWindow(hadjustment *GtkAdjustment, vadjustment *GtkAdjustment) *GtkScrolledWindow {
+	return &GtkScrolledWindow { GtkContainer { GtkWidget {
+		C.gtk_scrolled_window_new(hadjustment.Adjustment, vadjustment.Adjustment)
+	}}};
+}
+func (v GtkScrolledWindow) SetHAdjustment(hadjustment *GtkAdjustment) {
+	C._gtk_scrolled_window_set_hadjustment(v.Widget, hadjustment.Adjustment);
+}
+func (v GtkScrolledWindow) SetVAdjustment(vadjustment *GtkAdjustment) {
+	C._gtk_scrolled_window_set_vadjustment(v.Widget, vadjustment.Adjustment);
+}
 // TODO
-// gtk_frame_get_shadow_type
-// gtk_frame_set_shadow_type
 
 //-----------------------------------------------------------------------
 // Events
