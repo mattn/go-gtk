@@ -11,6 +11,3 @@ include $(GOROOT)/src/Make.pkg
 %: install %.go
 	$(GC) $*.go
 	$(LD) -o $@ $*.$O
-
-example: install
-	cd example && make

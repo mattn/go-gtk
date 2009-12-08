@@ -393,6 +393,246 @@ static void _gtk_scrolled_window_set_vadjustment(GtkWidget* widget, GtkAdjustmen
 	gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(widget), vadjustment);
 }
 
+static GtkAdjustment* _gtk_scrolled_window_get_hadjustment(GtkWidget* widget) {
+	return gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(widget));
+}
+
+static GtkAdjustment* _gtk_scrolled_window_get_vadjustment(GtkWidget* widget) {
+	return gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(widget));
+}
+
+static void* _gtk_text_buffer_new(GtkTextTagTable* tagtable) {
+	return gtk_text_buffer_new(tagtable);
+}
+ 
+static gint _gtk_text_buffer_get_line_count(void* buffer) {
+	return gtk_text_buffer_get_line_count(GTK_TEXT_BUFFER(buffer));
+}
+ 
+static gint _gtk_text_buffer_get_char_count(void* buffer) {
+	return gtk_text_buffer_get_char_count(GTK_TEXT_BUFFER(buffer));
+}
+
+static GtkTextTagTable* _gtk_text_buffer_get_tag_table(void* buffer) {
+	return gtk_text_buffer_get_tag_table(GTK_TEXT_BUFFER(buffer));
+}
+static void _gtk_text_buffer_insert(void* buffer, GtkTextIter* iter, const gchar* text, gint len) {
+	gtk_text_buffer_insert(GTK_TEXT_BUFFER(buffer), iter, text, len);
+}
+
+static void _gtk_text_buffer_insert_at_cursor(void *buffer, const gchar *text, gint len) {
+	gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(buffer), text, len);
+}
+
+static gboolean _gtk_text_buffer_insert_interactive(void* buffer, GtkTextIter* iter, const gchar* text, gint len, gboolean default_editable) {
+	return gtk_text_buffer_insert_interactive(GTK_TEXT_BUFFER(buffer), iter, text, len, default_editable);
+}
+
+static gboolean _gtk_text_buffer_insert_interactive_at_cursor(void* buffer, const gchar* text, gint len, gboolean default_editable) {
+	return gtk_text_buffer_insert_interactive_at_cursor(GTK_TEXT_BUFFER(buffer), text, len, default_editable);
+}
+
+static void _gtk_text_buffer_insert_range(void* buffer, GtkTextIter* iter, const GtkTextIter* start, const GtkTextIter* end) {
+	gtk_text_buffer_insert_range(GTK_TEXT_BUFFER(buffer), iter, start, end);
+}
+
+static gboolean _gtk_text_buffer_insert_range_interactive(void* buffer, GtkTextIter* iter, const GtkTextIter* start, const GtkTextIter* end, gboolean default_editable) {
+	return gtk_text_buffer_insert_range_interactive(GTK_TEXT_BUFFER(buffer), iter, start, end, default_editable);
+}
+
+//static void _gtk_text_buffer_insert_with_tags(void* buffer, GtkTextIter* iter, const gchar* text, gint len, GtkTextTag* first_tag, ...);
+
+//static void _gtk_text_buffer_insert_with_tags_by_name(void* buffer, GtkTextIter* iter, const gchar* text, gint len, const gchar* first_tag_name, ...);
+
+static void _gtk_text_buffer_delete(void* buffer, GtkTextIter* start, GtkTextIter* end) {
+	gtk_text_buffer_delete(GTK_TEXT_BUFFER(buffer), start, end);
+}
+
+static gboolean _gtk_text_buffer_delete_interactive(void* buffer, GtkTextIter* start_iter, GtkTextIter* end_iter, gboolean default_editable) {
+	return gtk_text_buffer_delete_interactive(GTK_TEXT_BUFFER(buffer), start_iter, end_iter, default_editable);
+}
+
+static gboolean _gtk_text_buffer_backspace(void* buffer, GtkTextIter* iter, gboolean interactive, gboolean default_editable) {
+	return gtk_text_buffer_backspace(GTK_TEXT_BUFFER(buffer), iter, interactive, default_editable);
+}
+
+static void _gtk_text_buffer_set_text(void* buffer, const gchar* text, gint len) {
+	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(buffer), text, len);
+}
+
+static gchar* _gtk_text_buffer_get_text(void* buffer, const GtkTextIter* start, const GtkTextIter* end, gboolean include_hidden_chars) {
+	return gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer), start, end, include_hidden_chars);
+}
+
+static gchar* _gtk_text_buffer_get_slice(void* buffer, const GtkTextIter* start, const GtkTextIter* end, gboolean include_hidden_chars) {
+	return gtk_text_buffer_get_slice(GTK_TEXT_BUFFER(buffer), start, end, include_hidden_chars);
+}
+
+// static void _gtk_text_buffer_insert_pixbuf(void* buffer, GtkTextIter* iter, GdkPixbuf* pixbuf) {
+// 	gtk_text_buffer_insert_pixbuf(GTK_TEXT_BUFFER(buffer), iter, pixbuf);
+// }
+
+// static void _gtk_text_buffer_insert_child_anchor(void* buffer, GtkTextIter* iter, GtkTextChildAnchor* anchor) {
+// 	gtk_text_buffer_insert_child_anchor(GTK_TEXT_BUFFER(buffer), iter, anchor);
+// }
+
+// static GtkTextChildAnchor* _gtk_text_buffer_create_child_anchor(void* buffer, GtkTextIter* iter) {
+// 	return gtk_text_buffer_create_child_anchor(GTK_TEXT_BUFFER(buffer), iter);
+// }
+//
+//static GtkTextMark* _gtk_text_buffer_create_mark(void* buffer, const gchar* mark_name, const void* where, gboolean left_gravity) {
+//	return gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(buffer), mark_name, where, left_gravity);
+//}
+//
+//static void _gtk_text_buffer_move_mark(void* buffer, GtkTextMark* mark, const void* where) {
+//	gtk_text_buffer_move_mark(GTK_TEXT_BUFFER(buffer), mark, where);
+//}
+//
+//static void _gtk_text_buffer_move_mark_by_name(void* buffer, const gchar* name, const void* where) {
+//	gtk_text_buffer_move_mark_by_name(GTK_TEXT_BUFFER(buffer), name, where);
+//}
+//
+//static void _gtk_text_buffer_add_mark(void* buffer, GtkTextMark* mark, const void* where) {
+//	gtk_text_buffer_add_mark(GTK_TEXT_BUFFER(buffer), mark, where);
+//}
+//
+//static void _gtk_text_buffer_delete_mark(void* buffer, GtkTextMark* mark) {
+//	gtk_text_buffer_delete_mark(GTK_TEXT_BUFFER(buffer), mark);
+//}
+//
+//static void _gtk_text_buffer_delete_mark_by_name(void* buffer, const gchar* name) {
+//	gtk_text_buffer_delete_mark_by_name(GTK_TEXT_BUFFER(buffer), name);
+//}
+//
+//static GtkTextMark* _gtk_text_buffer_get_mark(void* buffer, const gchar* name) {
+//	return gtk_text_buffer_get_mark(GTK_TEXT_BUFFER(buffer), name);
+//}
+//
+//static GtkTextMark* _gtk_text_buffer_get_insert(void* buffer) {
+//	return gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(buffer));
+//}
+//
+//static GtkTextMark* _gtk_text_buffer_get_selection_bound(void* buffer) {
+//	return gtk_text_buffer_get_selection_bound(GTK_TEXT_BUFFER(buffer));
+//}
+//
+//static gboolean _gtk_text_buffer_get_has_selection(void* buffer) {
+//	return gtk_text_buffer_get_has_selection(GTK_TEXT_BUFFER(buffer));
+//}
+//
+//static void _gtk_text_buffer_place_cursor(void* buffer, const void* where) {
+//	gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(buffer), where);
+//}
+//
+//static void _gtk_text_buffer_select_range(void* buffer, const void* ins, const void* bound) {
+//	gtk_text_buffer_select_range(GTK_TEXT_BUFFER(buffer), ins, bound);
+//}
+//
+//static void _gtk_text_buffer_apply_tag(void* buffer, GtkTextTag* tag, const GtkTextIter* start, const GtkTextIter* end) {
+//	gtk_text_buffer_apply_tag(GTK_TEXT_BUFFER(buffer), tag, start, end);
+//}
+//
+//static void _gtk_text_buffer_remove_tag(void* buffer, GtkTextTag* tag, const GtkTextIter* start, const GtkTextIter* end) {
+//	gtk_text_buffer_remove_tag(GTK_TEXT_BUFFER(buffer), tag, start, end);
+//}
+//
+//static void _gtk_text_buffer_apply_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
+//	gtk_text_buffer_apply_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
+//}
+//
+//static void _gtk_text_buffer_remove_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
+//	gtk_text_buffer_remove_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
+//}
+//
+//static void _gtk_text_buffer_remove_all_tags(void* buffer, const GtkTextIter* start, const GtkTextIter* end) {
+//	gtk_text_buffer_remove_all_tags(GTK_TEXT_BUFFER(buffer), start, end);
+//}
+//
+//// static GtkTextTag* gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
+//// 	return gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
+//// }
+//
+//static void _gtk_text_buffer_get_iter_at_line_offset(void* buffer, GtkTextIter* iter, gint line_number, gint char_offset) {
+//	gtk_text_buffer_get_iter_at_line_offset(GTK_TEXT_BUFFER(buffer), iter, line_number, char_offset);
+//}
+//
+//static void _gtk_text_buffer_get_iter_at_offset(void* buffer, GtkTextIter* iter, gint char_offset) {
+//	gtk_text_buffer_get_iter_at_offset(GTK_TEXT_BUFFER(buffer), iter, char_offset);
+//}
+//
+//static void _gtk_text_buffer_get_iter_at_line(void* buffer, GtkTextIter* iter, gint line_number) {
+//	gtk_text_buffer_get_iter_at_line(GTK_TEXT_BUFFER(buffer), iter, line_number);
+//}
+//
+//static void _gtk_text_buffer_get_iter_at_line_index(void* buffer, GtkTextIter* iter, gint line_number, gint byte_index) {
+//	gtk_text_buffer_get_iter_at_line_index(GTK_TEXT_BUFFER(buffer), iter, line_number, byte_index);
+//}
+//
+//static void _gtk_text_buffer_get_iter_at_mark(void* buffer, GtkTextIter* iter, GtkTextMark* mark) {
+//	gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(buffer), iter, mark);
+//}
+//
+//static void _gtk_text_buffer_get_iter_at_child_anchor(void* buffer, GtkTextIter* iter, GtkTextChildAnchor* anchor) {
+//	gtk_text_buffer_get_iter_at_child_anchor(GTK_TEXT_BUFFER(buffer), iter, anchor);
+//}
+//
+//static void _gtk_text_buffer_get_start_iter(void* buffer, GtkTextIter* iter) {
+//	gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), iter);
+//}
+//
+//static void _gtk_text_buffer_get_end_iter(void* buffer, GtkTextIter* iter) {
+//	gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), iter);
+//}
+//
+//static void _gtk_text_buffer_get_bounds(void* buffer, GtkTextIter* start, GtkTextIter* end) {
+//	gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(buffer), start, end);
+//}
+//
+//static gboolean _gtk_text_buffer_get_modified(void* buffer) {
+//	return gtk_text_buffer_get_modified(GTK_TEXT_BUFFER(buffer));
+//}
+//
+//static void _gtk_text_buffer_set_modified(void* buffer, gboolean setting) {
+//	gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(buffer), setting);
+//}
+//
+//static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interactive, gboolean default_editable) {
+//	return gtk_text_buffer_delete_selection(GTK_TEXT_BUFFER(buffer), interactive, default_editable);
+//}
+//
+// static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
+// static void gtk_text_buffer_copy_clipboard(void* buffer, GtkClipboard* clipboard);
+// static void gtk_text_buffer_cut_clipboard(void* buffer, GtkClipboard* clipboard, gboolean default_editable);
+// static gboolean gtk_text_buffer_get_selection_bounds(void* buffer, GtkTextIter* start, GtkTextIter* end);
+// static void gtk_text_buffer_begin_user_action(void* buffer);
+// static void gtk_text_buffer_end_user_action(void* buffer);
+// static void gtk_text_buffer_add_selection_clipboard(GtkTextBuffer* buffer, GtkClipboard* clipboard);
+// static void gtk_text_buffer_remove_selection_clipboard(void* buffer, GtkClipboard* clipboard);
+// enum GtkTextBufferTargetInfo;
+// gboolean (*GtkTextBufferDeserializeFunc) (GtkTextBuffer *register_buffer, GtkTextBuffer *content_buffer, void *iter, const guint8 *data, gsize length, gboolean create_tags, gpointer user_data, GError **error);
+// gboolean gtk_text_buffer_deserialize (GtkTextBuffer *register_buffer, GtkTextBuffer *content_buffer, GdkAtom format, void *iter, const guint8 *data, gsize length, GError **error);
+// gboolean gtk_text_buffer_deserialize_get_can_create_tags (GtkTextBuffer *buffer, GdkAtom format);
+// void gtk_text_buffer_deserialize_set_can_create_tags (GtkTextBuffer *buffer, GdkAtom format, gboolean can_create_tags); GtkTargetList* gtk_text_buffer_get_copy_target_list(GtkTextBuffer *buffer) { }
+// GdkAtom * gtk_text_buffer_get_deserialize_formats (GtkTextBuffer *buffer, gint *n_formats);
+// GtkTargetList * gtk_text_buffer_get_paste_target_list (GtkTextBuffer *buffer);
+// GdkAtom * gtk_text_buffer_get_serialize_formats (GtkTextBuffer *buffer, gint *n_formats);
+// GdkAtom gtk_text_buffer_register_deserialize_format (GtkTextBuffer *buffer, const gchar *mime_type, GtkTextBufferDeserializeFunc function, gpointer user_data, GDestroyNotify user_data_destroy);
+// GdkAtom gtk_text_buffer_register_deserialize_tagset (GtkTextBuffer *buffer, const gchar *tagset_name); 
+// GdkAtom gtk_text_buffer_register_serialize_format (GtkTextBuffer *buffer, const gchar *mime_type, GtkTextBufferSerializeFunc function, gpointer user_data, GDestroyNotify user_data_destroy);
+// GdkAtom gtk_text_buffer_register_serialize_tagset (GtkTextBuffer *buffer, const gchar *tagset_name); static guint8* (*GtkTextBufferSerializeFunc) (GtkTextBuffer *register_buffer, GtkTextBuffer *content_buffer, const void *start, const void *end, gsize *length, gpointer user_data);
+
+// static guint8* _gtk_text_buffer_serialize(void* register_buffer, void* content_buffer, GdkAtom format, const GtkTextIter* start, const GtkTextIter* end, gsize* length) {
+// 	return gtk_text_buffer_serialize(GTK_TEXT_BUFFER(register_buffer), GTK_TEXT_BUFFER(content_buffer), format, start, end, length);
+// }
+
+// static void _gtk_text_buffer_unregister_deserialize_format(void* buffer, GdkAtom format) {
+// 	gtk_text_buffer_unregister_deserialize_format(GTK_TEXT_BUFFER(buffer), format);
+// }
+
+// static void _gtk_text_buffer_unregister_serialize_format(void* buffer, GdkAtom format) {
+// 	gtk_text_buffer_unregister_serialize_format(GTK_TEXT_BUFFER(buffer), format) {
+// }
+ 
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
 static char* to_charptr(gchar* s) { return (char*)s; }
@@ -643,6 +883,37 @@ type GtkContainer struct { GtkWidget; }
 func (v GtkContainer) Add(w WidgetLike) {
 	C._gtk_container_add(v.ToGtkWidget(), w.ToGtkWidget());
 }
+// TODO
+// gtk_container_set_border_width
+// gtk_container_get_border_width
+// gtk_container_remove
+// gtk_container_set_resize_mode
+// gtk_container_get_resize_mode
+// gtk_container_check_resize
+// gtk_container_foreach
+// gtk_container_foreach_full
+// gtk_container_get_children
+// gtk_container_propagate_expose
+// gtk_container_set_focus_chain
+// gtk_container_unset_focus_chain
+// gtk_container_set_reallocate_redraws
+// gtk_container_set_focus_child
+// gtk_container_set_focus_vadjustment
+// gtk_container_get_focus_vadjustment
+// gtk_container_set_focus_hadjustment
+// gtk_container_get_focus_hadjustment
+// gtk_container_resize_children
+// gtk_container_class_install_child_property
+// gtk_container_class_find_child_property
+// gtk_container_class_list_child_properties
+// gtk_container_add_with_properties
+// gtk_container_child_set
+// gtk_container_child_get
+// gtk_container_child_set_valist
+// gtk_container_child_get_valist
+// gtk_container_child_set_property
+// gtk_container_child_get_property
+// gtk_container_forall
 
 //-----------------------------------------------------------------------
 // GtkWindow
@@ -796,6 +1067,22 @@ func (v GtkDialog) Response(response CallbackFunc, data unsafe.Pointer) {
 	v.Connect("response", response, data);
 }
 // TODO
+// gtk_dialog_new_with_buttons
+// gtk_dialog_add_action_widget
+// gtk_dialog_add_button
+// gtk_dialog_add_buttons
+// gtk_dialog_set_response_sensitive
+// gtk_dialog_set_default_response
+// gtk_dialog_get_response_for_widget
+// gtk_dialog_set_has_separator
+// gtk_dialog_get_has_separator
+// gtk_alternative_dialog_button_order
+// gtk_dialog_set_alternative_button_order
+// gtk_dialog_set_alternative_button_order_from_array
+// gtk_dialog_response
+// gtk_dialog_run
+// gtk_dialog_get_action_area
+// gtk_dialog_get_content_area
 
 //-----------------------------------------------------------------------
 // GtkMessageDialog
@@ -830,6 +1117,12 @@ func MessageDialog(parent WindowLike, flag int, t int, button int,
 	}}}}};
 }
 // TODO
+// gtk_message_dialog_new_with_markup
+// gtk_message_dialog_set_image
+// gtk_message_dialog_get_image
+// gtk_message_dialog_set_markup
+// gtk_message_dialog_format_secondary_text
+// gtk_message_dialog_format_secondary_markup
  
 //-----------------------------------------------------------------------
 // GtkBox
@@ -867,7 +1160,7 @@ func VBox(homogeneous bool, spacing uint) *GtkBox {
 		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing))
 	}}};
 }
-// TODO
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkHBox
@@ -878,7 +1171,7 @@ func HBox(homogeneous bool, spacing uint) *GtkBox {
 		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing))
 	}}};
 }
-// TODO
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkEntry
@@ -899,6 +1192,67 @@ func Entry() *GtkEntry {
 func (v GtkEntry) GetText() string { return C.GoString(C._gtk_entry_get_text(v.Widget)); }
 func (v GtkEntry) SetText(text string) { C._gtk_entry_set_text(v.Widget, C.CString(text)); }
 // TODO
+// gtk_entry_new_with_buffer
+// gtk_entry_get_buffer
+// gtk_entry_set_buffer
+// gtk_entry_set_visibility
+// gtk_entry_get_visibility
+// gtk_entry_set_invisible_char
+// gtk_entry_get_invisible_char
+// gtk_entry_unset_invisible_char
+// gtk_entry_set_has_frame
+// gtk_entry_get_has_frame
+// gtk_entry_set_inner_border
+// gtk_entry_set_overwrite_mode
+// gtk_entry_get_overwrite_mode
+// gtk_entry_set_max_length
+// gtk_entry_get_max_length
+// gtk_entry_get_text_length
+// gtk_entry_set_activates_default
+// gtk_entry_get_activates_default
+// gtk_entry_set_width_chars
+// gtk_entry_get_width_chars
+// gtk_entry_set_text
+// gtk_entry_get_layout
+// gtk_entry_get_layout_offsets
+// gtk_entry_set_alignment
+// gtk_entry_get_alignment
+// gtk_entry_set_completion
+// gtk_entry_layout_index_to_text_index
+// gtk_entry_text_index_to_layout_index
+// gtk_entry_set_cursor_hadjustment
+// gtk_entry_get_cursor_hadjustment
+// gtk_entry_set_progress_fraction
+// gtk_entry_get_progress_fraction
+// gtk_entry_set_progress_pulse_step
+// gtk_entry_get_progress_pulse_step
+// gtk_entry_progress_pulse
+// gtk_entry_set_icon_from_pixbuf
+// gtk_entry_set_icon_from_stock
+// gtk_entry_set_icon_from_icon_name
+// gtk_entry_set_icon_from_gicon
+// gtk_entry_get_icon_storage_type
+// gtk_entry_get_icon_pixbuf
+// gtk_entry_get_icon_stock
+// gtk_entry_get_icon_name
+// gtk_entry_get_icon_gicon
+// gtk_entry_set_icon_activatable
+// gtk_entry_get_icon_activatable
+// gtk_entry_set_icon_sensitive
+// gtk_entry_get_icon_sensitive
+// gtk_entry_get_icon_at_pos
+// gtk_entry_set_icon_tooltip_text
+// gtk_entry_get_icon_tooltip_text
+// gtk_entry_set_icon_tooltip_markup
+// gtk_entry_get_icon_tooltip_markup
+// gtk_entry_set_icon_drag_source
+// gtk_entry_get_current_icon_drag_source
+// gtk_entry_new_with_max_length
+// gtk_entry_append_text
+// gtk_entry_prepend_text
+// gtk_entry_set_position
+// gtk_entry_select_region
+// gtk_entry_set_editable
 
 //-----------------------------------------------------------------------
 // GtkImage
@@ -934,6 +1288,38 @@ func ImageFromStock(stock_id string, size int) *GtkImage {
 	}};
 }
 // TODO
+// gtk_image_new_from_pixmap
+// gtk_image_new_from_image
+// gtk_image_new_from_file
+// gtk_image_new_from_pixbuf
+// gtk_image_new_from_stock
+// gtk_image_new_from_icon_set
+// gtk_image_new_from_animation
+// gtk_image_new_from_icon_name
+// gtk_image_new_from_gicon
+// gtk_image_clear
+// gtk_image_set_from_pixmap
+// gtk_image_set_from_image
+// gtk_image_set_from_file
+// gtk_image_set_from_pixbuf
+// gtk_image_set_from_stock
+// gtk_image_set_from_icon_set
+// gtk_image_set_from_animation
+// gtk_image_set_from_icon_name
+// gtk_image_set_from_gicon
+// gtk_image_set_pixel_size
+// gtk_image_get_storage_type
+// gtk_image_get_pixmap
+// gtk_image_get_image
+// gtk_image_get_pixbuf
+// gtk_image_get_stock
+// gtk_image_get_icon_set
+// gtk_image_get_animation
+// gtk_image_get_icon_name
+// gtk_image_get_gicon
+// gtk_image_get_pixel_size
+// gtk_image_set
+// gtk_image_get
 
 //-----------------------------------------------------------------------
 // GtkLabel
@@ -1129,8 +1515,7 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(C.CString(label)))
 	}}}};
 }
-//func (v GtkCheckButton) GetProps() string { return C.GoString(C._gtk_font_button_get_title(v.Widget)); }
-// TODO
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkRadioButton
@@ -1233,9 +1618,6 @@ func (v GtkTreePath) PrependIndex(index int) {
 func (v GtkTreePath) GetDepth() int {
 	return int(C.gtk_tree_path_get_depth(v.TreePath));
 }
-//func (v GtkTreePath) GetIndices() *int {
-//	return *int(C.gtk_tree_path_get_indices(v.TreePath));
-//}
 func (v GtkTreePath) Free() {
 	C.gtk_tree_path_free(v.TreePath);
 }
@@ -1265,7 +1647,8 @@ func (v GtkTreePath) IsAncestor(descendant GtkTreePath) bool {
 func (v GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
 	return gboolean2bool(C.gtk_tree_path_is_descendant(v.TreePath, ancestor.TreePath));
 }
-// FINISH
+// TODO
+// gtk_tree_path_get_indices
 
 //-----------------------------------------------------------------------
 // GtkTreeIter
@@ -1279,6 +1662,7 @@ func (v GtkTreeIter) Copy() *GtkTreeIter {
 func (v GtkTreeIter) Free() {
 	C.gtk_tree_iter_free(v.TreeIter);
 }
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkTreeModel
@@ -1593,6 +1977,8 @@ func (v GtkAdjustment) SetPageSize(page_size float64) {
 func (v GtkAdjustment) Configure(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) {
 	C.gtk_adjustment_configure(v.Adjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size));
 }
+// FINISH
+
 //-----------------------------------------------------------------------
 // GtkScrolledWindow
 //-----------------------------------------------------------------------
@@ -1609,6 +1995,220 @@ func (v GtkScrolledWindow) SetHAdjustment(hadjustment *GtkAdjustment) {
 }
 func (v GtkScrolledWindow) SetVAdjustment(vadjustment *GtkAdjustment) {
 	C._gtk_scrolled_window_set_vadjustment(v.Widget, vadjustment.Adjustment);
+}
+func (v GtkScrolledWindow) GetHAdjustment() *GtkAdjustment {
+	return &GtkAdjustment {
+		C._gtk_scrolled_window_get_hadjustment(v.Widget)
+	};
+}
+func (v GtkScrolledWindow) GetVAdjustment() *GtkAdjustment {
+	return &GtkAdjustment {
+		C._gtk_scrolled_window_get_vadjustment(v.Widget)
+	};
+}
+// TODO
+// gtk_scrolled_window_get_hscrollbar
+// gtk_scrolled_window_get_vscrollbar
+// gtk_scrolled_window_set_policy
+// gtk_scrolled_window_get_policy
+// gtk_scrolled_window_set_placement
+// gtk_scrolled_window_unset_placement
+// gtk_scrolled_window_get_placement
+// gtk_scrolled_window_set_shadow_type
+// gtk_scrolled_window_get_shadow_type
+// gtk_scrolled_window_add_with_viewport
+
+//-----------------------------------------------------------------------
+// GtkTextTagTable
+//-----------------------------------------------------------------------
+type GtkTextTagTable struct {
+	TextTagTable *C.GtkTextTagTable;
+}
+func TextTagTable() *GtkTextTagTable {
+	return &GtkTextTagTable {
+		C.gtk_text_tag_table_new()
+	};
+}
+// TODO
+// gtk_text_tag_table_add
+// gtk_text_tag_table_remove
+// gtk_text_tag_table_lookup
+// gtk_text_tag_table_foreach
+// gtk_text_tag_table_get_size
+
+//-----------------------------------------------------------------------
+// GtkTextIter
+//-----------------------------------------------------------------------
+type GtkTextIter struct {
+	TextIter *C.GtkTextIter;
+}
+/*
+func (v GtkTextIter) TextIterGetBuffer() *GtkTextBuffer {
+	return &GtkTextBuffer {
+		C.gtk_text_iter_get_buffer(v.TextIter)
+	};
+}
+*/
+// TODO
+// gtk_text_iter_copy
+// gtk_text_iter_free
+// gtk_text_iter_get_type
+// gtk_text_iter_get_offset
+// gtk_text_iter_get_line
+// gtk_text_iter_get_line_offset
+// gtk_text_iter_get_line_index
+// gtk_text_iter_get_visible_line_offset
+// gtk_text_iter_get_visible_line_index
+// gtk_text_iter_get_char
+// gtk_text_iter_get_slice
+// gtk_text_iter_get_text
+// gtk_text_iter_get_visible_slice
+// gtk_text_iter_get_visible_text
+// gtk_text_iter_get_pixbuf
+// gtk_text_iter_get_marks
+// gtk_text_iter_get_child_anchor
+// gtk_text_iter_get_toggled_tags
+// gtk_text_iter_begins_tag
+// gtk_text_iter_ends_tag
+// gtk_text_iter_toggles_tag
+// gtk_text_iter_has_tag
+// gtk_text_iter_get_tags
+// gtk_text_iter_editable
+// gtk_text_iter_can_insert
+// gtk_text_iter_starts_word
+// gtk_text_iter_ends_word
+// gtk_text_iter_inside_word
+// gtk_text_iter_starts_sentence
+// gtk_text_iter_ends_sentence
+// gtk_text_iter_inside_sentence
+// gtk_text_iter_starts_line
+// gtk_text_iter_ends_line
+// gtk_text_iter_is_cursor_position
+// gtk_text_iter_get_chars_in_line
+// gtk_text_iter_get_bytes_in_line
+// gtk_text_iter_get_attributes
+// gtk_text_iter_get_language
+// gtk_text_iter_is_end
+// gtk_text_iter_is_start
+// gtk_text_iter_forward_char
+// gtk_text_iter_backward_char
+// gtk_text_iter_forward_chars
+// gtk_text_iter_backward_chars
+// gtk_text_iter_forward_line
+// gtk_text_iter_backward_line
+// gtk_text_iter_forward_lines
+// gtk_text_iter_backward_lines
+// gtk_text_iter_forward_word_end
+// gtk_text_iter_backward_word_start
+// gtk_text_iter_forward_word_ends
+// gtk_text_iter_backward_word_starts
+// gtk_text_iter_forward_visible_line
+// gtk_text_iter_backward_visible_line
+// gtk_text_iter_forward_visible_lines
+// gtk_text_iter_backward_visible_lines
+// gtk_text_iter_forward_visible_word_end
+// gtk_text_iter_backward_visible_word_start
+// gtk_text_iter_forward_visible_word_ends
+// gtk_text_iter_backward_visible_word_starts
+// gtk_text_iter_forward_sentence_end
+// gtk_text_iter_backward_sentence_start
+// gtk_text_iter_forward_sentence_ends
+// gtk_text_iter_backward_sentence_starts
+// gtk_text_iter_forward_cursor_position
+// gtk_text_iter_backward_cursor_position
+// gtk_text_iter_forward_cursor_positions
+// gtk_text_iter_backward_cursor_positions
+// gtk_text_iter_forward_visible_cursor_position
+// gtk_text_iter_backward_visible_cursor_position
+// gtk_text_iter_forward_visible_cursor_positions
+// gtk_text_iter_backward_visible_cursor_positions
+// gtk_text_iter_set_offset
+// gtk_text_iter_set_line
+// gtk_text_iter_set_line_offset
+// gtk_text_iter_set_line_index
+// gtk_text_iter_forward_to_end
+// gtk_text_iter_forward_to_line_end
+// gtk_text_iter_set_visible_line_offset
+// gtk_text_iter_set_visible_line_index
+// gtk_text_iter_forward_to_tag_toggle
+// gtk_text_iter_backward_to_tag_toggle
+// gtk_text_iter_forward_find_char
+// gtk_text_iter_backward_find_char
+// gtk_text_iter_forward_search
+// gtk_text_iter_backward_search
+// gtk_text_iter_equal
+// gtk_text_iter_compare
+// gtk_text_iter_in_range
+// gtk_text_iter_order
+
+
+//-----------------------------------------------------------------------
+// GtkTextBuffer
+//-----------------------------------------------------------------------
+type GtkTextBuffer struct {
+	TextBuffer unsafe.Pointer;
+}
+func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
+	return &GtkTextBuffer {
+		C._gtk_text_buffer_new(tagtable.TextTagTable)
+	};
+}
+func (v GtkTextBuffer) GetLineCount() int {
+	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer));
+}
+func (v GtkTextBuffer) GetCharCount() int {
+	return int(C._gtk_text_buffer_get_char_count(v.TextBuffer));
+}
+func (v GtkTextBuffer) GetTextTagTable() *GtkTextTagTable {
+	return &GtkTextTagTable {
+		C._gtk_text_buffer_get_tag_table(v.TextBuffer)
+	};
+}
+func (v GtkTextBuffer) Insert(iter *GtkTextIter, text string) {
+	str := C.CString(text);
+	len := C.strlen(str);
+	C._gtk_text_buffer_insert(v.TextBuffer, iter.TextIter, C.to_gcharptr(str), C.gint(len));
+}
+func (v GtkTextBuffer) InsertInteractive(iter *GtkTextIter, text string, default_editable bool) bool {
+	str := C.CString(text);
+	len := C.strlen(str);
+	return gboolean2bool(C._gtk_text_buffer_insert_interactive(v.TextBuffer, iter.TextIter, C.to_gcharptr(str), C.gint(len), bool2gboolean(default_editable)));
+}
+func (v GtkTextBuffer) InsertAtCursor(text string) {
+	str := C.CString(text);
+	len := C.strlen(str);
+	C._gtk_text_buffer_insert_at_cursor(v.TextBuffer, C.to_gcharptr(str), C.gint(len));
+}
+func (v GtkTextBuffer) InsertInteractiveAtCursor(text string, default_editable bool) bool {
+	str := C.CString(text);
+	len := C.strlen(str);
+	return gboolean2bool(C._gtk_text_buffer_insert_interactive_at_cursor(v.TextBuffer, C.to_gcharptr(str), C.gint(len), bool2gboolean(default_editable)));
+}
+func (v GtkTextBuffer) InsertRange(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_insert_range(v.TextBuffer, iter.TextIter, start.TextIter, end.TextIter);
+}
+func (v GtkTextBuffer) InsertRangeInteractive(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
+	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, iter.TextIter, start.TextIter, end.TextIter, bool2gboolean(default_editable)));
+}
+func (v GtkTextBuffer) Delete(start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_delete(v.TextBuffer, start.TextIter, end.TextIter);
+}
+func (v GtkTextBuffer) DeleteInteractive(start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
+	return gboolean2bool(C._gtk_text_buffer_delete_interactive(v.TextBuffer, start.TextIter, end.TextIter, bool2gboolean(default_editable)));
+}
+func (v GtkTextBuffer) Backspace(iter *GtkTextIter, interactive bool, default_editable bool) bool {
+	return gboolean2bool(C._gtk_text_buffer_backspace(v.TextBuffer, iter.TextIter, bool2gboolean(interactive), bool2gboolean(default_editable)));
+}
+func (v GtkTextBuffer) SetText(iter *GtkTextIter, text string) {
+	str := C.CString(text);
+	len := C.strlen(str);
+	C._gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(str), C.gint(len));
+}
+func (v GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
+	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_text(v.TextBuffer, start.TextIter, end.TextIter, bool2gboolean(include_hidden_chars))));
+}
+func (v GtkTextBuffer) GetSlice(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
+	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, start.TextIter, end.TextIter, bool2gboolean(include_hidden_chars))));
 }
 // TODO
 
