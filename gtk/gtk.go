@@ -480,47 +480,47 @@ static gchar* _gtk_text_buffer_get_slice(void* buffer, const GtkTextIter* start,
 // 	return gtk_text_buffer_create_child_anchor(GTK_TEXT_BUFFER(buffer), iter);
 // }
 //
-//static GtkTextMark* _gtk_text_buffer_create_mark(void* buffer, const gchar* mark_name, const void* where, gboolean left_gravity) {
-//	return gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(buffer), mark_name, where, left_gravity);
-//}
-//
-//static void _gtk_text_buffer_move_mark(void* buffer, GtkTextMark* mark, const void* where) {
-//	gtk_text_buffer_move_mark(GTK_TEXT_BUFFER(buffer), mark, where);
-//}
-//
-//static void _gtk_text_buffer_move_mark_by_name(void* buffer, const gchar* name, const void* where) {
-//	gtk_text_buffer_move_mark_by_name(GTK_TEXT_BUFFER(buffer), name, where);
-//}
-//
-//static void _gtk_text_buffer_add_mark(void* buffer, GtkTextMark* mark, const void* where) {
-//	gtk_text_buffer_add_mark(GTK_TEXT_BUFFER(buffer), mark, where);
-//}
-//
-//static void _gtk_text_buffer_delete_mark(void* buffer, GtkTextMark* mark) {
-//	gtk_text_buffer_delete_mark(GTK_TEXT_BUFFER(buffer), mark);
-//}
-//
-//static void _gtk_text_buffer_delete_mark_by_name(void* buffer, const gchar* name) {
-//	gtk_text_buffer_delete_mark_by_name(GTK_TEXT_BUFFER(buffer), name);
-//}
-//
-//static GtkTextMark* _gtk_text_buffer_get_mark(void* buffer, const gchar* name) {
-//	return gtk_text_buffer_get_mark(GTK_TEXT_BUFFER(buffer), name);
-//}
-//
-//static GtkTextMark* _gtk_text_buffer_get_insert(void* buffer) {
-//	return gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(buffer));
-//}
-//
-//static GtkTextMark* _gtk_text_buffer_get_selection_bound(void* buffer) {
-//	return gtk_text_buffer_get_selection_bound(GTK_TEXT_BUFFER(buffer));
-//}
-//
-//static gboolean _gtk_text_buffer_get_has_selection(void* buffer) {
-//	return gtk_text_buffer_get_has_selection(GTK_TEXT_BUFFER(buffer));
-//}
-//
-//static void _gtk_text_buffer_place_cursor(void* buffer, const void* where) {
+static GtkTextMark* _gtk_text_buffer_create_mark(void* buffer, const gchar* mark_name, const GtkTextIter* where, gboolean left_gravity) {
+	return gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(buffer), mark_name, where, left_gravity);
+}
+
+static void _gtk_text_buffer_move_mark(void* buffer, GtkTextMark* mark, const GtkTextIter* where) {
+	gtk_text_buffer_move_mark(GTK_TEXT_BUFFER(buffer), mark, where);
+}
+
+static void _gtk_text_buffer_move_mark_by_name(void* buffer, const gchar* name, const GtkTextIter* where) {
+	gtk_text_buffer_move_mark_by_name(GTK_TEXT_BUFFER(buffer), name, where);
+}
+
+static void _gtk_text_buffer_add_mark(void* buffer, GtkTextMark* mark, const GtkTextIter* where) {
+	gtk_text_buffer_add_mark(GTK_TEXT_BUFFER(buffer), mark, where);
+}
+
+static void _gtk_text_buffer_delete_mark(void* buffer, GtkTextMark* mark) {
+	gtk_text_buffer_delete_mark(GTK_TEXT_BUFFER(buffer), mark);
+}
+
+static void _gtk_text_buffer_delete_mark_by_name(void* buffer, const gchar* name) {
+	gtk_text_buffer_delete_mark_by_name(GTK_TEXT_BUFFER(buffer), name);
+}
+
+static GtkTextMark* _gtk_text_buffer_get_mark(void* buffer, const gchar* name) {
+	return gtk_text_buffer_get_mark(GTK_TEXT_BUFFER(buffer), name);
+}
+
+static GtkTextMark* _gtk_text_buffer_get_insert(void* buffer) {
+	return gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(buffer));
+}
+
+static GtkTextMark* _gtk_text_buffer_get_selection_bound(void* buffer) {
+	return gtk_text_buffer_get_selection_bound(GTK_TEXT_BUFFER(buffer));
+}
+
+static gboolean _gtk_text_buffer_get_has_selection(void* buffer) {
+	return gtk_text_buffer_get_has_selection(GTK_TEXT_BUFFER(buffer));
+}
+
+//static void _gtk_text_buffer_place_cursor(void* buffer, const GtkTextIter* where) {
 //	gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(buffer), where);
 //}
 //
@@ -2037,6 +2037,13 @@ func TextTagTable() *GtkTextTagTable {
 // gtk_text_tag_table_get_size
 
 //-----------------------------------------------------------------------
+// GtkTextMark
+//-----------------------------------------------------------------------
+type GtkTextMark struct {
+	TextMark *C.GtkTextMark;
+}
+
+//-----------------------------------------------------------------------
 // GtkTextIter
 //-----------------------------------------------------------------------
 type GtkTextIter struct {
@@ -2210,6 +2217,42 @@ func (v GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkTe
 func (v GtkTextBuffer) GetSlice(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
 	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, start.TextIter, end.TextIter, bool2gboolean(include_hidden_chars))));
 }
+func (v GtkTextBuffer) CreateMark(mark *GtkTextMark, mark_name string, where *GtkTextIter, left_gravity bool) {
+	C._gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(C.CString(mark_name)), where.TextIter, bool2gboolean(left_gravity));
+}
+func (v GtkTextBuffer) MoveMark(mark *GtkTextMark, where *GtkTextIter) {
+	C._gtk_text_buffer_move_mark(v.TextBuffer, mark.TextMark, where.TextIter);
+}
+func (v GtkTextBuffer) MoveMarkByName(mark *GtkTextMark, name string, where *GtkTextIter) {
+	C._gtk_text_buffer_move_mark_by_name(v.TextBuffer, C.to_gcharptr(C.CString(name)), where.TextIter);
+}
+func (v GtkTextBuffer) AddMark(mark *GtkTextMark, where *GtkTextIter) {
+	C._gtk_text_buffer_add_mark(v.TextBuffer, mark.TextMark, where.TextIter);
+}
+func (v GtkTextBuffer) DeleteMark(mark *GtkTextMark) {
+	C._gtk_text_buffer_delete_mark(v.TextBuffer, mark.TextMark);
+}
+func (v GtkTextBuffer) DeleteMarkByName(name string) {
+	C._gtk_text_buffer_delete_mark_by_name(v.TextBuffer, C.to_gcharptr(C.CString(name)));
+}
+func (v GtkTextBuffer) GetMark(name string) *GtkTextMark {
+	return &GtkTextMark {
+		C._gtk_text_buffer_get_mark(v.TextBuffer, C.to_gcharptr(C.CString(name)))
+	};
+}
+func (v GtkTextBuffer) GetInsert() *GtkTextMark {
+	return &GtkTextMark {
+		C._gtk_text_buffer_get_insert(v.TextBuffer)
+	};
+}
+func (v GtkTextBuffer) GetSelectionBound() *GtkTextMark {
+	return &GtkTextMark {
+		C._gtk_text_buffer_get_selection_bound(v.TextBuffer)
+	};
+}
+func (v GtkTextBuffer) GetHasSelection() bool {
+	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer));
+}
 // TODO
 
 //-----------------------------------------------------------------------
@@ -2232,7 +2275,6 @@ func pollEvents() {
 		if use_gtk_main == false {
 			C.gtk_main_iteration_do(C.gboolean(1));
 		}
-		//index := C._gtk_callback_index;
 		cbi := C.current_callback_info;
 		if cbi != nil && cbi.fire == C.int(0) {
 			elem := funcs.At(int(cbi.func_no));
