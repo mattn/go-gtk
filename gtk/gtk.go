@@ -520,38 +520,38 @@ static gboolean _gtk_text_buffer_get_has_selection(void* buffer) {
 	return gtk_text_buffer_get_has_selection(GTK_TEXT_BUFFER(buffer));
 }
 
-//static void _gtk_text_buffer_place_cursor(void* buffer, const GtkTextIter* where) {
-//	gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(buffer), where);
-//}
-//
-//static void _gtk_text_buffer_select_range(void* buffer, const void* ins, const void* bound) {
-//	gtk_text_buffer_select_range(GTK_TEXT_BUFFER(buffer), ins, bound);
-//}
-//
-//static void _gtk_text_buffer_apply_tag(void* buffer, GtkTextTag* tag, const GtkTextIter* start, const GtkTextIter* end) {
-//	gtk_text_buffer_apply_tag(GTK_TEXT_BUFFER(buffer), tag, start, end);
-//}
-//
-//static void _gtk_text_buffer_remove_tag(void* buffer, GtkTextTag* tag, const GtkTextIter* start, const GtkTextIter* end) {
-//	gtk_text_buffer_remove_tag(GTK_TEXT_BUFFER(buffer), tag, start, end);
-//}
-//
-//static void _gtk_text_buffer_apply_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
-//	gtk_text_buffer_apply_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
-//}
-//
-//static void _gtk_text_buffer_remove_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
-//	gtk_text_buffer_remove_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
-//}
-//
-//static void _gtk_text_buffer_remove_all_tags(void* buffer, const GtkTextIter* start, const GtkTextIter* end) {
-//	gtk_text_buffer_remove_all_tags(GTK_TEXT_BUFFER(buffer), start, end);
-//}
-//
-//// static GtkTextTag* gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
-//// 	return gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
-//// }
-//
+static void _gtk_text_buffer_place_cursor(void* buffer, const GtkTextIter* where) {
+	gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(buffer), where);
+}
+
+static void _gtk_text_buffer_select_range(void* buffer, const GtkTextIter* ins, const GtkTextIter* bound) {
+	gtk_text_buffer_select_range(GTK_TEXT_BUFFER(buffer), ins, bound);
+}
+
+static void _gtk_text_buffer_apply_tag(void* buffer, void* tag, const GtkTextIter* start, const GtkTextIter* end) {
+	gtk_text_buffer_apply_tag(GTK_TEXT_BUFFER(buffer), tag, start, end);
+}
+
+static void _gtk_text_buffer_remove_tag(void* buffer, void* tag, const GtkTextIter* start, const GtkTextIter* end) {
+	gtk_text_buffer_remove_tag(GTK_TEXT_BUFFER(buffer), tag, start, end);
+}
+
+static void _gtk_text_buffer_apply_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
+	gtk_text_buffer_apply_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
+}
+
+static void _gtk_text_buffer_remove_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
+	gtk_text_buffer_remove_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
+}
+
+static void _gtk_text_buffer_remove_all_tags(void* buffer, const GtkTextIter* start, const GtkTextIter* end) {
+	gtk_text_buffer_remove_all_tags(GTK_TEXT_BUFFER(buffer), start, end);
+}
+
+// static GtkTextTag* gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
+// 	return gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
+// }
+
 //static void _gtk_text_buffer_get_iter_at_line_offset(void* buffer, GtkTextIter* iter, gint line_number, gint char_offset) {
 //	gtk_text_buffer_get_iter_at_line_offset(GTK_TEXT_BUFFER(buffer), iter, line_number, char_offset);
 //}
@@ -2150,6 +2150,13 @@ func (v GtkTextIter) TextIterGetBuffer() *GtkTextBuffer {
 
 
 //-----------------------------------------------------------------------
+// GtkTextTag
+//-----------------------------------------------------------------------
+type GtkTextTag struct {
+	TextTag unsafe.Pointer;
+}
+
+//-----------------------------------------------------------------------
 // GtkTextBuffer
 //-----------------------------------------------------------------------
 type GtkTextBuffer struct {
@@ -2252,6 +2259,27 @@ func (v GtkTextBuffer) GetSelectionBound() *GtkTextMark {
 }
 func (v GtkTextBuffer) GetHasSelection() bool {
 	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer));
+}
+func (v GtkTextBuffer) PlaceCursor(where *GtkTextIter) {
+	C._gtk_text_buffer_place_cursor(v.TextBuffer, where.TextIter);
+}
+func (v GtkTextBuffer) SelectRange(ins *GtkTextIter, bound *GtkTextIter) {
+	C._gtk_text_buffer_select_range(v.TextBuffer, ins.TextIter, bound.TextIter);
+}
+func (v GtkTextBuffer) ApplyTag(where *GtkTextIter, tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_apply_tag(v.TextBuffer, tag.TextTag, start.TextIter, end.TextIter);
+}
+func (v GtkTextBuffer) RemoveTag(where *GtkTextIter, tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_remove_tag(v.TextBuffer, tag.TextTag, start.TextIter, end.TextIter);
+}
+func (v GtkTextBuffer) ApplyTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_apply_tag_by_name(v.TextBuffer, C.to_gcharptr(C.CString(name)), start.TextIter, end.TextIter);
+}
+func (v GtkTextBuffer) RemoveTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_remove_tag_by_name(v.TextBuffer, C.to_gcharptr(C.CString(name)), start.TextIter, end.TextIter);
+}
+func (v GtkTextBuffer) RemoveAllTags(start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_remove_all_tags(v.TextBuffer, start.TextIter, end.TextIter);
 }
 // TODO
 
