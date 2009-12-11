@@ -67,7 +67,7 @@ static void free_callback_info(gpointer data, GClosure *closure) {
 	g_slice_free(callback_info, data);
 }
 
-static long _gtk_signal_connect(GtkWidget* widget, char* name, int func_no, void* data) {
+static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no, void* data) {
 	static int index = 0;
     GSignalQuery query;
     callback_info* cbi;
@@ -84,12 +84,12 @@ static long _gtk_signal_connect(GtkWidget* widget, char* name, int func_no, void
     return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 }
 
-static char* _gtk_window_get_title(GtkWidget* widget) {
-	return (char*)gtk_window_get_title(GTK_WINDOW(widget));
+static const gchar* _gtk_window_get_title(GtkWidget* widget) {
+	return gtk_window_get_title(GTK_WINDOW(widget));
 }
 
-static void _gtk_window_set_title(GtkWidget* widget, char* title) {
-	gtk_window_set_title(GTK_WINDOW(widget), (gchar*)title);
+static void _gtk_window_set_title(GtkWidget* widget, gchar* title) {
+	gtk_window_set_title(GTK_WINDOW(widget), title);
 }
 
 static void _gtk_window_set_transient_for(GtkWidget* widget, GtkWidget *parent) {
@@ -100,29 +100,29 @@ static int _gtk_dialog_run(GtkWidget* dialog) {
 	return gtk_dialog_run(GTK_DIALOG(dialog));
 }
 
-static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, char *message) {
+static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, gchar *message) {
 	return gtk_message_dialog_new(
 			GTK_WINDOW(parent),
 			flags,
 			type,
 			buttons,
-			(gchar*)message, NULL);
+			message, NULL);
 }
 
-static char* _gtk_entry_get_text(GtkWidget* widget) {
-	return (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+static const gchar* _gtk_entry_get_text(GtkWidget* widget) {
+	return gtk_entry_get_text(GTK_ENTRY(widget));
 }
 
-static void _gtk_entry_set_text(GtkWidget* widget, char* text) {
-	gtk_entry_set_text(GTK_ENTRY(widget), (gchar*)text);
+static void _gtk_entry_set_text(GtkWidget* widget, gchar* text) {
+	gtk_entry_set_text(GTK_ENTRY(widget), text);
 }
 
-static char* _gtk_label_get_text(GtkWidget* widget) {
-	return (char*)gtk_label_get_text(GTK_LABEL(widget));
+static const gchar* _gtk_label_get_text(GtkWidget* widget) {
+	return gtk_label_get_text(GTK_LABEL(widget));
 }
 
-static void _gtk_label_set_text(GtkWidget* widget, char* text) {
-	gtk_label_set_text(GTK_LABEL(widget), (gchar*)text);
+static void _gtk_label_set_text(GtkWidget* widget, gchar* text) {
+	gtk_label_set_text(GTK_LABEL(widget), text);
 }
 
 static GtkWidget* _gtk_accel_label_get_accel_widget(GtkWidget* widget) {
@@ -141,12 +141,12 @@ static gboolean _gtk_accel_label_refetch(GtkWidget* widget) {
 	return gtk_accel_label_refetch(GTK_ACCEL_LABEL(widget));
 }
 
-static char* _gtk_button_get_label(GtkWidget* widget) {
-	return (char*)gtk_button_get_label(GTK_BUTTON(widget));
+static const gchar* _gtk_button_get_label(GtkWidget* widget) {
+	return gtk_button_get_label(GTK_BUTTON(widget));
 }
 
-static void _gtk_button_set_label(GtkWidget* widget, char* label) {
-	gtk_button_set_label(GTK_BUTTON(widget), (gchar*)label);
+static void _gtk_button_set_label(GtkWidget* widget, gchar* label) {
+	gtk_button_set_label(GTK_BUTTON(widget), label);
 }
 
 static gboolean _gtk_toggle_button_get_mode(GtkWidget* widget) {
@@ -181,15 +181,15 @@ static void _gtk_combo_box_set_wrap_width(GtkWidget* widget, gint width) {
 	gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(widget), width);
 }
 
-static void _gtk_combo_box_append_text(GtkWidget* widget, char* text) {
+static void _gtk_combo_box_append_text(GtkWidget* widget, gchar* text) {
 	gtk_combo_box_append_text(GTK_COMBO_BOX(widget), text);
 }
 
-static void _gtk_combo_box_insert_text(GtkWidget* widget, gint position, char* text) {
+static void _gtk_combo_box_insert_text(GtkWidget* widget, gint position, gchar* text) {
 	gtk_combo_box_insert_text(GTK_COMBO_BOX(widget), position, text);
 }
 
-static void _gtk_combo_box_prepend_text(GtkWidget* widget, char* text) {
+static void _gtk_combo_box_prepend_text(GtkWidget* widget, gchar* text) {
 	gtk_combo_box_prepend_text(GTK_COMBO_BOX(widget), text);
 }
 
@@ -197,7 +197,7 @@ static void _gtk_combo_box_remove_text(GtkWidget* widget, gint position) {
 	gtk_combo_box_remove_text(GTK_COMBO_BOX(widget), position);
 }
 
-static char* _gtk_combo_box_get_active_text(GtkWidget* widget) {
+static gchar* _gtk_combo_box_get_active_text(GtkWidget* widget) {
 	return gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
 }
 
@@ -209,11 +209,11 @@ static void _gtk_combo_box_set_active(GtkWidget* widget, gint index_) {
 	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), index_);
 }
 
-static char* _gtk_combo_box_get_title(GtkWidget* widget) {
-	return (char*)gtk_combo_box_get_title(GTK_COMBO_BOX(widget));
+static const gchar* _gtk_combo_box_get_title(GtkWidget* widget) {
+	return gtk_combo_box_get_title(GTK_COMBO_BOX(widget));
 }
 
-static void _gtk_combo_box_set_title(GtkWidget* widget, char* title) {
+static void _gtk_combo_box_set_title(GtkWidget* widget, gchar* title) {
 	gtk_combo_box_set_title(GTK_COMBO_BOX(widget), title);
 }
 
@@ -281,12 +281,12 @@ static void _gtk_combo_box_entry_set_text_column(GtkWidget* widget, gint text_co
 	gtk_combo_box_entry_set_text_column(GTK_COMBO_BOX_ENTRY(widget), text_column);
 }
 
-static char* _gtk_font_button_get_title(GtkWidget* widget) {
-	return (char*)gtk_font_button_get_title(GTK_FONT_BUTTON(widget));
+static const gchar* _gtk_font_button_get_title(GtkWidget* widget) {
+	return gtk_font_button_get_title(GTK_FONT_BUTTON(widget));
 }
 
-static void _gtk_font_button_set_title(GtkWidget* widget, char* title) {
-	gtk_font_button_set_title(GTK_FONT_BUTTON(widget), (gchar*)title);
+static void _gtk_font_button_set_title(GtkWidget* widget, gchar* title) {
+	gtk_font_button_set_title(GTK_FONT_BUTTON(widget), title);
 }
 
 static gboolean _gtk_font_button_get_use_size(GtkWidget* widget) {
@@ -297,12 +297,12 @@ static void _gtk_font_button_set_use_size(GtkWidget* widget, gboolean use_size) 
 	gtk_font_button_set_use_size(GTK_FONT_BUTTON(widget), use_size);
 }
 
-static char* _gtk_font_button_get_font_name(GtkWidget* widget) {
-	return (char*)gtk_font_button_get_font_name(GTK_FONT_BUTTON(widget));
+static const gchar* _gtk_font_button_get_font_name(GtkWidget* widget) {
+	return gtk_font_button_get_font_name(GTK_FONT_BUTTON(widget));
 }
 
-static void _gtk_font_button_set_font_name(GtkWidget* widget, char* fontname) {
-	gtk_font_button_set_font_name(GTK_FONT_BUTTON(widget), (gchar*)fontname);
+static void _gtk_font_button_set_font_name(GtkWidget* widget, gchar* fontname) {
+	gtk_font_button_set_font_name(GTK_FONT_BUTTON(widget), fontname);
 }
 
 static gboolean _gtk_font_button_get_show_size(GtkWidget* widget) {
@@ -329,11 +329,11 @@ static GtkTreePath* _gtk_tree_model_get_path(GtkTreeModel* tree_model, GtkTreeIt
 	return gtk_tree_model_get_path(tree_model, iter);
 }
 
-static guint _gtk_statusbar_get_context_id(GtkWidget* widget, char* context_description) {
+static guint _gtk_statusbar_get_context_id(GtkWidget* widget, gchar* context_description) {
 	return gtk_statusbar_get_context_id(GTK_STATUSBAR(widget), context_description);
 }
 
-static guint _gtk_statusbar_push(GtkWidget* widget, guint context_id, const char *text) {
+static guint _gtk_statusbar_push(GtkWidget* widget, guint context_id, const gchar *text) {
 	return gtk_statusbar_push(GTK_STATUSBAR(widget), context_id, text);
 }
 
@@ -353,12 +353,12 @@ static void _gtk_radio_button_set_group(GtkWidget* widget, GSList* group) {
 	gtk_radio_button_set_group(GTK_RADIO_BUTTON(widget), group);
 }
 
-static char* _gtk_frame_get_label(GtkWidget* widget) {
-	return (char*)gtk_frame_get_label(GTK_FRAME(widget));
+static const gchar* _gtk_frame_get_label(GtkWidget* widget) {
+	return gtk_frame_get_label(GTK_FRAME(widget));
 }
 
-static void _gtk_frame_set_label(GtkWidget* widget, char* label) {
-	gtk_frame_set_label(GTK_FRAME(widget), (gchar*)label);
+static void _gtk_frame_set_label(GtkWidget* widget, gchar* label) {
+	gtk_frame_set_label(GTK_FRAME(widget), label);
 }
 
 static GtkWidget* _gtk_frame_get_label_widget(GtkWidget* widget) {
@@ -552,54 +552,54 @@ static void _gtk_text_buffer_remove_all_tags(void* buffer, const GtkTextIter* st
 // 	return gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
 // }
 
-//static void _gtk_text_buffer_get_iter_at_line_offset(void* buffer, GtkTextIter* iter, gint line_number, gint char_offset) {
-//	gtk_text_buffer_get_iter_at_line_offset(GTK_TEXT_BUFFER(buffer), iter, line_number, char_offset);
-//}
-//
-//static void _gtk_text_buffer_get_iter_at_offset(void* buffer, GtkTextIter* iter, gint char_offset) {
-//	gtk_text_buffer_get_iter_at_offset(GTK_TEXT_BUFFER(buffer), iter, char_offset);
-//}
-//
-//static void _gtk_text_buffer_get_iter_at_line(void* buffer, GtkTextIter* iter, gint line_number) {
-//	gtk_text_buffer_get_iter_at_line(GTK_TEXT_BUFFER(buffer), iter, line_number);
-//}
-//
-//static void _gtk_text_buffer_get_iter_at_line_index(void* buffer, GtkTextIter* iter, gint line_number, gint byte_index) {
-//	gtk_text_buffer_get_iter_at_line_index(GTK_TEXT_BUFFER(buffer), iter, line_number, byte_index);
-//}
-//
-//static void _gtk_text_buffer_get_iter_at_mark(void* buffer, GtkTextIter* iter, GtkTextMark* mark) {
-//	gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(buffer), iter, mark);
-//}
-//
-//static void _gtk_text_buffer_get_iter_at_child_anchor(void* buffer, GtkTextIter* iter, GtkTextChildAnchor* anchor) {
-//	gtk_text_buffer_get_iter_at_child_anchor(GTK_TEXT_BUFFER(buffer), iter, anchor);
-//}
-//
-//static void _gtk_text_buffer_get_start_iter(void* buffer, GtkTextIter* iter) {
-//	gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), iter);
-//}
-//
-//static void _gtk_text_buffer_get_end_iter(void* buffer, GtkTextIter* iter) {
-//	gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), iter);
-//}
-//
-//static void _gtk_text_buffer_get_bounds(void* buffer, GtkTextIter* start, GtkTextIter* end) {
-//	gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(buffer), start, end);
-//}
-//
-//static gboolean _gtk_text_buffer_get_modified(void* buffer) {
-//	return gtk_text_buffer_get_modified(GTK_TEXT_BUFFER(buffer));
-//}
-//
-//static void _gtk_text_buffer_set_modified(void* buffer, gboolean setting) {
-//	gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(buffer), setting);
-//}
-//
-//static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interactive, gboolean default_editable) {
-//	return gtk_text_buffer_delete_selection(GTK_TEXT_BUFFER(buffer), interactive, default_editable);
-//}
-//
+static void _gtk_text_buffer_get_iter_at_line_offset(void* buffer, GtkTextIter* iter, gint line_number, gint char_offset) {
+	gtk_text_buffer_get_iter_at_line_offset(GTK_TEXT_BUFFER(buffer), iter, line_number, char_offset);
+}
+
+static void _gtk_text_buffer_get_iter_at_offset(void* buffer, GtkTextIter* iter, gint char_offset) {
+	gtk_text_buffer_get_iter_at_offset(GTK_TEXT_BUFFER(buffer), iter, char_offset);
+}
+
+static void _gtk_text_buffer_get_iter_at_line(void* buffer, GtkTextIter* iter, gint line_number) {
+	gtk_text_buffer_get_iter_at_line(GTK_TEXT_BUFFER(buffer), iter, line_number);
+}
+
+static void _gtk_text_buffer_get_iter_at_line_index(void* buffer, GtkTextIter* iter, gint line_number, gint byte_index) {
+	gtk_text_buffer_get_iter_at_line_index(GTK_TEXT_BUFFER(buffer), iter, line_number, byte_index);
+}
+
+static void _gtk_text_buffer_get_iter_at_mark(void* buffer, GtkTextIter* iter, GtkTextMark* mark) {
+	gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(buffer), iter, mark);
+}
+
+static void _gtk_text_buffer_get_iter_at_child_anchor(void* buffer, GtkTextIter* iter, GtkTextChildAnchor* anchor) {
+	gtk_text_buffer_get_iter_at_child_anchor(GTK_TEXT_BUFFER(buffer), iter, anchor);
+}
+
+static void _gtk_text_buffer_get_start_iter(void* buffer, GtkTextIter* iter) {
+	gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), iter);
+}
+
+static void _gtk_text_buffer_get_end_iter(void* buffer, GtkTextIter* iter) {
+	gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), iter);
+}
+
+static void _gtk_text_buffer_get_bounds(void* buffer, GtkTextIter* start, GtkTextIter* end) {
+	gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(buffer), start, end);
+}
+
+static gboolean _gtk_text_buffer_get_modified(void* buffer) {
+	return gtk_text_buffer_get_modified(GTK_TEXT_BUFFER(buffer));
+}
+
+static void _gtk_text_buffer_set_modified(void* buffer, gboolean setting) {
+	gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(buffer), setting);
+}
+
+static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interactive, gboolean default_editable) {
+	return gtk_text_buffer_delete_selection(GTK_TEXT_BUFFER(buffer), interactive, default_editable);
+}
+
 // static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
 // static void gtk_text_buffer_copy_clipboard(void* buffer, GtkClipboard* clipboard);
 // static void gtk_text_buffer_cut_clipboard(void* buffer, GtkClipboard* clipboard, gboolean default_editable);
@@ -694,7 +694,7 @@ func (v GtkWidget) Connect(s string, f CallbackFunc, data unsafe.Pointer) {
 	funcs.Push(&Callback{f});
 	ptr := C.CString(s);
 	defer C.free_string(ptr);
-	C._gtk_signal_connect(v.Widget, ptr, C.int(funcs.Len())-1, data);
+	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, data);
 }
 func (v GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget {
@@ -938,12 +938,12 @@ func Window(t int) *GtkWindow {
 	}}};
 }
 func (v GtkWindow) GetTitle() string {
-	return C.GoString(C._gtk_window_get_title(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_window_get_title(v.Widget)));
 }
 func (v GtkWindow) SetTitle(title string) {
 	ptr := C.CString(title);
 	defer C.free_string(ptr);
-	C._gtk_window_set_title(v.Widget, ptr);
+	C._gtk_window_set_title(v.Widget, C.to_gcharptr(ptr));
 }
 func (v GtkWindow) SetTransientFor(parent WindowLike) {
 	C._gtk_window_set_transient_for(v.Widget, parent.ToGtkWidget());
@@ -1124,7 +1124,7 @@ func MessageDialog(parent WindowLike, flag int, t int, button int,
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(button),
-			ptr)
+			C.to_gcharptr(ptr))
 	}}}}};
 }
 // TODO
@@ -1201,12 +1201,12 @@ func Entry() *GtkEntry {
 	}};
 }
 func (v GtkEntry) GetText() string {
-	return C.GoString(C._gtk_entry_get_text(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_entry_get_text(v.Widget)));
 }
 func (v GtkEntry) SetText(text string) {
 	ptr := C.CString(text);
 	defer C.free_string(ptr);
-	C._gtk_entry_set_text(v.Widget, ptr);
+	C._gtk_entry_set_text(v.Widget, C.to_gcharptr(ptr));
 }
 // TODO
 // gtk_entry_new_with_buffer
@@ -1361,12 +1361,12 @@ func Label(label string) *GtkLabel {
 	}};
 }
 func (v GtkLabel) GetLabel() string {
-	return C.GoString(C._gtk_label_get_text(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_label_get_text(v.Widget)));
 }
 func (v GtkLabel) SetLabel(label string) {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
-	C._gtk_label_set_text(v.Widget, ptr);
+	C._gtk_label_set_text(v.Widget, C.to_gcharptr(ptr));
 }
 // TODO
 // gtk_label_new_with_mnemonic
@@ -1467,12 +1467,12 @@ func ButtonWithLabel(label string) *GtkButton {
 	}};
 }
 func (v GtkButton) GetLabel() string {
-	return C.GoString(C._gtk_button_get_label(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_button_get_label(v.Widget)));
 }
 func (v GtkButton) SetLabel(label string) {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
-	C._gtk_button_set_label(v.Widget, ptr);
+	C._gtk_button_set_label(v.Widget, C.to_gcharptr(ptr));
 }
 // TODO
 // gtk_button_new_from_stock
@@ -1627,12 +1627,12 @@ func FontButtonWithFont(fontname string) *GtkFontButton {
 	}}};
 }
 func (v GtkFontButton) GetTitle() string {
-	return C.GoString(C._gtk_font_button_get_title(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_font_button_get_title(v.Widget)));
 }
 func (v GtkFontButton) SetTitle(title string) {
 	ptr := C.CString(title);
 	defer C.free_string(ptr);
-	C._gtk_font_button_set_title(v.Widget, ptr);
+	C._gtk_font_button_set_title(v.Widget, C.to_gcharptr(ptr));
 }
 func (v GtkFontButton) GetUseSize() bool {
 	return gboolean2bool(C._gtk_font_button_get_use_size(v.Widget));
@@ -1641,12 +1641,12 @@ func (v GtkFontButton) SetUseSize(use_size bool) {
 	C._gtk_font_button_set_use_size(v.Widget, bool2gboolean(use_size));
 }
 func (v GtkFontButton) GetFontName() string {
-	return C.GoString(C._gtk_font_button_get_font_name(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_font_button_get_font_name(v.Widget)));
 }
 func (v GtkFontButton) SetFontName(fontname string) {
 	ptr := C.CString(fontname);
 	defer C.free_string(ptr);
-	C._gtk_font_button_set_font_name(v.Widget, ptr);
+	C._gtk_font_button_set_font_name(v.Widget, C.to_gcharptr(ptr));
 }
 func (v GtkFontButton) GetShowSize() bool {
 	return gboolean2bool(C._gtk_font_button_get_show_size(v.Widget));
@@ -1825,23 +1825,23 @@ func (v GtkComboBox) SetWrapWidth(width int) {
 func (v GtkComboBox) AppendText(text string) {
 	ptr := C.CString(text);
 	defer C.free_string(ptr);
-	C._gtk_combo_box_append_text(v.Widget, ptr);
+	C._gtk_combo_box_append_text(v.Widget, C.to_gcharptr(ptr));
 }
 func (v GtkComboBox) InsertText(text string, position int) {
 	ptr := C.CString(text);
 	defer C.free_string(ptr);
-	C._gtk_combo_box_insert_text(v.Widget, C.gint(position), ptr);
+	C._gtk_combo_box_insert_text(v.Widget, C.gint(position), C.to_gcharptr(ptr));
 }
 func (v GtkComboBox) PrependText(text string) {
 	ptr := C.CString(text);
 	defer C.free_string(ptr);
-	C._gtk_combo_box_prepend_text(v.Widget, ptr);
+	C._gtk_combo_box_prepend_text(v.Widget, C.to_gcharptr(ptr));
 }
 func (v GtkComboBox) RemoveText(position int) {
 	C._gtk_combo_box_remove_text(v.Widget, C.gint(position));
 }
 func (v GtkComboBox) GetActiveText() string {
-	return C.GoString(C._gtk_combo_box_get_active_text(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_combo_box_get_active_text(v.Widget)));
 }
 func (v GtkComboBox) GetActive() int {
 	return int(C._gtk_combo_box_get_active(v.Widget));
@@ -1850,12 +1850,12 @@ func (v GtkComboBox) SetActive(width int) {
 	C._gtk_combo_box_set_active(v.Widget, C.gint(width));
 }
 func (v GtkComboBox) GetTitle() string {
-	return C.GoString(C._gtk_combo_box_get_title(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_combo_box_get_title(v.Widget)));
 }
 func (v GtkComboBox) SetTitle(title string) {
 	ptr := C.CString(title);
 	defer C.free_string(ptr);
-	C._gtk_combo_box_set_title(v.Widget, ptr);
+	C._gtk_combo_box_set_title(v.Widget, C.to_gcharptr(ptr));
 }
 func (v GtkComboBox) GetModel() *GtkTreeModel {
 	return &GtkTreeModel {
@@ -1949,12 +1949,12 @@ func Statusbar() *GtkStatusbar {
 func (v GtkStatusbar) GetContextId(content_description string) uint {
 	ptr := C.CString(content_description);
 	defer C.free_string(ptr);
-	return uint(C._gtk_statusbar_get_context_id(v.Widget, ptr));
+	return uint(C._gtk_statusbar_get_context_id(v.Widget, C.to_gcharptr(ptr)));
 }
 func (v GtkStatusbar) Push(context_id uint, text string) {
 	ptr := C.CString(text);
 	defer C.free_string(ptr);
-	C._gtk_statusbar_push(v.Widget, C.guint(context_id), ptr);
+	C._gtk_statusbar_push(v.Widget, C.guint(context_id), C.to_gcharptr(ptr));
 }
 func (v GtkStatusbar) Pop(context_id uint) {
 	C._gtk_statusbar_pop(v.Widget, C.guint(context_id));
@@ -1991,12 +1991,12 @@ func Frame(label string) *GtkFrame {
 	}}};
 }
 func (v GtkFrame) GetLabel() string {
-	return C.GoString(C._gtk_frame_get_label(v.Widget));
+	return C.GoString(C.to_charptr(C._gtk_frame_get_label(v.Widget)));
 }
 func (v GtkFrame) SetLabel(label string) {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
-	C._gtk_frame_set_label(v.Widget, ptr);
+	C._gtk_frame_set_label(v.Widget, C.to_gcharptr(ptr));
 }
 func (v GtkFrame) GetLabelWidget() LabelLike {
 	return &GtkLabel { GtkWidget {
@@ -2130,6 +2130,13 @@ func TextTagTable() *GtkTextTagTable {
 // gtk_text_tag_table_lookup
 // gtk_text_tag_table_foreach
 // gtk_text_tag_table_get_size
+
+//-----------------------------------------------------------------------
+// GtkTextChildAnchor
+//-----------------------------------------------------------------------
+type GtkTextChildAnchor struct {
+	TextChildAnchor *C.GtkTextChildAnchor;
+}
 
 //-----------------------------------------------------------------------
 // GtkTextMark
@@ -2392,6 +2399,42 @@ func (v GtkTextBuffer) RemoveTagByName(name string, start *GtkTextIter, end *Gtk
 }
 func (v GtkTextBuffer) RemoveAllTags(start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_remove_all_tags(v.TextBuffer, start.TextIter, end.TextIter);
+}
+func (v GtkTextBuffer) GetIterAtLineOffset(iter *GtkTextIter, line_number int, char_offset int) {
+	C._gtk_text_buffer_get_iter_at_line_offset(v.TextBuffer, iter.TextIter, C.gint(line_number), C.gint(char_offset));
+}
+func (v GtkTextBuffer) GetIterAtOffset(iter *GtkTextIter, char_offset int) {
+	C._gtk_text_buffer_get_iter_at_offset(v.TextBuffer, iter.TextIter, C.gint(char_offset));
+}
+func (v GtkTextBuffer) GetIterAtLine(iter *GtkTextIter, line_number int) {
+	C._gtk_text_buffer_get_iter_at_line(v.TextBuffer, iter.TextIter, C.gint(line_number));
+}
+func (v GtkTextBuffer) GetIterAtLineIndex(iter *GtkTextIter, line_number int, byte_index int) {
+	C._gtk_text_buffer_get_iter_at_line_index(v.TextBuffer, iter.TextIter, C.gint(line_number), C.gint(byte_index));
+}
+func (v GtkTextBuffer) GetIterAtMark(iter *GtkTextIter, mark *GtkTextMark) {
+	C._gtk_text_buffer_get_iter_at_mark(v.TextBuffer, iter.TextIter, mark.TextMark);
+}
+func (v GtkTextBuffer) GetIterAtChildAnchor(iter *GtkTextIter, anchor *GtkTextChildAnchor) {
+	C._gtk_text_buffer_get_iter_at_child_anchor(v.TextBuffer, iter.TextIter, anchor.TextChildAnchor);
+}
+func (v GtkTextBuffer) GetStartIter(iter *GtkTextIter) {
+	C._gtk_text_buffer_get_start_iter(v.TextBuffer, iter.TextIter)
+}
+func (v GtkTextBuffer) GetEndIter(iter *GtkTextIter) {
+	C._gtk_text_buffer_get_end_iter(v.TextBuffer, iter.TextIter)
+}
+func (v GtkTextBuffer) GetBounds(start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_get_bounds(v.TextBuffer, start.TextIter, end.TextIter)
+}
+func (v GtkTextBuffer) GetModified() bool {
+	return gboolean2bool(C._gtk_text_buffer_get_modified(v.TextBuffer));
+}
+func (v GtkTextBuffer) SetModified(setting bool) {
+	C._gtk_text_buffer_set_modified(v.TextBuffer, bool2gboolean(setting));
+}
+func (v GtkTextBuffer) DeleteSelection(interactive bool, default_editable bool) {
+	C._gtk_text_buffer_delete_selection(v.TextBuffer, bool2gboolean(interactive), bool2gboolean(default_editable));
 }
 // TODO
 
