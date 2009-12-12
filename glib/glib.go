@@ -14,7 +14,6 @@ type GSList struct {
 }
 func FromGSList(gs unsafe.Pointer) *GSList {
 	return &GSList {
-		C.to_gslist(gs)
-	};
+		C.to_gslist(gs) };
 }
 func (v GSList) ToGSList() *C.GSList { return v.List }

@@ -53,8 +53,7 @@ func main() {
 				gtk.GTK_DIALOG_MODAL,
 				gtk.GTK_MESSAGE_INFO,
 				gtk.GTK_BUTTONS_OK,
-				entry.GetText()
-			);
+				entry.GetText());
 			dialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 				println("Dialog OK!")
 			}, nil);

@@ -651,8 +651,18 @@ import "unsafe";
 import "runtime";
 import "container/vector";
 
-func bool2gboolean(b bool) C.gboolean { if b { return C.gboolean(1) } return C.gboolean(0) }
-func gboolean2bool(b C.gboolean) bool { if b != 0 { return true } return false }
+func bool2gboolean(b bool) C.gboolean {
+	if b {
+		return C.gboolean(1);
+	}
+	return C.gboolean(0);
+}
+func gboolean2bool(b C.gboolean) bool {
+	if b != 0 {
+		return true;
+	}
+	return false;
+}
 
 //-----------------------------------------------------------------------
 // GtkObject
@@ -698,13 +708,11 @@ func (v GtkWidget) Connect(s string, f CallbackFunc, data unsafe.Pointer) {
 }
 func (v GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget {
-		C.gtk_widget_get_toplevel(v.Widget)
-	};
+		C.gtk_widget_get_toplevel(v.Widget) };
 }
 func (v GtkWidget) GetTopLevelAsWindow() *GtkWindow {
 	return &GtkWindow { GtkContainer { GtkWidget {
-		C.gtk_widget_get_toplevel(v.Widget)
-	}}};
+		C.gtk_widget_get_toplevel(v.Widget) }}};
 }
 func (v GtkWidget) HideOnDelete() {
 	C.gtk_widget_hide_on_delete(v.Widget);
@@ -934,8 +942,7 @@ type WindowLike interface {
 type GtkWindow struct { GtkContainer; }
 func Window(t int) *GtkWindow {
 	return &GtkWindow { GtkContainer { GtkWidget {
-		C.gtk_window_new(C.GtkWindowType(t))
-	}}};
+		C.gtk_window_new(C.GtkWindowType(t)) }}};
 }
 func (v GtkWindow) GetTitle() string {
 	return C.GoString(C.to_charptr(C._gtk_window_get_title(v.Widget)));
@@ -1124,8 +1131,7 @@ func MessageDialog(parent WindowLike, flag int, t int, button int,
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(button),
-			C.to_gcharptr(ptr))
-	}}}}};
+			C.to_gcharptr(ptr)) }}}}};
 }
 // TODO
 // gtk_message_dialog_new_with_markup
@@ -1168,8 +1174,7 @@ func (v GtkBox) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) 
 //-----------------------------------------------------------------------
 func VBox(homogeneous bool, spacing uint) *GtkBox {
 	return &GtkBox { GtkContainer { GtkWidget {
-		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing))
-	}}};
+		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}};
 }
 // FINISH
 
@@ -1179,8 +1184,7 @@ func VBox(homogeneous bool, spacing uint) *GtkBox {
 type GtkHBox GtkBox;
 func HBox(homogeneous bool, spacing uint) *GtkBox {
 	return &GtkBox { GtkContainer { GtkWidget {
-		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing))
-	}}};
+		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}};
 }
 // FINISH
 
@@ -1197,8 +1201,7 @@ type GtkEntry struct {
 }
 func Entry() *GtkEntry {
 	return &GtkEntry { GtkWidget {
-		C.gtk_entry_new()
-	}};
+		C.gtk_entry_new() }};
 }
 func (v GtkEntry) GetText() string {
 	return C.GoString(C.to_charptr(C._gtk_entry_get_text(v.Widget)));
@@ -1291,22 +1294,19 @@ type GtkImage struct {
 }
 func Image() *GtkImage {
 	return &GtkImage { GtkWidget {
-		C.gtk_image_new()
-	}};
+		C.gtk_image_new() }};
 }
 func ImageFromFile(filename string) *GtkImage {
 	ptr := C.CString(filename);
 	defer C.free_string(ptr);
 	return &GtkImage { GtkWidget {
-		C.gtk_image_new_from_file(C.to_gcharptr(ptr))
-	}};
+		C.gtk_image_new_from_file(C.to_gcharptr(ptr)) }};
 }
 func ImageFromStock(stock_id string, size int) *GtkImage {
 	ptr := C.CString(stock_id);
 	defer C.free_string(ptr);
 	return &GtkImage { GtkWidget {
-		C.gtk_image_new_from_stock(C.to_gcharptr(ptr), C.GtkIconSize(size))
-	}};
+		C.gtk_image_new_from_stock(C.to_gcharptr(ptr), C.GtkIconSize(size)) }};
 }
 // TODO
 // gtk_image_new_from_pixmap
@@ -1357,8 +1357,7 @@ func Label(label string) *GtkLabel {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkLabel { GtkWidget {
-		C.gtk_label_new(C.to_gcharptr(ptr))
-	}};
+		C.gtk_label_new(C.to_gcharptr(ptr)) }};
 }
 func (v GtkLabel) GetLabel() string {
 	return C.GoString(C.to_charptr(C._gtk_label_get_text(v.Widget)));
@@ -1426,8 +1425,7 @@ func AccelLabel(label string) *GtkAccelLabel {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkAccelLabel { GtkWidget {
-		C.gtk_accel_label_new(C.to_gcharptr(ptr))
-	}};
+		C.gtk_accel_label_new(C.to_gcharptr(ptr)) }};
 }
 func (v GtkAccelLabel) GetAccelWidget() GtkWidget { return GtkWidget{ C._gtk_accel_label_get_accel_widget(v.Widget) }; }
 func (v GtkAccelLabel) GetAccelWidth() uint { return uint(C._gtk_accel_label_get_accel_width(v.Widget)); }
@@ -1456,15 +1454,13 @@ type GtkButton struct {
 }
 func Button() *GtkButton {
 	return &GtkButton { GtkWidget {
-		C.gtk_button_new()
-	}};
+		C.gtk_button_new() }};
 }
 func ButtonWithLabel(label string) *GtkButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkButton { GtkWidget {
-		C.gtk_button_new_with_label(C.to_gcharptr(ptr))
-	}};
+		C.gtk_button_new_with_label(C.to_gcharptr(ptr)) }};
 }
 func (v GtkButton) GetLabel() string {
 	return C.GoString(C.to_charptr(C._gtk_button_get_label(v.Widget)));
@@ -1500,22 +1496,19 @@ type GtkToggleButton struct {
 }
 func ToggleButton() *GtkToggleButton {
 	return &GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_toggle_button_new()
-	}}};
+		C.gtk_toggle_button_new() }}};
 }
 func ToggleButtonWithLabel(label string) *GtkToggleButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_toggle_button_new_with_label(C.to_gcharptr(ptr))
-	}}};
+		C.gtk_toggle_button_new_with_label(C.to_gcharptr(ptr)) }}};
 }
 func ToggleButtonWithMnemonic(label string) *GtkToggleButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr))
-	}}};
+		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr)) }}};
 }
 func (v GtkToggleButton) GetMode() bool {
 	return gboolean2bool(C._gtk_toggle_button_get_mode(v.Widget));
@@ -1545,22 +1538,19 @@ type GtkCheckButton struct {
 }
 func CheckButton() *GtkCheckButton {
 	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new()
-	}}}};
+		C.gtk_check_button_new() }}}};
 }
 func CheckButtonWithLabel(label string) *GtkCheckButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new_with_label(C.to_gcharptr(ptr))
-	}}}};
+		C.gtk_check_button_new_with_label(C.to_gcharptr(ptr)) }}}};
 }
 func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr))
-	}}}};
+		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr)) }}}};
 }
 // FINISH
 
@@ -1573,24 +1563,20 @@ type GtkRadioButton struct {
 func RadioButton(group *glib.GSList) *GtkRadioButton {
 	if group != nil {
 		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToGSList())))
-		}}}}};
+			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToGSList()))) }}}}};
 	}
 	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new(nil)
-	}}}}};
+		C.gtk_radio_button_new(nil) }}}}};
 }
 func RadioButtonWithLabel(group *glib.GSList, label string) *GtkRadioButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	if group != nil {
 		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToGSList())), C.to_gcharptr(ptr))
-		}}}}};
+			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToGSList())), C.to_gcharptr(ptr)) }}}}};
 	}
 	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))
-	}}}}};
+		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr)) }}}}};
 }
 func (v GtkRadioButton) GetGroup() *glib.GSList {
 	return glib.FromGSList(unsafe.Pointer(C._gtk_radio_button_get_group(v.Widget)));
@@ -1616,15 +1602,13 @@ type GtkFontButton struct {
 }
 func FontButton() *GtkFontButton {
 	return &GtkFontButton { GtkButton { GtkWidget {
-		C.gtk_font_button_new()
-	}}};
+		C.gtk_font_button_new() }}};
 }
 func FontButtonWithFont(fontname string) *GtkFontButton {
 	ptr := C.CString(fontname);
 	defer C.free_string(ptr);
 	return &GtkFontButton { GtkButton { GtkWidget {
-		C.gtk_font_button_new_with_font(C.to_gcharptr(ptr))
-	}}};
+		C.gtk_font_button_new_with_font(C.to_gcharptr(ptr)) }}};
 }
 func (v GtkFontButton) GetTitle() string {
 	return C.GoString(C.to_charptr(C._gtk_font_button_get_title(v.Widget)));
@@ -1664,20 +1648,17 @@ type GtkTreePath struct {
 }
 func TreePath() *GtkTreePath {
 	return &GtkTreePath {
-		C.gtk_tree_path_new()
-	};
+		C.gtk_tree_path_new() };
 }
 func TreePathFromString(path string) *GtkTreePath {
 	ptr := C.CString(path);
 	defer C.free_string(ptr);
 	return &GtkTreePath {
-		C.gtk_tree_path_new_from_string(C.to_gcharptr(ptr))
-	};
+		C.gtk_tree_path_new_from_string(C.to_gcharptr(ptr)) };
 }
 func TreePathNewFirst() *GtkTreePath {
 	return &GtkTreePath {
-		C.gtk_tree_path_new_first()
-	};
+		C.gtk_tree_path_new_first() };
 }
 func (v GtkTreePath) String() string {
 	return C.GoString(C.to_charptr(C.gtk_tree_path_to_string(v.TreePath)));
@@ -1696,8 +1677,7 @@ func (v GtkTreePath) Free() {
 }
 func (v GtkTreePath) Copy() *GtkTreePath {
 	return &GtkTreePath {
-		C.gtk_tree_path_copy(v.TreePath)
-	};
+		C.gtk_tree_path_copy(v.TreePath) };
 }
 func (v GtkTreePath) Compare(w GtkTreePath) int {
 	return int(C.gtk_tree_path_compare(v.TreePath, w.TreePath));
@@ -1803,18 +1783,15 @@ type GtkComboBox struct {
 }
 func ComboBox() *GtkComboBox {
 	return &GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_new()
-	}}};
+		C.gtk_combo_box_new() }}};
 }
 func ComboBoxWithModel(model *GtkTreeModel) *GtkComboBox {
 	return &GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_new_with_model(model.TreeModel)
-	}}};
+		C.gtk_combo_box_new_with_model(model.TreeModel) }}};
 }
 func ComboBoxNewText() *GtkComboBox {
 	return &GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_new_text()
-	}}};
+		C.gtk_combo_box_new_text() }}};
 }
 func (v GtkComboBox) GetWrapWidth() int {
 	return int(C._gtk_combo_box_get_wrap_width(v.Widget));
@@ -1859,8 +1836,7 @@ func (v GtkComboBox) SetTitle(title string) {
 }
 func (v GtkComboBox) GetModel() *GtkTreeModel {
 	return &GtkTreeModel {
-		C._gtk_combo_box_get_model(v.Widget)
-	};
+		C._gtk_combo_box_get_model(v.Widget) };
 }
 func (v GtkComboBox) SetModel(model *GtkTreeModel) {
 	C._gtk_combo_box_set_model(v.Widget, model.TreeModel);
@@ -1919,13 +1895,11 @@ type GtkComboBoxEntry struct {
 }
 func ComboBoxEntry() *GtkComboBoxEntry {
 	return &GtkComboBoxEntry { GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_entry_new()
-	}}}};
+		C.gtk_combo_box_entry_new() }}}};
 }
 func ComboBoxEntryNewText() *GtkComboBoxEntry {
 	return &GtkComboBoxEntry { GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_entry_new_text()
-	}}}};
+		C.gtk_combo_box_entry_new_text() }}}};
 }
 func (v GtkComboBoxEntry) GetTextColumn() int {
 	return int(C._gtk_combo_box_entry_get_text_column(v.Widget));
@@ -1943,8 +1917,7 @@ type GtkStatusbar struct {
 }
 func Statusbar() *GtkStatusbar {
 	return &GtkStatusbar { GtkHBox { GtkContainer { GtkWidget {
-		C.gtk_statusbar_new()
-	}}}};
+		C.gtk_statusbar_new() }}}};
 }
 func (v GtkStatusbar) GetContextId(content_description string) uint {
 	ptr := C.CString(content_description);
@@ -1987,8 +1960,7 @@ func Frame(label string) *GtkFrame {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkFrame { GtkContainer { GtkWidget {
-		C.gtk_frame_new(C.to_gcharptr(ptr))
-	}}};
+		C.gtk_frame_new(C.to_gcharptr(ptr)) }}};
 }
 func (v GtkFrame) GetLabel() string {
 	return C.GoString(C.to_charptr(C._gtk_frame_get_label(v.Widget)));
@@ -2000,8 +1972,7 @@ func (v GtkFrame) SetLabel(label string) {
 }
 func (v GtkFrame) GetLabelWidget() LabelLike {
 	return &GtkLabel { GtkWidget {
-		C._gtk_frame_get_label_widget(v.Widget)
-	}};
+		C._gtk_frame_get_label_widget(v.Widget) }};
 }
 func (v GtkFrame) SetLabelWidget(label_widget *LabelLike) {
 	C._gtk_frame_set_label_widget(v.Widget, label_widget.ToGtkWidget());
@@ -2030,8 +2001,7 @@ type GtkAdjustment struct {
 }
 func Adjustment(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) *GtkAdjustment {
 	return &GtkAdjustment {
-		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))
-	};
+		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size))) };
 }
 func (v GtkAdjustment) GetValue() float64 {
 	return float64(C.gtk_adjustment_get_value(v.Adjustment));
@@ -2082,8 +2052,7 @@ type GtkScrolledWindow struct {
 }
 func ScrolledWindow(hadjustment *GtkAdjustment, vadjustment *GtkAdjustment) *GtkScrolledWindow {
 	return &GtkScrolledWindow { GtkContainer { GtkWidget {
-		C.gtk_scrolled_window_new(hadjustment.Adjustment, vadjustment.Adjustment)
-	}}};
+		C.gtk_scrolled_window_new(hadjustment.Adjustment, vadjustment.Adjustment) }}};
 }
 func (v GtkScrolledWindow) SetHAdjustment(hadjustment *GtkAdjustment) {
 	C._gtk_scrolled_window_set_hadjustment(v.Widget, hadjustment.Adjustment);
@@ -2093,13 +2062,11 @@ func (v GtkScrolledWindow) SetVAdjustment(vadjustment *GtkAdjustment) {
 }
 func (v GtkScrolledWindow) GetHAdjustment() *GtkAdjustment {
 	return &GtkAdjustment {
-		C._gtk_scrolled_window_get_hadjustment(v.Widget)
-	};
+		C._gtk_scrolled_window_get_hadjustment(v.Widget) };
 }
 func (v GtkScrolledWindow) GetVAdjustment() *GtkAdjustment {
 	return &GtkAdjustment {
-		C._gtk_scrolled_window_get_vadjustment(v.Widget)
-	};
+		C._gtk_scrolled_window_get_vadjustment(v.Widget) };
 }
 // TODO
 // gtk_scrolled_window_get_hscrollbar
@@ -2121,8 +2088,7 @@ type GtkTextTagTable struct {
 }
 func TextTagTable() *GtkTextTagTable {
 	return &GtkTextTagTable {
-		C.gtk_text_tag_table_new()
-	};
+		C.gtk_text_tag_table_new() };
 }
 // TODO
 // gtk_text_tag_table_add
@@ -2266,8 +2232,7 @@ type GtkTextBuffer struct {
 }
 func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 	return &GtkTextBuffer {
-		C._gtk_text_buffer_new(tagtable.TextTagTable)
-	};
+		C._gtk_text_buffer_new(tagtable.TextTagTable) };
 }
 func (v GtkTextBuffer) GetLineCount() int {
 	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer));
@@ -2277,8 +2242,7 @@ func (v GtkTextBuffer) GetCharCount() int {
 }
 func (v GtkTextBuffer) GetTextTagTable() *GtkTextTagTable {
 	return &GtkTextTagTable {
-		C._gtk_text_buffer_get_tag_table(v.TextBuffer)
-	};
+		C._gtk_text_buffer_get_tag_table(v.TextBuffer) };
 }
 func (v GtkTextBuffer) Insert(iter *GtkTextIter, text string) {
 	ptr := C.CString(text);
@@ -2359,18 +2323,15 @@ func (v GtkTextBuffer) GetMark(name string) *GtkTextMark {
 	ptr := C.CString(name);
 	defer C.free_string(ptr);
 	return &GtkTextMark {
-		C._gtk_text_buffer_get_mark(v.TextBuffer, C.to_gcharptr(ptr))
-	};
+		C._gtk_text_buffer_get_mark(v.TextBuffer, C.to_gcharptr(ptr)) };
 }
 func (v GtkTextBuffer) GetInsert() *GtkTextMark {
 	return &GtkTextMark {
-		C._gtk_text_buffer_get_insert(v.TextBuffer)
-	};
+		C._gtk_text_buffer_get_insert(v.TextBuffer) };
 }
 func (v GtkTextBuffer) GetSelectionBound() *GtkTextMark {
 	return &GtkTextMark {
-		C._gtk_text_buffer_get_selection_bound(v.TextBuffer)
-	};
+		C._gtk_text_buffer_get_selection_bound(v.TextBuffer) };
 }
 func (v GtkTextBuffer) GetHasSelection() bool {
 	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer));
