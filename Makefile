@@ -1,13 +1,16 @@
 all:
 	cd glib && make
+	cd gdk && make
 	cd gtk && make
 
 install:
 	cd glib && make install
+	cd gdk && make install
 	cd gtk && make install
 
 clean:
 	cd glib && make clean
+	cd gdk && make clean
 	cd gtk && make clean
 
 example: install
