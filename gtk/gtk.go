@@ -1564,28 +1564,28 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 type GtkRadioButton struct {
 	GtkCheckButton;
 }
-func RadioButton(group *glib.GSList) *GtkRadioButton {
+func RadioButton(group *glib.SList) *GtkRadioButton {
 	if group != nil {
 		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToGSList()))) }}}}};
+			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToSList()))) }}}}};
 	}
 	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
 		C.gtk_radio_button_new(nil) }}}}};
 }
-func RadioButtonWithLabel(group *glib.GSList, label string) *GtkRadioButton {
+func RadioButtonWithLabel(group *glib.SList, label string) *GtkRadioButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	if group != nil {
 		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToGSList())), C.to_gcharptr(ptr)) }}}}};
+			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr)) }}}}};
 	}
 	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
 		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr)) }}}}};
 }
-func (v GtkRadioButton) GetGroup() *glib.GSList {
-	return glib.FromGSList(unsafe.Pointer(C._gtk_radio_button_get_group(v.Widget)));
+func (v GtkRadioButton) GetGroup() *glib.SList {
+	return glib.FromSList(unsafe.Pointer(C._gtk_radio_button_get_group(v.Widget)));
 }
-func (v GtkRadioButton) SetGroup(group *glib.GSList) {
+func (v GtkRadioButton) SetGroup(group *glib.SList) {
 	if group != nil {
 		C._gtk_radio_button_set_group(v.Widget, C.to_gslist(unsafe.Pointer(group)));
 	} else {
@@ -2164,6 +2164,9 @@ func (v GtkTextIter) GetVisibleSlice(end *GtkTextIter) string {
 }
 func (v GtkTextIter) GetVisibleText(end *GtkTextIter) string {
 	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_text(v.TextIter, end.TextIter)));
+}
+func (v GtkTextIter) GetMarks() *glib.SList {
+	return glib.FromSList(unsafe.Pointer(C.gtk_text_iter_get_marks(v.TextIter)));
 }
 // TODO
 // gtk_text_iter_get_pixbuf

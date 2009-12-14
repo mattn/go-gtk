@@ -2,18 +2,18 @@ package glib
 
 /*
 #include <glib.h>
-static GSList* to_gslist(void* gs) {
-	return (GSList*)gs;
+static GSList* to_slist(void* sl) {
+	return (GSList*)sl;
 }
 */
 import "C";
 import "unsafe";
 
-type GSList struct {
+type SList struct {
 	List *C.GSList
 }
-func FromGSList(gs unsafe.Pointer) *GSList {
-	return &GSList {
-		C.to_gslist(gs) };
+func FromSList(sl unsafe.Pointer) *SList {
+	return &SList {
+		C.to_slist(sl) };
 }
-func (v GSList) ToGSList() *C.GSList { return v.List }
+func (v SList) ToSList() *C.GSList { return v.List }
