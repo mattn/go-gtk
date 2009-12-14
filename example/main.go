@@ -156,6 +156,9 @@ func main() {
 	// GtkStatusbar
 	//--------------------------------------------------------
 	textview := gtk.TextView();
+	var iter gtk.GtkTextIter;
+	textview.GetBuffer().GetStartIter(&iter);
+	textview.GetBuffer().Insert(&iter, "Hello World!");
 	vbox.Add(textview);
 
 	//--------------------------------------------------------

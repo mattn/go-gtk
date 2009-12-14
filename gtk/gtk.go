@@ -644,6 +644,10 @@ static GtkWidget* _gtk_text_view_new_with_buffer(void* buffer) {
 static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
 	gtk_text_view_set_buffer(GTK_TEXT_VIEW(textview), GTK_TEXT_BUFFER(buffer));
 }
+
+static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
+	return gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+}
  
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
@@ -2417,7 +2421,9 @@ func (v GtkTextBuffer) GetIterAtChildAnchor(iter *GtkTextIter, anchor *GtkTextCh
 	C._gtk_text_buffer_get_iter_at_child_anchor(v.TextBuffer, iter.TextIter, anchor.TextChildAnchor);
 }
 func (v GtkTextBuffer) GetStartIter(iter *GtkTextIter) {
-	C._gtk_text_buffer_get_start_iter(v.TextBuffer, iter.TextIter)
+	var it C.GtkTextIter;
+	C._gtk_text_buffer_get_start_iter(v.TextBuffer, &it);
+	iter.TextIter = C.gtk_tree_iter_copy(&it);
 }
 func (v GtkTextBuffer) GetEndIter(iter *GtkTextIter) {
 	C._gtk_text_buffer_get_end_iter(v.TextBuffer, iter.TextIter)
@@ -2449,9 +2455,13 @@ func TextViewWithBuffer(b GtkTextBuffer) *GtkTextView {
 		C._gtk_text_view_new_with_buffer(b.TextBuffer) }}};
 }
 func (v GtkTextView) SetBuffer(b GtkTextBuffer) {
-	C._gtk_text_view_set_buffer(v.TextView, b.TextBuffer);
+	C._gtk_text_view_set_buffer(v.Widget, b.TextBuffer);
 }
-// void gtk_text_view_set_buffer(GtkTextView* text_view, GtkTextBuffer* buffer); GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView* text_view);
+func (v GtkTextView) GetBuffer() *GtkTextBuffer {
+	return &GtkTextBuffer {
+		C._gtk_text_view_get_buffer(v.Widget) };
+}
+// GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView* text_view);
 // TODO
 // gboolean gtk_text_view_scroll_to_iter(GtkTextView* text_view, GtkTextIter* iter, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
 // void gtk_text_view_scroll_to_mark(GtkTextView* text_view, GtkTextMark* mark, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
