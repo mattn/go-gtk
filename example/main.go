@@ -155,11 +155,17 @@ func main() {
 	//--------------------------------------------------------
 	// GtkStatusbar
 	//--------------------------------------------------------
+	textview := gtk.TextView();
+	vbox.Add(textview);
+
+	//--------------------------------------------------------
+	// GtkStatusbar
+	//--------------------------------------------------------
 	statusbar := gtk.Statusbar();
 	context_id := statusbar.GetContextId("go-gtk");
 	statusbar.Push(context_id, "GTK binding for Go!");
 
-	vbox.Add(statusbar);
+	vbox.PackStart(statusbar, false, false, 0);
 
 	//--------------------------------------------------------
 	// Event

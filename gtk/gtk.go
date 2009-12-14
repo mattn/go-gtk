@@ -636,6 +636,14 @@ static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interac
 // static void _gtk_text_buffer_unregister_serialize_format(void* buffer, GdkAtom format) {
 // 	gtk_text_buffer_unregister_serialize_format(GTK_TEXT_BUFFER(buffer), format) {
 // }
+
+static GtkWidget* _gtk_text_view_new_with_buffer(void* buffer) {
+	return gtk_text_view_new_with_buffer(GTK_TEXT_BUFFER(buffer));
+}
+ 
+static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
+	gtk_text_view_set_buffer(GTK_TEXT_VIEW(textview), GTK_TEXT_BUFFER(buffer));
+}
  
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
@@ -2427,6 +2435,77 @@ func (v GtkTextBuffer) DeleteSelection(interactive bool, default_editable bool) 
 	C._gtk_text_buffer_delete_selection(v.TextBuffer, bool2gboolean(interactive), bool2gboolean(default_editable));
 }
 // TODO
+
+//-----------------------------------------------------------------------
+// GtkTextView
+//-----------------------------------------------------------------------
+type GtkTextView struct { GtkContainer; }
+func TextView() *GtkTextView {
+	return &GtkTextView { GtkContainer { GtkWidget {
+		C.gtk_text_view_new() }}};
+}
+func TextViewWithBuffer(b GtkTextBuffer) *GtkTextView {
+	return &GtkTextView { GtkContainer { GtkWidget {
+		C._gtk_text_view_new_with_buffer(b.TextBuffer) }}};
+}
+func (v GtkTextView) SetBuffer(b GtkTextBuffer) {
+	C._gtk_text_view_set_buffer(v.TextView, b.TextBuffer);
+}
+// void gtk_text_view_set_buffer(GtkTextView* text_view, GtkTextBuffer* buffer); GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView* text_view);
+// TODO
+// gboolean gtk_text_view_scroll_to_iter(GtkTextView* text_view, GtkTextIter* iter, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
+// void gtk_text_view_scroll_to_mark(GtkTextView* text_view, GtkTextMark* mark, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
+// void gtk_text_view_scroll_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
+// gboolean gtk_text_view_move_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
+// gboolean gtk_text_view_place_cursor_onscreen(GtkTextView* text_view);
+// void gtk_text_view_get_visible_rect(GtkTextView* text_view, GdkRectangle* visible_rect);
+// void gtk_text_view_set_cursor_visible(GtkTextView* text_view, gboolean setting);
+// gboolean gtk_text_view_get_cursor_visible(GtkTextView* text_view); 
+// void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
+// void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
+// void gtk_text_view_get_iter_at_position(GtkTextView* text_view, GtkTextIter* iter, gint* trailing, gint x, gint y);
+// void gtk_text_view_get_line_yrange(GtkTextView* text_view, const GtkTextIter* iter, gint* y, gint* height);
+// void gtk_text_view_get_line_at_y(GtkTextView* text_view, GtkTextIter* target_iter, gint y, gint* line_top);
+// void gtk_text_view_buffer_to_window_coords(GtkTextView* text_view, GtkTextWindowType win, gint buffer_x, gint buffer_y, gint* window_x, gint* window_y);
+// void gtk_text_view_window_to_buffer_coords(GtkTextView* text_view, GtkTextWindowType win, gint window_x, gint window_y, gint* buffer_x, gint* buffer_y);
+// GdkWindow* gtk_text_view_get_window(GtkTextView* text_view, GtkTextWindowType win);
+// GtkTextWindowType gtk_text_view_get_window_type(GtkTextView* text_view, GdkWindow* window);
+// void gtk_text_view_set_border_window_size(GtkTextView* text_view, GtkTextWindowType type, gint size);
+// gint gtk_text_view_get_border_window_size(GtkTextView* text_view, GtkTextWindowType type);
+// gboolean gtk_text_view_forward_display_line(GtkTextView* text_view, GtkTextIter* iter);
+// gboolean gtk_text_view_backward_display_line(GtkTextView* text_view, GtkTextIter* iter);
+// gboolean gtk_text_view_forward_display_line_end(GtkTextView* text_view, GtkTextIter* iter);
+// gboolean gtk_text_view_backward_display_line_start(GtkTextView* text_view, GtkTextIter* iter);
+// gboolean gtk_text_view_starts_display_line(GtkTextView* text_view, const GtkTextIter* iter);
+// gboolean gtk_text_view_move_visually(GtkTextView* text_view, GtkTextIter* iter, gint count);
+// void gtk_text_view_add_child_at_anchor(GtkTextView* text_view, GtkWidget* child, GtkTextChildAnchor* anchor);
+// void gtk_text_view_add_child_in_window(GtkTextView* text_view, GtkWidget* child, GtkTextWindowType which_window, gint xpos, gint ypos);
+// void gtk_text_view_move_child(GtkTextView* text_view, GtkWidget* child, gint xpos, gint ypos);
+// void gtk_text_view_set_wrap_mode(GtkTextView* text_view, GtkWrapMode wrap_mode);
+// GtkWrapMode gtk_text_view_get_wrap_mode(GtkTextView* text_view);
+// void gtk_text_view_set_editable(GtkTextView* text_view, gboolean setting);
+// gboolean gtk_text_view_get_editable(GtkTextView* text_view);
+// void gtk_text_view_set_overwrite(GtkTextView* text_view, gboolean overwrite);
+// gboolean gtk_text_view_get_overwrite(GtkTextView* text_view);
+// void gtk_text_view_set_accepts_tab(GtkTextView *text_view, gboolean accepts_tab);
+// gboolean gtk_text_view_get_accepts_tab(GtkTextView *text_view);
+// void gtk_text_view_set_pixels_above_lines(GtkTextView* text_view, gint pixels_above_lines);
+// gint gtk_text_view_get_pixels_above_lines(GtkTextView* text_view);
+// void gtk_text_view_set_pixels_below_lines(GtkTextView* text_view, gint pixels_below_lines);
+// gint gtk_text_view_get_pixels_below_lines(GtkTextView* text_view);
+// void gtk_text_view_set_pixels_inside_wrap(GtkTextView* text_view, gint pixels_inside_wrap);
+// gint gtk_text_view_get_pixels_inside_wrap(GtkTextView* text_view);
+// void gtk_text_view_set_justification(GtkTextView* text_view, GtkJustification justification);
+// GtkJustification gtk_text_view_get_justification(GtkTextView* text_view);
+// void gtk_text_view_set_left_margin(GtkTextView* text_view, gint left_margin);
+// gint gtk_text_view_get_left_margin(GtkTextView* text_view);
+// void gtk_text_view_set_right_margin(GtkTextView* text_view, gint right_margin);
+// gint gtk_text_view_get_right_margin(GtkTextView* text_view);
+// void gtk_text_view_set_indent(GtkTextView* text_view, gint indent);
+// gint gtk_text_view_get_indent(GtkTextView* text_view);
+// void gtk_text_view_set_tabs(GtkTextView* text_view, PangoTabArray* tabs);
+// PangoTabArray* gtk_text_view_get_tabs(GtkTextView* text_view);
+// GtkTextAttributes* gtk_text_view_get_default_attributes(GtkTextView* text_view);
 
 //-----------------------------------------------------------------------
 // Events
