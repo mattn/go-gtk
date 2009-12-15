@@ -106,13 +106,17 @@ func main() {
 		//--------------------------------------------------------
 		// GtkRadioButton
 		//--------------------------------------------------------
-		radiobutton := gtk.RadioButton(nil);
+		buttonbox := gtk.VBox(false, 1)
+		radiobutton := gtk.RadioButtonWithLabel(nil, "Radio0");
+		buttonbox.Add(radiobutton);
 		radiogroup := radiobutton.GetGroup();
 		radiofirst := gtk.RadioButtonWithLabel(radiogroup, "Radio1");
-		buttons.Add(radiofirst);
-		buttons.Add(gtk.RadioButtonWithLabel(radiogroup, "Radio2"));
-		buttons.Add(gtk.RadioButtonWithLabel(radiogroup, "Radio3"));
-		radiofirst.SetActive(true);
+		buttonbox.Add(radiofirst);
+		buttonbox.Add(gtk.RadioButtonWithLabel(radiogroup, "Radio2"));
+		buttonbox.Add(gtk.RadioButtonWithLabel(radiogroup, "Radio3"));
+		buttons.Add(buttonbox);
+		//radiobutton.SetMode(false);
+		//radiofirst.SetActive(true);
 
 	vbox.Add(buttons);
 
@@ -158,7 +162,9 @@ func main() {
 	textview := gtk.TextView();
 	var iter gtk.GtkTextIter;
 	textview.GetBuffer().GetStartIter(&iter);
-	textview.GetBuffer().Insert(&iter, "Hello World!");
+	textview.GetBuffer().Insert(&iter, "Hello ");
+	textview.GetBuffer().GetEndIter(&iter);
+	textview.GetBuffer().Insert(&iter, "World!");
 	vbox.Add(textview);
 
 	//--------------------------------------------------------
