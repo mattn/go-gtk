@@ -413,6 +413,18 @@ static GtkAdjustment* _gtk_scrolled_window_get_vadjustment(GtkWidget* widget) {
 	return gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(widget));
 }
 
+static void _gtk_text_tag_table_add(GtkTextTagTable* table, void* tag) {
+	gtk_text_tag_table_add(table, (GtkTextTag*)tag);
+}
+ 
+static void _gtk_text_tag_table_remove(GtkTextTagTable* table, void* tag) {
+	gtk_text_tag_table_remove(table, (GtkTextTag*)tag);
+}
+ 
+static void* _gtk_text_tag_table_lookup(GtkTextTagTable* table, const gchar* name) {
+	return gtk_text_tag_table_lookup(table, name);
+}
+ 
 static void* _gtk_text_iter_get_buffer(GtkTextIter* iter) {
 	return gtk_text_iter_get_buffer(iter);
 }
@@ -2140,12 +2152,23 @@ func TextTagTable() *GtkTextTagTable {
 	return &GtkTextTagTable {
 		C.gtk_text_tag_table_new() };
 }
+func (v GtkTextTagTable) Add(tag *GtkTextTag) {
+	C._gtk_text_tag_table_add(v.TextTagTable, unsafe.Pointer(tag.TextTag));
+}
+func (v GtkTextTagTable) Remove(tag *GtkTextTag) {
+	C._gtk_text_tag_table_remove(v.TextTagTable, unsafe.Pointer(tag.TextTag));
+}
+func (v GtkTextTagTable) Lookup(name string) *GtkTextTag {
+	ptr := C.CString(name);
+	defer C.free_string(ptr);
+	return &GtkTextTag {
+		C._gtk_text_tag_table_lookup(v.TextTagTable, C.to_gcharptr(ptr)) };
+}
+func (v GtkTextTagTable) GetSize() int {
+	return int(C.gtk_text_tag_table_get_size(v.TextTagTable));
+}
 // TODO
-// gtk_text_tag_table_add
-// gtk_text_tag_table_remove
-// gtk_text_tag_table_lookup
 // gtk_text_tag_table_foreach
-// gtk_text_tag_table_get_size
 
 //-----------------------------------------------------------------------
 // GtkTextChildAnchor
