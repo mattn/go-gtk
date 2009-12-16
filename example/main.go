@@ -107,16 +107,13 @@ func main() {
 		// GtkRadioButton
 		//--------------------------------------------------------
 		buttonbox := gtk.VBox(false, 1)
-		radiobutton := gtk.RadioButtonWithLabel(nil, "Radio0");
-		buttonbox.Add(radiobutton);
-		radiogroup := radiobutton.GetGroup();
-		radiofirst := gtk.RadioButtonWithLabel(radiogroup, "Radio1");
+		radiofirst := gtk.RadioButtonWithLabel(nil, "Radio1");
 		buttonbox.Add(radiofirst);
-		buttonbox.Add(gtk.RadioButtonWithLabel(radiogroup, "Radio2"));
-		buttonbox.Add(gtk.RadioButtonWithLabel(radiogroup, "Radio3"));
+		buttonbox.Add(gtk.RadioButtonWithLabel(radiofirst.GetGroup(), "Radio2"));
+		buttonbox.Add(gtk.RadioButtonWithLabel(radiofirst.GetGroup(), "Radio3"));
 		buttons.Add(buttonbox);
 		//radiobutton.SetMode(false);
-		//radiofirst.SetActive(true);
+		radiofirst.SetActive(true);
 
 	vbox.Add(buttons);
 
