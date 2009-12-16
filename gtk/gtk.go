@@ -345,6 +345,18 @@ static void _gtk_statusbar_remove(GtkWidget* widget, guint context_id, guint mes
 	gtk_statusbar_remove(GTK_STATUSBAR(widget), context_id, message_id);
 }
 
+static GtkWidget* _gtk_radio_button_new_from_widget(GtkWidget *widget) {
+	return gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(widget));
+}
+
+static GtkWidget* _gtk_radio_button_new_with_label_from_widget(GtkWidget *widget, const gchar* label) {
+	return gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(widget), label);
+}
+
+static GtkWidget* _gtk_radio_button_new_with_mnemonic_from_widget(GtkWidget *widget, const gchar* label) {
+	return gtk_radio_button_new_with_mnemonic_from_widget(GTK_RADIO_BUTTON(widget), label);
+}
+
 static GSList* _gtk_radio_button_get_group(GtkWidget *widget) {
 	return gtk_radio_button_get_group(GTK_RADIO_BUTTON(widget));
 }
@@ -1594,6 +1606,32 @@ func RadioButtonWithLabel(group *glib.SList, label string) *GtkRadioButton {
 	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
 		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr)) }}}}};
 }
+func RadioButtonFromWidget(w *GtkRadioButton) *GtkRadioButton {
+	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C._gtk_radio_button_new_from_widget(w.Widget) }}}}};
+}
+func RadioButtonWithLabelFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
+	ptr := C.CString(label);
+	defer C.free_string(ptr);
+	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C._gtk_radio_button_new_with_label_from_widget(w.Widget, C.to_gcharptr(ptr)) }}}}};
+}
+func RadioButtonWithMnemonic(group *glib.SList, label string) *GtkRadioButton {
+	ptr := C.CString(label);
+	defer C.free_string(ptr);
+	if group != nil {
+		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+			C.gtk_radio_button_new_with_mnemonic(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr)) }}}}};
+	}
+	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr)) }}}}};
+}
+func RadioButtonWithMnemonicFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
+	ptr := C.CString(label);
+	defer C.free_string(ptr);
+	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
+		C._gtk_radio_button_new_with_mnemonic_from_widget(w.Widget, C.to_gcharptr(ptr)) }}}}};
+}
 func (v GtkRadioButton) GetGroup() *glib.SList {
 	return glib.FromSList(unsafe.Pointer(C._gtk_radio_button_get_group(v.Widget)));
 }
@@ -1604,11 +1642,7 @@ func (v GtkRadioButton) SetGroup(group *glib.SList) {
 		C._gtk_radio_button_set_group(v.Widget, nil);
 	}
 }
-// TODO
-// gtk_radio_button_new_from_widget
-// gtk_radio_button_new_with_label_from_widget
-// gtk_radio_button_new_with_mnemonic
-// gtk_radio_button_new_with_mnemonic_from_widget
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkFontButton
