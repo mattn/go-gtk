@@ -580,10 +580,9 @@ static void _gtk_text_buffer_remove_all_tags(void* buffer, const GtkTextIter* st
 	gtk_text_buffer_remove_all_tags(GTK_TEXT_BUFFER(buffer), start, end);
 }
 
-//static GtkTextTag* _gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
-//	//return gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name, const gchar* first_property_name, ...);
-//	return NULL; // TODO
-//}
+static void* _gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name) {
+	return gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(buffer), tag_name, NULL);
+}
 
 static void _gtk_text_buffer_get_iter_at_line_offset(void* buffer, GtkTextIter* iter, gint line_number, gint char_offset) {
 	gtk_text_buffer_get_iter_at_line_offset(GTK_TEXT_BUFFER(buffer), iter, line_number, char_offset);
@@ -2468,9 +2467,17 @@ func (v GtkTextBuffer) RemoveAllTags(start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_remove_all_tags(v.TextBuffer, &start.TextIter, &end.TextIter);
 }
 func (v GtkTextBuffer) CreateTag(tag_name string, props map[string]string) *GtkTextTag {
-	//C._gtk_text_buffer_create_tag(v.TextBuffer, ...);
+	ptr := C.CString(tag_name);
+	defer C.free_string(ptr);
+	tag := C._gtk_text_buffer_create_tag(v.TextBuffer, C.to_gcharptr(ptr));
 	//for key, val = range props {
 	//	# push arguments (key, val)
+	//	 GValue value;
+	//	 gchar *prop = key;
+	//	 g_value_init(&value, G_TYPE_STRING));
+	//	 g_value_set_string(&value, val);
+	//	 g_object_set_property((GObject *)tag, prop, &value);
+	//	 g_value_unset(&value);
 	//}
 	// # call _gtk_text_buffer_create_tag
 	return nil;
