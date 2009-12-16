@@ -100,6 +100,10 @@ static int _gtk_dialog_run(GtkWidget* dialog) {
 	return gtk_dialog_run(GTK_DIALOG(dialog));
 }
 
+static GtkWidget* _gtk_dialog_add_button(GtkWidget* dialog, const gchar* button_text, gint response_id) {
+	return gtk_dialog_add_button(GTK_DIALOG(dialog), button_text, response_id);
+}
+
 static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, gchar *message) {
 	return gtk_message_dialog_new(
 			GTK_WINDOW(parent),
@@ -1122,10 +1126,15 @@ func (v GtkDialog) Run() int {
 func (v GtkDialog) Response(response CallbackFunc, data unsafe.Pointer) {
 	v.Connect("response", response, data);
 }
+func (v GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
+	ptr := C.CString(button_text);
+	defer C.free_string(ptr);
+	return &GtkButton { GtkWidget {
+		C._gtk_dialog_add_button(v.Widget, C.to_gcharptr(ptr), C.gint(response_id)) }};
+}
 // TODO
 // gtk_dialog_new_with_buttons
 // gtk_dialog_add_action_widget
-// gtk_dialog_add_button
 // gtk_dialog_add_buttons
 // gtk_dialog_set_response_sensitive
 // gtk_dialog_set_default_response
@@ -1135,8 +1144,6 @@ func (v GtkDialog) Response(response CallbackFunc, data unsafe.Pointer) {
 // gtk_alternative_dialog_button_order
 // gtk_dialog_set_alternative_button_order
 // gtk_dialog_set_alternative_button_order_from_array
-// gtk_dialog_response
-// gtk_dialog_run
 // gtk_dialog_get_action_area
 // gtk_dialog_get_content_area
 
@@ -2516,7 +2523,6 @@ func (v GtkTextView) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer {
 		C._gtk_text_view_get_buffer(v.Widget) };
 }
-// GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView* text_view);
 // TODO
 // gboolean gtk_text_view_scroll_to_iter(GtkTextView* text_view, GtkTextIter* iter, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
 // void gtk_text_view_scroll_to_mark(GtkTextView* text_view, GtkTextMark* mark, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
