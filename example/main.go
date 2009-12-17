@@ -48,17 +48,30 @@ func main() {
 		button := gtk.ButtonWithLabel("Button with label");
 		button.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 			print("button clicked: ", button.GetLabel(), "\n");
-			dialog := gtk.MessageDialog(
+			messagedialog := gtk.MessageDialog(
 				button.GetTopLevelAsWindow(),
 				gtk.GTK_DIALOG_MODAL,
 				gtk.GTK_MESSAGE_INFO,
 				gtk.GTK_BUTTONS_OK,
 				entry.GetText());
-			dialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+			messagedialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 				println("Dialog OK!")
+
+				//--------------------------------------------------------
+				// GtkFileChooserDialog
+				//--------------------------------------------------------
+				//filechooserdialog := gtk.FileChooserDialog(
+				//	"Choose File...",
+				//	button.GetTopLevelAsWindow(),
+				//	gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
+				//	"");
+				//filechooserdialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+				//}, nil);
+				//filechooserdialog.Run();
+				//filechooserdialog.Destroy();
 			}, nil);
-			dialog.Run();
-			dialog.Destroy();
+			messagedialog.Run();
+			messagedialog.Destroy();
 		}, nil);
 		buttons.Add(button);
 
