@@ -401,6 +401,82 @@ static void _gtk_frame_set_shadow_type(GtkWidget* widget, GtkShadowType shadow_t
 	gtk_frame_set_shadow_type(GTK_FRAME(widget), shadow_type);
 }
 
+static gdouble _gtk_adjustment_get_lower(GtkAdjustment* adjustment) {
+#if GTK_CHECK_VERSION(2,14,0)
+	return gtk_adjustment_get_lower(adjustment);
+#else
+	return 0f;
+#endif
+}
+
+static void _gtk_adjustment_set_lower(GtkAdjustment* adjustment, gdouble lower) {
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_set_lower(adjustment, lower);
+#endif
+}
+
+static gdouble _gtk_adjustment_get_upper(GtkAdjustment* adjustment) {
+#if GTK_CHECK_VERSION(2,14,0)
+	return gtk_adjustment_get_upper(adjustment);
+#else
+	return 0f;
+#endif
+}
+
+static void _gtk_adjustment_set_upper(GtkAdjustment* adjustment, gdouble upper) {
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_set_upper(adjustment, upper);
+#endif
+}
+
+static gdouble _gtk_adjustment_get_step_increment(GtkAdjustment* adjustment) {
+#if GTK_CHECK_VERSION(2,14,0)
+	return gtk_adjustment_get_step_increment(adjustment);
+#else
+	return 0f;
+#endif
+}
+
+static void _gtk_adjustment_set_step_increment(GtkAdjustment* adjustment, gdouble step_increment) {
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_set_step_increment(adjustment, step_increment);
+#endif
+}
+
+static gdouble _gtk_adjustment_get_page_increment(GtkAdjustment* adjustment) {
+#if GTK_CHECK_VERSION(2,14,0)
+	return gtk_adjustment_get_page_increment(adjustment);
+#else
+	return 0f;
+#endif
+}
+
+static void _gtk_adjustment_set_page_increment(GtkAdjustment* adjustment, gdouble page_increment) {
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_set_page_increment(adjustment, page_increment);
+#endif
+}
+
+static gdouble _gtk_adjustment_get_page_size(GtkAdjustment* adjustment) {
+#if GTK_CHECK_VERSION(2,14,0)
+	return gtk_adjustment_get_page_size(adjustment);
+#else
+	return 0f;
+#endif
+}
+
+static void _gtk_adjustment_set_page_size(GtkAdjustment* adjustment, gdouble page_size) {
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_set_page_size(adjustment, page_size);
+#endif
+}
+
+static void _gtk_adjustment_configure(GtkAdjustment* adjustment, gdouble value, gdouble lower, gdouble upper, gdouble step_increment, gdouble page_increment, gdouble page_size) {
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_configure(adjustment, value, lower, upper, step_increment, page_increment, page_size);
+#endif
+}
+
 static void _gtk_scrolled_window_set_hadjustment(GtkWidget* widget, GtkAdjustment* hadjustment) {
 	gtk_scrolled_window_set_hadjustment(GTK_SCROLLED_WINDOW(widget), hadjustment);
 }
@@ -688,6 +764,10 @@ static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o);
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
 }
+
+static bool _check_version(int major, int minor, int micro) {
+	return GTK_CHECK_VERSION(major, minor, micro);
+}
 */
 import "C";
 import "glib";
@@ -706,6 +786,11 @@ func gboolean2bool(b C.gboolean) bool {
 		return true;
 	}
 	return false;
+}
+func panic_if_version_older(major int, minor int, micro int, message string) {
+	if C._check_version(C.int(major), C.int(minor), C.int(micro)) == 0 {
+		panic(message);
+	}
 }
 
 //-----------------------------------------------------------------------
@@ -2079,37 +2164,48 @@ func (v GtkAdjustment) SetValue(value float64) {
 	C.gtk_adjustment_set_value(v.Adjustment, C.gdouble(value));
 }
 func (v GtkAdjustment) GetLower() float64 {
-	return float64(C.gtk_adjustment_get_lower(v.Adjustment));
+	panic_if_version_older(2,14,0,"gtk_adjustment_get_lower() is not provided on your GTK");
+	return float64(C._gtk_adjustment_get_lower(v.Adjustment));
 }
 func (v GtkAdjustment) SetLower(lower float64) {
-	C.gtk_adjustment_set_lower(v.Adjustment, C.gdouble(lower));
+	panic_if_version_older(2,14,0,"gtk_adjustment_set_lower() is not provided on your GTK");
+	C._gtk_adjustment_set_lower(v.Adjustment, C.gdouble(lower));
 }
 func (v GtkAdjustment) GetUpper() float64 {
-	return float64(C.gtk_adjustment_get_upper(v.Adjustment));
+	panic_if_version_older(2,14,0,"gtk_adjustment_get_upper() is not provided on your GTK");
+	return float64(C._gtk_adjustment_get_upper(v.Adjustment));
 }
 func (v GtkAdjustment) SetUpper(upper float64) {
-	C.gtk_adjustment_set_upper(v.Adjustment, C.gdouble(upper));
+	panic_if_version_older(2,14,0,"gtk_adjustment_set_upper() is not provided on your GTK");
+	C._gtk_adjustment_set_upper(v.Adjustment, C.gdouble(upper));
 }
 func (v GtkAdjustment) GetStepIncrement() float64 {
-	return float64(C.gtk_adjustment_get_step_increment(v.Adjustment));
+	panic_if_version_older(2,14,0,"gtk_adjustment_get_step_increment() is not provided on your GTK");
+	return float64(C._gtk_adjustment_get_step_increment(v.Adjustment));
 }
 func (v GtkAdjustment) SetStepIncrement(step_increment float64) {
-	C.gtk_adjustment_set_step_increment(v.Adjustment, C.gdouble(step_increment));
+	panic_if_version_older(2,14,0,"gtk_adjustment_set_step_increment() is not provided on your GTK");
+	C._gtk_adjustment_set_step_increment(v.Adjustment, C.gdouble(step_increment));
 }
 func (v GtkAdjustment) GetPageIncrement() float64 {
-	return float64(C.gtk_adjustment_get_page_increment(v.Adjustment));
+	panic_if_version_older(2,14,0,"gtk_adjustment_get_page_increment() is not provided on your GTK");
+	return float64(C._gtk_adjustment_get_page_increment(v.Adjustment));
 }
 func (v GtkAdjustment) SetPageIncrement(page_increment float64) {
-	C.gtk_adjustment_set_page_increment(v.Adjustment, C.gdouble(page_increment));
+	panic_if_version_older(2,14,0,"gtk_adjustment_set_page_increment() is not provided on your GTK");
+	C._gtk_adjustment_set_page_increment(v.Adjustment, C.gdouble(page_increment));
 }
 func (v GtkAdjustment) GetPageSize() float64 {
-	return float64(C.gtk_adjustment_get_page_size(v.Adjustment));
+	panic_if_version_older(2,14,0,"gtk_adjustment_get_page_size() is not provided on your GTK");
+	return float64(C._gtk_adjustment_get_page_size(v.Adjustment));
 }
 func (v GtkAdjustment) SetPageSize(page_size float64) {
-	C.gtk_adjustment_set_page_size(v.Adjustment, C.gdouble(page_size));
+	panic_if_version_older(2,14,0,"gtk_adjustment_set_page_size() is not provided on your GTK");
+	C._gtk_adjustment_set_page_size(v.Adjustment, C.gdouble(page_size));
 }
 func (v GtkAdjustment) Configure(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) {
-	C.gtk_adjustment_configure(v.Adjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size));
+	panic_if_version_older(2,14,0,"gtk_adjustment_configure() is not provided on your GTK");
+	C._gtk_adjustment_configure(v.Adjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size));
 }
 // FINISH
 
