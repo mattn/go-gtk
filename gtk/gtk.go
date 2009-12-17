@@ -753,9 +753,24 @@ static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
 	return gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 }
  
-static gchar* to_gcharptr(char* s) { return (gchar*)s; }
+static void _append_tag(void* tag, const gchar* prop, const gchar* val) {
+	GParamSpec *pspec;
+	GValue fromvalue = { 0, };
+	GValue tovalue = { 0, };
+	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(tag), prop);
+	if (!pspec) return;
+	g_value_init(&fromvalue, G_TYPE_STRING);
+	g_value_set_string(&fromvalue, val);
+	g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
+	g_value_transform(&fromvalue, &tovalue);
+	g_object_set_property((GObject *)tag, prop, &tovalue);
+	g_value_unset(&fromvalue);
+	g_value_unset(&tovalue);
+}
 
-static char* to_charptr(gchar* s) { return (char*)s; }
+static const gchar* to_gcharptr(const char* s) { return (gchar*)s; }
+
+static const char* to_charptr(const gchar* s) { return (char*)s; }
 
 static void free_string(char* s) { free(s); }
 
@@ -765,7 +780,7 @@ static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
 }
 
-static bool _check_version(int major, int minor, int micro) {
+static int _check_version(int major, int minor, int micro) {
 	return GTK_CHECK_VERSION(major, minor, micro);
 }
 */
@@ -2543,10 +2558,10 @@ func (v GtkTextBuffer) PlaceCursor(where *GtkTextIter) {
 func (v GtkTextBuffer) SelectRange(ins *GtkTextIter, bound *GtkTextIter) {
 	C._gtk_text_buffer_select_range(v.TextBuffer, &ins.TextIter, &bound.TextIter);
 }
-func (v GtkTextBuffer) ApplyTag(where *GtkTextIter, tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
+func (v GtkTextBuffer) ApplyTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_apply_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter);
 }
-func (v GtkTextBuffer) RemoveTag(where *GtkTextIter, tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
+func (v GtkTextBuffer) RemoveTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_remove_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter);
 }
 func (v GtkTextBuffer) ApplyTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
@@ -2562,22 +2577,21 @@ func (v GtkTextBuffer) RemoveTagByName(name string, start *GtkTextIter, end *Gtk
 func (v GtkTextBuffer) RemoveAllTags(start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_remove_all_tags(v.TextBuffer, &start.TextIter, &end.TextIter);
 }
-func (v GtkTextBuffer) CreateTag(tag_name string, props map[string]string) *GtkTextTag {
+func (v GtkTextBuffer) CreateTag(tag_name string, props map[string] string) *GtkTextTag {
 	ptr := C.CString(tag_name);
 	defer C.free_string(ptr);
 	tag := C._gtk_text_buffer_create_tag(v.TextBuffer, C.to_gcharptr(ptr));
-	//for key, val = range props {
-	//	# push arguments (key, val)
-	//	 GValue value;
-	//	 gchar *prop = key;
-	//	 g_value_init(&value, G_TYPE_STRING));
-	//	 g_value_set_string(&value, val);
-	//	 g_object_set_property((GObject *)tag, prop, &value);
-	//	 g_value_unset(&value);
-	//}
-	// # call _gtk_text_buffer_create_tag
-	return nil;
+	for prop, val := range props {
+		pprop := C.CString(prop);
+		pval := C.CString(val);
+		C._append_tag(tag, C.to_gcharptr(pprop), C.to_gcharptr(pval));
+		C.free_string(pprop);
+		C.free_string(pval);
+	}
+	return &GtkTextTag { tag };
 }
+		/* C.g_value_init(&value, C.GType(C.G_TYPE_STRING)); */
+
 func (v GtkTextBuffer) GetIterAtLineOffset(iter *GtkTextIter, line_number int, char_offset int) {
 	C._gtk_text_buffer_get_iter_at_line_offset(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(char_offset));
 }

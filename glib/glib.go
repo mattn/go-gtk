@@ -16,4 +16,6 @@ func FromSList(sl unsafe.Pointer) *SList {
 	return &SList {
 		C.to_slist(sl) };
 }
-func (v SList) ToSList() *C.GSList { return v.List }
+func (v SList) ToSList() *C.GSList {
+	return v.List;
+}

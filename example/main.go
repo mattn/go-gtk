@@ -157,11 +157,17 @@ func main() {
 	// GtkStatusbar
 	//--------------------------------------------------------
 	textview := gtk.TextView();
-	var iter gtk.GtkTextIter;
-	textview.GetBuffer().GetStartIter(&iter);
-	textview.GetBuffer().Insert(&iter, "Hello ");
-	textview.GetBuffer().GetEndIter(&iter);
-	textview.GetBuffer().Insert(&iter, "World!");
+	var start, end gtk.GtkTextIter;
+	buffer := textview.GetBuffer();
+	buffer.GetStartIter(&start);
+	buffer.Insert(&start, "Hello ");
+	buffer.GetEndIter(&end);
+	buffer.Insert(&end, "World!");
+	tag := buffer.CreateTag("bold", map[string] string {
+		"background": "#FF0000", "weight": "700" });
+	buffer.GetStartIter(&start);
+	buffer.GetEndIter(&end);
+	buffer.ApplyTag(tag, &start, &end);
 	vbox.Add(textview);
 
 	//--------------------------------------------------------
