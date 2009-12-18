@@ -119,7 +119,7 @@ static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title, GtkWidget* pa
 			GTK_WINDOW(parent),
 			action,
 			button,
-			NULL);
+			NULL, NULL);
 }
 
 static gchar* _gtk_file_chooser_get_filename(GtkWidget* chooser) {
@@ -781,9 +781,9 @@ static void _append_tag(void* tag, const gchar* prop, const gchar* val) {
 	g_value_unset(&tovalue);
 }
 
-static const gchar* to_gcharptr(const char* s) { return (gchar*)s; }
+static const gchar* to_gcharptr(const char* s) { return (const gchar*)s; }
 
-static const char* to_charptr(const gchar* s) { return (char*)s; }
+static const char* to_charptr(const gchar* s) { return (const char*)s; }
 
 static void free_string(char* s) { free(s); }
 
@@ -830,6 +830,116 @@ type GtkObject struct {
 	Object *C.GtkObject;
 }
 
+//-----------------------------------------------------------------------
+// GtkStock
+//-----------------------------------------------------------------------
+const (
+	GTK_STOCK_DIALOG_AUTHENTICATION = "gtk-dialog-authentication"
+	GTK_STOCK_DIALOG_INFO = "gtk-dialog-info"
+	GTK_STOCK_DIALOG_WARNING = "gtk-dialog-warning"
+	GTK_STOCK_DIALOG_ERROR = "gtk-dialog-error"
+	GTK_STOCK_DIALOG_QUESTION = "gtk-dialog-question"
+	GTK_STOCK_DND = "gtk-dnd"
+	GTK_STOCK_DND_MULTIPLE = "gtk-dnd-multiple"
+	GTK_STOCK_ABOUT = "gtk-about"
+	GTK_STOCK_ADD = "gtk-add"
+	GTK_STOCK_APPLY = "gtk-apply"
+	GTK_STOCK_BOLD = "gtk-bold"
+	GTK_STOCK_CANCEL = "gtk-cancel"
+	GTK_STOCK_CAPS_LOCK_WARNING = "gtk-caps-lock-warning"
+	GTK_STOCK_CDROM = "gtk-cdrom"
+	GTK_STOCK_CLEAR = "gtk-clear"
+	GTK_STOCK_CLOSE = "gtk-close"
+	GTK_STOCK_COLOR_PICKER = "gtk-color-picker"
+	GTK_STOCK_CONVERT = "gtk-convert"
+	GTK_STOCK_CONNECT = "gtk-connect"
+	GTK_STOCK_COPY = "gtk-copy"
+	GTK_STOCK_CUT = "gtk-cut"
+	GTK_STOCK_DELETE = "gtk-delete"
+	GTK_STOCK_DIRECTORY = "gtk-directory"
+	GTK_STOCK_DISCARD = "gtk-discard"
+	GTK_STOCK_DISCONNECT = "gtk-disconnect"
+	GTK_STOCK_EDIT = "gtk-edit"
+	GTK_STOCK_EXECUTE = "gtk-execute"
+	GTK_STOCK_FILE = "gtk-file"
+	GTK_STOCK_FIND = "gtk-find"
+	GTK_STOCK_FIND_AND_REPLACE = "gtk-find-and-replace"
+	GTK_STOCK_FLOPPY = "gtk-floppy"
+	GTK_STOCK_FULLSCREEN = "gtk-fullscreen"
+	GTK_STOCK_GOTO_BOTTOM = "gtk-goto-bottom"
+	GTK_STOCK_GOTO_FIRST = "gtk-goto-first"
+	GTK_STOCK_GOTO_LAST = "gtk-goto-last"
+	GTK_STOCK_GOTO_TOP = "gtk-goto-top"
+	GTK_STOCK_GO_BACK = "gtk-go-back"
+	GTK_STOCK_GO_DOWN = "gtk-go-down"
+	GTK_STOCK_GO_FORWARD = "gtk-go-forward"
+	GTK_STOCK_GO_UP = "gtk-go-up"
+	GTK_STOCK_HARDDISK = "gtk-harddisk"
+	GTK_STOCK_HELP = "gtk-help"
+	GTK_STOCK_HOME = "gtk-home"
+	GTK_STOCK_INDEX = "gtk-index"
+	GTK_STOCK_INDENT = "gtk-indent"
+	GTK_STOCK_INFO = "gtk-info"
+	GTK_STOCK_UNINDENT = "gtk-unindent"
+	GTK_STOCK_ITALIC = "gtk-italic"
+	GTK_STOCK_JUMP_TO = "gtk-jump-to"
+	GTK_STOCK_JUSTIFY_CENTER = "gtk-justify-center"
+	GTK_STOCK_JUSTIFY_FILL = "gtk-justify-fill"
+	GTK_STOCK_JUSTIFY_LEFT = "gtk-justify-left"
+	GTK_STOCK_JUSTIFY_RIGHT = "gtk-justify-right"
+	GTK_STOCK_LEAVE_FULLSCREEN = "gtk-leave-fullscreen"
+	GTK_STOCK_MISSING_IMAGE = "gtk-missing-image"
+	GTK_STOCK_MEDIA_FORWARD = "gtk-media-forward"
+	GTK_STOCK_MEDIA_NEXT = "gtk-media-next"
+	GTK_STOCK_MEDIA_PAUSE = "gtk-media-pause"
+	GTK_STOCK_MEDIA_PLAY = "gtk-media-play"
+	GTK_STOCK_MEDIA_PREVIOUS = "gtk-media-previous"
+	GTK_STOCK_MEDIA_RECORD = "gtk-media-record"
+	GTK_STOCK_MEDIA_REWIND = "gtk-media-rewind"
+	GTK_STOCK_MEDIA_STOP = "gtk-media-stop"
+	GTK_STOCK_NETWORK = "gtk-network"
+	GTK_STOCK_NEW = "gtk-new"
+	GTK_STOCK_NO = "gtk-no"
+	GTK_STOCK_OK = "gtk-ok"
+	GTK_STOCK_OPEN = "gtk-open"
+	GTK_STOCK_ORIENTATION_PORTRAIT = "gtk-orientation-portrait"
+	GTK_STOCK_ORIENTATION_LANDSCAPE = "gtk-orientation-landscape"
+	GTK_STOCK_ORIENTATION_REVERSE_LANDSCAPE = "gtk-orientation-reverse-landscape"
+	GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT = "gtk-orientation-reverse-portrait"
+	GTK_STOCK_PAGE_SETUP = "gtk-page-setup"
+	GTK_STOCK_PASTE = "gtk-paste"
+	GTK_STOCK_PREFERENCES = "gtk-preferences"
+	GTK_STOCK_PRINT = "gtk-print"
+	GTK_STOCK_PRINT_ERROR = "gtk-print-error"
+	GTK_STOCK_PRINT_PAUSED = "gtk-print-paused"
+	GTK_STOCK_PRINT_PREVIEW = "gtk-print-preview"
+	GTK_STOCK_PRINT_REPORT = "gtk-print-report"
+	GTK_STOCK_PRINT_WARNING = "gtk-print-warning"
+	GTK_STOCK_PROPERTIES = "gtk-properties"
+	GTK_STOCK_QUIT = "gtk-quit"
+	GTK_STOCK_REDO = "gtk-redo"
+	GTK_STOCK_REFRESH = "gtk-refresh"
+	GTK_STOCK_REMOVE = "gtk-remove"
+	GTK_STOCK_REVERT_TO_SAVED = "gtk-revert-to-saved"
+	GTK_STOCK_SAVE = "gtk-save"
+	GTK_STOCK_SAVE_AS = "gtk-save-as"
+	GTK_STOCK_SELECT_ALL = "gtk-select-all"
+	GTK_STOCK_SELECT_COLOR = "gtk-select-color"
+	GTK_STOCK_SELECT_FONT = "gtk-select-font"
+	GTK_STOCK_SORT_ASCENDING = "gtk-sort-ascending"
+	GTK_STOCK_SORT_DESCENDING = "gtk-sort-descending"
+	GTK_STOCK_SPELL_CHECK = "gtk-spell-check"
+	GTK_STOCK_STOP = "gtk-stop"
+	GTK_STOCK_STRIKETHROUGH = "gtk-strikethrough"
+	GTK_STOCK_UNDELETE = "gtk-undelete"
+	GTK_STOCK_UNDERLINE = "gtk-underline"
+	GTK_STOCK_UNDO = "gtk-undo"
+	GTK_STOCK_YES = "gtk-yes"
+	GTK_STOCK_ZOOM_100 = "gtk-zoom-100"
+	GTK_STOCK_ZOOM_FIT = "gtk-zoom-fit"
+	GTK_STOCK_ZOOM_IN = "gtk-zoom-in"
+	GTK_STOCK_ZOOM_OUT = "gtk-zoom-out"
+)
 //-----------------------------------------------------------------------
 // GtkWidget
 //-----------------------------------------------------------------------
@@ -1344,6 +1454,7 @@ func (v GtkFileChooserWidget) GetFilename() string {
 //-----------------------------------------------------------------------
 type GtkFileChooserDialog struct {
 	GtkDialog;
+	//GtkFileChooser;
 };
 func FileChooserDialog(title string, parent WindowLike, action int, button string) *GtkFileChooserDialog {
 	ptitle := C.CString(title);

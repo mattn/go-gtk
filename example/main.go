@@ -60,15 +60,16 @@ func main() {
 				//--------------------------------------------------------
 				// GtkFileChooserDialog
 				//--------------------------------------------------------
-				//filechooserdialog := gtk.FileChooserDialog(
-				//	"Choose File...",
-				//	button.GetTopLevelAsWindow(),
-				//	gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
-				//	"");
-				//filechooserdialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
-				//}, nil);
-				//filechooserdialog.Run();
-				//filechooserdialog.Destroy();
+				filechooserdialog := gtk.FileChooserDialog(
+					"Choose File...",
+					button.GetTopLevelAsWindow(),
+					gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
+					gtk.GTK_STOCK_OK);
+				filechooserdialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+					println(filechooserdialog.GetFilename());
+					filechooserdialog.Destroy();
+				}, nil);
+				filechooserdialog.Run();
 			}, nil);
 			messagedialog.Run();
 			messagedialog.Destroy();
