@@ -10,13 +10,13 @@ package gtk
 
 typedef struct {
 	char name[256];
-    int func_no;
+	int func_no;
 	GtkWidget* widget;
-    uintptr_t* data;
+	uintptr_t* data;
 	uintptr_t** args;
 	int args_no;
 	int index;
-    GSignalQuery query;
+	GSignalQuery query;
 	int fire;
 } callback_info;
 
@@ -40,17 +40,17 @@ asm(
 );
 #else
 static void _callback(void *data, ...) {
-    va_list ap;
-    callback_info *cbi = (callback_info*) data;
+	va_list ap;
+	callback_info *cbi = (callback_info*) data;
 	int i;
 
 	cbi->fire = 0;
 	cbi->args = (uintptr_t**)malloc(sizeof(uintptr_t*)*cbi->args_no);
-    va_start(ap, data);
-    for (i = 0; i < cbi->args_no; i++) {
+	va_start(ap, data);
+	for (i = 0; i < cbi->args_no; i++) {
 		cbi->args[i] = va_arg(ap, void*);
 	}
-    va_end(ap);
+	va_end(ap);
 	current_callback_info = cbi;
 }
 #endif
@@ -69,11 +69,11 @@ static void free_callback_info(gpointer data, GClosure *closure) {
 
 static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no, void* data) {
 	static int index = 0;
-    GSignalQuery query;
-    callback_info* cbi;
-    guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(widget));
-    g_signal_query(signal_id, &query);
-    cbi = g_slice_new(callback_info);
+	GSignalQuery query;
+	callback_info* cbi;
+	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(widget));
+	g_signal_query(signal_id, &query);
+	cbi = g_slice_new(callback_info);
 	strcpy(cbi->name, name);
 	cbi->func_no = func_no;
 	cbi->widget = widget;
@@ -81,7 +81,7 @@ static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no, voi
 	cbi->data = data;
 	cbi->index = index;
 	index++;
-    return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 }
 
 static const gchar* _gtk_window_get_title(GtkWidget* widget) {
