@@ -940,6 +940,25 @@ const (
 	GTK_STOCK_ZOOM_IN = "gtk-zoom-in"
 	GTK_STOCK_ZOOM_OUT = "gtk-zoom-out"
 )
+
+type GtkStockItem struct {
+	StockItem *C.GtkStockItem;
+}
+func (v GtkStockItem) Add(nitems int) {
+	C.gtk_stock_add(v.StockItem, C.guint(nitems));
+}
+func (v GtkStockItem) AddStatic(nitems int) {
+	C.gtk_stock_add_static(v.StockItem, C.guint(nitems));
+}
+func GtkStockLookup(stock_id string, item *GtkStockItem) bool {
+	ptr := C.CString(stock_id);
+	defer C.free_string(ptr);
+	//return gboolean2bool(C.gtk_stock_lookup(C.to_gcharptr(ptr), item.StockItem));
+	return false;
+}
+func GtkStockListIDs() *glib.SList {
+	return glib.FromSList(unsafe.Pointer(C.gtk_stock_list_ids()));
+}
 //-----------------------------------------------------------------------
 // GtkWidget
 //-----------------------------------------------------------------------
@@ -2102,13 +2121,13 @@ func (v GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
 // GtkTreeIter
 //-----------------------------------------------------------------------
 type GtkTreeIter struct {
-	TreeIter *C.GtkTreeIter;
+	TreeIter C.GtkTreeIter;
 }
 func (v GtkTreeIter) Copy() *GtkTreeIter {
-	return &GtkTreeIter { C.gtk_tree_iter_copy(v.TreeIter) };
+	return &GtkTreeIter { *C.gtk_tree_iter_copy(&v.TreeIter) };
 }
 func (v GtkTreeIter) Free() {
-	C.gtk_tree_iter_free(v.TreeIter);
+	C.gtk_tree_iter_free(&v.TreeIter);
 }
 // FINISH
 
@@ -2129,32 +2148,25 @@ func (v GtkTreeModel) GetNColumns() int {
 	return int(C.gtk_tree_model_get_n_columns(v.TreeModel));
 }
 func (v GtkTreeModel) GetIter(iter *GtkTreeIter, path *GtkTreePath) bool {
-	var iter_ C.GtkTreeIter;
 	var path_ C.GtkTreePath;
-	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter_, unsafe.Pointer(&path_)));
-	iter.TreeIter = &iter_;
+	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter.TreeIter, unsafe.Pointer(&path_)));
 	path.TreePath = &path_;
 	return ret;
 }
 func (v GtkTreeModel) GetIterFromString(iter *GtkTreeIter, path_string string) bool {
-	var iter_ C.GtkTreeIter;
 	ptr := C.CString(path_string);
 	defer C.free_string(ptr);
-	ret := gboolean2bool(C.gtk_tree_model_get_iter_from_string(v.TreeModel, iter.TreeIter, C.to_gcharptr(ptr)));
-	iter.TreeIter = &iter_;
+	ret := gboolean2bool(C.gtk_tree_model_get_iter_from_string(v.TreeModel, &iter.TreeIter, C.to_gcharptr(ptr)));
 	return ret;
 }
 func (v GtkTreeModel) GetStringFromIter(iter *GtkTreeIter) string {
-	return C.GoString(C.to_charptr(C.gtk_tree_model_get_string_from_iter(v.TreeModel, iter.TreeIter)));
+	return C.GoString(C.to_charptr(C.gtk_tree_model_get_string_from_iter(v.TreeModel, &iter.TreeIter)));
 }
 func (v GtkTreeModel) GetIterFirst(iter *GtkTreeIter) bool {
-	var iter_ C.GtkTreeIter;
-	ret := gboolean2bool(C.gtk_tree_model_get_iter_first(v.TreeModel, iter.TreeIter));
-	iter.TreeIter = &iter_;
-	return ret;
+	return gboolean2bool(C.gtk_tree_model_get_iter_first(v.TreeModel, &iter.TreeIter));
 }
 func (v GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
-	return &GtkTreePath { C._gtk_tree_model_get_path(v.TreeModel, iter.TreeIter) };
+	return &GtkTreePath { C._gtk_tree_model_get_path(v.TreeModel, &iter.TreeIter) };
 }
 // TODO
 // gtk_tree_model_get_value
@@ -2243,13 +2255,10 @@ func (v GtkComboBox) SetFocusOnClick(focus_on_click bool) {
 	C._gtk_combo_box_set_focus_on_click(v.Widget, bool2gboolean(focus_on_click));
 }
 func (v GtkComboBox) GetActiveIter(iter *GtkTreeIter) bool {
-	var iter_ C.GtkTreeIter;
-	ret := gboolean2bool(C._gtk_combo_box_get_active_iter(v.Widget, &iter_));
-	iter.TreeIter = &iter_;
-	return ret;
+	return gboolean2bool(C._gtk_combo_box_get_active_iter(v.Widget, &iter.TreeIter));
 }
 func (v GtkComboBox) SetActiveIter(iter *GtkTreeIter) {
-	C._gtk_combo_box_set_active_iter(v.Widget, iter.TreeIter);
+	C._gtk_combo_box_set_active_iter(v.Widget, &iter.TreeIter);
 }
 func (v GtkComboBox) Popup() {
 	C._gtk_combo_box_popup(v.Widget);
