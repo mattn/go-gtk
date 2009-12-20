@@ -589,9 +589,9 @@ static gchar* _gtk_text_buffer_get_slice(void* buffer, const GtkTextIter* start,
 	return gtk_text_buffer_get_slice(GTK_TEXT_BUFFER(buffer), start, end, include_hidden_chars);
 }
 
-// static void _gtk_text_buffer_insert_pixbuf(void* buffer, GtkTextIter* iter, GdkPixbuf* pixbuf) {
-// 	gtk_text_buffer_insert_pixbuf(GTK_TEXT_BUFFER(buffer), iter, pixbuf);
-// }
+static void _gtk_text_buffer_insert_pixbuf(void* buffer, GtkTextIter* iter, GdkPixbuf* pixbuf) {
+	gtk_text_buffer_insert_pixbuf(GTK_TEXT_BUFFER(buffer), iter, pixbuf);
+}
 
 // static void _gtk_text_buffer_insert_child_anchor(void* buffer, GtkTextIter* iter, GtkTextChildAnchor* anchor) {
 // 	gtk_text_buffer_insert_child_anchor(GTK_TEXT_BUFFER(buffer), iter, anchor);
@@ -799,6 +799,7 @@ static int _check_version(int major, int minor, int micro) {
 */
 import "C";
 import "glib";
+import "gdk-pixbuf";
 import "unsafe";
 import "runtime";
 import "container/vector";
@@ -2743,8 +2744,11 @@ func (v GtkTextBuffer) SetText(iter *GtkTextIter, text string) {
 func (v GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
 	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))));
 }
-func (v GtkTextBuffer) GetSlice(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
+func (v GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
 	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))));
+}
+func (v GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdk.GdkPixbuf) {
+	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf);
 }
 func (v GtkTextBuffer) CreateMark(mark *GtkTextMark, mark_name string, where *GtkTextIter, left_gravity bool) {
 	ptr := C.CString(mark_name);

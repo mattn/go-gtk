@@ -95,10 +95,10 @@ func (v GdkPixbufLoader) Close() (ret bool, err *C.GError) {
 	err = error;
 	return;
 }
-func (v GdkPixbufLoader) GetPixbufAnimation() *GdkPixbufAnimation {
-	return &GdkPixbufAnimation {
-		C.gdk_pixbuf_loader_get_animation(v.PixbufLoader) };
-}
+//func (v GdkPixbufLoader) GetPixbufAnimation() *GdkPixbufAnimation {
+//	return &GdkPixbufAnimation {
+//		C.gdk_pixbuf_loader_get_animation(v.PixbufLoader) };
+//}
 func (v GdkPixbufLoader) SetSize(width int, height int) {
 	C.gdk_pixbuf_loader_set_size(v.PixbufLoader, C.int(width), C.int(height));
 }
