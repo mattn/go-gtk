@@ -15,6 +15,7 @@ clean:
 	cd gdk && make clean
 	cd gdkpixbuf && make clean
 	cd gtk && make clean
+	cd example && make clean
 
 example: install
 	cd example && make
