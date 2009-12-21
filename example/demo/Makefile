@@ -4,8 +4,8 @@
 
 include $(GOROOT)/src/Make.$(GOARCH)
 
-TARG=main
+TARG=demo
 GOFILES=\
-	main.go\
+	demo.go\
 
 include $(GOROOT)/src/Make.cmd
