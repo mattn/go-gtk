@@ -25,7 +25,7 @@ func main() {
 	// GtkImage
 	//--------------------------------------------------------
 	dir, _ := path.Split(os.Args[0]);
-	imagefile := path.Join(dir, "../data/go-gtk-logo.png"); 
+	imagefile := path.Join(dir, "../../data/go-gtk-logo.png"); 
 
 	label := gtk.Label("Go Binding for GTK");
 	vbox.PackStart(label, false, true, 0);
