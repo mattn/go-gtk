@@ -561,6 +561,9 @@ static gboolean _gtk_text_buffer_insert_range_interactive(void* buffer, GtkTextI
 	return gtk_text_buffer_insert_range_interactive(GTK_TEXT_BUFFER(buffer), iter, start, end, default_editable);
 }
 
+static void _gtk_text_buffer_insert_with_tag(void* buffer, GtkTextIter* iter, const gchar* text, gint len, void* tag) {
+	gtk_text_buffer_insert_with_tags(GTK_TEXT_BUFFER(buffer), iter, text, len, tag, NULL);
+}
 //static void _gtk_text_buffer_insert_with_tags(void* buffer, GtkTextIter* iter, const gchar* text, gint len, GtkTextTag* first_tag, ...);
 
 //static void _gtk_text_buffer_insert_with_tags_by_name(void* buffer, GtkTextIter* iter, const gchar* text, gint len, const gchar* first_tag_name, ...);
@@ -781,13 +784,14 @@ static void _append_tag(void* tag, const gchar* prop, const gchar* val) {
 	g_value_unset(&tovalue);
 }
 
-static const gchar* to_gcharptr(const char* s) { return (const gchar*)s; }
+static inline const gchar* to_gcharptr(const char* s) { return (const gchar*)s; }
 
-static const char* to_charptr(const gchar* s) { return (const char*)s; }
+static inline const char* to_charptr(const gchar* s) { return (const char*)s; }
 
-static void free_string(char* s) { free(s); }
+static inline void free_string(char* s) { free(s); }
 
 static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
+static GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -1059,11 +1063,21 @@ func (v GtkWidget) QueueResize() {
 // gtk_widget_get_name
 // gtk_widget_set_state
 // gtk_widget_get_state
-// gtk_widget_set_sensitive
-// gtk_widget_get_sensitive
-// gtk_widget_is_sensitive
-// gtk_widget_set_visible
-// gtk_widget_get_visible
+func (v GtkWidget) GetSensitive() bool {
+	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget));
+}
+func (v GtkWidget) SetSensitive(setting bool) {
+	C.gtk_widget_set_sensitive(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) IsSensitive() bool {
+	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget));
+}
+func (v GtkWidget) GetVisible() bool {
+	return gboolean2bool(C.gtk_widget_get_visible(v.Widget));
+}
+func (v GtkWidget) SetVisible(setting bool) {
+	C.gtk_widget_set_visible(v.Widget, bool2gboolean(setting));
+}
 // gtk_widget_set_has_window
 // gtk_widget_get_has_window
 // gtk_widget_is_toplevel
@@ -1086,8 +1100,15 @@ func (v GtkWidget) QueueResize() {
 // gtk_widget_child_focus
 // gtk_widget_keynav_failed
 // gtk_widget_error_bell
-// gtk_widget_set_size_request
-// gtk_widget_get_size_request
+func (v GtkWidget) SetSizeRequest(width int, height int) {
+	C.gtk_widget_set_size_request(v.Widget, C.gint(width), C.gint(height));
+}
+func (v GtkWidget) GetSizeRequest(width *int, height *int) {
+	var w, h C.gint;
+	C.gtk_widget_get_size_request(v.Widget, &w, &h);
+	*width = int(w);
+	*height = int(h);
+}
 // gtk_widget_set_uposition
 // gtk_widget_set_usize
 // gtk_widget_set_events
@@ -2467,8 +2488,11 @@ type GtkScrolledWindow struct {
 	GtkContainer;
 }
 func ScrolledWindow(hadjustment *GtkAdjustment, vadjustment *GtkAdjustment) *GtkScrolledWindow {
+	var had, vad *C.GtkAdjustment;
+	if hadjustment != nil { had = hadjustment.Adjustment }
+	if vadjustment != nil { vad = vadjustment.Adjustment }
 	return &GtkScrolledWindow { GtkContainer { GtkWidget {
-		C.gtk_scrolled_window_new(hadjustment.Adjustment, vadjustment.Adjustment) }}};
+		C.gtk_scrolled_window_new(had, vad) }}};
 }
 func (v GtkScrolledWindow) SetHAdjustment(hadjustment *GtkAdjustment) {
 	C._gtk_scrolled_window_set_hadjustment(v.Widget, hadjustment.Adjustment);
@@ -2726,6 +2750,15 @@ func (v GtkTextBuffer) InsertRange(iter *GtkTextIter, start *GtkTextIter, end *G
 func (v GtkTextBuffer) InsertRangeInteractive(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
 	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
 }
+func (v GtkTextBuffer) InsertWithTag(iter *GtkTextIter, text string, tag *GtkTextTag) {
+	ptr := C.CString(text);
+	defer C.free_string(ptr);
+	len := C.strlen(ptr);
+	C._gtk_text_buffer_insert_with_tag(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), tag.TextTag);
+}
+//func (v GtkTextBuffer) InsertWithTags(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
+//	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
+//}
 func (v GtkTextBuffer) Delete(start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_delete(v.TextBuffer, &start.TextIter, &end.TextIter);
 }
@@ -2894,8 +2927,12 @@ func (v GtkTextView) GetBuffer() *GtkTextBuffer {
 // void gtk_text_view_scroll_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_move_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_place_cursor_onscreen(GtkTextView* text_view);
-// void gtk_text_view_get_visible_rect(GtkTextView* text_view, GdkRectangle* visible_rect);
-// void gtk_text_view_set_cursor_visible(GtkTextView* text_view, gboolean setting);
+func (v GtkTextView) GetCursorVisible() bool {
+	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.to_GtkTextView(v.Widget)));
+}
+func (v GtkTextView) SetCursorVisible(setting bool) {
+	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.Widget), bool2gboolean(setting));
+}
 // gboolean gtk_text_view_get_cursor_visible(GtkTextView* text_view); 
 // void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
 // void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
@@ -2919,8 +2956,12 @@ func (v GtkTextView) GetBuffer() *GtkTextBuffer {
 // void gtk_text_view_move_child(GtkTextView* text_view, GtkWidget* child, gint xpos, gint ypos);
 // void gtk_text_view_set_wrap_mode(GtkTextView* text_view, GtkWrapMode wrap_mode);
 // GtkWrapMode gtk_text_view_get_wrap_mode(GtkTextView* text_view);
-// void gtk_text_view_set_editable(GtkTextView* text_view, gboolean setting);
-// gboolean gtk_text_view_get_editable(GtkTextView* text_view);
+func (v GtkTextView) GetEditable() bool {
+	return gboolean2bool(C.gtk_text_view_get_editable(C.to_GtkTextView(v.Widget)));
+}
+func (v GtkTextView) SetEditable(setting bool) {
+	C.gtk_text_view_set_editable(C.to_GtkTextView(v.Widget), bool2gboolean(setting));
+}
 // void gtk_text_view_set_overwrite(GtkTextView* text_view, gboolean overwrite);
 // gboolean gtk_text_view_get_overwrite(GtkTextView* text_view);
 // void gtk_text_view_set_accepts_tab(GtkTextView *text_view, gboolean accepts_tab);
