@@ -1,4 +1,4 @@
-package gdk
+package gdkpixbuf
 
 /*
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -9,7 +9,7 @@ package gdk
 #include <string.h>
 
 //static const gchar* to_gcharptr(const char* s) { return (const gchar*)s; }
-static const guchar* to_gucharptr(const void* s) { return (const guchar*)s; }
+static guchar* to_gucharptr(void* s) { return (guchar*)s; }
 
 static void free_string(char* s) { free(s); }
 

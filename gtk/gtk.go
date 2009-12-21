@@ -2747,7 +2747,7 @@ func (v GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkTe
 func (v GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
 	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))));
 }
-func (v GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdk.GdkPixbuf) {
+func (v GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
 	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf);
 }
 func (v GtkTextBuffer) CreateMark(mark *GtkTextMark, mark_name string, where *GtkTextIter, left_gravity bool) {
