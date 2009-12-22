@@ -11,8 +11,13 @@ package gdk
 //static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
 //static void free_string(char* s) { free(s); }
+
+static GdkWindow* to_GdkWindow(void* w) {
+	return (GdkWindow*)w;
+}
 */
 import "C"
+import "unsafe"
 
 const (
 	GDK_X_CURSOR = 0;
@@ -104,4 +109,12 @@ type GdkCursor struct {
 func Cursor(cursor_type int) *GdkCursor {
 	return &GdkCursor {
 		C.gdk_cursor_new(C.GdkCursorType(cursor_type)) };
+}
+
+type GdkWindow struct {
+	Window *C.GdkWindow;
+}
+func FromWindow(window unsafe.Pointer) *GdkWindow {
+	return &GdkWindow {
+		C.to_GdkWindow(window) };
 }
