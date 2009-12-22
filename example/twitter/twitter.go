@@ -53,26 +53,31 @@ func main() {
 	tag := buffer.CreateTag("blue", map[string] string {
 		"foreground": "#0000FF", "weight": "700" });
 	button := gtk.ButtonWithLabel("Update Timeline");
+	button.SetTooltipMarkup("update <b>public timeline</b>");
 	button.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
-		if r, _, err := http.Get("http://twitter.com/statuses/public_timeline.json"); err == nil {
-			n, _ := strconv.Atoi64(r.GetHeader("Content-Length"));
-			b := make([]byte, n);
-			io.ReadFull(r.Body, b);
-			j, _ := json.Decode(string(b));
-			arr := reflect.NewValue(j).(*reflect.SliceValue);
-			for i := 0; i < arr.Len(); i++ {
-				data := arr.Elem(i).(*reflect.InterfaceValue).Elem().(*reflect.MapValue);
-				icon := data.Elem(reflect.NewValue("user")).(*reflect.InterfaceValue).Elem().(*reflect.MapValue).Elem(reflect.NewValue("profile_image_url")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
-				var iter gtk.GtkTextIter;
-				buffer.GetStartIter(&iter);
-				buffer.InsertPixbuf(&iter, url2pixbuf(icon));
-				name := data.Elem(reflect.NewValue("user")).(*reflect.InterfaceValue).Elem().(*reflect.MapValue).Elem(reflect.NewValue("screen_name")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
-				text := data.Elem(reflect.NewValue("text")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
-				buffer.Insert(&iter, " ");
-				buffer.InsertWithTag(&iter, name, tag);
-				buffer.Insert(&iter, ":" + text + "\n");
-			}  
-		}
+		button.SetSensitive(false);
+		go func() {
+			if r, _, err := http.Get("http://twitter.com/statuses/public_timeline.json"); err == nil {
+				n, _ := strconv.Atoi64(r.GetHeader("Content-Length"));
+				b := make([]byte, n);
+				io.ReadFull(r.Body, b);
+				j, _ := json.Decode(string(b));
+				arr := reflect.NewValue(j).(*reflect.SliceValue);
+				for i := 0; i < arr.Len(); i++ {
+					data := arr.Elem(i).(*reflect.InterfaceValue).Elem().(*reflect.MapValue);
+					icon := data.Elem(reflect.NewValue("user")).(*reflect.InterfaceValue).Elem().(*reflect.MapValue).Elem(reflect.NewValue("profile_image_url")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
+					var iter gtk.GtkTextIter;
+					buffer.GetStartIter(&iter);
+					buffer.InsertPixbuf(&iter, url2pixbuf(icon));
+					name := data.Elem(reflect.NewValue("user")).(*reflect.InterfaceValue).Elem().(*reflect.MapValue).Elem(reflect.NewValue("screen_name")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
+					text := data.Elem(reflect.NewValue("text")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
+					buffer.Insert(&iter, " ");
+					buffer.InsertWithTag(&iter, name, tag);
+					buffer.Insert(&iter, ":" + text + "\n");
+				}  
+			}
+			button.SetSensitive(true);
+		}();
 	}, nil);
 	vbox.PackEnd(button, false, false, 0);
 

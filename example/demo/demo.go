@@ -197,6 +197,7 @@ func main() {
 	// Event
 	//--------------------------------------------------------
 	window.Add(vbox);
+	window.SetSizeRequest(600, 600);
 	window.ShowAll();
 	gtk.Main();
 }
