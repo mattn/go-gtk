@@ -987,13 +987,27 @@ type WidgetLike interface {
 type GtkWidget struct {
 	Widget *C.GtkWidget;
 }
-func (v GtkWidget) ToGtkWidget() *C.GtkWidget { return v.Widget }
-func (v GtkWidget) Hide() { C.gtk_widget_hide(v.Widget) }
-func (v GtkWidget) HideAll() { C.gtk_widget_hide_all(v.Widget) }
-func (v GtkWidget) Show() { C.gtk_widget_show(v.Widget) }
-func (v GtkWidget) ShowAll() { C.gtk_widget_show_all(v.Widget) }
-func (v GtkWidget) ShowNow() { C.gtk_widget_show_now(v.Widget) }
-func (v GtkWidget) Destroy() { C.gtk_widget_destroy(v.Widget) }
+func (v GtkWidget) ToGtkWidget() *C.GtkWidget {
+	return v.Widget;
+}
+func (v GtkWidget) Hide() {
+	C.gtk_widget_hide(v.Widget);
+}
+func (v GtkWidget) HideAll() {
+	C.gtk_widget_hide_all(v.Widget);
+}
+func (v GtkWidget) Show() {
+	C.gtk_widget_show(v.Widget);
+}
+func (v GtkWidget) ShowAll() {
+	C.gtk_widget_show_all(v.Widget);
+}
+func (v GtkWidget) ShowNow() {
+	C.gtk_widget_show_now(v.Widget);
+}
+func (v GtkWidget) Destroy() {
+	C.gtk_widget_destroy(v.Widget)
+}
 func (v GtkWidget) Connect(s string, f CallbackFunc, data unsafe.Pointer) {
 	funcs.Push(&Callback{f});
 	ptr := C.CString(s);
@@ -1011,28 +1025,50 @@ func (v GtkWidget) GetTopLevelAsWindow() *GtkWindow {
 func (v GtkWidget) HideOnDelete() {
 	C.gtk_widget_hide_on_delete(v.Widget);
 }
+// TODO
+// gtk_widget_destroyed
+func (v GtkWidget) Ref() {
+	C.gtk_widget_ref(v.Widget);
+}
+func (v GtkWidget) Unref() {
+	C.gtk_widget_unref(v.Widget);
+}
+// gtk_widget_set
+func (v GtkWidget) Unparent() {
+	C.gtk_widget_unparent(v.Widget);
+}
+func (v GtkWidget) GetNoShowAll() bool {
+	return gboolean2bool(C.gtk_widget_get_no_show_all(v.Widget));
+}
+func (v GtkWidget) SetNoShowAll(setting bool) {
+	C.gtk_widget_set_no_show_all(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) Map() {
+	C.gtk_widget_map(v.Widget);
+}
+func (v GtkWidget) Unmap() {
+	C.gtk_widget_unmap(v.Widget);
+}
+func (v GtkWidget) Realize() {
+	C.gtk_widget_realize(v.Widget);
+}
+func (v GtkWidget) Unrealize() {
+	C.gtk_widget_unrealize(v.Widget);
+}
+func (v GtkWidget) QueueDraw() {
+	C.gtk_widget_queue_draw(v.Widget);
+}
+// gtk_widget_queue_draw_area
+func (v GtkWidget) QueueClear() {
+	C.gtk_widget_queue_clear(v.Widget);
+}
+// gtk_widget_queue_clear_area
 func (v GtkWidget) QueueResize() {
 	C.gtk_widget_queue_resize(v.Widget);
 }
-
-// TODO
-// gtk_widget_destroyed
-// gtk_widget_ref
-// gtk_widget_unref
-// gtk_widget_set
-// gtk_widget_unparent
-// gtk_widget_set_no_show_all
-// gtk_widget_get_no_show_all
-// gtk_widget_map
-// gtk_widget_unmap
-// gtk_widget_realize
-// gtk_widget_unrealize
-// gtk_widget_queue_draw
-// gtk_widget_queue_draw_area
-// gtk_widget_queue_clear
-// gtk_widget_queue_clear_area
-// gtk_widget_queue_resize
-// gtk_widget_queue_resize_no_redraw
+func (v GtkWidget) QueueResizeNoRedraw() {
+	C.gtk_widget_queue_resize_no_redraw(v.Widget);
+}
 // gtk_widget_draw
 // gtk_widget_size_request
 // gtk_widget_size_allocate
@@ -1045,25 +1081,59 @@ func (v GtkWidget) QueueResize() {
 // gtk_widget_mnemonic_activate
 // gtk_widget_event
 // gtk_widget_send_expose
-// gtk_widget_activate
+func (v GtkWidget) Activate() {
+	C.gtk_widget_activate(v.Widget);
+}
 // gtk_widget_set_scroll_adjustments
-// gtk_widget_reparent
+func (v GtkWidget) Reparent(parent *GtkWidget) {
+	C.gtk_widget_reparent(v.Widget, parent.Widget);
+}
 // gtk_widget_intersect
 // gtk_widget_region_intersect
-// gtk_widget_set_can_focus
-// gtk_widget_get_can_focus
-// gtk_widget_has_focus
-// gtk_widget_is_focus
-// gtk_widget_grab_focus
-// gtk_widget_set_can_default
-// gtk_widget_get_can_default
-// gtk_widget_has_default
-// gtk_widget_grab_default
-// gtk_widget_set_receives_default
-// gtk_widget_get_receives_default
-// gtk_widget_has_grab
-// gtk_widget_set_name
-// gtk_widget_get_name
+func (v GtkWidget) GetCanFocus() bool {
+	return gboolean2bool(C.gtk_widget_get_can_focus(v.Widget));
+}
+func (v GtkWidget) SetCanFocus(setting bool) {
+	C.gtk_widget_set_can_focus(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) HasFocus() bool {
+	return gboolean2bool(C.gtk_widget_has_focus(v.Widget));
+}
+func (v GtkWidget) IsFocus() bool {
+	return gboolean2bool(C.gtk_widget_is_focus(v.Widget));
+}
+func (v GtkWidget) GrabFocus() {
+	C.gtk_widget_grab_focus(v.Widget);
+}
+func (v GtkWidget) GetCanDefault() bool {
+	return gboolean2bool(C.gtk_widget_get_can_default(v.Widget));
+}
+func (v GtkWidget) SetCanDefault(setting bool) {
+	C.gtk_widget_set_can_default(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) GetHasDefault() bool {
+	return gboolean2bool(C.gtk_widget_has_default(v.Widget));
+}
+func (v GtkWidget) GrabDefault() {
+	C.gtk_widget_grab_default(v.Widget);
+}
+func (v GtkWidget) GetReceivesDefault() bool {
+	return gboolean2bool(C.gtk_widget_get_receives_default(v.Widget));
+}
+func (v GtkWidget) SetReceivesDefault(setting bool) {
+	C.gtk_widget_set_receives_default(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) HasGrab() bool {
+	return gboolean2bool(C.gtk_widget_has_grab(v.Widget));
+}
+func (v GtkWindow) GetName() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_name(v.Widget)));
+}
+func (v GtkWindow) SetName(name string) {
+	ptr := C.CString(name);
+	defer C.free_string(ptr);
+	C.gtk_widget_set_name(v.Widget, C.to_gcharptr(ptr));
+}
 // gtk_widget_set_state
 // gtk_widget_get_state
 func (v GtkWidget) GetSensitive() bool {
@@ -1207,7 +1277,9 @@ func (v GtkWidget) GetSizeRequest(width *int, height *int) {
 // gtk_widget_get_direction
 // gtk_widget_set_default_direction
 // gtk_widget_get_default_direction
-// gtk_widget_is_composited
+func (v GtkWidget) IsComposited() bool {
+	return gboolean2bool(C.gtk_widget_is_composited(v.Widget));
+}
 // gtk_widget_shape_combine_mask
 // gtk_widget_input_shape_combine_mask
 // gtk_widget_reset_shapes
@@ -1219,12 +1291,28 @@ func (v GtkWidget) GetSizeRequest(width *int, height *int) {
 // gtk_widget_set_tooltip_window
 // gtk_widget_get_tooltip_window
 // gtk_widget_trigger_tooltip_query
-// gtk_widget_set_tooltip_text
-// gtk_widget_get_tooltip_text
-// gtk_widget_set_tooltip_markup
-// gtk_widget_get_tooltip_markup
-// gtk_widget_set_has_tooltip
-// gtk_widget_get_has_tooltip
+func (v GtkWidget) GetTooltipText() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_text(v.Widget)));
+}
+func (v GtkWidget) SetTooltipText(text string) {
+	ptr := C.CString(text);
+	defer C.free_string(ptr);
+	C.gtk_widget_set_tooltip_text(v.Widget, C.to_gcharptr(ptr));
+}
+func (v GtkWidget) GetTooltipMarkup() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_markup(v.Widget)));
+}
+func (v GtkWidget) SetTooltipMarkup(markup string) {
+	ptr := C.CString(markup);
+	defer C.free_string(ptr);
+	C.gtk_widget_set_tooltip_markup(v.Widget, C.to_gcharptr(ptr));
+}
+func (v GtkWidget) GetHasTooltip() bool {
+	return gboolean2bool(C.gtk_widget_get_has_tooltip(v.Widget));
+}
+func (v GtkWidget) SetHasTooltip(setting bool) {
+	C.gtk_widget_set_has_tooltip(v.Widget, bool2gboolean(setting));
+}
 // gtk_requisition_get_type
 // gtk_requisition_copy
 // gtk_requisition_free
