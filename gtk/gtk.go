@@ -792,6 +792,8 @@ static inline void free_string(char* s) { free(s); }
 
 static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 static GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
+//static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
+static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -803,6 +805,7 @@ static int _check_version(int major, int minor, int micro) {
 */
 import "C";
 import "glib";
+import "gdk";
 import "gdk-pixbuf";
 import "unsafe";
 import "runtime";
@@ -1078,23 +1081,58 @@ func (v GtkWidget) GetVisible() bool {
 func (v GtkWidget) SetVisible(setting bool) {
 	C.gtk_widget_set_visible(v.Widget, bool2gboolean(setting));
 }
-// gtk_widget_set_has_window
-// gtk_widget_get_has_window
-// gtk_widget_is_toplevel
-// gtk_widget_is_drawable
-// gtk_widget_set_app_paintable
-// gtk_widget_get_app_paintable
-// gtk_widget_set_double_buffered
-// gtk_widget_get_double_buffered
-// gtk_widget_set_redraw_on_allocate
-// gtk_widget_set_parent
-// gtk_widget_get_parent
-// gtk_widget_set_parent_window
-// gtk_widget_get_parent_window
-// gtk_widget_set_child_visible
-// gtk_widget_get_child_visible
-// gtk_widget_set_window
-// gtk_widget_get_window
+func (v GtkWidget) GetHasWindow() bool {
+	return gboolean2bool(C.gtk_widget_get_has_window(v.Widget));
+}
+func (v GtkWidget) SetHasWindow(setting bool) {
+	C.gtk_widget_set_has_window(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) IsToplevel() bool {
+	return gboolean2bool(C.gtk_widget_is_toplevel(v.Widget));
+}
+func (v GtkWidget) IsDrawable() bool {
+	return gboolean2bool(C.gtk_widget_is_drawable(v.Widget));
+}
+func (v GtkWidget) GetAppPrintable() bool {
+	return gboolean2bool(C.gtk_widget_get_app_paintable(v.Widget));
+}
+func (v GtkWidget) SetAppPrintable(setting bool) {
+	C.gtk_widget_set_app_paintable(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) GetDoubleBuffered() bool {
+	return gboolean2bool(C.gtk_widget_get_double_buffered(v.Widget));
+}
+func (v GtkWidget) SetDoubleBuffered(setting bool) {
+	C.gtk_widget_set_double_buffered(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) SetRedrawOnAllocate(setting bool) {
+	C.gtk_widget_set_redraw_on_allocate(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) GetParent() *GtkWidget {
+	return &GtkWidget {
+		C.gtk_widget_get_parent(v.Widget) };
+}
+func (v GtkWidget) SetParent(parent *GtkWidget) {
+	C.gtk_widget_set_parent(v.Widget, parent.Widget);
+}
+func (v GtkWidget) GetParentWindow() *gdk.GdkWindow {
+	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)));
+};
+func (v GtkWidget) SetParentWindow(parent *gdk.GdkWindow) {
+	C.gtk_widget_set_parent_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(parent.Window)));
+}
+func (v GtkWidget) GetChildVisible() bool {
+	return gboolean2bool(C.gtk_widget_get_child_visible(v.Widget));
+}
+func (v GtkWidget) SetChildVisible(setting bool) {
+	C.gtk_widget_set_child_visible(v.Widget, bool2gboolean(setting));
+}
+func (v GtkWidget) GetWindow() *gdk.GdkWindow {
+	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_window(v.Widget)));
+}
+func (v GtkWidget) SetWindow(window *gdk.GdkWindow) {
+	C.gtk_widget_set_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(window.Window)));
+}
 // gtk_widget_get_allocation
 // gtk_widget_set_allocation
 // gtk_widget_child_focus
@@ -1247,7 +1285,9 @@ type WindowLike interface {
 	GetTitle() string;
 	SetTitle(title string);
 }
-type GtkWindow struct { GtkContainer; }
+type GtkWindow struct {
+	GtkContainer;
+}
 func Window(t int) *GtkWindow {
 	return &GtkWindow { GtkContainer { GtkWidget {
 		C.gtk_window_new(C.GtkWindowType(t)) }}};
