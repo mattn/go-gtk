@@ -806,7 +806,7 @@ static int _check_version(int major, int minor, int micro) {
 import "C";
 import "glib";
 import "gdk";
-import "gdk-pixbuf";
+import "gdkpixbuf";
 import "unsafe";
 import "runtime";
 import "container/vector";
