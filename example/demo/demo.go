@@ -22,20 +22,48 @@ func main() {
 	vbox := gtk.VBox(false, 1);
 
 	//--------------------------------------------------------
+	// GtkMenuBar
+	//--------------------------------------------------------
+	menubar := gtk.MenuBar();
+	vbox.PackStart(menubar, false, false, 0);
+
+	//--------------------------------------------------------
+	// GtkMenuItem
+	//--------------------------------------------------------
+	filemenu := gtk.MenuItemWithMnemonic("_File");
+	menubar.Append(filemenu);
+	filesubmenu := gtk.Menu();
+	filemenu.SetSubmenu(filesubmenu);
+
+		exitmenuitem := gtk.MenuItemWithMnemonic("E_xit");
+		exitmenuitem.Connect("activate", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+			gtk.MainQuit();
+		}, nil);
+		filesubmenu.Append(exitmenuitem);
+
+	//--------------------------------------------------------
+	// GtkFrame
+	//--------------------------------------------------------
+	frame := gtk.Frame("Demo");
+	framebox := gtk.VBox(false, 1);
+	frame.Add(framebox);
+	vbox.Add(frame);
+
+	//--------------------------------------------------------
 	// GtkImage
 	//--------------------------------------------------------
 	dir, _ := path.Split(os.Args[0]);
 	imagefile := path.Join(dir, "../../data/go-gtk-logo.png"); 
 
 	label := gtk.Label("Go Binding for GTK");
-	vbox.PackStart(label, false, true, 0);
+	framebox.PackStart(label, false, true, 0);
 
 	entry := gtk.Entry();
 	entry.SetText("Hello world");
-	vbox.Add(entry);
+	framebox.Add(entry);
 
 	image := gtk.ImageFromFile(imagefile);
-	vbox.Add(image);
+	framebox.Add(image);
 
 	//--------------------------------------------------------
 	// GtkHBox
@@ -87,7 +115,7 @@ func main() {
 			print("show_size: ", fontbutton.GetShowSize(), "\n");
 		}, nil);
 		buttons.Add(fontbutton);
-		vbox.Add(buttons);
+		framebox.PackStart(buttons, false, false, 0);
 
 		buttons = gtk.HBox(false, 1);
 
@@ -129,7 +157,7 @@ func main() {
 		//radiobutton.SetMode(false);
 		radiofirst.SetActive(true);
 
-	vbox.Add(buttons);
+		framebox.PackStart(buttons, false, false, 0);
 
 	//--------------------------------------------------------
 	// GtkComboBoxEntry
@@ -157,15 +185,7 @@ func main() {
 	}, nil);
 	combos.Add(combobox);
 
-	vbox.Add(combos);
-
-	//--------------------------------------------------------
-	// GtkFrame
-	//--------------------------------------------------------
-	frame := gtk.Frame("Demo");
-	frame.Add(vbox);
-	vbox = gtk.VBox(false, 1);
-	vbox.Add(frame);
+	framebox.PackStart(combos, false, false, 0);
 
 	//--------------------------------------------------------
 	// GtkStatusbar
@@ -182,7 +202,7 @@ func main() {
 	buffer.GetStartIter(&start);
 	buffer.GetEndIter(&end);
 	buffer.ApplyTag(tag, &start, &end);
-	vbox.Add(textview);
+	framebox.Add(textview);
 
 	//--------------------------------------------------------
 	// GtkStatusbar
@@ -191,7 +211,7 @@ func main() {
 	context_id := statusbar.GetContextId("go-gtk");
 	statusbar.Push(context_id, "GTK binding for Go!");
 
-	vbox.PackStart(statusbar, false, false, 0);
+	framebox.PackStart(statusbar, false, false, 0);
 
 	//--------------------------------------------------------
 	// Event

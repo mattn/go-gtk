@@ -792,6 +792,10 @@ static inline void free_string(char* s) { free(s); }
 
 static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 static GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
+static GtkMenuBar* to_GtkMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
+static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
+static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
+static GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
 //static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 
@@ -1324,7 +1328,9 @@ type ContainerLike interface {
 	WidgetLike;
 	Add(w WidgetLike);
 }
-type GtkContainer struct { GtkWidget; }
+type GtkContainer struct {
+	GtkWidget;
+}
 func (v GtkContainer) Add(w WidgetLike) {
 	C._gtk_container_add(v.ToGtkWidget(), w.ToGtkWidget());
 }
@@ -1969,10 +1975,18 @@ func AccelLabel(label string) *GtkAccelLabel {
 	return &GtkAccelLabel { GtkWidget {
 		C.gtk_accel_label_new(C.to_gcharptr(ptr)) }};
 }
-func (v GtkAccelLabel) GetAccelWidget() GtkWidget { return GtkWidget{ C._gtk_accel_label_get_accel_widget(v.Widget) }; }
-func (v GtkAccelLabel) GetAccelWidth() uint { return uint(C._gtk_accel_label_get_accel_width(v.Widget)); }
-func (v GtkAccelLabel) SetAccelWidget(w GtkWidget) { C._gtk_accel_label_set_accel_widget(v.Widget, w.Widget); }
-func (v GtkAccelLabel) Refetch() bool { return gboolean2bool(C._gtk_accel_label_refetch(v.Widget)); }
+func (v GtkAccelLabel) GetAccelWidget() GtkWidget {
+	return GtkWidget{ C._gtk_accel_label_get_accel_widget(v.Widget) };
+}
+func (v GtkAccelLabel) GetAccelWidth() uint {
+	return uint(C._gtk_accel_label_get_accel_width(v.Widget));
+}
+func (v GtkAccelLabel) SetAccelWidget(w WidgetLike) {
+	C._gtk_accel_label_set_accel_widget(v.Widget, w.ToGtkWidget());
+}
+func (v GtkAccelLabel) Refetch() bool {
+	return gboolean2bool(C._gtk_accel_label_refetch(v.Widget));
+}
 // TODO
 // gtk_accel_label_set_accel_closure
 
@@ -2050,7 +2064,7 @@ func ToggleButtonWithMnemonic(label string) *GtkToggleButton {
 	ptr := C.CString(label);
 	defer C.free_string(ptr);
 	return &GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr)) }}};
+		C.gtk_toggle_button_new_with_mnemonic(C.to_gcharptr(ptr)) }}};
 }
 func (v GtkToggleButton) GetMode() bool {
 	return gboolean2bool(C._gtk_toggle_button_get_mode(v.Widget));
@@ -2990,8 +3004,6 @@ func (v GtkTextBuffer) CreateTag(tag_name string, props map[string] string) *Gtk
 	}
 	return &GtkTextTag { tag };
 }
-		/* C.g_value_init(&value, C.GType(C.G_TYPE_STRING)); */
-
 func (v GtkTextBuffer) GetIterAtLineOffset(iter *GtkTextIter, line_number int, char_offset int) {
 	C._gtk_text_buffer_get_iter_at_line_offset(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(char_offset));
 }
@@ -3061,7 +3073,6 @@ func (v GtkTextView) GetCursorVisible() bool {
 func (v GtkTextView) SetCursorVisible(setting bool) {
 	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.Widget), bool2gboolean(setting));
 }
-// gboolean gtk_text_view_get_cursor_visible(GtkTextView* text_view); 
 // void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
 // void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
 // void gtk_text_view_get_iter_at_position(GtkTextView* text_view, GtkTextIter* iter, gint* trailing, gint x, gint y);
@@ -3090,10 +3101,18 @@ func (v GtkTextView) GetEditable() bool {
 func (v GtkTextView) SetEditable(setting bool) {
 	C.gtk_text_view_set_editable(C.to_GtkTextView(v.Widget), bool2gboolean(setting));
 }
-// void gtk_text_view_set_overwrite(GtkTextView* text_view, gboolean overwrite);
-// gboolean gtk_text_view_get_overwrite(GtkTextView* text_view);
-// void gtk_text_view_set_accepts_tab(GtkTextView *text_view, gboolean accepts_tab);
-// gboolean gtk_text_view_get_accepts_tab(GtkTextView *text_view);
+func (v GtkTextView) GetOverwrite() bool {
+	return gboolean2bool(C.gtk_text_view_get_overwrite(C.to_GtkTextView(v.Widget)));
+}
+func (v GtkTextView) SetOverwrite(overwrite bool) {
+	C.gtk_text_view_set_overwrite(C.to_GtkTextView(v.Widget), bool2gboolean(overwrite));
+}
+func (v GtkTextView) GetAcceptsTab() bool {
+	return gboolean2bool(C.gtk_text_view_get_accepts_tab(C.to_GtkTextView(v.Widget)));
+}
+func (v GtkTextView) SetAcceptsTab(accepts_tab bool) {
+	C.gtk_text_view_set_accepts_tab(C.to_GtkTextView(v.Widget), bool2gboolean(accepts_tab));
+}
 // void gtk_text_view_set_pixels_above_lines(GtkTextView* text_view, gint pixels_above_lines);
 // gint gtk_text_view_get_pixels_above_lines(GtkTextView* text_view);
 // void gtk_text_view_set_pixels_below_lines(GtkTextView* text_view, gint pixels_below_lines);
@@ -3111,6 +3130,150 @@ func (v GtkTextView) SetEditable(setting bool) {
 // void gtk_text_view_set_tabs(GtkTextView* text_view, PangoTabArray* tabs);
 // PangoTabArray* gtk_text_view_get_tabs(GtkTextView* text_view);
 // GtkTextAttributes* gtk_text_view_get_default_attributes(GtkTextView* text_view);
+
+//-----------------------------------------------------------------------
+// GtkItem
+//-----------------------------------------------------------------------
+type GtkItem struct {
+	GtkContainer;
+}
+func (v GtkItem) Select() {
+	C.gtk_item_select(C.to_GtkItem(v.Widget));
+}
+func (v GtkItem) Deselect() {
+	C.gtk_item_deselect(C.to_GtkItem(v.Widget));
+}
+func (v GtkItem) Toggle() {
+	C.gtk_item_toggle(C.to_GtkItem(v.Widget));
+}
+
+//-----------------------------------------------------------------------
+// GtkMenuItem
+//-----------------------------------------------------------------------
+type GtkMenuItem struct {
+	GtkItem;
+}
+func MenuItem() *GtkMenuItem {
+	return &GtkMenuItem { GtkItem { GtkContainer { GtkWidget {
+		C.gtk_menu_item_new() }}}};
+}
+func MenuItemWithLabel(label string) *GtkMenuItem {
+	ptr := C.CString(label);
+	defer C.free_string(ptr);
+	return &GtkMenuItem { GtkItem { GtkContainer { GtkWidget {
+		C.gtk_menu_item_new_with_label(C.to_gcharptr(ptr)) }}}};
+}
+func MenuItemWithMnemonic(label string) *GtkMenuItem {
+	ptr := C.CString(label);
+	defer C.free_string(ptr);
+	return &GtkMenuItem { GtkItem { GtkContainer { GtkWidget {
+		C.gtk_menu_item_new_with_mnemonic(C.to_gcharptr(ptr)) }}}};
+}
+func (v GtkMenuItem) SetSubmenu(w WidgetLike) {
+	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToGtkWidget());
+}
+// TODO
+// void gtk_menu_item_set_submenu(GtkMenuItem *menu_item, GtkWidget *submenu);
+// GtkWidget* gtk_menu_item_get_submenu(GtkMenuItem *menu_item);
+// void gtk_menu_item_select(GtkMenuItem *menu_item);
+// void gtk_menu_item_deselect(GtkMenuItem *menu_item);
+// void gtk_menu_item_activate(GtkMenuItem *menu_item);
+// void gtk_menu_item_toggle_size_request(GtkMenuItem *menu_item, gint *requisition);
+// void gtk_menu_item_toggle_size_allocate(GtkMenuItem *menu_item, gint allocation);
+// void gtk_menu_item_set_right_justified(GtkMenuItem *menu_item, gboolean right_justified);
+// gboolean gtk_menu_item_get_right_justified(GtkMenuItem *menu_item);
+// void gtk_menu_item_set_accel_path(GtkMenuItem *menu_item, const gchar *accel_path);
+// G_CONST_RETURN gchar* gtk_menu_item_get_accel_path(GtkMenuItem *menu_item);
+// void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
+// G_CONST_RETURN gchar *gtk_menu_item_get_label(GtkMenuItem *menu_item);
+// void gtk_menu_item_set_use_underline(GtkMenuItem *menu_item, gboolean setting);
+// gboolean gtk_menu_item_get_use_underline(GtkMenuItem *menu_item);
+// void gtk_menu_item_remove_submenu(GtkMenuItem *menu_item);
+// #define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
+
+//-----------------------------------------------------------------------
+// GtkMenu
+//-----------------------------------------------------------------------
+type GtkMenu struct {
+	GtkContainer;
+}
+func Menu() *GtkMenu {
+	return &GtkMenu { GtkContainer { GtkWidget {
+		C.gtk_menu_new() }}};
+}
+func (v GtkMenu) Append(child WidgetLike) {
+	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+}
+func (v GtkMenu) Prepend(child WidgetLike) {
+	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+}
+func (v GtkMenu) Insert(child WidgetLike, position int) {
+	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position));
+}
+// TODO
+// void gtk_menu_popup (GtkMenu *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, GtkMenuPositionFunc func, gpointer data, guint button, guint32 activate_time);
+// void gtk_menu_reposition (GtkMenu *menu);
+// void gtk_menu_popdown (GtkMenu *menu);
+// GtkWidget* gtk_menu_get_active (GtkMenu *menu);
+// void gtk_menu_set_active (GtkMenu *menu, guint index_);
+// void gtk_menu_set_accel_group (GtkMenu *menu, GtkAccelGroup *accel_group);
+// GtkAccelGroup* gtk_menu_get_accel_group (GtkMenu *menu);
+// void gtk_menu_set_accel_path(GtkMenu *menu, const gchar *accel_path);
+// const gchar* gtk_menu_get_accel_path(GtkMenu *menu);
+// void gtk_menu_attach_to_widget (GtkMenu *menu, GtkWidget *attach_widget, GtkMenuDetachFunc detacher);
+// void gtk_menu_detach (GtkMenu *menu);
+// GtkWidget* gtk_menu_get_attach_widget (GtkMenu *menu);
+// void gtk_menu_set_tearoff_state(GtkMenu *menu, gboolean torn_off);
+// gboolean gtk_menu_get_tearoff_state(GtkMenu *menu);
+// void gtk_menu_set_title(GtkMenu *menu, const gchar *title);
+// G_CONST_RETURN gchar *gtk_menu_get_title(GtkMenu *menu);
+// void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
+// void gtk_menu_set_screen (GtkMenu *menu, GdkScreen *screen);
+// void gtk_menu_attach(GtkMenu *menu, GtkWidget *child, guint left_attach, guint right_attach, guint top_attach, guint bottom_attach);
+// void gtk_menu_set_monitor(GtkMenu *menu, gint monitor_num);
+// gint gtk_menu_get_monitor(GtkMenu *menu);
+// GList* gtk_menu_get_for_attach_widget(GtkWidget *widget); 
+// void gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_toggle_size);
+// gboolean gtk_menu_get_reserve_toggle_size(GtkMenu *menu);
+
+//-----------------------------------------------------------------------
+// GtkMenuBar
+//-----------------------------------------------------------------------
+const (
+  GTK_PACK_DIRECTION_LTR = 0;
+  GTK_PACK_DIRECTION_RTL = 1;
+  GTK_PACK_DIRECTION_TTB = 2;
+  GTK_PACK_DIRECTION_BTT = 3;
+)
+type GtkMenuBar struct {
+	GtkWidget;
+}
+func MenuBar() *GtkMenuBar {
+	return &GtkMenuBar { GtkWidget {
+		C.gtk_menu_bar_new() }};
+}
+func (v GtkMenuBar) GetPackDirection() int {
+	return int(C.gtk_menu_bar_get_pack_direction(C.to_GtkMenuBar(v.Widget)));
+}
+func (v GtkMenuBar) SetPackDirection(pack_dir int) {
+	C.gtk_menu_bar_set_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir));
+}
+func (v GtkMenuBar) GetChildPackDirection() int {
+	return int(C.gtk_menu_bar_get_child_pack_direction(C.to_GtkMenuBar(v.Widget)));
+}
+func (v GtkMenuBar) SetChildPackDirection(pack_dir int) {
+	C.gtk_menu_bar_set_child_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir));
+}
+func (v GtkMenuBar) Append(child WidgetLike) {
+	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+}
+func (v GtkMenuBar) Prepend(child WidgetLike) {
+	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+}
+func (v GtkMenuBar) Insert(child WidgetLike, position int) {
+	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position));
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // Events
