@@ -188,8 +188,11 @@ func main() {
 	framebox.PackStart(combos, false, false, 0);
 
 	//--------------------------------------------------------
-	// GtkStatusbar
+	// GtkTextView
 	//--------------------------------------------------------
+	swin := gtk.ScrolledWindow(nil, nil);
+	swin.SetPolicy(gtk.GTK_POLICY_AUTOMATIC, gtk.GTK_POLICY_AUTOMATIC);
+	swin.SetShadowType(gtk.GTK_SHADOW_IN);
 	textview := gtk.TextView();
 	var start, end gtk.GtkTextIter;
 	buffer := textview.GetBuffer();
@@ -202,7 +205,8 @@ func main() {
 	buffer.GetStartIter(&start);
 	buffer.GetEndIter(&end);
 	buffer.ApplyTag(tag, &start, &end);
-	framebox.Add(textview);
+	swin.Add(textview);
+	framebox.Add(swin);
 
 	//--------------------------------------------------------
 	// GtkStatusbar
