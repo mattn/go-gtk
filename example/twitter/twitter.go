@@ -1,7 +1,7 @@
 package main
 
 import "gtk"
-import "gdk-pixbuf"
+import "gdkpixbuf"
 import "unsafe"
 import "http"
 import "json"
