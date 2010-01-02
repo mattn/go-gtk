@@ -1399,14 +1399,28 @@ func (v GtkBox) PackStart(child WidgetLike, expand bool, fill bool, padding uint
 func (v GtkBox) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
 	C.gtk_box_pack_end(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding));
 }
+func (v GtkBox) PackStartDefaults(child WidgetLike) {
+	C.gtk_box_pack_start_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget());
+}
+func (v GtkBox) PackEndDefaults(child WidgetLike) {
+	C.gtk_box_pack_end_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget());
+}
+func (v GtkBox) GetHomogeneous() bool {
+	return gboolean2bool(C.gtk_box_get_homogeneous(C.to_GtkBox(v.Widget)));
+}
+func (v GtkBox) SetHomogeneous(homogeneous bool) {
+	C.gtk_box_set_homogeneous(C.to_GtkBox(v.Widget), bool2gboolean(homogeneous));
+}
+func (v GtkBox) GetSpacing() int {
+	return int(C.gtk_box_get_spacing(C.to_GtkBox(v.Widget)));
+}
+func (v GtkBox) SetSpacing(spacing int) {
+	C.gtk_box_set_spacing(C.to_GtkBox(v.Widget), C.gint(spacing));
+}
 // TODO
-// gtk_box_pack_start_defaults
-// gtk_box_pack_end_defaults
-// gtk_box_set_homogeneous
-// gtk_box_get_homogeneous
-// gtk_box_set_spacing
-// gtk_box_get_spacing
-// gtk_box_reorder_child
+func (v GtkBox) ReorderChild(child WidgetLike, position int) {
+	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToGtkWidget(), C.gint(position));
+}
 // gtk_box_query_child_packing
 // gtk_box_set_child_packing
 
