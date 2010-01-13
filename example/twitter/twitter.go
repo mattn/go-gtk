@@ -9,7 +9,6 @@ import "io"
 import "os"
 import "strconv"
 import "strings"
-import "reflect"
 
 func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
 	if r, _, err := http.Get(url); err == nil {
@@ -62,15 +61,15 @@ func main() {
 				b := make([]byte, n);
 				io.ReadFull(r.Body, b);
 				j, _ := json.Decode(string(b));
-				arr := reflect.NewValue(j).(*reflect.SliceValue);
-				for i := 0; i < arr.Len(); i++ {
-					data := arr.Elem(i).(*reflect.InterfaceValue).Elem().(*reflect.MapValue);
-					icon := data.Elem(reflect.NewValue("user")).(*reflect.InterfaceValue).Elem().(*reflect.MapValue).Elem(reflect.NewValue("profile_image_url")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
+				arr := j.([]interface{});
+				for i := 0; i < len(arr); i++ {
+					data := arr[i].(map[string]interface{});
+					icon := data["user"].(map[string]interface{})["profile_image_url"].(string);
 					var iter gtk.GtkTextIter;
 					buffer.GetStartIter(&iter);
 					buffer.InsertPixbuf(&iter, url2pixbuf(icon));
-					name := data.Elem(reflect.NewValue("user")).(*reflect.InterfaceValue).Elem().(*reflect.MapValue).Elem(reflect.NewValue("screen_name")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
-					text := data.Elem(reflect.NewValue("text")).(*reflect.InterfaceValue).Elem().(*reflect.StringValue).Get();
+					name := data["user"].(map[string]interface{})["screen_name"].(string);
+					text := data["text"].(string);
 					buffer.Insert(&iter, " ");
 					buffer.InsertWithTag(&iter, name, tag);
 					buffer.Insert(&iter, ":" + text + "\n");

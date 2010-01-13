@@ -774,8 +774,12 @@ func (v GtkWidget) QueueResizeNoRedraw() {
 // gtk_widget_remove_accelerator
 // gtk_widget_set_accel_path
 // gtk_widget_list_accel_closures
-// gtk_widget_can_activate_accel
-// gtk_widget_mnemonic_activate
+func (v GtkWidget) CanActivateAccel(signal_id uint) bool {
+	return gboolean2bool(C.gtk_widget_can_activate_accel(v.Widget, C.guint(signal_id)));
+}
+func (v GtkWidget) MnemonicActivate(group_cycling bool) bool {
+	return gboolean2bool(C.gtk_widget_mnemonic_activate(v.Widget, bool2gboolean(group_cycling)));
+}
 // gtk_widget_event
 // gtk_widget_send_expose
 func (v GtkWidget) Activate() {
