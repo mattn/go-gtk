@@ -2043,17 +2043,32 @@ func (v GtkTreeModel) GetIterFirst(iter *GtkTreeIter) bool {
 func (v GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
 	return &GtkTreePath { C._gtk_tree_model_get_path(v.TreeModel, &iter.TreeIter) };
 }
+func (v GtkTreeModel) IterNext(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_next(v.TreeModel, &iter.TreeIter));
+}
+func (v GtkTreeModel) IterChildren(iter *GtkTreeIter, parent *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_children(v.TreeModel, &iter.TreeIter, &parent.TreeIter));
+}
+func (v GtkTreeModel) IterHasChild(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_has_child(v.TreeModel, &iter.TreeIter));
+}
+func (v GtkTreeModel) IterNChildren(iter *GtkTreeIter) int {
+	return int(C.gtk_tree_model_iter_n_children(v.TreeModel, &iter.TreeIter));
+}
+func (v GtkTreeModel) IterNthChild(iter *GtkTreeIter, parent *GtkTreeIter, n int) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_nth_child(v.TreeModel, &iter.TreeIter, &parent.TreeIter, C.gint(n)));
+}
+func (v GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_parent(v.TreeModel, &iter.TreeIter, &child.TreeIter));
+}
 // TODO
 // gtk_tree_model_get_value
-// gtk_tree_model_iter_next
-// gtk_tree_model_iter_children
-// gtk_tree_model_iter_has_child
-// gtk_tree_model_iter_n_children
-// gtk_tree_model_iter_nth_child
-// gtk_tree_model_iter_parent
 // gtk_tree_model_ref_node
 // gtk_tree_model_unref_node
 // gtk_tree_model_get
+func (v GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_parent(v.TreeModel, &iter.TreeIter, &child.TreeIter));
+}
 // gtk_tree_model_get_valist
 // gtk_tree_model_foreach
 
