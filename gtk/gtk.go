@@ -20,7 +20,7 @@ typedef struct {
 	int fire;
 } callback_info;
 
-callback_info* current_callback_info;
+callback_info* current_callback_info = NULL;
 static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
@@ -2066,9 +2066,6 @@ func (v GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
 // gtk_tree_model_ref_node
 // gtk_tree_model_unref_node
 // gtk_tree_model_get
-func (v GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_model_iter_parent(v.TreeModel, &iter.TreeIter, &child.TreeIter));
-}
 // gtk_tree_model_get_valist
 // gtk_tree_model_foreach
 
