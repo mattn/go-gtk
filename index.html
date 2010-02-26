@@ -18,22 +18,26 @@
 <body>
 	<img id="logo" alt="go-gtk" src="static/images/go-gtk-logo.png" title="go-gtk" />
 	<section id="content">
-		<article id="whats">
-			<h2 class="maintitle">Whats</h2>
-			<p>Go bindings for GTK</p>
-		</article>
+		<div class="blocked-content">
+			<article id="whats">
+				<h2 class="maintitle">Whats</h2>
+				<p>Go bindings for GTK</p>
+			</article>
 		<br />
-		<article id="install" class="blocked-content">
-			<h2 class="maintitle">Install</h2>
-			<p>To experiment with go-gtk, you can just compile and run the example program:</p>
+		<div class="blocked-content">
+			<article id="install">
+				<h2 class="maintitle">Install</h2>
+				<p>To experiment with go-gtk, you can just compile and run the example program:</p>
 <pre class="code">
 # make example
 # ./example/main
 </pre>
-		</article>
+			</article>
+		</div>
 		<br />
-		<article id="coding" class="blocked-content">
-			<h2 class="maintitle">Coding Style</h2>
+		<div class="blocked-content">
+			<article id="coding">
+				<h2 class="maintitle">Coding Style</h2>
 <blockquote class="code">
 <span class="PreProc">package</span>&nbsp;main<br />
 <br />
@@ -157,85 +161,96 @@
 &nbsp;&nbsp;&nbsp;&nbsp;gtk.Main();<br />
 }<br />
 </blockquote>
-		</article>
+			</article>
+		</div>
 		<br />
-		<article id="screenshot" class="blocked-content">
-			<h2 class="maintitle">Screenshot</h2>
-			<p>
-			<img src="static/images/screenshot.png" alt="Go GTK!" title="Go GTK!" />
-			<br />
-			<img src="static/images/screenshot-twitter.png" alt="Twitter Client!" title="Twitter Client!" />
-			</p>
-		</article>
+		<div class="blocked-content">
+			<article id="screenshot">
+				<h2 class="maintitle">Screenshot</h2>
+				<p>
+				<img src="static/images/screenshot.png" alt="Go GTK!" title="Go GTK!" />
+				<br />
+				<img src="static/images/screenshot-twitter.png" alt="Twitter Client!" title="Twitter Client!" />
+				</p>
+			</article>
+		</div>
 		<br />
-		<article id="repo" class="blocked-content">
-			<h2 class="maintitle">Repository</h2>
-			<p>
-			<a href="http://github.com/mattn/go-gtk/">http://github.com/mattn/go-gtk/</a>
-			</p>
-		</article>
+		<div class="blocked-content">
+			<article id="repo">
+				<h2 class="maintitle">Repository</h2>
+				<p>
+				<a href="http://github.com/mattn/go-gtk/">http://github.com/mattn/go-gtk/</a>
+				</p>
+			</article>
+		<div />
 		<br />
-		<article id="license" class="blocked-content">
-			<h2 class="maintitle">License</h2>
-			<p>The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.</p>
-		</article>
+		<div class="blocked-content">
+			<article id="license">
+				<h2 class="maintitle">License</h2>
+				<p>The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.</p>
+			</article>
+		<div />
 		<br />
-		<article id="author" class="blocked-content">
-			<h2 class="maintitle">Author</h2>
-			<p>Project authors:</p>
-			<div>
-				<ul>
-					<li>Yasuhiro Matsumoto</li>
-				</ul>
-			</div>
-		</article>
+		<div class="blocked-content">
+			<article id="author">
+				<h2 class="maintitle">Author</h2>
+				<p>Project authors:</p>
+				<div>
+					<ul>
+						<li>Yasuhiro Matsumoto</li>
+					</ul>
+				</div>
+			</article>
+		<div />
 		<br />
-		<article id="goal" class="blocked-content">
-			<h2 class="maintitle">Goal</h2>
-			<p>Project goal:</p>
-			<div>
-				<p>Hopefully support following widgets and methods enough to run general application.</p>
-				<blockquote>
-					GtkAccelLabel<br />
-					GtkButton<br />
-					GtkCheckButton<br />
-					GtkColorButton<br />
-					GtkComboBox<br />
-					GtkComboBoxEntry<br />
-					GtkEntry<br />
-					GtkFileChooserButton<br />
-					GtkFontButton<br />
-					GtkFrame<br />
-					GtkIconView<br />
-					GtkImage<br />
-					GtkLabel<br />
-					GtkLinkButton<br />
-					GtkMenuBar<br />
-					GtkNotebook<br />
-					GtkPaned<br />
-					GtkVolumeButton<br />
-					GtkPageSetupUnixDialog<br />
-					GtkPrintUnixDialog<br />
-					GtkProgressBar<br />
-					GtkRadioButton<br />
-					GtkRecentChooserDialog<br />
-					GtkScale<br />
-					GtkScrolledWindow<br />
-					GtkSeparator<br />
-					GtkSpinButton<br />
-					GtkStatusbar<br />
-					GtkTextView<br />
-					GtkToggleButton<br />
-					GtkToolbar<br />
-					GtkTreeView<br />
-					GtkWindow<br />
-					GtkMessageDialog<br />
-					GtkAssistant<br />
-					GtkFontSelectionDialog<br />
-					GtkColorSelectionDialog<br />
-					GtkFileChooserDialog<br />
-				</blockquote>
-			</div>
-		</article>
+		<div class="blocked-content">
+			<article id="goal">
+				<h2 class="maintitle">Goal</h2>
+				<p>Project goal:</p>
+				<div>
+					<p>Hopefully support following widgets and methods enough to run general application.</p>
+					<blockquote>
+						GtkAccelLabel<br />
+						GtkButton<br />
+						GtkCheckButton<br />
+						GtkColorButton<br />
+						GtkComboBox<br />
+						GtkComboBoxEntry<br />
+						GtkEntry<br />
+						GtkFileChooserButton<br />
+						GtkFontButton<br />
+						GtkFrame<br />
+						GtkIconView<br />
+						GtkImage<br />
+						GtkLabel<br />
+						GtkLinkButton<br />
+						GtkMenuBar<br />
+						GtkNotebook<br />
+						GtkPaned<br />
+						GtkVolumeButton<br />
+						GtkPageSetupUnixDialog<br />
+						GtkPrintUnixDialog<br />
+						GtkProgressBar<br />
+						GtkRadioButton<br />
+						GtkRecentChooserDialog<br />
+						GtkScale<br />
+						GtkScrolledWindow<br />
+						GtkSeparator<br />
+						GtkSpinButton<br />
+						GtkStatusbar<br />
+						GtkTextView<br />
+						GtkToggleButton<br />
+						GtkToolbar<br />
+						GtkTreeView<br />
+						GtkWindow<br />
+						GtkMessageDialog<br />
+						GtkAssistant<br />
+						GtkFontSelectionDialog<br />
+						GtkColorSelectionDialog<br />
+						GtkFileChooserDialog<br />
+					</blockquote>
+				</div>
+			</article>
+		</div>
 	</section>
 </body>
