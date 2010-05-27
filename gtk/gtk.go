@@ -20,12 +20,20 @@ typedef struct {
 	int fire;
 } callback_info;
 
-callback_info* current_callback_info = NULL;
+static callback_info* current_callback_info = NULL;
 static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
 static void callback_info_free_args(callback_info* cbi) {
 	free(cbi->args);
+}
+static int callback_info_get_current(callback_info* cbi) {
+	if (current_callback_info) {
+		memcpy(cbi, current_callback_info, sizeof(callback_info));
+		current_callback_info = NULL;
+		return 1;
+	}
+	return 0;
 }
 
 #ifdef __x86_64__
@@ -3027,17 +3035,17 @@ func pollEvents() {
 		if use_gtk_main == false {
 			C.gtk_main_iteration_do(C.gboolean(1));
 		}
-		cbi := C.current_callback_info;
-		if cbi != nil && cbi.fire == C.int(0) {
+		var cbi C.callback_info;
+		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
 			elem := funcs.At(int(cbi.func_no));
 			args := make([]unsafe.Pointer, cbi.args_no);
 			for i := C.int(0); i < cbi.args_no; i++ {
-				args[i] = unsafe.Pointer(C.callback_info_get_arg(cbi, C.int(i)));
+				args[i] = unsafe.Pointer(C.callback_info_get_arg(&cbi, C.int(i)));
 			}
 			f := elem.(*Callback);
 			f.f(&GtkWidget{cbi.widget}, args);
 			cbi.fire = C.int(1);
-			C.callback_info_free_args(cbi);
+			C.callback_info_free_args(&cbi);
 		}
 	}
 }
