@@ -5,6 +5,7 @@ import "gdkpixbuf"
 import "unsafe"
 import "http"
 import "json"
+import "bytes"
 import "io"
 import "os"
 import "strconv"
@@ -60,7 +61,8 @@ func main() {
 				n, _ := strconv.Atoi64(r.GetHeader("Content-Length"));
 				b := make([]byte, n);
 				io.ReadFull(r.Body, b);
-				j, _ := json.Decode(string(b));
+				var j interface{};
+				json.NewDecoder(bytes.NewBuffer(b)).Decode(&j);
 				arr := j.([]interface{});
 				for i := 0; i < len(arr); i++ {
 					data := arr[i].(map[string]interface{});
