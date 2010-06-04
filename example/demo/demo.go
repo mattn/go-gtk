@@ -93,11 +93,14 @@ func main() {
 					button.GetTopLevelAsWindow(),
 					gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
 					gtk.GTK_STOCK_OK);
+				println("Dialog OK2!")
 				filechooserdialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
 					println(filechooserdialog.GetFilename());
 					filechooserdialog.Destroy();
 				}, nil);
+				println("Dialog OK3!")
 				filechooserdialog.Run();
+				println("Dialog OK4!")
 			}, nil);
 			messagedialog.Run();
 			messagedialog.Destroy();
