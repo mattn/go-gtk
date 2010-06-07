@@ -25,7 +25,7 @@ func HttpGet(url string) (*http.Response, os.Error) {
 		err = conn.Write(&req);
 		r, err = conn.Read();
 	} else {
-		r, _, err = http.Get("http://twitter.com/statuses/public_timeline.json");
+		r, _, err = http.Get(url);
 	}
 	return r, err;
 }
