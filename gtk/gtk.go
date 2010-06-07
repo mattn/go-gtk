@@ -36,17 +36,6 @@ static int callback_info_get_current(callback_info* cbi) {
 	return 0;
 }
 
-#ifdef __x86_64__
-static int _callback(void *data, ...);
-asm(
-".text\n"
-"	.type _callback_amd64, @function\n"
-"_callback_amd64:\n"
-"	movq	$1, %rax\n"
-"	jmp	_callback\n"
-"	.size	_callback_amd64, . - _callback_amd64\n"
-);
-#else
 static void _callback(void *data, ...) {
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
@@ -61,7 +50,6 @@ static void _callback(void *data, ...) {
 	va_end(ap);
 	current_callback_info = cbi;
 }
-#endif
 
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
