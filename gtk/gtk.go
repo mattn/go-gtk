@@ -3017,7 +3017,7 @@ type GtkTreeViewColumn struct {
 	GtkContainer;
 }
 func TreeViewColumn() *GtkTreeViewColumn {
-	return &GtkTreeView { GtkContainer { GtkWidget {
+	return &GtkTreeViewColumn { GtkContainer { GtkWidget {
 		C.gtk_tree_view_new() }}};
 }
 //GtkTreeViewColumn *gtk_tree_view_column_new (void);
