@@ -114,7 +114,20 @@ func Cursor(cursor_type int) *GdkCursor {
 type GdkWindow struct {
 	Window *C.GdkWindow;
 }
+
 func FromWindow(window unsafe.Pointer) *GdkWindow {
 	return &GdkWindow {
 		C.to_GdkWindow(window) };
+}
+
+func ThreadsInit() {
+	C.gdk_threads_init();
+}
+
+func ThreadsEnter() {
+	C.gdk_threads_enter();
+}
+
+func ThreadsLeave() {
+	C.gdk_threads_leave();
 }
