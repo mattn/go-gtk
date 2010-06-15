@@ -3258,16 +3258,20 @@ func pollEvents() {
 
 func Init(args *[]string) {
 	runtime.GOMAXPROCS(10);
-	var argc C.int = C.int(len(*args));
-	cargs := make([]*C.char, argc);
-	for i, arg := range *args { cargs[i] = C.CString(arg) }
-	C._gtk_init(unsafe.Pointer(&argc), unsafe.Pointer(&cargs));
-	goargs := make([]string, argc);
-	for i := 0;i < int(argc); i++ { goargs[i] = C.GoString(cargs[i]); }
-	for i := 0;i < int(argc); i++ { C.free_string(cargs[i]); }
-	*args = goargs;
+	if args != nil {
+		var argc C.int = C.int(len(*args));
+		cargs := make([]*C.char, argc);
+		for i, arg := range *args { cargs[i] = C.CString(arg) }
+		C._gtk_init(unsafe.Pointer(&argc), unsafe.Pointer(&cargs));
+		goargs := make([]string, argc);
+		for i := 0;i < int(argc); i++ { goargs[i] = C.GoString(cargs[i]); }
+		for i := 0;i < int(argc); i++ { C.free_string(cargs[i]); }
+		*args = goargs;
 
-	funcs = new(vector.Vector);
+		funcs = new(vector.Vector);
+	} else {
+		C._gtk_init(nil, nil);
+	}
 }
 
 func Main() {
