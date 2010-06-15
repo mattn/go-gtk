@@ -102,6 +102,10 @@ const (
 	GDK_CURSOR_IS_PIXMAP = -1;
 )
 
+var (
+	first = true;
+)
+
 type GdkCursor struct {
 	Cursor *C.GdkCursor;
 }
@@ -121,6 +125,10 @@ func FromWindow(window unsafe.Pointer) *GdkWindow {
 }
 
 func ThreadsInit() {
+	if first {
+		first = false;
+		C.g_thread_init(nil);
+	}
 	C.gdk_threads_init();
 }
 
