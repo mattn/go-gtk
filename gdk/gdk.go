@@ -15,6 +15,11 @@ package gdk
 static GdkWindow* to_GdkWindow(void* w) {
 	return (GdkWindow*)w;
 }
+static void _g_thread_init(GThreadFunctions *vtable) {
+#ifndef	G_THREADS_ENABLED
+	g_thread_init(vtable);
+#endif
+}
 */
 import "C"
 import "unsafe"
@@ -127,7 +132,7 @@ func FromWindow(window unsafe.Pointer) *GdkWindow {
 func ThreadsInit() {
 	if first {
 		first = false;
-		C.g_thread_init(nil);
+		C._g_thread_init(nil);
 	}
 	C.gdk_threads_init();
 }
