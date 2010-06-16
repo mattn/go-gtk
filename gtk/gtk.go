@@ -502,6 +502,7 @@ static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
 static GType* to_GTypePtr(void* w) { return (GType*)w; }
 static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
 static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
+static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -3017,6 +3018,77 @@ func (v GtkMenuBar) Prepend(child WidgetLike) {
 }
 func (v GtkMenuBar) Insert(child WidgetLike, position int) {
 	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position));
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkScale
+//-----------------------------------------------------------------------
+const (
+	GTK_POS_LEFT = 0
+	GTK_POS_RIGHT = 1
+	GTK_POS_TOP = 2
+	GTK_POS_BOTTOM = 3
+)
+type GtkScale struct {
+	GtkWidget;
+}
+func (v GtkScale) SetDigits(digits int) {
+	C.gtk_scale_set_digits(C.to_GtkScale(v.Widget), C.gint(digits));
+}
+func (v GtkScale) GetDigits() int {
+	return int(C.gtk_scale_get_digits(C.to_GtkScale(v.Widget)));
+}
+func (v GtkScale) SetDrawValue(draw_value bool) {
+	C.gtk_scale_set_draw_value(C.to_GtkScale(v.Widget), bool2gboolean(draw_value));
+}
+func (v GtkScale) GetDrawValue() bool {
+	return gboolean2bool(C.gtk_scale_get_draw_value(C.to_GtkScale(v.Widget)));
+}
+func (v GtkScale) SetValuePos(pos int) {
+	C.gtk_scale_set_value_pos(C.to_GtkScale(v.Widget), C.GtkPositionType(pos));
+}
+func (v GtkScale) GetValuePos() int {
+	return int(C.gtk_scale_get_value_pos(C.to_GtkScale(v.Widget)));
+}
+// PangoLayout * gtk_scale_get_layout (GtkScale *scale);
+func (v GtkScale) GetLayoutOffsets(x *int, y *int) {
+	var xx, yy C.gint
+	C.gtk_scale_get_layout_offsets(C.to_GtkScale(v.Widget), &xx, &yy);
+	*x = int(xx);
+	*y = int(yy);
+}
+func (v GtkScale) AddMark(value float, position int, markup string) {
+	ptr := C.CString(markup);
+	defer C.free_string(ptr);
+	C.gtk_scale_add_mark(C.to_GtkScale(v.Widget), C.gdouble(value), C.GtkPositionType(position), C.to_gcharptr(ptr));
+}
+func (v GtkScale) ClearMarks() {
+	C.gtk_scale_clear_marks(C.to_GtkScale(v.Widget));
+}
+//-----------------------------------------------------------------------
+// GtkHScale
+//-----------------------------------------------------------------------
+func HScale(adjustment *GtkAdjustment) *GtkScale {
+	return &GtkScale { GtkWidget {
+		C.gtk_hscale_new(adjustment.Adjustment) }};
+}
+func HScaleWithRange(min float, max float, step float) *GtkScale {
+	return &GtkScale { GtkWidget {
+		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }};
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkVScale
+//-----------------------------------------------------------------------
+func VScale(adjustment *GtkAdjustment) *GtkScale {
+	return &GtkScale { GtkWidget {
+		C.gtk_vscale_new(adjustment.Adjustment) }};
+}
+func VScaleWithRange(min float, max float, step float) *GtkScale {
+	return &GtkScale { GtkWidget {
+		C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }};
 }
 // FINISH
 
