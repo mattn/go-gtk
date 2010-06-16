@@ -34,6 +34,18 @@ type GdkPixbuf struct {
 	Pixbuf *C.GdkPixbuf;
 }
 
+func GdkPixbufFromFile(path string) (pixbuf *GdkPixbuf, err *C.GError) {
+	var error *C.GError;
+	ptr := C.CString(path);
+	defer C.free_string(ptr);
+	pixbuf = &GdkPixbuf { C.gdk_pixbuf_new_from_file(ptr, &error) };
+	err = error;
+	return;
+}
+
+func GetGdkPixbufType() int {
+	return int(C.gdk_pixbuf_get_type());
+}
 //-----------------------------------------------------------------------
 // GdkPixbufAnimation
 //-----------------------------------------------------------------------

@@ -452,23 +452,27 @@ static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
 #endif
 }
 
-static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attribute(gchar *title, GtkCellRenderer *cell, gchar* attribute, gint column) {
-	return gtk_tree_view_column_new_with_attributes(title, cell, attribute, column, NULL);
-}
-
-static void _append_tag(void* tag, const gchar* prop, const gchar* val) {
+static void _apply_property(void* obj, const gchar* prop, const gchar* val) {
 	GParamSpec *pspec;
 	GValue fromvalue = { 0, };
 	GValue tovalue = { 0, };
-	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(tag), prop);
+	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(obj), prop);
 	if (!pspec) return;
 	g_value_init(&fromvalue, G_TYPE_STRING);
 	g_value_set_string(&fromvalue, val);
 	g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
 	g_value_transform(&fromvalue, &tovalue);
-	g_object_set_property((GObject *)tag, prop, &tovalue);
+	g_object_set_property((GObject *)obj, prop, &tovalue);
 	g_value_unset(&fromvalue);
 	g_value_unset(&tovalue);
+}
+
+static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attribute(gchar* title, GtkCellRenderer* cell) {
+	return gtk_tree_view_column_new_with_attributes(title, cell, NULL);
+}
+
+static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attributes(gchar* title, GtkCellRenderer* cell, gchar* prop, gint column) {
+	return gtk_tree_view_column_new_with_attributes(title, cell, prop, column, NULL);
 }
 
 static inline const GType* make_gtypes(int count) {
@@ -522,6 +526,15 @@ static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { ret
 static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
 static GtkTreeModel* to_GtkTreeModel(GtkListStore* w) { return GTK_TREE_MODEL(w); }
+//static GType to_GType(uint type) { return (GType)type; }
+
+static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
+static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
+static GValue* init_gvalue_uint(guint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UINT); g_value_set_uint(gv, val); return gv; }
+static GValue* init_gvalue_int(gint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_INT); g_value_set_int(gv, val); return gv; }
+static GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return gv; }
+static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return gv; }
+//static GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return gv; }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -2761,7 +2774,7 @@ func (v GtkTextBuffer) CreateTag(tag_name string, props map[string] string) *Gtk
 	for prop, val := range props {
 		pprop := C.CString(prop);
 		pval := C.CString(val);
-		C._append_tag(tag, C.to_gcharptr(pprop), C.to_gcharptr(pval));
+		C._apply_property(tag, C.to_gcharptr(pprop), C.to_gcharptr(pval));
 		C.free_string(pprop);
 		C.free_string(pval);
 	}
@@ -3238,13 +3251,21 @@ func TreeViewColumn() *GtkTreeViewColumn {
 	return &GtkTreeViewColumn {
 		C.gtk_tree_view_column_new() };
 }
-func TreeViewColumnWithAttribute(title string, cell CellRendererLike, attribute string, column int) *GtkTreeViewColumn {
+func TreeViewColumnWithAttribute(title string, cell CellRendererLike) *GtkTreeViewColumn {
+	ptitle := C.CString(title);
+	defer C.free_string(ptitle);
+
+	return &GtkTreeViewColumn {
+		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer()) };
+}
+func TreeViewColumnWithAttributes(title string, cell CellRendererLike, attribute string, column int) *GtkTreeViewColumn {
 	ptitle := C.CString(title);
 	defer C.free_string(ptitle);
 	pattribute := C.CString(attribute);
 	defer C.free_string(pattribute);
+
 	return &GtkTreeViewColumn {
-		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column)) };
+		C._gtk_tree_view_column_new_with_attributes(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column)) };
 }
 func (v GtkTreeViewColumn) PackStart(cell CellRendererLike, expand bool) {
 	C.gtk_tree_view_column_pack_start(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand));
@@ -3446,6 +3467,7 @@ const (
 	TYPE_STRING = 64;
 	TYPE_BOXED = 72;
 	TYPE_POINTER = 68;
+	TYPE_PIXBUF = 68;
 )
 type GtkListStore struct {
 	ListStore *C.GtkListStore;
@@ -3466,8 +3488,20 @@ func (v GtkListStore) ToTreeModel() *GtkTreeModel {
 //GtkListStore *gtk_list_store_new(gint n_columns, ...);
 //GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
 //void gtk_list_store_set_column_types (GtkListStore *list_store, gint n_columns, GType *types);
-//void gtk_list_store_set_value (GtkListStore *list_store, GtkTreeIter *iter, gint column, GValue *value);
+func (v GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
+	gv := native2gvalue(a);
+	if gv != nil {
+		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), gv);
+	} else {
+		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), a.(*C.GValue));
+	}
+}
 //void gtk_list_store_set (GtkListStore *list_store, GtkTreeIter *iter, ...);
+func (v GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
+	for r := range a {
+		v.SetValue(iter, r, a[r]);
+	}
+}
 //void gtk_list_store_set_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
 //void gtk_list_store_set_valist (GtkListStore *list_store, GtkTreeIter *iter, va_list var_args);
 //gboolean gtk_list_store_remove (GtkListStore *list_store, GtkTreeIter *iter);
@@ -3476,14 +3510,52 @@ func (v GtkListStore) ToTreeModel() *GtkTreeModel {
 //void gtk_list_store_insert_after (GtkListStore *list_store, GtkTreeIter *iter, GtkTreeIter *sibling);
 //void gtk_list_store_insert_with_values (GtkListStore *list_store, GtkTreeIter *iter, gint position, ...);
 //void gtk_list_store_insert_with_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint position, gint *columns, GValue *values, gint n_values);
-//void gtk_list_store_prepend (GtkListStore *list_store, GtkTreeIter *iter);
-//void gtk_list_store_append (GtkListStore *list_store, GtkTreeIter *iter);
-//void gtk_list_store_clear (GtkListStore *list_store);
+func (v GtkListStore) Prepend(iter *GtkTreeIter) {
+	C.gtk_list_store_prepend(v.ListStore, &iter.TreeIter);
+}
+func (v GtkListStore) Append(iter *GtkTreeIter) {
+	C.gtk_list_store_append(v.ListStore, &iter.TreeIter);
+}
+func (v GtkListStore) Clear() {
+	C.gtk_list_store_clear(v.ListStore);
+}
 //gboolean gtk_list_store_iter_is_valid (GtkListStore *list_store, GtkTreeIter *iter);
 //void gtk_list_store_reorder (GtkListStore *store, gint *new_order);
 //void gtk_list_store_swap (GtkListStore *store, GtkTreeIter *a, GtkTreeIter *b);
 //void gtk_list_store_move_after (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
 //void gtk_list_store_move_before (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
+
+func native2gvalue(val interface{}) *C.GValue {
+	var gv *C.GValue;
+	switch val.(type) {
+	case bool:
+		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)));
+		break;
+	case byte:
+		gv = C.init_gvalue_byte(C.guchar(val.(byte)));
+		break;
+	case int:
+		gv = C.init_gvalue_int(C.gint(val.(int)));
+		break;
+	case uint:
+		gv = C.init_gvalue_uint(C.guint(val.(uint)));
+		break;
+	case float:
+		gv = C.init_gvalue_double(C.gdouble(val.(float)));
+		break;
+	case string:
+		{
+			pval := C.CString(val.(string));
+			defer C.free_string(pval);
+			gv = C.init_gvalue_string(C.to_gcharptr(pval));
+		}
+		break;
+	default:
+		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&val)));
+		break;
+	}
+	return gv;
+}
 
 //-----------------------------------------------------------------------
 // Events
