@@ -66,6 +66,15 @@ func main() {
 	framebox.Add(image);
 
 	//--------------------------------------------------------
+	// GtkScale
+	//--------------------------------------------------------
+	scale := gtk.HScaleWithRange(0, 100, 1);
+	scale.Connect("value-changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		print("scale: ", scale.GetValue(), "\n");
+	}, nil);
+	framebox.Add(scale);
+
+	//--------------------------------------------------------
 	// GtkHBox
 	//--------------------------------------------------------
 	buttons := gtk.HBox(false, 1);
