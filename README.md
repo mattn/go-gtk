@@ -17,8 +17,9 @@ INSTALL:
   To experiment with go-gtk, you can just compile and run the example
   program:
 
+    make install
     make example
-    ./example/main
+    ./example/demo/demo
 
 LICENSE:
 --------
@@ -36,42 +37,42 @@ GOAL:
 
   Hopefully support following widgets and methods enough to run general application. 
 
-    GtkAccelLabel
-    GtkButton
-    GtkCheckButton
-    GtkColorButton
-    GtkComboBox
-    GtkComboBoxEntry
-    GtkEntry
-    GtkFileChooserButton
-    GtkFontButton
-    GtkFrame
-    GtkIconView
-    GtkImage
-    GtkLabel
-    GtkLinkButton
-    GtkMenuBar
-    GtkNotebook
-    GtkPaned
-    GtkVolumeButton
-    GtkPageSetupUnixDialog
-    GtkPrintUnixDialog
-    GtkProgressBar
-    GtkRadioButton
-    GtkRecentChooserDialog
-    GtkScale
-    GtkScrolledWindow
-    GtkSeparator
-    GtkSpinButton
-    GtkStatusbar
-    GtkTextView
-    GtkToggleButton
-    GtkToolbar
-    GtkTreeView
-    GtkWindow
-    GtkMessageDialog
-    GtkAssistant
-    GtkFontSelectionDialog
-    GtkColorSelectionDialog
-    GtkFileChooserDialog
+    GtkAccelLabel: 90%
+    GtkButton: 25%
+    GtkCheckButton: 100%
+    GtkColorButton: 0%
+    GtkComboBox: 80%
+    GtkComboBoxEntry: 100%
+    GtkEntry: 10%
+    GtkFileChooserButton: 0%
+    GtkFontButton: 100%
+    GtkFrame: 100%
+    GtkIconView: 0%
+    GtkImage: 10%
+    GtkLabel: 10%
+    GtkLinkButton: 0%
+    GtkMenuBar: 100%
+    GtkNotebook: 0%
+    GtkPaned: 0%
+    GtkVolumeButton: 0%
+    GtkPageSetupUnixDialog: 0%
+    GtkPrintUnixDialog: 0%
+    GtkProgressBar: 0%
+    GtkRadioButton: 100%
+    GtkRecentChooserDialog: 0%
+    GtkScale: 0%
+    GtkScrolledWindow: 50%
+    GtkSeparator: 0%
+    GtkSpinButton: 0%
+    GtkStatusbar: 100%
+    GtkTextView: 10%
+    GtkToggleButton: 100%
+    GtkToolbar: 0%
+    GtkTreeView: 5%
+    GtkWindow: 5%
+    GtkMessageDialog: 10%
+    GtkAssistant: 0%
+    GtkFontSelectionDialog: 0%
+    GtkColorSelectionDialog: 0%
+    GtkFileChooserDialog: 100%
 
