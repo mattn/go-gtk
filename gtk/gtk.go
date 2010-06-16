@@ -452,6 +452,10 @@ static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
 #endif
 }
 
+static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attribute(gchar *title, GtkCellRenderer *cell, gchar* attribute, gint column) {
+	return gtk_tree_view_column_new_with_attributes(title, cell, attribute, column, NULL);
+}
+
 static void _append_tag(void* tag, const gchar* prop, const gchar* val) {
 	GParamSpec *pspec;
 	GValue fromvalue = { 0, };
@@ -465,6 +469,18 @@ static void _append_tag(void* tag, const gchar* prop, const gchar* val) {
 	g_object_set_property((GObject *)tag, prop, &tovalue);
 	g_value_unset(&fromvalue);
 	g_value_unset(&tovalue);
+}
+
+static inline const GType* make_gtypes(int count) {
+	return g_new0(GType, count);
+}
+
+static inline void destroy_gtypes(GType* types) {
+	g_free(types);
+}
+
+static inline void set_gtype(GType* types, int n, int type) {
+	types[n] = (GType) type;
 }
 
 static inline const gchar* to_gcharptr(const char* s) { return (const gchar*)s; }
@@ -499,11 +515,13 @@ static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLL
 //static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
-static GType* to_GTypePtr(void* w) { return (GType*)w; }
+//static GtkTreeViewColumn* to_GtkTreeViewColumn(GtkWidget* w) { return GTK_TREE_VIEW_COLUMN(w); }
+//static GType* to_GTypePtr(void* w) { return (GType*)w; }
 static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
 static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
 static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
+static GtkTreeModel* to_GtkTreeModel(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -3129,8 +3147,15 @@ func VScaleWithRange(min float, max float, step float) *GtkScale {
 //-----------------------------------------------------------------------
 // GtkCellRenderer
 //-----------------------------------------------------------------------
+type CellRendererLike interface {
+	ToGtkCellRenderer() *C.GtkCellRenderer;
+}
 type GtkCellRenderer struct {
 	CellRenderer *C.GtkCellRenderer;
+	CellRendererLike;
+}
+func (v GtkCellRenderer) ToGtkCellRenderer() *C.GtkCellRenderer {
+	return v.CellRenderer;
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererText
@@ -3140,7 +3165,7 @@ type GtkCellRendererText struct {
 }
 func CellRendererText() *GtkCellRendererText {
 	return &GtkCellRendererText { GtkCellRenderer {
-		C.gtk_cell_renderer_text_new() }};
+		C.gtk_cell_renderer_text_new(), nil }};
 }
 func (v GtkCellRendererText) SetFixedHeightFromFont(number_of_rows int) {
 	C.gtk_cell_renderer_text_set_fixed_height_from_font(C.to_GtkCellRendererText(v.CellRenderer), C.gint(number_of_rows));
@@ -3153,7 +3178,7 @@ type GtkCellRendererPixbuf struct {
 }
 func CellRendererPixbuf() *GtkCellRendererPixbuf {
 	return &GtkCellRendererPixbuf { GtkCellRenderer {
-		C.gtk_cell_renderer_pixbuf_new() }};
+		C.gtk_cell_renderer_pixbuf_new(), nil }};
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererProgress
@@ -3163,7 +3188,7 @@ type GtkCellRendererProgress struct {
 }
 func CellRendererProgress() *GtkCellRendererProgress {
 	return &GtkCellRendererProgress { GtkCellRenderer {
-		C.gtk_cell_renderer_progress_new() }};
+		C.gtk_cell_renderer_progress_new(), nil }};
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererSpinner
@@ -3173,7 +3198,7 @@ type GtkCellRendererSpinner struct {
 }
 func CellRendererSpinner() *GtkCellRendererSpinner {
 	return &GtkCellRendererSpinner { GtkCellRenderer {
-		C._gtk_cell_renderer_spinner_new() }};
+		C._gtk_cell_renderer_spinner_new(), nil }};
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererToggle
@@ -3183,7 +3208,7 @@ type GtkCellRendererToggle struct {
 }
 func CellRendererToggle() *GtkCellRendererToggle {
 	return &GtkCellRendererToggle { GtkCellRenderer {
-		C.gtk_cell_renderer_toggle_new() }};
+		C.gtk_cell_renderer_toggle_new(), nil }};
 }
 func (v GtkCellRendererToggle) GetRadio() bool {
 	return gboolean2bool(C.gtk_cell_renderer_toggle_get_radio(C.to_GtkCellRendererToggle(v.CellRenderer)));
@@ -3207,18 +3232,35 @@ func (v GtkCellRendererToggle) SetActivatable(activatable bool) {
 // GtkTreeViewColumn
 //-----------------------------------------------------------------------
 type GtkTreeViewColumn struct {
-	GtkContainer;
+	TreeViewColumn *C.GtkTreeViewColumn;
 }
 func TreeViewColumn() *GtkTreeViewColumn {
-	return &GtkTreeViewColumn { GtkContainer { GtkWidget {
-		C.gtk_tree_view_new() }}};
+	return &GtkTreeViewColumn {
+		C.gtk_tree_view_column_new() };
 }
-//GtkTreeViewColumn *gtk_tree_view_column_new (void);
-//GtkTreeViewColumn *gtk_tree_view_column_new_with_attributes (const gchar *title, GtkCellRenderer *cell, ...) G_GNUC_NULL_TERMINATED;
-//void gtk_tree_view_column_pack_start (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell, gboolean expand);
-//void gtk_tree_view_column_pack_end (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell, gboolean expand);
-//void gtk_tree_view_column_clear (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_add_attribute (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, const gchar *attribute, gint column);
+func TreeViewColumnWithAttribute(title string, cell CellRendererLike, attribute string, column int) *GtkTreeViewColumn {
+	ptitle := C.CString(title);
+	defer C.free_string(ptitle);
+	pattribute := C.CString(attribute);
+	defer C.free_string(pattribute);
+	return &GtkTreeViewColumn {
+		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column)) };
+}
+func (v GtkTreeViewColumn) PackStart(cell CellRendererLike, expand bool) {
+	C.gtk_tree_view_column_pack_start(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand));
+}
+func (v GtkTreeViewColumn) PackEnd(cell CellRendererLike, expand bool) {
+	C.gtk_tree_view_column_pack_end(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand));
+}
+func (v GtkTreeViewColumn) Clear() {
+	C.gtk_tree_view_column_clear(v.TreeViewColumn);
+}
+func (v GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string, column int) {
+	ptr := C.CString(attribute);
+	defer C.free_string(ptr);
+	C.gtk_tree_view_column_add_attribute(v.TreeViewColumn, cell.ToGtkCellRenderer(), C.to_gcharptr(ptr), C.gint(column));
+}
+
 //void gtk_tree_view_column_set_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, ...) G_GNUC_NULL_TERMINATED;
 //void gtk_tree_view_column_set_cell_data_func (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, GtkTreeCellDataFunc func, gpointer func_data, GDestroyNotify destroy);
 //void gtk_tree_view_column_clear_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer);
@@ -3238,8 +3280,15 @@ func TreeViewColumn() *GtkTreeViewColumn {
 //void gtk_tree_view_column_set_max_width (GtkTreeViewColumn *tree_column, gint max_width);
 //gint gtk_tree_view_column_get_max_width (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_clicked (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_set_title (GtkTreeViewColumn *tree_column, const gchar *title);
-//G_CONST_RETURN gchar *gtk_tree_view_column_get_title (GtkTreeViewColumn *tree_column);
+func (v GtkTreeViewColumn) SetTitle(title string) {
+	ptr := C.CString(title);
+	defer C.free_string(ptr);
+	C.gtk_tree_view_column_set_title(v.TreeViewColumn, C.to_gcharptr(ptr));
+
+}
+func (v GtkTreeViewColumn) GetTitle() string {
+	return C.GoString(C.to_charptr(C.gtk_tree_view_column_get_title(v.TreeViewColumn)));
+}
 //void gtk_tree_view_column_set_expand (GtkTreeViewColumn *tree_column, gboolean expand);
 //gboolean gtk_tree_view_column_get_expand (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_clickable (GtkTreeViewColumn *tree_column, gboolean clickable);
@@ -3294,6 +3343,9 @@ func (v GtkTreeView) SetModel(model *GtkTreeModel) {
 //void gtk_tree_view_set_rules_hint (GtkTreeView *tree_view, gboolean setting);
 //gboolean gtk_tree_view_get_rules_hint (GtkTreeView *tree_view);
 //gint gtk_tree_view_append_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
+func (v GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
+	return int(C.gtk_tree_view_append_column(C.to_GtkTreeView(v.Widget), column.TreeViewColumn));
+}
 //gint gtk_tree_view_remove_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
 //gint gtk_tree_view_insert_column (GtkTreeView *tree_view, GtkTreeViewColumn *column, gint position);
 //gint gtk_tree_view_insert_column_with_attributes (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, ...) G_GNUC_NULL_TERMINATED;
@@ -3381,16 +3433,35 @@ func (v GtkTreeView) SetModel(model *GtkTreeModel) {
 //-----------------------------------------------------------------------
 // GtkListStore
 //-----------------------------------------------------------------------
+const (
+	TYPE_CHAR = 12;
+	TYPE_UCHAR = 16;
+	TYPE_BOOL = 20;
+	TYPE_INT = 24;
+	TYPE_UINT = 28;
+	TYPE_LONG = 32;
+	TYPE_ULONG = 36;
+	TYPE_FLOAT = 56;
+	TYPE_DOUBLE = 60;
+	TYPE_STRING = 64;
+	TYPE_BOXED = 72;
+	TYPE_POINTER = 68;
+)
 type GtkListStore struct {
 	ListStore *C.GtkListStore;
 }
 func ListStore(v ...interface{}) *GtkListStore {
-	types := make([]C.GType, len(v));
+	types := C.make_gtypes(C.int(len(v)));
 	for n := range v {
-		types[n] = v[n].(C.GType);
+		C.set_gtype(types, C.int(n), C.int(v[n].(int)));
 	}
+	defer C.destroy_gtypes(types);
 	return &GtkListStore {
-		C.gtk_list_store_newv(C.gint(len(types)), C.to_GTypePtr(unsafe.Pointer(&types))) }
+		C.gtk_list_store_newv(C.gint(len(v)), types) }
+}
+func (v GtkListStore) ToTreeModel() *GtkTreeModel {
+	return &GtkTreeModel {
+		C.to_GtkTreeModel(v.ListStore) };
 }
 //GtkListStore *gtk_list_store_new(gint n_columns, ...);
 //GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
@@ -3460,7 +3531,6 @@ func Init(args *[]string) {
 		for i := 0;i < int(argc); i++ { goargs[i] = C.GoString(cargs[i]); }
 		for i := 0;i < int(argc); i++ { C.free_string(cargs[i]); }
 		*args = goargs;
-
 		funcs = new(vector.Vector);
 	} else {
 		C._gtk_init(nil, nil);
