@@ -3,7 +3,6 @@ package main
 import (
   "os";
   "gtk";
-  "gdkpixbuf";
   "unsafe";
 )
 
@@ -17,7 +16,7 @@ func main() {
 
 	vbox := gtk.VBox(false, 1)
 
-	store := gtk.ListStore(gtk.TYPE_STRING, gtk.TYPE_BOOL, gdkpixbuf.GetGdkPixbufType());
+	store := gtk.ListStore(gtk.TYPE_STRING, gtk.TYPE_BOOL);
 	treeview := gtk.TreeView();
 	treeview.SetModel(store.ToTreeModel());
 
