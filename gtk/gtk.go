@@ -184,15 +184,15 @@ static void _gtk_adjustment_configure(GtkAdjustment* adjustment, gdouble value, 
 static void _gtk_text_tag_table_add(GtkTextTagTable* table, void* tag) {
 	gtk_text_tag_table_add(table, (GtkTextTag*)tag);
 }
- 
+
 static void _gtk_text_tag_table_remove(GtkTextTagTable* table, void* tag) {
 	gtk_text_tag_table_remove(table, (GtkTextTag*)tag);
 }
- 
+
 static void* _gtk_text_tag_table_lookup(GtkTextTagTable* table, const gchar* name) {
 	return gtk_text_tag_table_lookup(table, name);
 }
- 
+
 static void* _gtk_text_iter_get_buffer(GtkTextIter* iter) {
 	return gtk_text_iter_get_buffer(iter);
 }
@@ -200,11 +200,11 @@ static void* _gtk_text_iter_get_buffer(GtkTextIter* iter) {
 static void* _gtk_text_buffer_new(GtkTextTagTable* tagtable) {
 	return gtk_text_buffer_new(tagtable);
 }
- 
+
 static gint _gtk_text_buffer_get_line_count(void* buffer) {
 	return gtk_text_buffer_get_line_count(GTK_TEXT_BUFFER(buffer));
 }
- 
+
 static gint _gtk_text_buffer_get_char_count(void* buffer) {
 	return gtk_text_buffer_get_char_count(GTK_TEXT_BUFFER(buffer));
 }
@@ -435,7 +435,7 @@ static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interac
 static GtkWidget* _gtk_text_view_new_with_buffer(void* buffer) {
 	return gtk_text_view_new_with_buffer(GTK_TEXT_BUFFER(buffer));
 }
- 
+
 static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
 	gtk_text_view_set_buffer(GTK_TEXT_VIEW(textview), GTK_TEXT_BUFFER(buffer));
 }
@@ -443,7 +443,15 @@ static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
 static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
 	return gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 }
- 
+
+static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
+#ifdef GTK_CELL_RENDERER_SPINNER
+	return gtk_cell_renderer_spinner_new();
+#else
+	return gtk_cell_renderer_spin_new();
+#endif
+}
+
 static void _append_tag(void* tag, const gchar* prop, const gchar* val) {
 	GParamSpec *pspec;
 	GValue fromvalue = { 0, };
@@ -492,6 +500,8 @@ static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLL
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
 static GType* to_GTypePtr(void* w) { return (GType*)w; }
+static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
+static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -3010,6 +3020,83 @@ func (v GtkMenuBar) Insert(child WidgetLike, position int) {
 }
 // FINISH
 
+//-----------------------------------------------------------------------
+// GtkCellRenderer
+//-----------------------------------------------------------------------
+type GtkCellRenderer struct {
+	CellRenderer *C.GtkCellRenderer;
+}
+//-----------------------------------------------------------------------
+// GtkCellRendererText
+//-----------------------------------------------------------------------
+type GtkCellRendererText struct {
+	GtkCellRenderer;
+}
+func CellRendererText() *GtkCellRendererText {
+	return &GtkCellRendererText { GtkCellRenderer {
+		C.gtk_cell_renderer_text_new() }};
+}
+func (v GtkCellRendererText) SetFixedHeightFromFont(number_of_rows int) {
+	C.gtk_cell_renderer_text_set_fixed_height_from_font(C.to_GtkCellRendererText(v.CellRenderer), C.gint(number_of_rows));
+}
+//-----------------------------------------------------------------------
+// GtkCellRendererPixbuf
+//-----------------------------------------------------------------------
+type GtkCellRendererPixbuf struct {
+	GtkCellRenderer;
+}
+func CellRendererPixbuf() *GtkCellRendererPixbuf {
+	return &GtkCellRendererPixbuf { GtkCellRenderer {
+		C.gtk_cell_renderer_pixbuf_new() }};
+}
+//-----------------------------------------------------------------------
+// GtkCellRendererProgress
+//-----------------------------------------------------------------------
+type GtkCellRendererProgress struct {
+	GtkCellRenderer;
+}
+func CellRendererProgress() *GtkCellRendererProgress {
+	return &GtkCellRendererProgress { GtkCellRenderer {
+		C.gtk_cell_renderer_progress_new() }};
+}
+//-----------------------------------------------------------------------
+// GtkCellRendererSpinner
+//-----------------------------------------------------------------------
+type GtkCellRendererSpinner struct {
+	GtkCellRenderer;
+}
+func CellRendererSpinner() *GtkCellRendererSpinner {
+	return &GtkCellRendererSpinner { GtkCellRenderer {
+		C._gtk_cell_renderer_spinner_new() }};
+}
+//-----------------------------------------------------------------------
+// GtkCellRendererToggle
+//-----------------------------------------------------------------------
+type GtkCellRendererToggle struct {
+	GtkCellRenderer;
+}
+func CellRendererToggle() *GtkCellRendererToggle {
+	return &GtkCellRendererToggle { GtkCellRenderer {
+		C.gtk_cell_renderer_toggle_new() }};
+}
+func (v GtkCellRendererToggle) GetRadio() bool {
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_radio(C.to_GtkCellRendererToggle(v.CellRenderer)));
+}
+func (v GtkCellRendererToggle) SetRadio(radio bool) {
+	C.gtk_cell_renderer_toggle_set_radio(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(radio));
+}
+func (v GtkCellRendererToggle) GetActive() bool {
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_active(C.to_GtkCellRendererToggle(v.CellRenderer)));
+}
+func (v GtkCellRendererToggle) SetActive(active bool) {
+	C.gtk_cell_renderer_toggle_set_active(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(active));
+}
+func (v GtkCellRendererToggle) GetActivatable() bool {
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_activatable(C.to_GtkCellRendererToggle(v.CellRenderer)));
+}
+func (v GtkCellRendererToggle) SetActivatable(activatable bool) {
+	C.gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(activatable));
+}
 //-----------------------------------------------------------------------
 // GtkTreeViewColumn
 //-----------------------------------------------------------------------
