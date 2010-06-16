@@ -9,14 +9,31 @@ func main() {
 	gtk.Init(nil);
 	gdk.ThreadsInit();
 	w := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
-	l := gtk.Label("");
-	w.Add(l);
+
+	v := gtk.VBox(false, 1)
+
+	l1 := gtk.Label("");
+	v.Add(l1);
+	l2 := gtk.Label("");
+	v.Add(l2);
+
+	w.Add(v);
+
+	w.SetSizeRequest(100, 100);
 	w.ShowAll();
 	syscall.Sleep(1000*1000*100);
 	go (func() {
-		for i := 0; i < 100000; i++ {
+		for i := 0; i < 300000; i++ {
 			gdk.ThreadsEnter();
-			l.SetLabel(strconv.Itoa(i));
+			l1.SetLabel(strconv.Itoa(i));
+			gdk.ThreadsLeave();
+		}
+		gtk.MainQuit();
+	})();
+	go (func() {
+		for i := 300000; i >= 0; i-- {
+			gdk.ThreadsEnter();
+			l2.SetLabel(strconv.Itoa(i));
 			gdk.ThreadsLeave();
 		}
 		gtk.MainQuit();
