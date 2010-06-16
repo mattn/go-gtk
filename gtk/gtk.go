@@ -503,6 +503,7 @@ static GType* to_GTypePtr(void* w) { return (GType*)w; }
 static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
 static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
 static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
+static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -3022,6 +3023,39 @@ func (v GtkMenuBar) Insert(child WidgetLike, position int) {
 // FINISH
 
 //-----------------------------------------------------------------------
+// GtkRange
+//-----------------------------------------------------------------------
+type GtkRange struct {
+	GtkWidget;
+}
+func (v GtkRange) SetValue(value float) {
+	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value));
+}
+func (v GtkRange) GetValue() float {
+	return float(C.gtk_range_get_value(C.to_GtkRange(v.Widget)));
+}
+// void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
+// GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
+// void gtk_range_set_adjustment (GtkRange *range, GtkAdjustment *adjustment);
+// GtkAdjustment* gtk_range_get_adjustment (GtkRange *range);
+// void gtk_range_set_inverted (GtkRange *range, gboolean setting);
+// gboolean gtk_range_get_inverted (GtkRange *range);
+// void gtk_range_set_flippable (GtkRange *range, gboolean flippable);
+// gboolean gtk_range_get_flippable (GtkRange *range);
+// void gtk_range_set_lower_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
+// GtkSensitivityType gtk_range_get_lower_stepper_sensitivity (GtkRange *range);
+// void gtk_range_set_upper_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
+// GtkSensitivityType gtk_range_get_upper_stepper_sensitivity (GtkRange *range);
+// void gtk_range_set_increments (GtkRange *range, gdouble step, gdouble page);
+// void gtk_range_set_range (GtkRange *range, gdouble min, gdouble max);
+// void gtk_range_set_show_fill_level (GtkRange *range, gboolean show_fill_level);
+// gboolean gtk_range_get_show_fill_level (GtkRange *range);
+// void gtk_range_set_restrict_to_fill_level (GtkRange *range, gboolean restrict_to_fill_level);
+// gboolean gtk_range_get_restrict_to_fill_level (GtkRange *range);
+// void gtk_range_set_fill_level (GtkRange *range, gdouble fill_level);
+// gdouble gtk_range_get_fill_level (GtkRange *range);
+
+//-----------------------------------------------------------------------
 // GtkScale
 //-----------------------------------------------------------------------
 const (
@@ -3031,7 +3065,7 @@ const (
 	GTK_POS_BOTTOM = 3
 )
 type GtkScale struct {
-	GtkWidget;
+	GtkRange;
 }
 func (v GtkScale) SetDigits(digits int) {
 	C.gtk_scale_set_digits(C.to_GtkScale(v.Widget), C.gint(digits));
@@ -3070,12 +3104,12 @@ func (v GtkScale) ClearMarks() {
 // GtkHScale
 //-----------------------------------------------------------------------
 func HScale(adjustment *GtkAdjustment) *GtkScale {
-	return &GtkScale { GtkWidget {
-		C.gtk_hscale_new(adjustment.Adjustment) }};
+	return &GtkScale { GtkRange { GtkWidget {
+		C.gtk_hscale_new(adjustment.Adjustment) }}};
 }
 func HScaleWithRange(min float, max float, step float) *GtkScale {
-	return &GtkScale { GtkWidget {
-		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }};
+	return &GtkScale { GtkRange { GtkWidget {
+		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }}};
 }
 // FINISH
 
@@ -3083,12 +3117,12 @@ func HScaleWithRange(min float, max float, step float) *GtkScale {
 // GtkVScale
 //-----------------------------------------------------------------------
 func VScale(adjustment *GtkAdjustment) *GtkScale {
-	return &GtkScale { GtkWidget {
-		C.gtk_vscale_new(adjustment.Adjustment) }};
+	return &GtkScale { GtkRange { GtkWidget {
+		C.gtk_vscale_new(adjustment.Adjustment) }}};
 }
 func VScaleWithRange(min float, max float, step float) *GtkScale {
-	return &GtkScale { GtkWidget {
-		C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }};
+	return &GtkScale { GtkRange { GtkWidget {
+		C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }}};
 }
 // FINISH
 
