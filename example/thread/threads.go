@@ -6,8 +6,8 @@ import "strconv"
 import "syscall"
 
 func main() {
-	gtk.Init(nil);
 	gdk.ThreadsInit();
+	gtk.Init(nil);
 	w := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 
 	v := gtk.VBox(false, 1)

@@ -16,7 +16,7 @@ static GdkWindow* to_GdkWindow(void* w) {
 	return (GdkWindow*)w;
 }
 static void _g_thread_init(GThreadFunctions *vtable) {
-#ifndef	G_THREADS_ENABLED
+#ifdef	G_THREADS_ENABLED
 	g_thread_init(vtable);
 #endif
 }
