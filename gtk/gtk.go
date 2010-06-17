@@ -475,7 +475,11 @@ static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attributes(gchar* title
 	return gtk_tree_view_column_new_with_attributes(title, cell, prop, column, NULL);
 }
 
-static inline const GType* make_gtypes(int count) {
+static void _gtk_list_store_set_ptr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_list_store_set(list_store, iter, column, *(uint**)data, -1);
+}
+
+static inline GType* make_gtypes(int count) {
 	return g_new0(GType, count);
 }
 
@@ -487,9 +491,9 @@ static inline void set_gtype(GType* types, int n, int type) {
 	types[n] = (GType) type;
 }
 
-static inline const gchar* to_gcharptr(const char* s) { return (const gchar*)s; }
+static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
 
-static inline const char* to_charptr(const gchar* s) { return (const char*)s; }
+static inline char* to_charptr(const gchar* s) { return (char*)s; }
 
 static inline void free_string(char* s) { free(s); }
 
@@ -527,6 +531,7 @@ static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
 static GtkTreeModel* to_GtkTreeModel(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 //static GType to_GType(uint type) { return (GType)type; }
+static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 
 static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
 static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
@@ -549,6 +554,7 @@ import "glib";
 import "gdk";
 import "gdkpixbuf";
 import "unsafe";
+import "reflect";
 import "runtime";
 import "container/vector";
 
@@ -702,8 +708,7 @@ func (v GtkStockItem) AddStatic(nitems int) {
 func GtkStockLookup(stock_id string, item *GtkStockItem) bool {
 	ptr := C.CString(stock_id);
 	defer C.free_string(ptr);
-	//return gboolean2bool(C.gtk_stock_lookup(C.to_gcharptr(ptr), item.StockItem));
-	return false;
+	return gboolean2bool(C.gtk_stock_lookup(C.to_gcharptr(ptr), item.StockItem));
 }
 func GtkStockListIDs() *glib.SList {
 	return glib.FromSList(unsafe.Pointer(C.gtk_stock_list_ids()));
@@ -1000,6 +1005,14 @@ func (v GtkWidget) GetSizeRequest(width *int, height *int) {
 // gtk_widget_get_pango_context
 // gtk_widget_create_pango_layout
 // gtk_widget_render_icon
+func (v GtkWidget) RenderIcon(stock_id string, size int, detail string) *gdkpixbuf.GdkPixbuf {
+	pstock_id := C.CString(stock_id);
+	defer C.free_string(pstock_id);
+	pdetail := C.CString(detail);
+	defer C.free_string(pdetail);
+	return &gdkpixbuf.GdkPixbuf {
+		C.gtk_widget_render_icon(v.Widget, C.to_gcharptr(pstock_id), C.GtkIconSize(size), C.to_gcharptr(pdetail)) };
+}
 // gtk_widget_set_composite_name
 // gtk_widget_get_composite_name
 // gtk_widget_reset_rc_styles
@@ -1636,6 +1649,10 @@ func ImageFromStock(stock_id string, size int) *GtkImage {
 // gtk_image_get_pixmap
 // gtk_image_get_image
 // gtk_image_get_pixbuf
+func (v GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf {
+		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget)) };
+}
 // gtk_image_get_stock
 // gtk_image_get_icon_set
 // gtk_image_get_animation
@@ -3284,6 +3301,10 @@ func (v GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string,
 
 //void gtk_tree_view_column_set_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, ...) G_GNUC_NULL_TERMINATED;
 //void gtk_tree_view_column_set_cell_data_func (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, GtkTreeCellDataFunc func, gpointer func_data, GDestroyNotify destroy);
+var tree_view_column_set_cell_data_funcs *vector.Vector;
+func (v GtkTreeViewColumn) SetCellDataFunc(cell CellRendererLike, f interface{}, data interface{}) {
+}
+
 //void gtk_tree_view_column_clear_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer);
 //void gtk_tree_view_column_set_spacing (GtkTreeViewColumn *tree_column, gint spacing);
 //gint gtk_tree_view_column_get_spacing (GtkTreeViewColumn *tree_column);
@@ -3493,7 +3514,7 @@ func (v GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	if gv != nil {
 		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), gv);
 	} else {
-		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), a.(*C.GValue));
+		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()));
 	}
 }
 //void gtk_list_store_set (GtkListStore *list_store, GtkTreeIter *iter, ...);
