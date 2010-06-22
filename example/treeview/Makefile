@@ -4,8 +4,8 @@
 
 include $(GOROOT)/src/Make.$(GOARCH)
 
-TARG=treeview
+TARG=listview
 GOFILES=\
-	treeview.go\
+	listview.go\
 
 include $(GOROOT)/src/Make.cmd
