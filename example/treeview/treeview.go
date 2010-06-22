@@ -31,7 +31,7 @@ func main() {
 		store.Append(&iter1, nil);
 		store.Set(&iter1, gtk.Image().RenderIcon(gtk.GTK_STOCK_DIRECTORY, gtk.GTK_ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "Folder" + strconv.Itoa(n));
 		store.Append(&iter2, &iter1);
-		store.Set(&iter2, gtk.Image().RenderIcon(gtk.GTK_STOCK_DIRECTORY, gtk.GTK_ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "Folder" + strconv.Itoa(n));
+		store.Set(&iter2, gtk.Image().RenderIcon(gtk.GTK_STOCK_DIRECTORY, gtk.GTK_ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "SubFolder" + strconv.Itoa(n));
 		store.Append(&iter3, &iter2);
 		store.Set(&iter3, gtk.Image().RenderIcon(gtk.GTK_STOCK_FILE, gtk.GTK_ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "File" + strconv.Itoa(n));
 	}
