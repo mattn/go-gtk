@@ -1001,6 +1001,11 @@ func (v GtkWidget) GetSizeRequest(width *int, height *int) {
 // gtk_widget_modify_base
 // gtk_widget_modify_cursor
 // gtk_widget_modify_font
+func (v GtkWidget) ModifyFontEasy(desc string) {
+	pdesc := C.CString(desc);
+	defer C.free_string(pdesc);
+	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc));
+}
 // gtk_widget_create_pango_context
 // gtk_widget_get_pango_context
 // gtk_widget_create_pango_layout

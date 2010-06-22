@@ -56,6 +56,7 @@ func main() {
 	imagefile := path.Join(dir, "../../data/go-gtk-logo.png"); 
 
 	label := gtk.Label("Go Binding for GTK");
+	label.ModifyFontEasy("DejaVu Serif 15");
 	framebox.PackStart(label, false, true, 0);
 
 	entry := gtk.Entry();
