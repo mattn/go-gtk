@@ -479,6 +479,10 @@ static void _gtk_list_store_set_ptr(GtkListStore* list_store, GtkTreeIter* iter,
 	gtk_list_store_set(list_store, iter, column, *(uint**)data, -1);
 }
 
+static void _gtk_tree_store_set_ptr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_tree_store_set(tree_store, iter, column, *(uint**)data, -1);
+}
+
 static inline GType* make_gtypes(int count) {
 	return g_new0(GType, count);
 }
@@ -529,7 +533,8 @@ static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return 
 static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
 static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
-static GtkTreeModel* to_GtkTreeModel(GtkListStore* w) { return GTK_TREE_MODEL(w); }
+static GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
+static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
 //static GType to_GType(uint type) { return (GType)type; }
 static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 
@@ -574,6 +579,37 @@ func panic_if_version_older(major int, minor int, micro int, message string) {
 	if C._check_version(C.int(major), C.int(minor), C.int(micro)) == 0 {
 		panic(message);
 	}
+}
+func native2gvalue(val interface{}) *C.GValue {
+	var gv *C.GValue;
+	switch val.(type) {
+	case bool:
+		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)));
+		break;
+	case byte:
+		gv = C.init_gvalue_byte(C.guchar(val.(byte)));
+		break;
+	case int:
+		gv = C.init_gvalue_int(C.gint(val.(int)));
+		break;
+	case uint:
+		gv = C.init_gvalue_uint(C.guint(val.(uint)));
+		break;
+	case float:
+		gv = C.init_gvalue_double(C.gdouble(val.(float)));
+		break;
+	case string:
+		{
+			pval := C.CString(val.(string));
+			defer C.free_string(pval);
+			gv = C.init_gvalue_string(C.to_gcharptr(pval));
+		}
+		break;
+	default:
+		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&val)));
+		break;
+	}
+	return gv;
 }
 
 //-----------------------------------------------------------------------
@@ -3418,6 +3454,11 @@ func (v GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
 //void gtk_tree_view_set_cursor (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *focus_column, gboolean start_editing);
 //void gtk_tree_view_set_cursor_on_cell (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *focus_column, GtkCellRenderer *focus_cell, gboolean start_editing);
 //void gtk_tree_view_get_cursor (GtkTreeView *tree_view, GtkTreePath **path, GtkTreeViewColumn **focus_column);
+func (v GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewColumn) {
+	*path = &GtkTreePath { nil }
+	*focus_column = &GtkTreeViewColumn { nil }
+	C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, &(*focus_column).TreeViewColumn)
+}
 //GdkWindow *gtk_tree_view_get_bin_window (GtkTreeView *tree_view);
 //gboolean gtk_tree_view_get_path_at_pos (GtkTreeView *tree_view, gint x, gint y, GtkTreePath **path, GtkTreeViewColumn **column, gint *cell_x, gint *cell_y);
 //void gtk_tree_view_get_cell_area (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, GdkRectangle *rect);
@@ -3509,7 +3550,7 @@ func ListStore(v ...interface{}) *GtkListStore {
 }
 func (v GtkListStore) ToTreeModel() *GtkTreeModel {
 	return &GtkTreeModel {
-		C.to_GtkTreeModel(v.ListStore) };
+		C.to_GtkTreeModelFromListStore(v.ListStore) };
 }
 //GtkListStore *gtk_list_store_new(gint n_columns, ...);
 //GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
@@ -3522,7 +3563,6 @@ func (v GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()));
 	}
 }
-//void gtk_list_store_set (GtkListStore *list_store, GtkTreeIter *iter, ...);
 func (v GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
 	for r := range a {
 		v.SetValue(iter, r, a[r]);
@@ -3530,10 +3570,18 @@ func (v GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
 }
 //void gtk_list_store_set_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
 //void gtk_list_store_set_valist (GtkListStore *list_store, GtkTreeIter *iter, va_list var_args);
-//gboolean gtk_list_store_remove (GtkListStore *list_store, GtkTreeIter *iter);
-//void gtk_list_store_insert (GtkListStore *list_store, GtkTreeIter *iter, gint position);
-//void gtk_list_store_insert_before (GtkListStore *list_store, GtkTreeIter *iter, GtkTreeIter *sibling);
-//void gtk_list_store_insert_after (GtkListStore *list_store, GtkTreeIter *iter, GtkTreeIter *sibling);
+func (v GtkListStore) Remove(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_list_store_remove(v.ListStore, &iter.TreeIter));
+}
+func (v GtkListStore) Insert(iter *GtkTreeIter, position int) {
+	C.gtk_list_store_insert(v.ListStore, &iter.TreeIter, C.gint(position));
+}
+func (v GtkListStore) InsertBefore(iter *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_list_store_insert_before(v.ListStore, &iter.TreeIter, &sibling.TreeIter);
+}
+func (v GtkListStore) InsertAfter(iter *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_list_store_insert_after(v.ListStore, &iter.TreeIter, &sibling.TreeIter);
+}
 //void gtk_list_store_insert_with_values (GtkListStore *list_store, GtkTreeIter *iter, gint position, ...);
 //void gtk_list_store_insert_with_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint position, gint *columns, GValue *values, gint n_values);
 func (v GtkListStore) Prepend(iter *GtkTreeIter) {
@@ -3545,43 +3593,96 @@ func (v GtkListStore) Append(iter *GtkTreeIter) {
 func (v GtkListStore) Clear() {
 	C.gtk_list_store_clear(v.ListStore);
 }
-//gboolean gtk_list_store_iter_is_valid (GtkListStore *list_store, GtkTreeIter *iter);
+func (v GtkListStore) IterIsValid(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_list_store_iter_is_valid(v.ListStore, &iter.TreeIter));
+}
 //void gtk_list_store_reorder (GtkListStore *store, gint *new_order);
-//void gtk_list_store_swap (GtkListStore *store, GtkTreeIter *a, GtkTreeIter *b);
+func (v GtkListStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
+	C.gtk_list_store_swap(v.ListStore, &a.TreeIter, &b.TreeIter);
+}
 //void gtk_list_store_move_after (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
 //void gtk_list_store_move_before (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
 
-func native2gvalue(val interface{}) *C.GValue {
-	var gv *C.GValue;
-	switch val.(type) {
-	case bool:
-		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)));
-		break;
-	case byte:
-		gv = C.init_gvalue_byte(C.guchar(val.(byte)));
-		break;
-	case int:
-		gv = C.init_gvalue_int(C.gint(val.(int)));
-		break;
-	case uint:
-		gv = C.init_gvalue_uint(C.guint(val.(uint)));
-		break;
-	case float:
-		gv = C.init_gvalue_double(C.gdouble(val.(float)));
-		break;
-	case string:
-		{
-			pval := C.CString(val.(string));
-			defer C.free_string(pval);
-			gv = C.init_gvalue_string(C.to_gcharptr(pval));
-		}
-		break;
-	default:
-		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&val)));
-		break;
-	}
-	return gv;
+//-----------------------------------------------------------------------
+// GtkTreeStore
+//-----------------------------------------------------------------------
+// GtkTreeStore *gtk_tree_store_new (gint n_columns, ...);
+type GtkTreeStore struct {
+	TreeStore *C.GtkTreeStore;
 }
+func TreeStore(v ...interface{}) *GtkTreeStore {
+	types := C.make_gtypes(C.int(len(v)));
+	for n := range v {
+		C.set_gtype(types, C.int(n), C.int(v[n].(int)));
+	}
+	defer C.destroy_gtypes(types);
+	return &GtkTreeStore {
+		C.gtk_tree_store_newv(C.gint(len(v)), types) }
+}
+func (v GtkTreeStore) ToTreeModel() *GtkTreeModel {
+	return &GtkTreeModel {
+		C.to_GtkTreeModelFromTreeStore(v.TreeStore) };
+}
+// GtkTreeStore *gtk_tree_store_newv (gint n_columns, GType *types);
+// void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types); void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
+func (v GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
+	gv := native2gvalue(a);
+	if gv != nil {
+		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), gv);
+	} else {
+		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()));
+	}
+}
+func (v GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
+	for r := range a {
+		v.SetValue(iter, r, a[r]);
+	}
+}
+// void gtk_tree_store_set_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
+// void gtk_tree_store_set_valist (GtkTreeStore *tree_store, GtkTreeIter *iter, va_list var_args);
+func (v GtkTreeStore) Remove(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_store_remove(v.TreeStore, &iter.TreeIter));
+}
+func (v GtkTreeStore) Insert(iter *GtkTreeIter, parent *GtkTreeIter, position int) {
+	C.gtk_tree_store_insert(v.TreeStore, &iter.TreeIter, &parent.TreeIter, C.gint(position));
+}
+func (v GtkTreeStore) InsertBefore(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_tree_store_insert_before(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter);
+}
+func (v GtkTreeStore) InsertAfter(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_tree_store_insert_after(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter);
+}
+// void gtk_tree_store_insert_with_values (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, ...);
+// void gtk_tree_store_insert_with_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, gint *columns, GValue *values, gint n_values);
+func (v GtkTreeStore) Prepend(iter *GtkTreeIter, parent *GtkTreeIter) {
+	if parent == nil {
+		C.gtk_tree_store_prepend(v.TreeStore, &iter.TreeIter, nil);
+	} else {
+		C.gtk_tree_store_prepend(v.TreeStore, &iter.TreeIter, &parent.TreeIter);
+	}
+}
+func (v GtkTreeStore) Append(iter *GtkTreeIter, parent *GtkTreeIter) {
+	if parent == nil {
+		C.gtk_tree_store_append(v.TreeStore, &iter.TreeIter, nil);
+	} else {
+		C.gtk_tree_store_append(v.TreeStore, &iter.TreeIter, &parent.TreeIter);
+	}
+}
+func (v GtkTreeStore) IterDepth(iter *GtkTreeIter) int {
+	return int(C.gtk_tree_store_iter_depth(v.TreeStore, &iter.TreeIter));
+}
+func (v GtkTreeStore) Clear() {
+	C.gtk_tree_store_clear(v.TreeStore);
+}
+func (v GtkTreeStore) IterIsValid(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_store_iter_is_valid(v.TreeStore, &iter.TreeIter));
+}
+// void gtk_tree_store_reorder (GtkTreeStore *tree_store, GtkTreeIter *parent, gint *new_order);
+func (v GtkTreeStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
+	C.gtk_tree_store_swap(v.TreeStore, &a.TreeIter, &b.TreeIter);
+}
+// void gtk_tree_store_move_before (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *position);
+// void gtk_tree_store_move_after (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *position);
 
 //-----------------------------------------------------------------------
 // Events
