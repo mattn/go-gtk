@@ -3447,8 +3447,12 @@ func (v GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
 //void gtk_tree_view_scroll_to_point (GtkTreeView *tree_view, gint tree_x, gint tree_y);
 //void gtk_tree_view_scroll_to_cell (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gboolean use_align, gfloat row_align, gfloat col_align);
 //void gtk_tree_view_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column);
-//void gtk_tree_view_expand_all (GtkTreeView *tree_view);
-//void gtk_tree_view_collapse_all (GtkTreeView *tree_view);
+func (v GtkTreeView) ExpandAll() {
+	C.gtk_tree_view_expand_all(C.to_GtkTreeView(v.Widget));
+}
+func (v GtkTreeView) CollapseAll() {
+	C.gtk_tree_view_collapse_all(C.to_GtkTreeView(v.Widget));
+}
 //void gtk_tree_view_expand_to_path (GtkTreeView *tree_view, GtkTreePath *path);
 //gboolean gtk_tree_view_expand_row (GtkTreeView *tree_view, GtkTreePath *path, gboolean open_all);
 //gboolean gtk_tree_view_collapse_row (GtkTreeView *tree_view, GtkTreePath *path);
