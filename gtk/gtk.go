@@ -1524,12 +1524,22 @@ func (v GtkBox) GetSpacing() int {
 func (v GtkBox) SetSpacing(spacing int) {
 	C.gtk_box_set_spacing(C.to_GtkBox(v.Widget), C.gint(spacing));
 }
-// TODO
 func (v GtkBox) ReorderChild(child WidgetLike, position int) {
 	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToGtkWidget(), C.gint(position));
 }
-// gtk_box_query_child_packing
-// gtk_box_set_child_packing
+func (v GtkBox) QueryChildPacking(child *GtkWidget, expand *bool, fill *bool, padding *uint, pack_type *int) {
+	var cexpand, cfill C.gboolean;
+	var cpadding C.guint;
+	var cpack_type C.GtkPackType;
+	C.gtk_box_query_child_packing(C.to_GtkBox(v.Widget), child.Widget, &cexpand, &cfill, &cpadding, &cpack_type);
+	*expand = gboolean2bool(cexpand);
+	*fill = gboolean2bool(cfill);
+	*padding = uint(cpadding);
+	*pack_type = int(cpack_type);
+}
+func (v GtkBox) SetChildPacking(child *GtkWidget, expand bool, fill bool, padding uint, pack_type int) {
+	C.gtk_box_set_child_packing(C.to_GtkBox(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type));
+}
 
 //-----------------------------------------------------------------------
 // GtkVBox
