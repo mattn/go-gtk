@@ -11,10 +11,12 @@ func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("GTK Go!");
-	window.Connect("destroy", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	window.Connect("destroy", func(w *gtk.GtkWidget, user_data unsafe.Pointer) {
+		p := uintptr(user_data);
+		println(*(*string)(unsafe.Pointer(&p)));
 		println("got destroy!");
 		gtk.MainQuit();
-	}, nil);
+	}, "foo");
 
 	//--------------------------------------------------------
 	// GtkVBox

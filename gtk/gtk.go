@@ -73,7 +73,11 @@ static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no, voi
 	cbi->func_no = func_no;
 	cbi->widget = widget;
 	cbi->args_no = query.n_params;
-	cbi->data = data;
+	if (data) {
+		cbi->data = *(uint**)data;
+	} else {
+		cbi->data = NULL;
+	}
 	cbi->index = index;
 	index++;
 	return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
@@ -509,6 +513,7 @@ static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
 static GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
 static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
 static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w); }
+static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
 static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
 static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
@@ -762,7 +767,7 @@ type WidgetLike interface {
 	ShowAll();
 	ShowNow();
 	Destroy();
-	Connect(s string, f CallbackFunc, data unsafe.Pointer);
+	Connect(s string, f CallbackFunc, data interface{});
 	GetTopLevel() *GtkWidget;
 	GetTopLevelAsWindow() *GtkWindow;
 	HideOnDelete();
@@ -792,11 +797,15 @@ func (v GtkWidget) ShowNow() {
 func (v GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
-func (v GtkWidget) Connect(s string, f CallbackFunc, data unsafe.Pointer) {
-	funcs.Push(&Callback{f});
+func (v GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
+	funcs.Push(f);
 	ptr := C.CString(s);
 	defer C.free_string(ptr);
-	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, data);
+	if data == nil {
+		C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, nil);
+	} else {
+		C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, unsafe.Pointer(reflect.NewValue(data).Addr()));
+	}
 }
 func (v GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget {
@@ -1318,7 +1327,7 @@ type GtkDialog struct {
 func (v GtkDialog) Run() int {
 	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)));
 }
-func (v GtkDialog) Response(response CallbackFunc, data unsafe.Pointer) {
+func (v GtkDialog) Response(response CallbackFunc, data interface{}) {
 	v.Connect("response", response, data);
 }
 func (v GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
@@ -1830,13 +1839,13 @@ func (v GtkAccelLabel) Refetch() bool {
 type ButtonLike interface { // Buttons are LabelLike Widgets!
 	LabelLike;
 	// the following should be just Clickable; ...
-	Clicked(CallbackFunc, unsafe.Pointer); // this is a very simple interface...
+	Clicked(CallbackFunc, interface{}); // this is a very simple interface...
 }
 type Clickable interface {
 	WidgetLike;
-	Clicked(CallbackFunc, unsafe.Pointer); // this is a very simple interface...
+	Clicked(CallbackFunc, interface{}); // this is a very simple interface...
 }
-func (v GtkButton) Clicked(onclick CallbackFunc, data unsafe.Pointer) {
+func (v GtkButton) Clicked(onclick CallbackFunc, data interface{}) {
 	v.Connect("clicked", onclick, data);
 }
 type GtkButton struct {
@@ -2051,6 +2060,45 @@ func (v GtkFontButton) SetShowSize(show_size bool) {
 	C.gtk_font_button_set_show_size(C.to_GtkFontButton(v.Widget), bool2gboolean(show_size));
 }
 // FINISH
+
+//-----------------------------------------------------------------------
+// GtkLinkButton
+//-----------------------------------------------------------------------
+type GtkLinkButton struct {
+	GtkButton;
+}
+func LinkButton(uri string) *GtkLinkButton {
+	ptr := C.CString(uri);
+	defer C.free_string(ptr);
+	return &GtkLinkButton { GtkButton { GtkWidget {
+		C.gtk_link_button_new(C.to_gcharptr(ptr)) }}};
+}
+func LinkButtonWithLabel(uri string, label string) *GtkLinkButton {
+	puri := C.CString(uri);
+	defer C.free_string(puri);
+	plabel := C.CString(label);
+	defer C.free_string(plabel);
+	return &GtkLinkButton { GtkButton { GtkWidget {
+		C.gtk_link_button_new_with_label(C.to_gcharptr(puri), C.to_gcharptr(plabel)) }}};
+}
+func (v GtkLinkButton) GetUri() string {
+	return C.GoString(C.to_charptr(C.gtk_link_button_get_uri(C.to_GtkLinkButton(v.Widget))));
+}
+func (v GtkLinkButton) SetUri(uri string) {
+	ptr := C.CString(uri);
+	defer C.free_string(ptr);
+	C.gtk_link_button_set_uri(C.to_GtkLinkButton(v.Widget), C.to_gcharptr(ptr));
+}
+
+//func (v GtkLinkButton) SetUriHook(f func(button *GtkLinkButton, link string, user_data unsafe.Pointer), ) {
+	// GtkLinkButtonUriFunc gtk_link_button_set_uri_hook (GtkLinkButtonUriFunc func, gpointer data, GDestroyNotify destroy);
+//}
+func (v GtkLinkButton) GetVisited() bool {
+	return gboolean2bool(C.gtk_link_button_get_visited(C.to_GtkLinkButton(v.Widget)));
+}
+func (v GtkLinkButton) SetVisited(visited bool) {
+	C.gtk_link_button_set_visited(C.to_GtkLinkButton(v.Widget), bool2gboolean(visited));
+}
 
 //-----------------------------------------------------------------------
 // GtkTreePath
@@ -3333,7 +3381,6 @@ func TreeViewColumn() *GtkTreeViewColumn {
 func TreeViewColumnWithAttribute(title string, cell CellRendererLike) *GtkTreeViewColumn {
 	ptitle := C.CString(title);
 	defer C.free_string(ptitle);
-
 	return &GtkTreeViewColumn {
 		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer()) };
 }
@@ -3342,7 +3389,6 @@ func TreeViewColumnWithAttributes(title string, cell CellRendererLike, attribute
 	defer C.free_string(ptitle);
 	pattribute := C.CString(attribute);
 	defer C.free_string(pattribute);
-
 	return &GtkTreeViewColumn {
 		C._gtk_tree_view_column_new_with_attributes(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column)) };
 }
@@ -3951,10 +3997,7 @@ var use_gtk_main bool = false;
 // full closures, so there is never a need to pass additional data via
 // a void * pointer.  Where you might have wanted to do that, you can
 // instead just use func () { ... using data } to pass the data in.
-type CallbackFunc func(*GtkWidget, []unsafe.Pointer);
-type Callback struct {
-	f CallbackFunc;
-}
+type CallbackFunc interface{}
 var funcs *vector.Vector;
 var main_loop bool = true;
 func pollEvents() {
@@ -3964,13 +4007,30 @@ func pollEvents() {
 		}
 		var cbi C.callback_info;
 		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
-			elem := funcs.At(int(cbi.func_no));
-			args := make([]unsafe.Pointer, cbi.args_no);
+			f := funcs.At(int(cbi.func_no)).(CallbackFunc);
+			args := make([]interface{}, cbi.args_no);
+			rf := reflect.NewValue(f).(*reflect.FuncValue);
+			t := rf.Type().(*reflect.FuncType);
+			fargs := make([]reflect.Value, t.NumIn());
+			println(int(cbi.args_no));
 			for i := C.int(0); i < cbi.args_no; i++ {
-				args[i] = unsafe.Pointer(C.callback_info_get_arg(&cbi, C.int(i)));
+				args[i] = C.callback_info_get_arg(&cbi, C.int(i));
 			}
-			f := elem.(*Callback);
-			f.f(&GtkWidget{cbi.widget}, args);
+			for i := 0; i < len(fargs); i++ {
+				if i == 0 {
+					fargs[i] = reflect.NewValue(&GtkWidget { cbi.widget });
+				} else
+				if i == len(fargs)-1 {
+					fargs[i] = reflect.NewValue(unsafe.Pointer(cbi.data));
+				} else {
+					if i-1 < len(args) {
+						fargs[i] = reflect.NewValue(args[i-1]);
+					} else {
+						fargs[i] = reflect.NewValue(nil);
+					}
+				}
+			}
+			rf.Call(fargs);
 			cbi.fire = C.int(1);
 			C.callback_info_free_args(&cbi);
 		}
