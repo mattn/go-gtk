@@ -514,6 +514,7 @@ static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BO
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
 static GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
 static GtkBox* to_GtkBox(GtkWidget* w) { return GTK_BOX(w); }
+static GtkPaned* to_GtkPaned(GtkWidget* w) { return GTK_PANED(w); }
 static GtkToggleButton* to_GtkToggleButton(GtkWidget* w) { return GTK_TOGGLE_BUTTON(w); }
 static GtkAccelLabel* to_GtkAccelLabel(GtkWidget* w) { return GTK_ACCEL_LABEL(w); }
 static GtkEntry* to_GtkEntry(GtkWidget* w) { return GTK_ENTRY(w); }
@@ -1492,7 +1493,7 @@ const (
 		GTK_PACK_START = 0;
 		GTK_PACK_END = 1;
 )
-type Packable interface {
+type BoxLike interface {
 	ContainerLike;
 	PackStart(child WidgetLike, expand bool, fill bool, padding uint);
 	PackEnd(child WidgetLike, expand bool, fill bool, padding uint);
@@ -1544,19 +1545,24 @@ func (v GtkBox) SetChildPacking(child *GtkWidget, expand bool, fill bool, paddin
 //-----------------------------------------------------------------------
 // GtkVBox
 //-----------------------------------------------------------------------
-func VBox(homogeneous bool, spacing uint) *GtkBox {
-	return &GtkBox { GtkContainer { GtkWidget {
-		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}};
+type GtkVBox struct {
+	GtkBox;
+}
+func VBox(homogeneous bool, spacing uint) *GtkVBox {
+	return &GtkVBox { GtkBox { GtkContainer { GtkWidget {
+		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}}};
 }
 // FINISH
 
 //-----------------------------------------------------------------------
 // GtkHBox
 //-----------------------------------------------------------------------
-type GtkHBox GtkBox;
-func HBox(homogeneous bool, spacing uint) *GtkBox {
-	return &GtkBox { GtkContainer { GtkWidget {
-		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}};
+type GtkHBox struct {
+	GtkBox;
+}
+func HBox(homogeneous bool, spacing uint) *GtkHBox {
+	return &GtkHBox { GtkBox { GtkContainer { GtkWidget {
+		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}}};
 }
 // FINISH
 
@@ -2324,8 +2330,8 @@ type GtkStatusbar struct {
 	GtkHBox;
 }
 func Statusbar() *GtkStatusbar {
-	return &GtkStatusbar { GtkHBox { GtkContainer { GtkWidget {
-		C.gtk_statusbar_new() }}}};
+	return &GtkStatusbar { GtkHBox { GtkBox { GtkContainer { GtkWidget {
+		C.gtk_statusbar_new() }}}}};
 }
 func (v GtkStatusbar) GetContextId(content_description string) uint {
 	ptr := C.CString(content_description);
@@ -3871,6 +3877,70 @@ func (v GtkNotebook) GetTabDetachable(child *GtkWidget) bool {
 func (v GtkNotebook) SetDetachable(child *GtkWidget, detachable bool) {
 	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(detachable));
 }
+//-----------------------------------------------------------------------
+// GtkPaned
+//-----------------------------------------------------------------------
+type PanedLike interface {
+	ContainerLike;
+	Add1(child WidgetLike, expand bool, fill bool, padding uint);
+	Add2(child WidgetLike, expand bool, fill bool, padding uint);
+	Pack1(child WidgetLike, expand bool, fill bool, padding uint);
+	Pack2(child WidgetLike, expand bool, fill bool, padding uint);
+}
+type GtkPaned struct {
+	GtkContainer;
+}
+func (v GtkPaned) Add1(child *GtkWidget) {
+	C.gtk_paned_add1(C.to_GtkPaned(v.Widget), child.Widget);
+}
+func (v GtkPaned) Add2(child *GtkWidget) {
+	C.gtk_paned_add2(C.to_GtkPaned(v.Widget), child.Widget);
+}
+func (v GtkPaned) Pack1(child *GtkWidget, resize bool, shrink bool) {
+	C.gtk_paned_pack1(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink));
+}
+func (v GtkPaned) Pack2(child *GtkWidget, resize bool, shrink bool) {
+	C.gtk_paned_pack2(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink));
+}
+func (v GtkPaned) GetPosition() int {
+	return int(C.gtk_paned_get_position(C.to_GtkPaned(v.Widget)));
+}
+func (v GtkPaned) SetPosition(position int) {
+	C.gtk_paned_set_position(C.to_GtkPaned(v.Widget), C.gint(position));
+}
+func (v GtkPaned) GetChild1() *GtkWidget {
+	return &GtkWidget {
+		C.gtk_paned_get_child1(C.to_GtkPaned(v.Widget)) };
+}
+func (v GtkPaned) GetChild2() *GtkWidget {
+	return &GtkWidget {
+		C.gtk_paned_get_child2(C.to_GtkPaned(v.Widget)) };
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkHPaned
+//-----------------------------------------------------------------------
+type GtkHPaned struct {
+	GtkPaned;
+}
+func HPaned() *GtkHPaned {
+	return &GtkHPaned { GtkPaned { GtkContainer { GtkWidget {
+		C.gtk_hpaned_new() }}}};
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkHPaned
+//-----------------------------------------------------------------------
+type GtkVPaned struct {
+	GtkPaned
+}
+func VPaned() *GtkVPaned {
+	return &GtkVPaned { GtkPaned { GtkContainer { GtkWidget {
+		C.gtk_vpaned_new() }}}};
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // Events
