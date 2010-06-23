@@ -537,6 +537,7 @@ static GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_
 static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
 //static GType to_GType(uint type) { return (GType)type; }
 static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
+static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 
 static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
 static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
@@ -1487,6 +1488,10 @@ func MessageDialog(parent WindowLike, flag int, t int, button int,
 //-----------------------------------------------------------------------
 // GtkBox
 //-----------------------------------------------------------------------
+const (
+		GTK_PACK_START = 0;
+		GTK_PACK_END = 1;
+)
 type Packable interface {
 	ContainerLike;
 	PackStart(child WidgetLike, expand bool, fill bool, padding uint);
@@ -3683,6 +3688,171 @@ func (v GtkTreeStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
 }
 // void gtk_tree_store_move_before (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *position);
 // void gtk_tree_store_move_after (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *position);
+
+//-----------------------------------------------------------------------
+// GtkNotebook
+//-----------------------------------------------------------------------
+type GtkNotebook struct {
+	GtkContainer;
+}
+func Notebook() *GtkNotebook {
+	return &GtkNotebook { GtkContainer { GtkWidget {
+		C.gtk_notebook_new() }}};
+}
+func (v GtkNotebook) AppendPage(child *GtkWidget, tab_label *GtkWidget) int {
+	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget));
+}
+func (v GtkNotebook) AppendPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
+	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget));
+}
+func (v GtkNotebook) PrependPage(child *GtkWidget, tab_label *GtkWidget) int {
+	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget));
+}
+func (v GtkNotebook) PrependPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
+	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget));
+}
+func (v GtkNotebook) InsertPage(child *GtkWidget, tab_label *GtkWidget, position int) int {
+	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, C.gint(position)));
+}
+func (v GtkNotebook) InsertPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget, position int) int {
+	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget, C.gint(position)));
+}
+func (v GtkNotebook) RemovePage(child *GtkWidget, page_num int) {
+	C.gtk_notebook_remove_page(C.to_GtkNotebook(v.Widget), C.gint(page_num));
+}
+// void gtk_notebook_set_window_creation_hook (GtkNotebookWindowCreationFunc func, gpointer data, GDestroyNotify destroy);
+func (v GtkNotebook) SetGroupId(group_id int) {
+	C.gtk_notebook_set_group_id(C.to_GtkNotebook(v.Widget), C.gint(group_id));
+}
+func (v GtkNotebook) GetGroupId() int {
+	return int(C.gtk_notebook_get_group_id(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) SetGroup(group unsafe.Pointer) {
+	C.gtk_notebook_set_group(C.to_GtkNotebook(v.Widget), C.gpointer(group));
+}
+func (v GtkNotebook) GetGroup() unsafe.Pointer {
+	return unsafe.Pointer(C.gtk_notebook_get_group(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) GetCurrentPage() int {
+	return int(C.gtk_notebook_get_current_page(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) GetNthPage(page_num int) *GtkWidget {
+	return &GtkWidget {
+		C.gtk_notebook_get_nth_page(C.to_GtkNotebook(v.Widget), C.gint(page_num)) };
+}
+func (v GtkNotebook) GetNPages() int {
+	return int(C.gtk_notebook_get_n_pages(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) PageNum(child *GtkWidget) int {
+	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.Widget), child.Widget));
+}
+func (v GtkNotebook) GetPageNum(page_num int) {
+	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.Widget), C.gint(page_num));
+}
+func (v GtkNotebook) NextPage() {
+	C.gtk_notebook_next_page(C.to_GtkNotebook(v.Widget));
+}
+func (v GtkNotebook) PrevPage() {
+	C.gtk_notebook_prev_page(C.to_GtkNotebook(v.Widget));
+}
+func (v GtkNotebook) GetShowBorder() bool {
+	return gboolean2bool(C.gtk_notebook_get_show_border(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) SetShowBorder(show_border bool) {
+	C.gtk_notebook_set_show_border(C.to_GtkNotebook(v.Widget), bool2gboolean(show_border));
+}
+func (v GtkNotebook) GetShowTabs() bool {
+	return gboolean2bool(C.gtk_notebook_get_show_tabs(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) SetShowTabs(show_tabs bool) {
+	C.gtk_notebook_set_show_tabs(C.to_GtkNotebook(v.Widget), bool2gboolean(show_tabs));
+}
+func (v GtkNotebook) SetTabPos(pos int) {
+	C.gtk_notebook_set_tab_pos(C.to_GtkNotebook(v.Widget), C.GtkPositionType(pos));
+}
+func (v GtkNotebook) GetTabPos() int {
+	return int(C.gtk_notebook_get_tab_pos(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) SeHomogeneousTabs(homogeneous bool) {
+	C.gtk_notebook_set_homogeneous_tabs(C.to_GtkNotebook(v.Widget), bool2gboolean(homogeneous));
+}
+func (v GtkNotebook) SetTabBorder(border_width uint) {
+	C.gtk_notebook_set_tab_border(C.to_GtkNotebook(v.Widget), C.guint(border_width));
+}
+func (v GtkNotebook) SetTabHBorder(tab_hborder uint) {
+	C.gtk_notebook_set_tab_hborder(C.to_GtkNotebook(v.Widget), C.guint(tab_hborder));
+}
+func (v GtkNotebook) SetTabVBorder(tab_vborder uint) {
+	C.gtk_notebook_set_tab_vborder(C.to_GtkNotebook(v.Widget), C.guint(tab_vborder));
+}
+func (v GtkNotebook) GetScrollable() bool {
+	return gboolean2bool(C.gtk_notebook_get_scrollable(C.to_GtkNotebook(v.Widget)));
+}
+func (v GtkNotebook) SetScrollable(scrollable bool) {
+	C.gtk_notebook_set_scrollable(C.to_GtkNotebook(v.Widget), bool2gboolean(scrollable));
+}
+func (v GtkNotebook) PopupEnable() {
+	C.gtk_notebook_popup_enable(C.to_GtkNotebook(v.Widget));
+}
+func (v GtkNotebook) PopupDisable() {
+	C.gtk_notebook_popup_disable(C.to_GtkNotebook(v.Widget));
+}
+func (v GtkNotebook) GetTabLabel(child *GtkWidget) *GtkWidget {
+	return &GtkWidget {
+		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.Widget), child.Widget) };
+}
+func (v GtkNotebook) SetTabLabel(child *GtkWidget, tab_label *GtkWidget) {
+	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget);
+}
+func (v GtkNotebook) SetTabLabelText(child *GtkWidget, name string) {
+	ptr := C.CString(name);
+	defer C.free_string(ptr);
+	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr));
+}
+func (v GtkNotebook) GetTabLabelText(child *GtkWidget) string {
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget)));
+}
+func (v GtkNotebook) GetMenuLabel(child *GtkWidget) *GtkWidget {
+	return &GtkWidget {
+		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.Widget), child.Widget) };
+}
+func (v GtkNotebook) SetMenuLabel(child *GtkWidget, menu_label *GtkWidget) {
+	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.Widget), child.Widget, menu_label.Widget);
+}
+func (v GtkNotebook) SetMenuLabelText(child *GtkWidget, name string) {
+	ptr := C.CString(name);
+	defer C.free_string(ptr);
+	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr));
+}
+func (v GtkNotebook) GetMenuLabelText(child *GtkWidget) string {
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget)));
+}
+func (v GtkNotebook) QueryTabLabelPacking(child *GtkWidget, expand *bool, fill *bool, pack_type *int) {
+	var cexpand, cfill C.gboolean;
+	var cpack_type C.GtkPackType;
+	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, &cexpand, &cfill, &cpack_type);
+	*expand = gboolean2bool(cexpand);
+	*fill = gboolean2bool(cfill);
+	*pack_type = int(cpack_type);
+}
+func (v GtkNotebook) SetTabLabelPacking(child *GtkWidget, expand bool, fill bool, pack_type int) {
+	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type));
+}
+func (v GtkNotebook) ReorderChild(child *GtkWidget, position int) {
+	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.Widget), child.Widget, C.gint(position));
+}
+func (v GtkNotebook) GetTabReorderable(child *GtkWidget) bool {
+	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget));
+}
+func (v GtkNotebook) SetReorderable(child *GtkWidget, reorderable bool) {
+	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(reorderable));
+}
+func (v GtkNotebook) GetTabDetachable(child *GtkWidget) bool {
+	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget));
+}
+func (v GtkNotebook) SetDetachable(child *GtkWidget, detachable bool) {
+	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(detachable));
+}
 
 //-----------------------------------------------------------------------
 // Events

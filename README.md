@@ -52,7 +52,7 @@ GOAL:
     GtkLabel: 10%
     GtkLinkButton: 0%
     GtkMenuBar: 100%
-    GtkNotebook: 0%
+    GtkNotebook: 90%
     GtkPaned: 0%
     GtkVolumeButton: 0%
     GtkPageSetupUnixDialog: 0%
