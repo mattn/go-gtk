@@ -3686,8 +3686,12 @@ func (v GtkTreeStore) IterIsValid(iter *GtkTreeIter) bool {
 func (v GtkTreeStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
 	C.gtk_tree_store_swap(v.TreeStore, &a.TreeIter, &b.TreeIter);
 }
-// void gtk_tree_store_move_before (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *position);
-// void gtk_tree_store_move_after (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *position);
+func (v GtkTreeStore) MoveBefore(iter *GtkTreeIter, position *GtkTreeIter) {
+	C.gtk_tree_store_move_before(v.TreeStore, &iter.TreeIter, &position.TreeIter);
+}
+func (v GtkTreeStore) MoveAfter(iter *GtkTreeIter, position *GtkTreeIter) {
+	C.gtk_tree_store_move_after(v.TreeStore, &iter.TreeIter, &position.TreeIter);
+}
 
 //-----------------------------------------------------------------------
 // GtkNotebook
