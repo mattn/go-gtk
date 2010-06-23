@@ -5,14 +5,13 @@ import (
   "glib";
   "gtk";
   "gdkpixbuf";
-  "unsafe";
 )
 
 func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("GTK Stock Icons");
-	window.Connect("destroy", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	window.Connect("destroy", func() {
 		gtk.MainQuit();
 	}, nil);
 

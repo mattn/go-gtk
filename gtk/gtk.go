@@ -15,7 +15,6 @@ typedef struct {
 	char name[256];
 	int func_no;
 	GtkWidget* widget;
-	uintptr_t* data;
 	uintptr_t** args;
 	int args_no;
 	int index;
@@ -62,18 +61,17 @@ static void free_callback_info(gpointer data, GClosure *closure) {
 	g_slice_free(callback_info, data);
 }
 
-static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no, void* data) {
+static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no) {
 	static int index = 0;
 	GSignalQuery query;
 	callback_info* cbi;
 	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(widget));
 	g_signal_query(signal_id, &query);
-	cbi = g_slice_new(callback_info);
+	cbi = g_slice_new0(callback_info);
 	strcpy(cbi->name, name);
 	cbi->func_no = func_no;
 	cbi->widget = widget;
 	cbi->args_no = query.n_params;
-	cbi->data = data;
 	cbi->index = index;
 	index++;
 	return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
@@ -563,7 +561,6 @@ import "gdk";
 import "gdkpixbuf";
 import "unsafe";
 import "reflect";
-import "runtime";
 import "container/vector";
 
 func bool2gboolean(b bool) C.gboolean {
@@ -794,11 +791,10 @@ func (v GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
 func (v GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
-	funcs.Push(f);
+	funcs.Push(&CallbackContext{f, reflect.NewValue(data)});
 	ptr := C.CString(s);
 	defer C.free_string(ptr);
-	pv := reflect.NewValue(data);
-	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, unsafe.Pointer(&pv));
+	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1);
 }
 func (v GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget {
@@ -3991,6 +3987,10 @@ var use_gtk_main bool = false;
 // a void * pointer.  Where you might have wanted to do that, you can
 // instead just use func () { ... using data } to pass the data in.
 type CallbackFunc interface{}
+type CallbackContext struct {
+	f CallbackFunc;
+	data reflect.Value;
+}
 var funcs *vector.Vector;
 var main_loop bool = true;
 func pollEvents() {
@@ -4000,8 +4000,8 @@ func pollEvents() {
 		}
 		var cbi C.callback_info;
 		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
-			f := funcs.At(int(cbi.func_no)).(CallbackFunc);
-			rf := reflect.NewValue(f).(*reflect.FuncValue);
+			context := funcs.At(int(cbi.func_no)).(*CallbackContext);
+			rf := reflect.NewValue(context.f).(*reflect.FuncValue);
 			t := rf.Type().(*reflect.FuncType);
 			fargs := make([]reflect.Value, t.NumIn());
 			for i := 0; i < len(fargs); i++ {
@@ -4009,7 +4009,7 @@ func pollEvents() {
 					fargs[i] = reflect.NewValue(&GtkWidget { cbi.widget });
 				} else
 				if i == len(fargs)-1 {
-					fargs[i] = *(*reflect.Value)(unsafe.Pointer(cbi.data));
+					fargs[i] = context.data;
 				} else {
 					if i-1 < int(cbi.args_no) {
 						fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)));
@@ -4026,7 +4026,7 @@ func pollEvents() {
 }
 
 func Init(args *[]string) {
-	runtime.GOMAXPROCS(10);
+	//runtime.GOMAXPROCS(10);
 	if args != nil {
 		var argc C.int = C.int(len(*args));
 		cargs := make([]*C.char, argc);
@@ -4036,10 +4036,10 @@ func Init(args *[]string) {
 		for i := 0;i < int(argc); i++ { goargs[i] = C.GoString(cargs[i]); }
 		for i := 0;i < int(argc); i++ { C.free_string(cargs[i]); }
 		*args = goargs;
-		funcs = new(vector.Vector);
 	} else {
 		C._gtk_init(nil, nil);
 	}
+	funcs = new(vector.Vector);
 }
 
 func Main() {

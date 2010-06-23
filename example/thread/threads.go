@@ -8,24 +8,27 @@ import "syscall"
 func main() {
 	gdk.ThreadsInit();
 	gtk.Init(nil);
-	w := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
+	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
+	window.Connect("destroy", func() {
+		gtk.MainQuit();
+	}, nil);
 
-	v := gtk.VBox(false, 1)
+	vbox := gtk.VBox(false, 1)
 
-	l1 := gtk.Label("");
-	v.Add(l1);
-	l2 := gtk.Label("");
-	v.Add(l2);
+	label1 := gtk.Label("");
+	vbox.Add(label1);
+	label2 := gtk.Label("");
+	vbox.Add(label2);
 
-	w.Add(v);
+	window.Add(vbox);
 
-	w.SetSizeRequest(100, 100);
-	w.ShowAll();
+	window.SetSizeRequest(100, 100);
+	window.ShowAll();
 	syscall.Sleep(1000*1000*100);
 	go (func() {
 		for i := 0; i < 300000; i++ {
 			gdk.ThreadsEnter();
-			l1.SetLabel(strconv.Itoa(i));
+			label1.SetLabel(strconv.Itoa(i));
 			gdk.ThreadsLeave();
 		}
 		gtk.MainQuit();
@@ -33,7 +36,7 @@ func main() {
 	go (func() {
 		for i := 300000; i >= 0; i-- {
 			gdk.ThreadsEnter();
-			l2.SetLabel(strconv.Itoa(i));
+			label2.SetLabel(strconv.Itoa(i));
 			gdk.ThreadsLeave();
 		}
 		gtk.MainQuit();

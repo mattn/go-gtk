@@ -4,7 +4,6 @@ import (
   "os";
   "gtk";
   "gdkpixbuf";
-  "unsafe";
   "strconv";
 )
 
@@ -12,7 +11,7 @@ func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("GTK Folder View");
-	window.Connect("destroy", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	window.Connect("destroy", func() {
 		gtk.MainQuit();
 	}, nil);
 
@@ -36,7 +35,7 @@ func main() {
 		store.Set(&iter3, gtk.Image().RenderIcon(gtk.GTK_STOCK_FILE, gtk.GTK_ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "File" + strconv.Itoa(n));
 	}
 
-	treeview.Connect("row_activated", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	treeview.Connect("row_activated", func() {
 		var path *gtk.GtkTreePath;
 		var column *gtk.GtkTreeViewColumn;
 		treeview.GetCursor(&path, &column);
@@ -48,7 +47,7 @@ func main() {
 			gtk.GTK_BUTTONS_OK,
 			mes);
 		dialog.SetTitle("TreePath");
-		dialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		dialog.Response(func() {
 			dialog.Destroy();
 		}, nil);
 		dialog.Run();

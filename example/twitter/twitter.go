@@ -2,7 +2,6 @@ package main
 
 import "gtk"
 import "gdkpixbuf"
-import "unsafe"
 import "http"
 import "net"
 import "json"
@@ -54,7 +53,7 @@ func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("Twitter!");
-	window.Connect("destroy", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	window.Connect("destroy", func() {
 		gtk.MainQuit();
 	}, nil);
 
@@ -73,7 +72,7 @@ func main() {
 		"foreground": "#0000FF", "weight": "700" });
 	button := gtk.ButtonWithLabel("Update Timeline");
 	button.SetTooltipMarkup("update <b>public timeline</b>");
-	button.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	button.Clicked(func() {
 		button.SetSensitive(false);
 		go func() {
 			r, err := HttpGet("http://twitter.com/statuses/public_timeline.json");

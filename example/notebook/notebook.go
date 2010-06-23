@@ -3,7 +3,6 @@ package main
 import (
   "os";
   "gtk";
-  "unsafe";
   "strconv";
 )
 
@@ -11,7 +10,7 @@ func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("GTK Notebook");
-	window.Connect("destroy", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	window.Connect("destroy", func() {
 		gtk.MainQuit();
 	}, nil);
 
@@ -23,13 +22,13 @@ func main() {
 		vbox := gtk.HBox(false, 1);
 
 		prev := gtk.ButtonWithLabel("go perv");
-		prev.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		prev.Clicked(func() {
 			notebook.PrevPage();
 		}, nil);
 		vbox.Add(prev);
 
 		next := gtk.ButtonWithLabel("go next");
-		next.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		next.Clicked(func() {
 			notebook.NextPage();
 		}, nil);
 		vbox.Add(next);

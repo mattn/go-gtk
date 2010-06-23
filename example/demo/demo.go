@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	gtk.Init(&os.Args);
+	//gtk.Init(&os.Args);
+	gtk.Init(nil);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("GTK Go!");
 	window.Connect("destroy", func(w *gtk.GtkWidget, user_data string) {
