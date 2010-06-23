@@ -3699,8 +3699,8 @@ func Notebook() *GtkNotebook {
 	return &GtkNotebook { GtkContainer { GtkWidget {
 		C.gtk_notebook_new() }}};
 }
-func (v GtkNotebook) AppendPage(child *GtkWidget, tab_label *GtkWidget) int {
-	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget));
+func (v GtkNotebook) AppendPage(child WidgetLike, tab_label WidgetLike) int {
+	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget()));
 }
 func (v GtkNotebook) AppendPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
 	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget));
