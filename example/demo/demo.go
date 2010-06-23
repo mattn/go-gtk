@@ -3,7 +3,6 @@ package main
 import (
   "os";
   "gtk";
-  "unsafe";
   "path";
 )
 
@@ -11,10 +10,8 @@ func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("GTK Go!");
-	window.Connect("destroy", func(w *gtk.GtkWidget, user_data unsafe.Pointer) {
-		p := uintptr(user_data);
-		println(*(*string)(unsafe.Pointer(&p)));
-		println("got destroy!");
+	window.Connect("destroy", func(w *gtk.GtkWidget, user_data string) {
+		println("got destroy!", user_data);
 		gtk.MainQuit();
 	}, "foo");
 
@@ -38,7 +35,7 @@ func main() {
 	filemenu.SetSubmenu(filesubmenu);
 
 		exitmenuitem := gtk.MenuItemWithMnemonic("E_xit");
-		exitmenuitem.Connect("activate", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		exitmenuitem.Connect("activate", func() {
 			gtk.MainQuit();
 		}, nil);
 		filesubmenu.Append(exitmenuitem);
@@ -72,7 +69,7 @@ func main() {
 	// GtkScale
 	//--------------------------------------------------------
 	scale := gtk.HScaleWithRange(0, 100, 1);
-	scale.Connect("value-changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	scale.Connect("value-changed", func() {
 		print("scale: ", scale.GetValue(), "\n");
 	}, nil);
 	framebox.Add(scale);
@@ -86,7 +83,7 @@ func main() {
 		// GtkButton
 		//--------------------------------------------------------
 		button := gtk.ButtonWithLabel("Button with label");
-		button.Clicked(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		button.Clicked(func() {
 			print("button clicked: ", button.GetLabel(), "\n");
 			messagedialog := gtk.MessageDialog(
 				button.GetTopLevelAsWindow(),
@@ -94,7 +91,7 @@ func main() {
 				gtk.GTK_MESSAGE_INFO,
 				gtk.GTK_BUTTONS_OK,
 				entry.GetText());
-			messagedialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+			messagedialog.Response(func() {
 				println("Dialog OK!")
 
 				//--------------------------------------------------------
@@ -105,7 +102,7 @@ func main() {
 					button.GetTopLevelAsWindow(),
 					gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
 					gtk.GTK_STOCK_OK);
-				filechooserdialog.Response(func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+				filechooserdialog.Response(func() {
 					println(filechooserdialog.GetFilename());
 					filechooserdialog.Destroy();
 				}, nil);
@@ -120,7 +117,7 @@ func main() {
 		// GtkFontButton
 		//--------------------------------------------------------
 		fontbutton := gtk.FontButton();
-		fontbutton.Connect("font-set", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		fontbutton.Connect("font-set", func() {
 			print("title: ", fontbutton.GetTitle(), "\n");
 			print("fontname: ", fontbutton.GetFontName(), "\n");
 			print("use_size: ", fontbutton.GetUseSize(), "\n");
@@ -135,7 +132,7 @@ func main() {
 		// GtkToggleButton
 		//--------------------------------------------------------
 		togglebutton := gtk.ToggleButtonWithLabel("ToggleButton with label");
-		togglebutton.Connect("toggled", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		togglebutton.Connect("toggled", func() {
 			if togglebutton.GetActive() {
 				togglebutton.SetLabel("ToggleButton ON!");
 			} else {
@@ -148,7 +145,7 @@ func main() {
 		// GtkCheckButton
 		//--------------------------------------------------------
 		checkbutton := gtk.CheckButtonWithLabel("CheckButton with label");
-		checkbutton.Connect("toggled", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+		checkbutton.Connect("toggled", func() {
 			if checkbutton.GetActive() {
 				checkbutton.SetLabel("CheckButton CHECKED!");
 			} else {
@@ -179,7 +176,7 @@ func main() {
 	comboboxentry.AppendText("Monkey");
 	comboboxentry.AppendText("Tiger");
 	comboboxentry.AppendText("Elephant");
-	comboboxentry.Connect("changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	comboboxentry.Connect("changed", func() {
 		print("value: ", comboboxentry.GetActiveText(), "\n");
 	}, nil);
 	combos.Add(comboboxentry);
@@ -192,7 +189,7 @@ func main() {
 	combobox.AppendText("Banana");
 	combobox.AppendText("Apple");
 	combobox.SetActive(1);
-	combobox .Connect("changed", func(w *gtk.GtkWidget, args []unsafe.Pointer) {
+	combobox .Connect("changed", func() {
 		print("value: ", combobox.GetActiveText(), "\n");
 	}, nil);
 	combos.Add(combobox);

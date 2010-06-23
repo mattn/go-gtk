@@ -73,11 +73,7 @@ static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no, voi
 	cbi->func_no = func_no;
 	cbi->widget = widget;
 	cbi->args_no = query.n_params;
-	if (data) {
-		cbi->data = *(uint**)data;
-	} else {
-		cbi->data = NULL;
-	}
+	cbi->data = data;
 	cbi->index = index;
 	index++;
 	return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
@@ -801,11 +797,8 @@ func (v GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
 	funcs.Push(f);
 	ptr := C.CString(s);
 	defer C.free_string(ptr);
-	if data == nil {
-		C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, nil);
-	} else {
-		C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, unsafe.Pointer(reflect.NewValue(data).Addr()));
-	}
+	pv := reflect.NewValue(data);
+	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1, unsafe.Pointer(&pv));
 }
 func (v GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget {
@@ -4008,23 +4001,18 @@ func pollEvents() {
 		var cbi C.callback_info;
 		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
 			f := funcs.At(int(cbi.func_no)).(CallbackFunc);
-			args := make([]interface{}, cbi.args_no);
 			rf := reflect.NewValue(f).(*reflect.FuncValue);
 			t := rf.Type().(*reflect.FuncType);
 			fargs := make([]reflect.Value, t.NumIn());
-			println(int(cbi.args_no));
-			for i := C.int(0); i < cbi.args_no; i++ {
-				args[i] = C.callback_info_get_arg(&cbi, C.int(i));
-			}
 			for i := 0; i < len(fargs); i++ {
 				if i == 0 {
 					fargs[i] = reflect.NewValue(&GtkWidget { cbi.widget });
 				} else
 				if i == len(fargs)-1 {
-					fargs[i] = reflect.NewValue(unsafe.Pointer(cbi.data));
+					fargs[i] = *(*reflect.Value)(unsafe.Pointer(cbi.data));
 				} else {
-					if i-1 < len(args) {
-						fargs[i] = reflect.NewValue(args[i-1]);
+					if i-1 < int(cbi.args_no) {
+						fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)));
 					} else {
 						fargs[i] = reflect.NewValue(nil);
 					}
