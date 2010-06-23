@@ -65,7 +65,7 @@ GOAL:
     GtkMessageDialog: 10%
     GtkNotebook: 90%
     GtkPageSetupUnixDialog: 0%
-    GtkPaned: 0%
+    GtkPaned: 100%
     GtkPrintUnixDialog: 0%
     GtkProgressBar: 0%
     GtkRadioButton: 100%
