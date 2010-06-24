@@ -493,14 +493,33 @@ static inline void set_gtype(GType* types, int n, int type) {
 	types[n] = (GType) type;
 }
 
+static inline gchar** make_strings(int count) {
+	return (gchar**)malloc(sizeof(gchar*) * count);
+}
+
+static inline void destroy_strings(gchar** strings) {
+	free(strings);
+}
+
+static inline gchar* get_string(gchar** strings, int n) {
+	return strings[n];
+}
+
+static inline void set_string(gchar** strings, int n, gchar* str) {
+	strings[n] = str;
+}
+
 static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
 
 static inline char* to_charptr(const gchar* s) { return (char*)s; }
+
+static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 
 static inline void free_string(char* s) { free(s); }
 
 static GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
 static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
+static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
 static GtkContainer* to_GtkContainer(GtkWidget* w) { return GTK_CONTAINER(w); }
 static GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER(w); }
 static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
@@ -1521,6 +1540,182 @@ func MessageDialog(parent WindowLike, flag uint, t uint, button uint, message st
 // gtk_message_dialog_set_markup
 // gtk_message_dialog_format_secondary_text
 // gtk_message_dialog_format_secondary_markup
+
+//-----------------------------------------------------------------------
+// GtkAboutDialog
+//-----------------------------------------------------------------------
+type GtkAboutDialog struct {
+	GtkDialog
+}
+
+func AboutDialog() *GtkAboutDialog {
+	return &GtkAboutDialog { GtkDialog { GtkWindow{ GtkContainer { GtkWidget {
+		C.gtk_about_dialog_new() }}}}}
+}
+func ShowAboutDialog(v ...interface{}) {
+	//TODO
+}
+func (v *GtkAboutDialog) GetName() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_name(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetName(name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_name(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetProgramName() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_program_name(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetProgramName(name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_program_name(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetVersion() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_version(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetVersion(version string) {
+	ptr := C.CString(version)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_version(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetCopyright() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_copyright(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetCopyright(copyright string) {
+	ptr := C.CString(copyright)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_copyright(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetComments() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_comments(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetComments(comments string) {
+	ptr := C.CString(comments)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_comments(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetLicense() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_license(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetLicense(license string) {
+	ptr := C.CString(license)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_license(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetWrapLicense() bool {
+	return gboolean2bool(C.gtk_about_dialog_get_wrap_license(C.to_GtkAboutDialog(v.Widget)))
+}
+func (v *GtkAboutDialog) SetWrapWidth(wrap_license bool) {
+	C.gtk_about_dialog_set_wrap_license(C.to_GtkAboutDialog(v.Widget), bool2gboolean(wrap_license))
+}
+func (v *GtkAboutDialog) GetWebsite() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_website(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetWebsite(website string) {
+	ptr := C.CString(website)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_website(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetWebsiteLabel() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_website_label(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetWebsiteLabel(website_label string) {
+	ptr := C.CString(website_label)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_website_label(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetAuthors() []string {
+	var authors *vector.StringVector
+	cauthors := C.gtk_about_dialog_get_authors(C.to_GtkAboutDialog(v.Widget))
+	for {
+		authors.Push(C.GoString(C.to_charptr(*cauthors)))
+		cauthors = C.next_gcharptr(cauthors);
+		if *cauthors == nil {
+			break;
+		}
+	}
+	return authors.Data()
+}
+func (v *GtkAboutDialog) SetAuthors(authors []string) {
+	cauthors := C.make_strings(C.int(len(authors)+1));
+	for i, author := range authors {
+		ptr := C.CString(author)
+		defer C.free_string(ptr);
+		C.set_string(cauthors, C.int(i), C.to_gcharptr(ptr));
+	}
+	C.set_string(cauthors, C.int(len(authors)), nil);
+	C.gtk_about_dialog_set_authors(C.to_GtkAboutDialog(v.Widget), cauthors);
+	C.destroy_strings(cauthors);
+}
+func (v *GtkAboutDialog) GetDocumenters() []string {
+	var documenters *vector.StringVector
+	cdocumenters := C.gtk_about_dialog_get_documenters(C.to_GtkAboutDialog(v.Widget))
+	for {
+		documenters.Push(C.GoString(C.to_charptr(*cdocumenters)))
+		cdocumenters = C.next_gcharptr(cdocumenters);
+		if *cdocumenters == nil {
+			break;
+		}
+	}
+	return documenters.Data()
+}
+func (v *GtkAboutDialog) SetDocumenters(documenters []string) {
+	cdocumenters := C.make_strings(C.int(len(documenters)));
+	for i, author := range documenters {
+		ptr := C.CString(author)
+		defer C.free_string(ptr);
+		C.set_string(cdocumenters, C.int(i), C.to_gcharptr(ptr));
+	}
+	C.gtk_about_dialog_set_documenters(C.to_GtkAboutDialog(v.Widget), cdocumenters);
+	C.destroy_strings(cdocumenters);
+}
+func (v *GtkAboutDialog) GetArtists() []string {
+	var artists *vector.StringVector
+	cartists := C.gtk_about_dialog_get_artists(C.to_GtkAboutDialog(v.Widget))
+	for {
+		artists.Push(C.GoString(C.to_charptr(*cartists)))
+		cartists = C.next_gcharptr(cartists);
+		if *cartists == nil {
+			break;
+		}
+	}
+	return artists.Data()
+}
+func (v *GtkAboutDialog) SetArtists(artists []string) {
+	cartists := C.make_strings(C.int(len(artists)));
+	for i, author := range artists {
+		ptr := C.CString(author)
+		defer C.free_string(ptr);
+		C.set_string(cartists, C.int(i), C.to_gcharptr(ptr));
+	}
+	C.gtk_about_dialog_set_artists(C.to_GtkAboutDialog(v.Widget), cartists);
+	C.destroy_strings(cartists);
+}
+func (v *GtkAboutDialog) GetTranslatorCredits() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_translator_credits(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetTranslatorCredits(translator_credits string) {
+	ptr := C.CString(translator_credits)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_translator_credits(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkAboutDialog) GetLogo() *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_about_dialog_get_logo(C.to_GtkAboutDialog(v.Widget))}
+}
+func (v *GtkAboutDialog) SetLogo(logo *gdkpixbuf.GdkPixbuf) {
+	C.gtk_about_dialog_set_logo(C.to_GtkAboutDialog(v.Widget), logo.Pixbuf);
+}
+func (v *GtkAboutDialog) GetLogoIconName() string {
+	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_logo_icon_name(C.to_GtkAboutDialog(v.Widget))))
+}
+func (v *GtkAboutDialog) SetLogoIconName(icon_name string) {
+	ptr := C.CString(icon_name)
+	defer C.free_string(ptr)
+	C.gtk_about_dialog_set_logo_icon_name(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkBox
