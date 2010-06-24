@@ -34,7 +34,7 @@ type GdkPixbuf struct {
 	Pixbuf *C.GdkPixbuf
 }
 
-func GdkPixbufFromFile(path string) (pixbuf *GdkPixbuf, err *C.GError) {
+func PixbufFromFile(path string) (pixbuf *GdkPixbuf, err *C.GError) {
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
