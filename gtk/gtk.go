@@ -524,7 +524,7 @@ static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
 static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
 static GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
 static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
-//static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
+static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
 //static GtkTreeViewColumn* to_GtkTreeViewColumn(GtkWidget* w) { return GTK_TREE_VIEW_COLUMN(w); }
@@ -1089,8 +1089,13 @@ func (v *GtkWidget) IsComposited() bool {
 // gtk_widget_list_mnemonic_labels
 // gtk_widget_add_mnemonic_label
 // gtk_widget_remove_mnemonic_label
-// gtk_widget_set_tooltip_window
-// gtk_widget_get_tooltip_window
+func (v *GtkWidget) SetTooltipWindow(w WindowLike) {
+	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToGtkWidget()))
+}
+func (v *GtkWidget) GetTooltipWindow() *GtkWindow {
+	return &GtkWindow{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.Widget)))}}}
+}
 // gtk_widget_trigger_tooltip_query
 func (v *GtkWidget) GetTooltipText() string {
 	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_text(v.Widget)))
