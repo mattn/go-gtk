@@ -62,12 +62,24 @@ func main() {
 		filesubmenu.Append(exitmenuitem);
 
 	//--------------------------------------------------------
+	// GtkVPaned
+	//--------------------------------------------------------
+	vpaned := gtk.VPaned();
+	vbox.Add(vpaned);
+
+	//--------------------------------------------------------
 	// GtkFrame
 	//--------------------------------------------------------
-	frame := gtk.Frame("Demo");
-	framebox := gtk.VBox(false, 1);
-	frame.Add(framebox);
-	vbox.Add(frame);
+	frame1 := gtk.Frame("Demo");
+	framebox1 := gtk.VBox(false, 1);
+	frame1.Add(framebox1);
+
+	frame2 := gtk.Frame("Demo");
+	framebox2 := gtk.VBox(false, 1);
+	frame2.Add(framebox2);
+
+	vpaned.Add1(frame1);
+	vpaned.Add2(frame2);
 
 	//--------------------------------------------------------
 	// GtkImage
@@ -77,14 +89,14 @@ func main() {
 
 	label := gtk.Label("Go Binding for GTK");
 	label.ModifyFontEasy("DejaVu Serif 15");
-	framebox.PackStart(label, false, true, 0);
+	framebox1.PackStart(label, false, true, 0);
 
 	entry := gtk.Entry();
 	entry.SetText("Hello world");
-	framebox.Add(entry);
+	framebox1.Add(entry);
 
 	image := gtk.ImageFromFile(imagefile);
-	framebox.Add(image);
+	framebox1.Add(image);
 
 	//--------------------------------------------------------
 	// GtkScale
@@ -93,7 +105,7 @@ func main() {
 	scale.Connect("value-changed", func() {
 		print("scale: ", scale.GetValue(), "\n");
 	}, nil);
-	framebox.Add(scale);
+	framebox2.Add(scale);
 
 	//--------------------------------------------------------
 	// GtkHBox
@@ -145,7 +157,7 @@ func main() {
 			print("show_size: ", fontbutton.GetShowSize(), "\n");
 		}, nil);
 		buttons.Add(fontbutton);
-		framebox.PackStart(buttons, false, false, 0);
+		framebox2.PackStart(buttons, false, false, 0);
 
 		buttons = gtk.HBox(false, 1);
 
@@ -187,7 +199,7 @@ func main() {
 		//radiobutton.SetMode(false);
 		radiofirst.SetActive(true);
 
-		framebox.PackStart(buttons, false, false, 0);
+		framebox2.PackStart(buttons, false, false, 0);
 
 	//--------------------------------------------------------
 	// GtkComboBoxEntry
@@ -215,7 +227,7 @@ func main() {
 	}, nil);
 	combos.Add(combobox);
 
-	framebox.PackStart(combos, false, false, 0);
+	framebox2.PackStart(combos, false, false, 0);
 
 	//--------------------------------------------------------
 	// GtkTextView
@@ -236,7 +248,7 @@ func main() {
 	buffer.GetEndIter(&end);
 	buffer.ApplyTag(tag, &start, &end);
 	swin.Add(textview);
-	framebox.Add(swin);
+	framebox2.Add(swin);
 
 	//--------------------------------------------------------
 	// GtkStatusbar
@@ -245,7 +257,7 @@ func main() {
 	context_id := statusbar.GetContextId("go-gtk");
 	statusbar.Push(context_id, "GTK binding for Go!");
 
-	framebox.PackStart(statusbar, false, false, 0);
+	framebox2.PackStart(statusbar, false, false, 0);
 
 	//--------------------------------------------------------
 	// Event
