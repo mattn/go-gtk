@@ -1817,10 +1817,10 @@ func Entry() *GtkEntry {
 	return &GtkEntry{GtkWidget{
 		C.gtk_entry_new()}}
 }
-func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
-	return &GtkEntry{GtkWidget{
-		C.gtk_entry_new_with_buffer(buffer.TextBuffer)}}
-}
+//func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
+//	return &GtkEntry{GtkWidget{
+//		C.gtk_entry_new_with_buffer(C.to_GtkTextbuffer.TextBuffer)}}
+//}
 func (v *GtkEntry) GetText() string {
 	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
 }
@@ -1829,20 +1829,28 @@ func (v *GtkEntry) SetText(text string) {
 	defer C.free_string(ptr)
 	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkEntry) GetBuffer() *GtkTextBuffer {
-	return &GtkTextBuffer{
-		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
+//func (v *GtkEntry) GetBuffer() *GtkTextBuffer {
+//	return &GtkTextBuffer{
+//		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
+//}
+//func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) {
+//	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), C.to_GtkTextBuffer(buffer.TextBuffer))
+//}
+func (v *GtkEntry) GetVisibility() bool {
+	return gboolean2bool(C.gtk_entry_get_visibility(C.to_GtkEntry(v.Widget)))
 }
-func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) {
-	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), buffer.TextBuffer)
+func (v *GtkEntry) SetVisibility(setting bool) {
+	C.gtk_entry_set_visibility(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
-// gtk_entry_set_visibility
-// gtk_entry_get_visibility
 // gtk_entry_set_invisible_char
 // gtk_entry_get_invisible_char
 // gtk_entry_unset_invisible_char
-// gtk_entry_set_has_frame
-// gtk_entry_get_has_frame
+func (v *GtkEntry) GetHasFrame() bool {
+	return gboolean2bool(C.gtk_entry_get_has_frame(C.to_GtkEntry(v.Widget)))
+}
+func (v *GtkEntry) SetHasFrame(setting bool) {
+	C.gtk_entry_set_has_frame(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
+}
 // gtk_entry_set_inner_border
 // gtk_entry_set_overwrite_mode
 // gtk_entry_get_overwrite_mode
@@ -1889,11 +1897,21 @@ func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) {
 // gtk_entry_set_icon_drag_source
 // gtk_entry_get_current_icon_drag_source
 // gtk_entry_new_with_max_length
-// gtk_entry_append_text
-// gtk_entry_prepend_text
+func (v *GtkEntry) AppendText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_entry_append_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkEntry) PrependText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_entry_prepend_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
+}
 // gtk_entry_set_position
 // gtk_entry_select_region
-// gtk_entry_set_editable
+func (v *GtkEntry) SetEditable(setting bool) {
+	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
+}
 
 //-----------------------------------------------------------------------
 // GtkImage
@@ -2005,7 +2023,7 @@ func (v *GtkLabel) SetLabel(label string) {
 // gtk_label_set_attributes
 // gtk_label_get_attributes
 func (v *GtkLabel) SetMarkup(markup string) {
-	ptr := C.CString(label)
+	ptr := C.CString(markup)
 	defer C.free_string(ptr)
 	C.gtk_label_set_markup(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
