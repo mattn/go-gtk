@@ -4,9 +4,12 @@ import "gdk"
 import "gtk"
 import "strconv"
 import "syscall"
+import "runtime"
 
 func main() {
+	runtime.GOMAXPROCS(10);
 	gdk.ThreadsInit();
+	gdk.ThreadsEnter();
 	gtk.Init(nil);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.Connect("destroy", func() {
