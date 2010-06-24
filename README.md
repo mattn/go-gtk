@@ -75,6 +75,7 @@ GOAL:
     GtkSeparator: 0%
     GtkSpinButton: 0%
     GtkStatusbar: 100%
+    GtkTable: 100%
     GtkTextView: 10%
     GtkToggleButton: 100%
     GtkToolbar: 0%

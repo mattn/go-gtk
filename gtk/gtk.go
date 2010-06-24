@@ -873,8 +873,8 @@ func (v *GtkWidget) Activate() {
 	C.gtk_widget_activate(v.Widget)
 }
 // gtk_widget_set_scroll_adjustments
-func (v *GtkWidget) Reparent(parent *GtkWidget) {
-	C.gtk_widget_reparent(v.Widget, parent.Widget)
+func (v *GtkWidget) Reparent(parent WidgetLike) {
+	C.gtk_widget_reparent(v.Widget, parent.ToGtkWidget())
 }
 // gtk_widget_intersect
 // gtk_widget_region_intersect
@@ -970,8 +970,8 @@ func (v *GtkWidget) GetParent() *GtkWidget {
 	return &GtkWidget{
 		C.gtk_widget_get_parent(v.Widget)}
 }
-func (v *GtkWidget) SetParent(parent *GtkWidget) {
-	C.gtk_widget_set_parent(v.Widget, parent.Widget)
+func (v *GtkWidget) SetParent(parent WidgetLike) {
+	C.gtk_widget_set_parent(v.Widget, parent.ToGtkWidget())
 }
 func (v *GtkWidget) GetParentWindow() *gdk.GdkWindow {
 	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)))
@@ -1285,12 +1285,33 @@ func (v *GtkWindow) SetTransientFor(parent WindowLike) {
 // gtk_window_begin_resize_drag
 // gtk_window_begin_move_drag
 // gtk_window_set_policy
-// gtk_window_set_default_size
-// gtk_window_get_default_size
-// gtk_window_resize
-// gtk_window_get_size
-// gtk_window_move
-// gtk_window_get_position
+func (v *GtkWindow) SetDefaultSize(width int, height int) {
+	C.gtk_window_set_default_size(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
+}
+func (v *GtkWindow) GetDefaultSize(width *int, height *int) {
+	var cwidth, cheight C.gint
+	C.gtk_window_get_default_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight);
+	*width = int(cwidth)
+	*height = int(cheight)
+}
+func (v *GtkWindow) Resize(width int, height int) {
+	C.gtk_window_resize(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
+}
+func (v *GtkWindow) GetSize(width *int, height *int) {
+	var cwidth, cheight C.gint
+	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight);
+	*width = int(cwidth)
+	*height = int(cheight)
+}
+func (v *GtkWindow) Move(x int, y int) {
+	C.gtk_window_move(C.to_GtkWindow(v.Widget), C.gint(x), C.gint(y))
+}
+func (v *GtkWindow) GetPosition(root_x *int, root_y *int) {
+	var croot_x, croot_y C.gint
+	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &croot_x, &croot_y);
+	*root_x = int(croot_x)
+	*root_y = int(croot_y)
+}
 // gtk_window_parse_geometry
 // gtk_window_get_group
 // gtk_window_reshow_with_initial_size
@@ -1540,18 +1561,18 @@ func (v *GtkBox) SetSpacing(spacing int) {
 func (v *GtkBox) ReorderChild(child WidgetLike, position int) {
 	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToGtkWidget(), C.gint(position))
 }
-func (v *GtkBox) QueryChildPacking(child *GtkWidget, expand *bool, fill *bool, padding *uint, pack_type *uint) {
+func (v *GtkBox) QueryChildPacking(child WidgetLike, expand *bool, fill *bool, padding *uint, pack_type *uint) {
 	var cexpand, cfill C.gboolean
 	var cpadding C.guint
 	var cpack_type C.GtkPackType
-	C.gtk_box_query_child_packing(C.to_GtkBox(v.Widget), child.Widget, &cexpand, &cfill, &cpadding, &cpack_type)
+	C.gtk_box_query_child_packing(C.to_GtkBox(v.Widget), child.ToGtkWidget(), &cexpand, &cfill, &cpadding, &cpack_type)
 	*expand = gboolean2bool(cexpand)
 	*fill = gboolean2bool(cfill)
 	*padding = uint(cpadding)
 	*pack_type = uint(cpack_type)
 }
-func (v *GtkBox) SetChildPacking(child *GtkWidget, expand bool, fill bool, padding uint, pack_type uint) {
-	C.gtk_box_set_child_packing(C.to_GtkBox(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type))
+func (v *GtkBox) SetChildPacking(child WidgetLike, expand bool, fill bool, padding uint, pack_type uint) {
+	C.gtk_box_set_child_packing(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type))
 }
 
 //-----------------------------------------------------------------------
@@ -2598,6 +2619,9 @@ func (v *GtkScrolledWindow) SetShadowType(typ uint) {
 }
 // gtk_scrolled_window_get_shadow_type
 // gtk_scrolled_window_add_with_viewport
+func (v *GtkScrolledWindow) AddWithViewPort(w WidgetLike) {
+	C.gtk_scrolled_window_add_with_viewport(C.to_GtkScrolledWindow(v.Widget), w.ToGtkWidget())
+}
 
 //-----------------------------------------------------------------------
 // GtkTextTagTable
@@ -3831,22 +3855,22 @@ func Notebook() *GtkNotebook {
 func (v *GtkNotebook) AppendPage(child WidgetLike, tab_label WidgetLike) int {
 	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget()))
 }
-func (v *GtkNotebook) AppendPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
-	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget))
+func (v *GtkNotebook) AppendPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
+	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), menu_label.ToGtkWidget()))
 }
-func (v *GtkNotebook) PrependPage(child *GtkWidget, tab_label *GtkWidget) int {
-	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget))
+func (v *GtkNotebook) PrependPage(child WidgetLike, tab_label WidgetLike) int {
+	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget()))
 }
-func (v *GtkNotebook) PrependPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
-	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget))
+func (v *GtkNotebook) PrependPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
+	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), menu_label.ToGtkWidget()))
 }
-func (v *GtkNotebook) InsertPage(child *GtkWidget, tab_label *GtkWidget, position int) int {
-	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, C.gint(position)))
+func (v *GtkNotebook) InsertPage(child WidgetLike, tab_label WidgetLike, position int) int {
+	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), C.gint(position)))
 }
-func (v *GtkNotebook) InsertPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget, position int) int {
-	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget, C.gint(position)))
+func (v *GtkNotebook) InsertPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike, position int) int {
+	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), menu_label.ToGtkWidget(), C.gint(position)))
 }
-func (v *GtkNotebook) RemovePage(child *GtkWidget, page_num int) {
+func (v *GtkNotebook) RemovePage(child WidgetLike, page_num int) {
 	C.gtk_notebook_remove_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))
 }
 // void gtk_notebook_set_window_creation_hook (GtkNotebookWindowCreationFunc func, gpointer data, GDestroyNotify destroy);
@@ -3872,8 +3896,8 @@ func (v *GtkNotebook) GetNthPage(page_num int) *GtkWidget {
 func (v *GtkNotebook) GetNPages() int {
 	return int(C.gtk_notebook_get_n_pages(C.to_GtkNotebook(v.Widget)))
 }
-func (v *GtkNotebook) PageNum(child *GtkWidget) int {
-	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.Widget), child.Widget))
+func (v *GtkNotebook) PageNum(child WidgetLike) int {
+	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.Widget), child.ToGtkWidget()))
 }
 func (v *GtkNotebook) GetPageNum(page_num int) {
 	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))
@@ -3926,61 +3950,61 @@ func (v *GtkNotebook) PopupEnable() {
 func (v *GtkNotebook) PopupDisable() {
 	C.gtk_notebook_popup_disable(C.to_GtkNotebook(v.Widget))
 }
-func (v *GtkNotebook) GetTabLabel(child *GtkWidget) *GtkWidget {
+func (v *GtkNotebook) GetTabLabel(child WidgetLike) *GtkWidget {
 	return &GtkWidget{
-		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.Widget), child.Widget)}
+		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())}
 }
-func (v *GtkNotebook) SetTabLabel(child *GtkWidget, tab_label *GtkWidget) {
-	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget)
+func (v *GtkNotebook) SetTabLabel(child WidgetLike, tab_label WidgetLike) {
+	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget())
 }
-func (v *GtkNotebook) SetTabLabelText(child *GtkWidget, name string) {
+func (v *GtkNotebook) SetTabLabelText(child WidgetLike, name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr))
+	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), C.to_gcharptr(ptr))
 }
-func (v *GtkNotebook) GetTabLabelText(child *GtkWidget) string {
-	return C.GoString(C.to_charptr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget)))
+func (v *GtkNotebook) GetTabLabelText(child WidgetLike) string {
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())))
 }
-func (v *GtkNotebook) GetMenuLabel(child *GtkWidget) *GtkWidget {
+func (v *GtkNotebook) GetMenuLabel(child WidgetLike) *GtkWidget {
 	return &GtkWidget{
-		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.Widget), child.Widget)}
+		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())}
 }
-func (v *GtkNotebook) SetMenuLabel(child *GtkWidget, menu_label *GtkWidget) {
-	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.Widget), child.Widget, menu_label.Widget)
+func (v *GtkNotebook) SetMenuLabel(child WidgetLike, menu_label WidgetLike) {
+	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), menu_label.ToGtkWidget())
 }
-func (v *GtkNotebook) SetMenuLabelText(child *GtkWidget, name string) {
+func (v *GtkNotebook) SetMenuLabelText(child WidgetLike, name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr))
+	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), C.to_gcharptr(ptr))
 }
-func (v *GtkNotebook) GetMenuLabelText(child *GtkWidget) string {
-	return C.GoString(C.to_charptr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget)))
+func (v *GtkNotebook) GetMenuLabelText(child WidgetLike) string {
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())))
 }
-func (v *GtkNotebook) QueryTabLabelPacking(child *GtkWidget, expand *bool, fill *bool, pack_type *uint) {
+func (v *GtkNotebook) QueryTabLabelPacking(child WidgetLike, expand *bool, fill *bool, pack_type *uint) {
 	var cexpand, cfill C.gboolean
 	var cpack_type C.GtkPackType
-	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, &cexpand, &cfill, &cpack_type)
+	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), &cexpand, &cfill, &cpack_type)
 	*expand = gboolean2bool(cexpand)
 	*fill = gboolean2bool(cfill)
 	*pack_type = uint(cpack_type)
 }
-func (v *GtkNotebook) SetTabLabelPacking(child *GtkWidget, expand bool, fill bool, pack_type uint) {
-	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type))
+func (v *GtkNotebook) SetTabLabelPacking(child WidgetLike, expand bool, fill bool, pack_type uint) {
+	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type))
 }
-func (v *GtkNotebook) ReorderChild(child *GtkWidget, position int) {
-	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.Widget), child.Widget, C.gint(position))
+func (v *GtkNotebook) ReorderChild(child WidgetLike, position int) {
+	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), C.gint(position))
 }
-func (v *GtkNotebook) GetTabReorderable(child *GtkWidget) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget))
+func (v *GtkNotebook) GetTabReorderable(child WidgetLike) bool {
+	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget()))
 }
-func (v *GtkNotebook) SetReorderable(child *GtkWidget, reorderable bool) {
-	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(reorderable))
+func (v *GtkNotebook) SetReorderable(child WidgetLike, reorderable bool) {
+	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), bool2gboolean(reorderable))
 }
-func (v *GtkNotebook) GetTabDetachable(child *GtkWidget) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget))
+func (v *GtkNotebook) GetTabDetachable(child WidgetLike) bool {
+	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget()))
 }
-func (v *GtkNotebook) SetDetachable(child *GtkWidget, detachable bool) {
-	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(detachable))
+func (v *GtkNotebook) SetDetachable(child WidgetLike, detachable bool) {
+	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), bool2gboolean(detachable))
 }
 //-----------------------------------------------------------------------
 // GtkPaned
@@ -3996,17 +4020,17 @@ type GtkPaned struct {
 	GtkContainer
 }
 
-func (v *GtkPaned) Add1(child *GtkWidget) {
-	C.gtk_paned_add1(C.to_GtkPaned(v.Widget), child.Widget)
+func (v *GtkPaned) Add1(child WidgetLike) {
+	C.gtk_paned_add1(C.to_GtkPaned(v.Widget), child.ToGtkWidget())
 }
-func (v *GtkPaned) Add2(child *GtkWidget) {
-	C.gtk_paned_add2(C.to_GtkPaned(v.Widget), child.Widget)
+func (v *GtkPaned) Add2(child WidgetLike) {
+	C.gtk_paned_add2(C.to_GtkPaned(v.Widget), child.ToGtkWidget())
 }
-func (v *GtkPaned) Pack1(child *GtkWidget, resize bool, shrink bool) {
-	C.gtk_paned_pack1(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink))
+func (v *GtkPaned) Pack1(child WidgetLike, resize bool, shrink bool) {
+	C.gtk_paned_pack1(C.to_GtkPaned(v.Widget), child.ToGtkWidget(), bool2gboolean(resize), bool2gboolean(shrink))
 }
-func (v *GtkPaned) Pack2(child *GtkWidget, resize bool, shrink bool) {
-	C.gtk_paned_pack2(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink))
+func (v *GtkPaned) Pack2(child WidgetLike, resize bool, shrink bool) {
+	C.gtk_paned_pack2(C.to_GtkPaned(v.Widget), child.ToGtkWidget(), bool2gboolean(resize), bool2gboolean(shrink))
 }
 func (v *GtkPaned) GetPosition() int {
 	return int(C.gtk_paned_get_position(C.to_GtkPaned(v.Widget)))
@@ -4070,42 +4094,43 @@ func Table(rows uint, columns uint, homogeneous bool) *GtkTable {
 func (v *GtkTable) Resize(rows uint, columns uint) {
 	C.gtk_table_resize(C.to_GtkTable(v.Widget), C.guint(rows), C.guint(columns))
 }
-func (v *GtkTable) Attach(child *GtkWidget, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint, xoptions uint, yoptions uint, xpadding uint, ypadding uint) {
-	C.gtk_table_attach(C.to_GtkTable(v.Widget), child.Widget, C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), C.guint(xpadding), C.guint(ypadding))
+func (v *GtkTable) Attach(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint, xoptions uint, yoptions uint, xpadding uint, ypadding uint) {
+	C.gtk_table_attach(C.to_GtkTable(v.Widget), child.ToGtkWidget(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), C.guint(xpadding), C.guint(ypadding))
 }
-func (v *GtkTable) AttachDefaults(child *GtkWidget, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
-	C.gtk_table_attach_defaults(C.to_GtkTable(v.Widget), child.Widget, C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach));
+func (v *GtkTable) AttachDefaults(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
+	C.gtk_table_attach_defaults(C.to_GtkTable(v.Widget), child.ToGtkWidget(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach))
 }
-func (v *GtkTable) SetRowSpacing(child *GtkWidget, row uint, spacing uint) {
+func (v *GtkTable) SetRowSpacing(child WidgetLike, row uint, spacing uint) {
 	C.gtk_table_set_row_spacing(C.to_GtkTable(v.Widget), C.guint(row), C.guint(spacing))
 }
-func (v *GtkTable) GetRowSpacing(child *GtkWidget, row uint) uint {
+func (v *GtkTable) GetRowSpacing(child WidgetLike, row uint) uint {
 	return uint(C.gtk_table_get_row_spacing(C.to_GtkTable(v.Widget), C.guint(row)))
 }
-func (v *GtkTable) SetColSpacing(child *GtkWidget, column uint, spacing uint) {
+func (v *GtkTable) SetColSpacing(child WidgetLike, column uint, spacing uint) {
 	C.gtk_table_set_col_spacing(C.to_GtkTable(v.Widget), C.guint(column), C.guint(spacing))
 }
-func (v *GtkTable) GetColSpacing(child *GtkWidget, column uint) uint {
+func (v *GtkTable) GetColSpacing(child WidgetLike, column uint) uint {
 	return uint(C.gtk_table_get_col_spacing(C.to_GtkTable(v.Widget), C.guint(column)))
 }
-func (v *GtkTable) SetRowSpacings(child *GtkWidget, spacing uint) {
+func (v *GtkTable) SetRowSpacings(child WidgetLike, spacing uint) {
 	C.gtk_table_set_row_spacings(C.to_GtkTable(v.Widget), C.guint(spacing))
 }
-func (v *GtkTable) GetDefaultRowSpacing(child *GtkWidget) uint {
+func (v *GtkTable) GetDefaultRowSpacing(child WidgetLike) uint {
 	return uint(C.gtk_table_get_default_row_spacing(C.to_GtkTable(v.Widget)))
 }
-func (v *GtkTable) SetColSpacings(child *GtkWidget, spacing uint) {
+func (v *GtkTable) SetColSpacings(child WidgetLike, spacing uint) {
 	C.gtk_table_set_col_spacings(C.to_GtkTable(v.Widget), C.guint(spacing))
 }
-func (v *GtkTable) GetDefaultColSpacing(child *GtkWidget) uint {
+func (v *GtkTable) GetDefaultColSpacing(child WidgetLike) uint {
 	return uint(C.gtk_table_get_default_col_spacing(C.to_GtkTable(v.Widget)))
 }
-func (v *GtkTable) SetHomogeneous(child *GtkWidget, homogeneous bool) {
-	C.gtk_table_set_homogeneous(C.to_GtkTable(v.Widget), bool2gboolean(homogeneous));
+func (v *GtkTable) SetHomogeneous(child WidgetLike, homogeneous bool) {
+	C.gtk_table_set_homogeneous(C.to_GtkTable(v.Widget), bool2gboolean(homogeneous))
 }
-func (v *GtkTable) GetHomogeneous(child *GtkWidget) bool {
+func (v *GtkTable) GetHomogeneous(child WidgetLike) bool {
 	return gboolean2bool(C.gtk_table_get_homogeneous(C.to_GtkTable(v.Widget)))
 }
+// FINISH
 
 //-----------------------------------------------------------------------
 // Events
