@@ -20,7 +20,7 @@ func main() {
 	table := gtk.Table(5, 5, false);
 	for y := uint(0); y < 5; y++ {
 		for x := uint(0); x < 5; x++ {
-			table.Attach(gtk.Label(fmt.Sprintf("%02d:%02d", x, y)), x, x+1, y, y+1, gtk.GTK_FILL, gtk.GTK_FILL, 5, 5);
+			table.Attach(gtk.ButtonWithLabel(fmt.Sprintf("%02d:%02d", x, y)), x, x+1, y, y+1, gtk.GTK_FILL, gtk.GTK_FILL, 5, 5);
 		}
 	}
 	swin.AddWithViewPort(table);
