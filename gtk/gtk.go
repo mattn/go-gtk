@@ -2004,9 +2004,6 @@ func (v *GtkLabel) SetLabel(label string) {
 // TODO
 // gtk_label_set_attributes
 // gtk_label_get_attributes
-func (v *GtkLabel) GetMarkup() string {
-	return C.GoString(C.to_charptr(C.gtk_label_get_markup(C.to_GtkLabel(v.Widget))))
-}
 func (v *GtkLabel) SetMarkup(markup string) {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
@@ -2028,7 +2025,11 @@ func (v *GtkLabel) SetUseUnderline(setting bool) {
 // gtk_label_get_mnemonic_keyval
 // gtk_label_set_mnemonic_widget
 // gtk_label_get_mnemonic_widget
-// gtk_label_set_text_with_mnemonic
+func (v *GtkLabel) SetTextWithMnemonic(str string) {
+	ptr := C.CString(str)
+	defer C.free_string(ptr)
+	C.gtk_label_set_text_with_mnemonic(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
+}
 // gtk_label_set_justify
 // gtk_label_get_justify
 // gtk_label_set_ellipsize
@@ -2038,12 +2039,22 @@ func (v *GtkLabel) SetUseUnderline(setting bool) {
 // gtk_label_set_max_width_chars
 // gtk_label_get_max_width_chars
 // gtk_label_set_pattern
-// gtk_label_set_line_wrap
-// gtk_label_get_line_wrap
+func (v *GtkLabel) GetUseLineWrap() bool {
+	return gboolean2bool(C.gtk_label_get_line_wrap(C.to_GtkLabel(v.Widget)))
+}
+func (v *GtkLabel) SetUseLineWrap(setting bool) {
+	C.gtk_label_set_line_wrap(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+}
 // gtk_label_set_line_wrap_mode
 // gtk_label_get_line_wrap_mode
 // gtk_label_set_selectable
 // gtk_label_get_selectable
+func (v *GtkLabel) GetSelectable() bool {
+	return gboolean2bool(C.gtk_label_get_selectable(C.to_GtkLabel(v.Widget)))
+}
+func (v *GtkLabel) SetSelectable(setting bool) {
+	C.gtk_label_set_selectable(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+}
 // gtk_label_set_angle
 // gtk_label_get_angle
 // gtk_label_select_region
