@@ -812,10 +812,10 @@ func (v *GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
 func (v *GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
-	funcs.Push(&CallbackContext{f, reflect.NewValue(data)})
+	callback_contexts.Push(&CallbackContext{f, reflect.NewValue(data)})
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1)
+	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
 }
 func (v *GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget{
@@ -1817,6 +1817,10 @@ func Entry() *GtkEntry {
 	return &GtkEntry{GtkWidget{
 		C.gtk_entry_new()}}
 }
+func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
+	return &GtkEntry{GtkWidget{
+		C.gtk_entry_new_with_buffer(buffer.TextBuffer)}}
+}
 func (v *GtkEntry) GetText() string {
 	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
 }
@@ -1825,10 +1829,13 @@ func (v *GtkEntry) SetText(text string) {
 	defer C.free_string(ptr)
 	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
 }
-// TODO
-// gtk_entry_new_with_buffer
-// gtk_entry_get_buffer
-// gtk_entry_set_buffer
+func (v *GtkEntry) GetBuffer() *GtkTextBuffer {
+	return &GtkTextBuffer{
+		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
+}
+func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) {
+	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), buffer.TextBuffer)
+}
 // gtk_entry_set_visibility
 // gtk_entry_get_visibility
 // gtk_entry_set_invisible_char
@@ -1980,6 +1987,12 @@ func Label(label string) *GtkLabel {
 	return &GtkLabel{GtkWidget{
 		C.gtk_label_new(C.to_gcharptr(ptr))}}
 }
+func LabelWithMnemonic(label string) *GtkLabel {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkLabel{GtkWidget{
+		C.gtk_label_new_with_mnemonic(C.to_gcharptr(ptr))}}
+}
 func (v *GtkLabel) GetLabel() string {
 	return C.GoString(C.to_charptr(C.gtk_label_get_text(C.to_GtkLabel(v.Widget))))
 }
@@ -1989,14 +2002,28 @@ func (v *GtkLabel) SetLabel(label string) {
 	C.gtk_label_set_text(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
 // TODO
-// gtk_label_new_with_mnemonic
 // gtk_label_set_attributes
 // gtk_label_get_attributes
-// gtk_label_set_markup
-// gtk_label_set_use_markup
-// gtk_label_get_use_markup
-// gtk_label_set_use_underline
-// gtk_label_get_use_underline
+func (v *GtkLabel) GetMarkup() string {
+	return C.GoString(C.to_charptr(C.gtk_label_get_markup(C.to_GtkLabel(v.Widget))))
+}
+func (v *GtkLabel) SetMarkup(markup string) {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	C.gtk_label_set_markup(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkLabel) GetUseMarkup() bool {
+	return gboolean2bool(C.gtk_label_get_use_markup(C.to_GtkLabel(v.Widget)))
+}
+func (v *GtkLabel) SetUseMarkup(setting bool) {
+	C.gtk_label_set_use_markup(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkLabel) GetUseUnderline() bool {
+	return gboolean2bool(C.gtk_label_get_use_underline(C.to_GtkLabel(v.Widget)))
+}
+func (v *GtkLabel) SetUseUnderline(setting bool) {
+	C.gtk_label_set_use_underline(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+}
 // gtk_label_set_markup_with_mnemonic
 // gtk_label_get_mnemonic_keyval
 // gtk_label_set_mnemonic_widget
@@ -3686,10 +3713,9 @@ func (v *GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string
 
 //void gtk_tree_view_column_set_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, ...) G_GNUC_NULL_TERMINATED;
 //void gtk_tree_view_column_set_cell_data_func (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, GtkTreeCellDataFunc func, gpointer func_data, GDestroyNotify destroy);
-var tree_view_column_set_cell_data_funcs *vector.Vector
-
-func (v *GtkTreeViewColumn) SetCellDataFunc(cell CellRendererLike, f interface{}, data interface{}) {
-}
+//var tree_view_column_set_cell_data_funcs *vector.Vector
+//func (v *GtkTreeViewColumn) SetCellDataFunc(cell CellRendererLike, f interface{}, data interface{}) {
+//}
 
 //void gtk_tree_view_column_clear_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer);
 //void gtk_tree_view_column_set_spacing (GtkTreeViewColumn *tree_column, gint spacing);
@@ -4347,7 +4373,7 @@ type CallbackContext struct {
 	data reflect.Value
 }
 
-var funcs *vector.Vector
+var callback_contexts *vector.Vector
 var main_loop bool = true
 
 func pollEvents() {
@@ -4357,7 +4383,7 @@ func pollEvents() {
 		}
 		var cbi C.callback_info
 		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
-			context := funcs.At(int(cbi.func_no)).(*CallbackContext)
+			context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
 			rf := reflect.NewValue(context.f).(*reflect.FuncValue)
 			t := rf.Type().(*reflect.FuncType)
 			fargs := make([]reflect.Value, t.NumIn())
@@ -4401,7 +4427,7 @@ func Init(args *[]string) {
 	} else {
 		C._gtk_init(nil, nil)
 	}
-	funcs = new(vector.Vector)
+	callback_contexts = new(vector.Vector)
 }
 
 func Main() {
