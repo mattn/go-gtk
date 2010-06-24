@@ -8,7 +8,6 @@ import "json"
 import "bytes"
 import "io"
 import "os"
-import "strconv"
 import "strings"
 
 func HttpGet(url string) (*http.Response, os.Error) {
@@ -31,9 +30,8 @@ func HttpGet(url string) (*http.Response, os.Error) {
 
 func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
 	if r, err := HttpGet(url); err == nil {
-		n, _ := strconv.Atoi64(r.GetHeader("Content-Length"));
 		t := r.GetHeader("Content-Type");
-		b := make([]byte, n);
+		b := make([]byte, r.ContentLength);
 		io.ReadFull(r.Body, b);
 		var loader *gdkpixbuf.GdkPixbufLoader;
 		if strings.Index(t, "jpeg") >= 0 {
@@ -77,8 +75,7 @@ func main() {
 		go func() {
 			r, err := HttpGet("http://twitter.com/statuses/public_timeline.json");
 			if err == nil {
-				n, _ := strconv.Atoi64(r.GetHeader("Content-Length"));
-				b := make([]byte, n);
+				b := make([]byte, r.ContentLength);
 				io.ReadFull(r.Body, b);
 				var j interface{};
 				json.NewDecoder(bytes.NewBuffer(b)).Decode(&j);
