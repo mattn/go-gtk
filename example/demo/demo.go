@@ -3,11 +3,11 @@ package main
 import (
   "os";
   "gtk";
+  "gdkpixbuf";
   "path";
 )
 
 func main() {
-	//gtk.Init(&os.Args);
 	gtk.Init(nil);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
 	window.SetTitle("GTK Go!");
@@ -41,6 +41,26 @@ func main() {
 		}, nil);
 		filesubmenu.Append(exitmenuitem);
 
+	filemenu = gtk.MenuItemWithMnemonic("_Help");
+	menubar.Append(filemenu);
+	filesubmenu = gtk.Menu();
+	filemenu.SetSubmenu(filesubmenu);
+
+		exitmenuitem = gtk.MenuItemWithMnemonic("_About");
+		exitmenuitem.Connect("activate", func() {
+			dialog := gtk.AboutDialog()
+			dialog.SetName("Go-Gtk Demo!")
+			dialog.SetProgramName("demo")
+			dialog.SetAuthors([]string{"mattn <mattn.jp@gmail.com>"})
+			dir, _ := path.Split(os.Args[0]);
+			imagefile := path.Join(dir, "../../data/mattn-logo.png");
+			pixbuf, _ := gdkpixbuf.PixbufFromFile(imagefile);
+			dialog.SetLogo(pixbuf);
+			dialog.Run()
+			dialog.Destroy()
+		}, nil);
+		filesubmenu.Append(exitmenuitem);
+
 	//--------------------------------------------------------
 	// GtkFrame
 	//--------------------------------------------------------
@@ -53,7 +73,7 @@ func main() {
 	// GtkImage
 	//--------------------------------------------------------
 	dir, _ := path.Split(os.Args[0]);
-	imagefile := path.Join(dir, "../../data/go-gtk-logo.png"); 
+	imagefile := path.Join(dir, "../../data/go-gtk-logo.png");
 
 	label := gtk.Label("Go Binding for GTK");
 	label.ModifyFontEasy("DejaVu Serif 15");
