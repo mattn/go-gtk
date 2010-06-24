@@ -1606,7 +1606,7 @@ func (v *GtkAboutDialog) SetLicense(license string) {
 func (v *GtkAboutDialog) GetWrapLicense() bool {
 	return gboolean2bool(C.gtk_about_dialog_get_wrap_license(C.to_GtkAboutDialog(v.Widget)))
 }
-func (v *GtkAboutDialog) SetWrapWidth(wrap_license bool) {
+func (v *GtkAboutDialog) SetWrapLicense(wrap_license bool) {
 	C.gtk_about_dialog_set_wrap_license(C.to_GtkAboutDialog(v.Widget), bool2gboolean(wrap_license))
 }
 func (v *GtkAboutDialog) GetWebsite() string {
