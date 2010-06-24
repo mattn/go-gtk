@@ -414,7 +414,7 @@ static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interac
 // GtkTargetList * gtk_text_buffer_get_paste_target_list (GtkTextBuffer *buffer);
 // GdkAtom * gtk_text_buffer_get_serialize_formats (GtkTextBuffer *buffer, gint *n_formats);
 // GdkAtom gtk_text_buffer_register_deserialize_format (GtkTextBuffer *buffer, const gchar *mime_type, GtkTextBufferDeserializeFunc function, gpointer user_data, GDestroyNotify user_data_destroy);
-// GdkAtom gtk_text_buffer_register_deserialize_tagset (GtkTextBuffer *buffer, const gchar *tagset_name); 
+// GdkAtom gtk_text_buffer_register_deserialize_tagset (GtkTextBuffer *buffer, const gchar *tagset_name);
 // GdkAtom gtk_text_buffer_register_serialize_format (GtkTextBuffer *buffer, const gchar *mime_type, GtkTextBufferSerializeFunc function, gpointer user_data, GDestroyNotify user_data_destroy);
 // GdkAtom gtk_text_buffer_register_serialize_tagset (GtkTextBuffer *buffer, const gchar *tagset_name); static guint8* (*GtkTextBufferSerializeFunc) (GtkTextBuffer *register_buffer, GtkTextBuffer *content_buffer, const void *start, const void *end, gsize *length, gpointer user_data);
 
@@ -538,6 +538,7 @@ static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_
 //static GType to_GType(uint type) { return (GType)type; }
 static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
+static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 
 static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
 static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
@@ -555,301 +556,302 @@ static int _check_version(int major, int minor, int micro) {
 	return GTK_CHECK_VERSION(major, minor, micro);
 }
 */
-import "C";
-import "glib";
-import "gdk";
-import "gdkpixbuf";
-import "unsafe";
-import "reflect";
-import "container/vector";
+import "C"
+import "glib"
+import "gdk"
+import "gdkpixbuf"
+import "unsafe"
+import "reflect"
+import "container/vector"
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
-		return C.gboolean(1);
+		return C.gboolean(1)
 	}
-	return C.gboolean(0);
+	return C.gboolean(0)
 }
 func gboolean2bool(b C.gboolean) bool {
 	if b != 0 {
-		return true;
+		return true
 	}
-	return false;
+	return false
 }
 func panic_if_version_older(major int, minor int, micro int, message string) {
 	if C._check_version(C.int(major), C.int(minor), C.int(micro)) == 0 {
-		panic(message);
+		panic(message)
 	}
 }
 func native2gvalue(val interface{}) *C.GValue {
-	var gv *C.GValue;
+	var gv *C.GValue
 	switch val.(type) {
 	case bool:
-		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)));
-		break;
+		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)))
+		break
 	case byte:
-		gv = C.init_gvalue_byte(C.guchar(val.(byte)));
-		break;
+		gv = C.init_gvalue_byte(C.guchar(val.(byte)))
+		break
 	case int:
-		gv = C.init_gvalue_int(C.gint(val.(int)));
-		break;
+		gv = C.init_gvalue_int(C.gint(val.(int)))
+		break
 	case uint:
-		gv = C.init_gvalue_uint(C.guint(val.(uint)));
-		break;
+		gv = C.init_gvalue_uint(C.guint(val.(uint)))
+		break
 	case float:
-		gv = C.init_gvalue_double(C.gdouble(val.(float)));
-		break;
+		gv = C.init_gvalue_double(C.gdouble(val.(float)))
+		break
 	case string:
 		{
-			pval := C.CString(val.(string));
-			defer C.free_string(pval);
-			gv = C.init_gvalue_string(C.to_gcharptr(pval));
+			pval := C.CString(val.(string))
+			defer C.free_string(pval)
+			gv = C.init_gvalue_string(C.to_gcharptr(pval))
 		}
-		break;
+		break
 	default:
 		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&val)));
-		break;
+		break
 	}
-	return gv;
+	return gv
 }
 
 //-----------------------------------------------------------------------
 // GtkObject
 //-----------------------------------------------------------------------
-type ObjectLike interface {
-}
+type ObjectLike interface{}
 type GtkObject struct {
-	Object *C.GtkObject;
+	Object *C.GtkObject
 }
 
 //-----------------------------------------------------------------------
 // GtkStock
 //-----------------------------------------------------------------------
 const (
-	GTK_STOCK_DIALOG_AUTHENTICATION = "gtk-dialog-authentication"
-	GTK_STOCK_DIALOG_INFO = "gtk-dialog-info"
-	GTK_STOCK_DIALOG_WARNING = "gtk-dialog-warning"
-	GTK_STOCK_DIALOG_ERROR = "gtk-dialog-error"
-	GTK_STOCK_DIALOG_QUESTION = "gtk-dialog-question"
-	GTK_STOCK_DND = "gtk-dnd"
-	GTK_STOCK_DND_MULTIPLE = "gtk-dnd-multiple"
-	GTK_STOCK_ABOUT = "gtk-about"
-	GTK_STOCK_ADD = "gtk-add"
-	GTK_STOCK_APPLY = "gtk-apply"
-	GTK_STOCK_BOLD = "gtk-bold"
-	GTK_STOCK_CANCEL = "gtk-cancel"
-	GTK_STOCK_CAPS_LOCK_WARNING = "gtk-caps-lock-warning"
-	GTK_STOCK_CDROM = "gtk-cdrom"
-	GTK_STOCK_CLEAR = "gtk-clear"
-	GTK_STOCK_CLOSE = "gtk-close"
-	GTK_STOCK_COLOR_PICKER = "gtk-color-picker"
-	GTK_STOCK_CONVERT = "gtk-convert"
-	GTK_STOCK_CONNECT = "gtk-connect"
-	GTK_STOCK_COPY = "gtk-copy"
-	GTK_STOCK_CUT = "gtk-cut"
-	GTK_STOCK_DELETE = "gtk-delete"
-	GTK_STOCK_DIRECTORY = "gtk-directory"
-	GTK_STOCK_DISCARD = "gtk-discard"
-	GTK_STOCK_DISCONNECT = "gtk-disconnect"
-	GTK_STOCK_EDIT = "gtk-edit"
-	GTK_STOCK_EXECUTE = "gtk-execute"
-	GTK_STOCK_FILE = "gtk-file"
-	GTK_STOCK_FIND = "gtk-find"
-	GTK_STOCK_FIND_AND_REPLACE = "gtk-find-and-replace"
-	GTK_STOCK_FLOPPY = "gtk-floppy"
-	GTK_STOCK_FULLSCREEN = "gtk-fullscreen"
-	GTK_STOCK_GOTO_BOTTOM = "gtk-goto-bottom"
-	GTK_STOCK_GOTO_FIRST = "gtk-goto-first"
-	GTK_STOCK_GOTO_LAST = "gtk-goto-last"
-	GTK_STOCK_GOTO_TOP = "gtk-goto-top"
-	GTK_STOCK_GO_BACK = "gtk-go-back"
-	GTK_STOCK_GO_DOWN = "gtk-go-down"
-	GTK_STOCK_GO_FORWARD = "gtk-go-forward"
-	GTK_STOCK_GO_UP = "gtk-go-up"
-	GTK_STOCK_HARDDISK = "gtk-harddisk"
-	GTK_STOCK_HELP = "gtk-help"
-	GTK_STOCK_HOME = "gtk-home"
-	GTK_STOCK_INDEX = "gtk-index"
-	GTK_STOCK_INDENT = "gtk-indent"
-	GTK_STOCK_INFO = "gtk-info"
-	GTK_STOCK_UNINDENT = "gtk-unindent"
-	GTK_STOCK_ITALIC = "gtk-italic"
-	GTK_STOCK_JUMP_TO = "gtk-jump-to"
-	GTK_STOCK_JUSTIFY_CENTER = "gtk-justify-center"
-	GTK_STOCK_JUSTIFY_FILL = "gtk-justify-fill"
-	GTK_STOCK_JUSTIFY_LEFT = "gtk-justify-left"
-	GTK_STOCK_JUSTIFY_RIGHT = "gtk-justify-right"
-	GTK_STOCK_LEAVE_FULLSCREEN = "gtk-leave-fullscreen"
-	GTK_STOCK_MISSING_IMAGE = "gtk-missing-image"
-	GTK_STOCK_MEDIA_FORWARD = "gtk-media-forward"
-	GTK_STOCK_MEDIA_NEXT = "gtk-media-next"
-	GTK_STOCK_MEDIA_PAUSE = "gtk-media-pause"
-	GTK_STOCK_MEDIA_PLAY = "gtk-media-play"
-	GTK_STOCK_MEDIA_PREVIOUS = "gtk-media-previous"
-	GTK_STOCK_MEDIA_RECORD = "gtk-media-record"
-	GTK_STOCK_MEDIA_REWIND = "gtk-media-rewind"
-	GTK_STOCK_MEDIA_STOP = "gtk-media-stop"
-	GTK_STOCK_NETWORK = "gtk-network"
-	GTK_STOCK_NEW = "gtk-new"
-	GTK_STOCK_NO = "gtk-no"
-	GTK_STOCK_OK = "gtk-ok"
-	GTK_STOCK_OPEN = "gtk-open"
-	GTK_STOCK_ORIENTATION_PORTRAIT = "gtk-orientation-portrait"
-	GTK_STOCK_ORIENTATION_LANDSCAPE = "gtk-orientation-landscape"
+	GTK_STOCK_DIALOG_AUTHENTICATION         = "gtk-dialog-authentication"
+	GTK_STOCK_DIALOG_INFO                   = "gtk-dialog-info"
+	GTK_STOCK_DIALOG_WARNING                = "gtk-dialog-warning"
+	GTK_STOCK_DIALOG_ERROR                  = "gtk-dialog-error"
+	GTK_STOCK_DIALOG_QUESTION               = "gtk-dialog-question"
+	GTK_STOCK_DND                           = "gtk-dnd"
+	GTK_STOCK_DND_MULTIPLE                  = "gtk-dnd-multiple"
+	GTK_STOCK_ABOUT                         = "gtk-about"
+	GTK_STOCK_ADD                           = "gtk-add"
+	GTK_STOCK_APPLY                         = "gtk-apply"
+	GTK_STOCK_BOLD                          = "gtk-bold"
+	GTK_STOCK_CANCEL                        = "gtk-cancel"
+	GTK_STOCK_CAPS_LOCK_WARNING             = "gtk-caps-lock-warning"
+	GTK_STOCK_CDROM                         = "gtk-cdrom"
+	GTK_STOCK_CLEAR                         = "gtk-clear"
+	GTK_STOCK_CLOSE                         = "gtk-close"
+	GTK_STOCK_COLOR_PICKER                  = "gtk-color-picker"
+	GTK_STOCK_CONVERT                       = "gtk-convert"
+	GTK_STOCK_CONNECT                       = "gtk-connect"
+	GTK_STOCK_COPY                          = "gtk-copy"
+	GTK_STOCK_CUT                           = "gtk-cut"
+	GTK_STOCK_DELETE                        = "gtk-delete"
+	GTK_STOCK_DIRECTORY                     = "gtk-directory"
+	GTK_STOCK_DISCARD                       = "gtk-discard"
+	GTK_STOCK_DISCONNECT                    = "gtk-disconnect"
+	GTK_STOCK_EDIT                          = "gtk-edit"
+	GTK_STOCK_EXECUTE                       = "gtk-execute"
+	GTK_STOCK_FILE                          = "gtk-file"
+	GTK_STOCK_FIND                          = "gtk-find"
+	GTK_STOCK_FIND_AND_REPLACE              = "gtk-find-and-replace"
+	GTK_STOCK_FLOPPY                        = "gtk-floppy"
+	GTK_STOCK_FULLSCREEN                    = "gtk-fullscreen"
+	GTK_STOCK_GOTO_BOTTOM                   = "gtk-goto-bottom"
+	GTK_STOCK_GOTO_FIRST                    = "gtk-goto-first"
+	GTK_STOCK_GOTO_LAST                     = "gtk-goto-last"
+	GTK_STOCK_GOTO_TOP                      = "gtk-goto-top"
+	GTK_STOCK_GO_BACK                       = "gtk-go-back"
+	GTK_STOCK_GO_DOWN                       = "gtk-go-down"
+	GTK_STOCK_GO_FORWARD                    = "gtk-go-forward"
+	GTK_STOCK_GO_UP                         = "gtk-go-up"
+	GTK_STOCK_HARDDISK                      = "gtk-harddisk"
+	GTK_STOCK_HELP                          = "gtk-help"
+	GTK_STOCK_HOME                          = "gtk-home"
+	GTK_STOCK_INDEX                         = "gtk-index"
+	GTK_STOCK_INDENT                        = "gtk-indent"
+	GTK_STOCK_INFO                          = "gtk-info"
+	GTK_STOCK_UNINDENT                      = "gtk-unindent"
+	GTK_STOCK_ITALIC                        = "gtk-italic"
+	GTK_STOCK_JUMP_TO                       = "gtk-jump-to"
+	GTK_STOCK_JUSTIFY_CENTER                = "gtk-justify-center"
+	GTK_STOCK_JUSTIFY_FILL                  = "gtk-justify-fill"
+	GTK_STOCK_JUSTIFY_LEFT                  = "gtk-justify-left"
+	GTK_STOCK_JUSTIFY_RIGHT                 = "gtk-justify-right"
+	GTK_STOCK_LEAVE_FULLSCREEN              = "gtk-leave-fullscreen"
+	GTK_STOCK_MISSING_IMAGE                 = "gtk-missing-image"
+	GTK_STOCK_MEDIA_FORWARD                 = "gtk-media-forward"
+	GTK_STOCK_MEDIA_NEXT                    = "gtk-media-next"
+	GTK_STOCK_MEDIA_PAUSE                   = "gtk-media-pause"
+	GTK_STOCK_MEDIA_PLAY                    = "gtk-media-play"
+	GTK_STOCK_MEDIA_PREVIOUS                = "gtk-media-previous"
+	GTK_STOCK_MEDIA_RECORD                  = "gtk-media-record"
+	GTK_STOCK_MEDIA_REWIND                  = "gtk-media-rewind"
+	GTK_STOCK_MEDIA_STOP                    = "gtk-media-stop"
+	GTK_STOCK_NETWORK                       = "gtk-network"
+	GTK_STOCK_NEW                           = "gtk-new"
+	GTK_STOCK_NO                            = "gtk-no"
+	GTK_STOCK_OK                            = "gtk-ok"
+	GTK_STOCK_OPEN                          = "gtk-open"
+	GTK_STOCK_ORIENTATION_PORTRAIT          = "gtk-orientation-portrait"
+	GTK_STOCK_ORIENTATION_LANDSCAPE         = "gtk-orientation-landscape"
 	GTK_STOCK_ORIENTATION_REVERSE_LANDSCAPE = "gtk-orientation-reverse-landscape"
-	GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT = "gtk-orientation-reverse-portrait"
-	GTK_STOCK_PAGE_SETUP = "gtk-page-setup"
-	GTK_STOCK_PASTE = "gtk-paste"
-	GTK_STOCK_PREFERENCES = "gtk-preferences"
-	GTK_STOCK_PRINT = "gtk-print"
-	GTK_STOCK_PRINT_ERROR = "gtk-print-error"
-	GTK_STOCK_PRINT_PAUSED = "gtk-print-paused"
-	GTK_STOCK_PRINT_PREVIEW = "gtk-print-preview"
-	GTK_STOCK_PRINT_REPORT = "gtk-print-report"
-	GTK_STOCK_PRINT_WARNING = "gtk-print-warning"
-	GTK_STOCK_PROPERTIES = "gtk-properties"
-	GTK_STOCK_QUIT = "gtk-quit"
-	GTK_STOCK_REDO = "gtk-redo"
-	GTK_STOCK_REFRESH = "gtk-refresh"
-	GTK_STOCK_REMOVE = "gtk-remove"
-	GTK_STOCK_REVERT_TO_SAVED = "gtk-revert-to-saved"
-	GTK_STOCK_SAVE = "gtk-save"
-	GTK_STOCK_SAVE_AS = "gtk-save-as"
-	GTK_STOCK_SELECT_ALL = "gtk-select-all"
-	GTK_STOCK_SELECT_COLOR = "gtk-select-color"
-	GTK_STOCK_SELECT_FONT = "gtk-select-font"
-	GTK_STOCK_SORT_ASCENDING = "gtk-sort-ascending"
-	GTK_STOCK_SORT_DESCENDING = "gtk-sort-descending"
-	GTK_STOCK_SPELL_CHECK = "gtk-spell-check"
-	GTK_STOCK_STOP = "gtk-stop"
-	GTK_STOCK_STRIKETHROUGH = "gtk-strikethrough"
-	GTK_STOCK_UNDELETE = "gtk-undelete"
-	GTK_STOCK_UNDERLINE = "gtk-underline"
-	GTK_STOCK_UNDO = "gtk-undo"
-	GTK_STOCK_YES = "gtk-yes"
-	GTK_STOCK_ZOOM_100 = "gtk-zoom-100"
-	GTK_STOCK_ZOOM_FIT = "gtk-zoom-fit"
-	GTK_STOCK_ZOOM_IN = "gtk-zoom-in"
-	GTK_STOCK_ZOOM_OUT = "gtk-zoom-out"
+	GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT  = "gtk-orientation-reverse-portrait"
+	GTK_STOCK_PAGE_SETUP                    = "gtk-page-setup"
+	GTK_STOCK_PASTE                         = "gtk-paste"
+	GTK_STOCK_PREFERENCES                   = "gtk-preferences"
+	GTK_STOCK_PRINT                         = "gtk-print"
+	GTK_STOCK_PRINT_ERROR                   = "gtk-print-error"
+	GTK_STOCK_PRINT_PAUSED                  = "gtk-print-paused"
+	GTK_STOCK_PRINT_PREVIEW                 = "gtk-print-preview"
+	GTK_STOCK_PRINT_REPORT                  = "gtk-print-report"
+	GTK_STOCK_PRINT_WARNING                 = "gtk-print-warning"
+	GTK_STOCK_PROPERTIES                    = "gtk-properties"
+	GTK_STOCK_QUIT                          = "gtk-quit"
+	GTK_STOCK_REDO                          = "gtk-redo"
+	GTK_STOCK_REFRESH                       = "gtk-refresh"
+	GTK_STOCK_REMOVE                        = "gtk-remove"
+	GTK_STOCK_REVERT_TO_SAVED               = "gtk-revert-to-saved"
+	GTK_STOCK_SAVE                          = "gtk-save"
+	GTK_STOCK_SAVE_AS                       = "gtk-save-as"
+	GTK_STOCK_SELECT_ALL                    = "gtk-select-all"
+	GTK_STOCK_SELECT_COLOR                  = "gtk-select-color"
+	GTK_STOCK_SELECT_FONT                   = "gtk-select-font"
+	GTK_STOCK_SORT_ASCENDING                = "gtk-sort-ascending"
+	GTK_STOCK_SORT_DESCENDING               = "gtk-sort-descending"
+	GTK_STOCK_SPELL_CHECK                   = "gtk-spell-check"
+	GTK_STOCK_STOP                          = "gtk-stop"
+	GTK_STOCK_STRIKETHROUGH                 = "gtk-strikethrough"
+	GTK_STOCK_UNDELETE                      = "gtk-undelete"
+	GTK_STOCK_UNDERLINE                     = "gtk-underline"
+	GTK_STOCK_UNDO                          = "gtk-undo"
+	GTK_STOCK_YES                           = "gtk-yes"
+	GTK_STOCK_ZOOM_100                      = "gtk-zoom-100"
+	GTK_STOCK_ZOOM_FIT                      = "gtk-zoom-fit"
+	GTK_STOCK_ZOOM_IN                       = "gtk-zoom-in"
+	GTK_STOCK_ZOOM_OUT                      = "gtk-zoom-out"
 )
 
 type GtkStockItem struct {
-	StockItem *C.GtkStockItem;
+	StockItem *C.GtkStockItem
 }
-func (v GtkStockItem) Add(nitems int) {
-	C.gtk_stock_add(v.StockItem, C.guint(nitems));
+
+func (v *GtkStockItem) Add(nitems uint) {
+	C.gtk_stock_add(v.StockItem, C.guint(nitems))
 }
-func (v GtkStockItem) AddStatic(nitems int) {
-	C.gtk_stock_add_static(v.StockItem, C.guint(nitems));
+func (v *GtkStockItem) AddStatic(nitems uint) {
+	C.gtk_stock_add_static(v.StockItem, C.guint(nitems))
 }
 func GtkStockLookup(stock_id string, item *GtkStockItem) bool {
-	ptr := C.CString(stock_id);
-	defer C.free_string(ptr);
-	return gboolean2bool(C.gtk_stock_lookup(C.to_gcharptr(ptr), item.StockItem));
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	return gboolean2bool(C.gtk_stock_lookup(C.to_gcharptr(ptr), item.StockItem))
 }
 func GtkStockListIDs() *glib.SList {
-	return glib.FromSList(unsafe.Pointer(C.gtk_stock_list_ids()));
+	return glib.FromSList(unsafe.Pointer(C.gtk_stock_list_ids()))
 }
 //-----------------------------------------------------------------------
 // GtkWidget
 //-----------------------------------------------------------------------
 type WidgetLike interface {
-	ToGtkWidget() *C.GtkWidget;
-	Hide();
-	HideAll();
-	Show();
-	ShowAll();
-	ShowNow();
-	Destroy();
-	Connect(s string, f CallbackFunc, data interface{});
-	GetTopLevel() *GtkWidget;
-	GetTopLevelAsWindow() *GtkWindow;
-	HideOnDelete();
-	QueueResize();
+	ToGtkWidget() *C.GtkWidget
+	Hide()
+	HideAll()
+	Show()
+	ShowAll()
+	ShowNow()
+	Destroy()
+	Connect(s string, f CallbackFunc, data interface{})
+	GetTopLevel() *GtkWidget
+	GetTopLevelAsWindow() *GtkWindow
+	HideOnDelete()
+	QueueResize()
 }
 type GtkWidget struct {
-	Widget *C.GtkWidget;
+	Widget *C.GtkWidget
 }
-func (v GtkWidget) ToGtkWidget() *C.GtkWidget {
-	return v.Widget;
+
+func (v *GtkWidget) ToGtkWidget() *C.GtkWidget {
+	return v.Widget
 }
-func (v GtkWidget) Hide() {
-	C.gtk_widget_hide(v.Widget);
+func (v *GtkWidget) Hide() {
+	C.gtk_widget_hide(v.Widget)
 }
-func (v GtkWidget) HideAll() {
-	C.gtk_widget_hide_all(v.Widget);
+func (v *GtkWidget) HideAll() {
+	C.gtk_widget_hide_all(v.Widget)
 }
-func (v GtkWidget) Show() {
-	C.gtk_widget_show(v.Widget);
+func (v *GtkWidget) Show() {
+	C.gtk_widget_show(v.Widget)
 }
-func (v GtkWidget) ShowAll() {
-	C.gtk_widget_show_all(v.Widget);
+func (v *GtkWidget) ShowAll() {
+	C.gtk_widget_show_all(v.Widget)
 }
-func (v GtkWidget) ShowNow() {
-	C.gtk_widget_show_now(v.Widget);
+func (v *GtkWidget) ShowNow() {
+	C.gtk_widget_show_now(v.Widget)
 }
-func (v GtkWidget) Destroy() {
+func (v *GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
-func (v GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
-	funcs.Push(&CallbackContext{f, reflect.NewValue(data)});
-	ptr := C.CString(s);
-	defer C.free_string(ptr);
-	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1);
+func (v *GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
+	funcs.Push(&CallbackContext{f, reflect.NewValue(data)})
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(funcs.Len())-1)
 }
-func (v GtkWidget) GetTopLevel() *GtkWidget {
-	return &GtkWidget {
-		C.gtk_widget_get_toplevel(v.Widget) };
+func (v *GtkWidget) GetTopLevel() *GtkWidget {
+	return &GtkWidget{
+		C.gtk_widget_get_toplevel(v.Widget)}
 }
-func (v GtkWidget) GetTopLevelAsWindow() *GtkWindow {
-	return &GtkWindow { GtkContainer { GtkWidget {
-		C.gtk_widget_get_toplevel(v.Widget) }}};
+func (v *GtkWidget) GetTopLevelAsWindow() *GtkWindow {
+	return &GtkWindow{GtkContainer{GtkWidget{
+		C.gtk_widget_get_toplevel(v.Widget)}}}
 }
-func (v GtkWidget) HideOnDelete() {
-	C.gtk_widget_hide_on_delete(v.Widget);
+func (v *GtkWidget) HideOnDelete() {
+	C.gtk_widget_hide_on_delete(v.Widget)
 }
 // TODO
 // gtk_widget_destroyed
-func (v GtkWidget) Ref() {
-	C.gtk_widget_ref(v.Widget);
+func (v *GtkWidget) Ref() {
+	C.gtk_widget_ref(v.Widget)
 }
-func (v GtkWidget) Unref() {
-	C.gtk_widget_unref(v.Widget);
+func (v *GtkWidget) Unref() {
+	C.gtk_widget_unref(v.Widget)
 }
 // gtk_widget_set
-func (v GtkWidget) Unparent() {
-	C.gtk_widget_unparent(v.Widget);
+func (v *GtkWidget) Unparent() {
+	C.gtk_widget_unparent(v.Widget)
 }
-func (v GtkWidget) GetNoShowAll() bool {
-	return gboolean2bool(C.gtk_widget_get_no_show_all(v.Widget));
+func (v *GtkWidget) GetNoShowAll() bool {
+	return gboolean2bool(C.gtk_widget_get_no_show_all(v.Widget))
 }
-func (v GtkWidget) SetNoShowAll(setting bool) {
-	C.gtk_widget_set_no_show_all(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetNoShowAll(setting bool) {
+	C.gtk_widget_set_no_show_all(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) Map() {
-	C.gtk_widget_map(v.Widget);
+func (v *GtkWidget) Map() {
+	C.gtk_widget_map(v.Widget)
 }
-func (v GtkWidget) Unmap() {
-	C.gtk_widget_unmap(v.Widget);
+func (v *GtkWidget) Unmap() {
+	C.gtk_widget_unmap(v.Widget)
 }
-func (v GtkWidget) Realize() {
-	C.gtk_widget_realize(v.Widget);
+func (v *GtkWidget) Realize() {
+	C.gtk_widget_realize(v.Widget)
 }
-func (v GtkWidget) Unrealize() {
-	C.gtk_widget_unrealize(v.Widget);
+func (v *GtkWidget) Unrealize() {
+	C.gtk_widget_unrealize(v.Widget)
 }
-func (v GtkWidget) QueueDraw() {
-	C.gtk_widget_queue_draw(v.Widget);
+func (v *GtkWidget) QueueDraw() {
+	C.gtk_widget_queue_draw(v.Widget)
 }
 // gtk_widget_queue_draw_area
-func (v GtkWidget) QueueClear() {
-	C.gtk_widget_queue_clear(v.Widget);
+func (v *GtkWidget) QueueClear() {
+	C.gtk_widget_queue_clear(v.Widget)
 }
 // gtk_widget_queue_clear_area
-func (v GtkWidget) QueueResize() {
-	C.gtk_widget_queue_resize(v.Widget);
+func (v *GtkWidget) QueueResize() {
+	C.gtk_widget_queue_resize(v.Widget)
 }
-func (v GtkWidget) QueueResizeNoRedraw() {
-	C.gtk_widget_queue_resize_no_redraw(v.Widget);
+func (v *GtkWidget) QueueResizeNoRedraw() {
+	C.gtk_widget_queue_resize_no_redraw(v.Widget)
 }
 // gtk_widget_draw
 // gtk_widget_size_request
@@ -859,149 +861,149 @@ func (v GtkWidget) QueueResizeNoRedraw() {
 // gtk_widget_remove_accelerator
 // gtk_widget_set_accel_path
 // gtk_widget_list_accel_closures
-func (v GtkWidget) CanActivateAccel(signal_id uint) bool {
-	return gboolean2bool(C.gtk_widget_can_activate_accel(v.Widget, C.guint(signal_id)));
+func (v *GtkWidget) CanActivateAccel(signal_id uint) bool {
+	return gboolean2bool(C.gtk_widget_can_activate_accel(v.Widget, C.guint(signal_id)))
 }
-func (v GtkWidget) MnemonicActivate(group_cycling bool) bool {
-	return gboolean2bool(C.gtk_widget_mnemonic_activate(v.Widget, bool2gboolean(group_cycling)));
+func (v *GtkWidget) MnemonicActivate(group_cycling bool) bool {
+	return gboolean2bool(C.gtk_widget_mnemonic_activate(v.Widget, bool2gboolean(group_cycling)))
 }
 // gtk_widget_event
 // gtk_widget_send_expose
-func (v GtkWidget) Activate() {
-	C.gtk_widget_activate(v.Widget);
+func (v *GtkWidget) Activate() {
+	C.gtk_widget_activate(v.Widget)
 }
 // gtk_widget_set_scroll_adjustments
-func (v GtkWidget) Reparent(parent *GtkWidget) {
-	C.gtk_widget_reparent(v.Widget, parent.Widget);
+func (v *GtkWidget) Reparent(parent *GtkWidget) {
+	C.gtk_widget_reparent(v.Widget, parent.Widget)
 }
 // gtk_widget_intersect
 // gtk_widget_region_intersect
-func (v GtkWidget) GetCanFocus() bool {
-	return gboolean2bool(C.gtk_widget_get_can_focus(v.Widget));
+func (v *GtkWidget) GetCanFocus() bool {
+	return gboolean2bool(C.gtk_widget_get_can_focus(v.Widget))
 }
-func (v GtkWidget) SetCanFocus(setting bool) {
-	C.gtk_widget_set_can_focus(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetCanFocus(setting bool) {
+	C.gtk_widget_set_can_focus(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) HasFocus() bool {
-	return gboolean2bool(C.gtk_widget_has_focus(v.Widget));
+func (v *GtkWidget) HasFocus() bool {
+	return gboolean2bool(C.gtk_widget_has_focus(v.Widget))
 }
-func (v GtkWidget) IsFocus() bool {
-	return gboolean2bool(C.gtk_widget_is_focus(v.Widget));
+func (v *GtkWidget) IsFocus() bool {
+	return gboolean2bool(C.gtk_widget_is_focus(v.Widget))
 }
-func (v GtkWidget) GrabFocus() {
-	C.gtk_widget_grab_focus(v.Widget);
+func (v *GtkWidget) GrabFocus() {
+	C.gtk_widget_grab_focus(v.Widget)
 }
-func (v GtkWidget) GetCanDefault() bool {
-	return gboolean2bool(C.gtk_widget_get_can_default(v.Widget));
+func (v *GtkWidget) GetCanDefault() bool {
+	return gboolean2bool(C.gtk_widget_get_can_default(v.Widget))
 }
-func (v GtkWidget) SetCanDefault(setting bool) {
-	C.gtk_widget_set_can_default(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetCanDefault(setting bool) {
+	C.gtk_widget_set_can_default(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) GetHasDefault() bool {
-	return gboolean2bool(C.gtk_widget_has_default(v.Widget));
+func (v *GtkWidget) GetHasDefault() bool {
+	return gboolean2bool(C.gtk_widget_has_default(v.Widget))
 }
-func (v GtkWidget) GrabDefault() {
-	C.gtk_widget_grab_default(v.Widget);
+func (v *GtkWidget) GrabDefault() {
+	C.gtk_widget_grab_default(v.Widget)
 }
-func (v GtkWidget) GetReceivesDefault() bool {
-	return gboolean2bool(C.gtk_widget_get_receives_default(v.Widget));
+func (v *GtkWidget) GetReceivesDefault() bool {
+	return gboolean2bool(C.gtk_widget_get_receives_default(v.Widget))
 }
-func (v GtkWidget) SetReceivesDefault(setting bool) {
-	C.gtk_widget_set_receives_default(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetReceivesDefault(setting bool) {
+	C.gtk_widget_set_receives_default(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) HasGrab() bool {
-	return gboolean2bool(C.gtk_widget_has_grab(v.Widget));
+func (v *GtkWidget) HasGrab() bool {
+	return gboolean2bool(C.gtk_widget_has_grab(v.Widget))
 }
-func (v GtkWindow) GetName() string {
-	return C.GoString(C.to_charptr(C.gtk_widget_get_name(v.Widget)));
+func (v *GtkWindow) GetName() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_name(v.Widget)))
 }
-func (v GtkWindow) SetName(name string) {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	C.gtk_widget_set_name(v.Widget, C.to_gcharptr(ptr));
+func (v *GtkWindow) SetName(name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_widget_set_name(v.Widget, C.to_gcharptr(ptr))
 }
 // gtk_widget_set_state
 // gtk_widget_get_state
-func (v GtkWidget) GetSensitive() bool {
-	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget));
+func (v *GtkWidget) GetSensitive() bool {
+	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget))
 }
-func (v GtkWidget) SetSensitive(setting bool) {
-	C.gtk_widget_set_sensitive(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetSensitive(setting bool) {
+	C.gtk_widget_set_sensitive(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) IsSensitive() bool {
-	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget));
+func (v *GtkWidget) IsSensitive() bool {
+	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget))
 }
-func (v GtkWidget) GetVisible() bool {
-	return gboolean2bool(C.gtk_widget_get_visible(v.Widget));
+func (v *GtkWidget) GetVisible() bool {
+	return gboolean2bool(C.gtk_widget_get_visible(v.Widget))
 }
-func (v GtkWidget) SetVisible(setting bool) {
-	C.gtk_widget_set_visible(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetVisible(setting bool) {
+	C.gtk_widget_set_visible(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) GetHasWindow() bool {
-	return gboolean2bool(C.gtk_widget_get_has_window(v.Widget));
+func (v *GtkWidget) GetHasWindow() bool {
+	return gboolean2bool(C.gtk_widget_get_has_window(v.Widget))
 }
-func (v GtkWidget) SetHasWindow(setting bool) {
-	C.gtk_widget_set_has_window(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetHasWindow(setting bool) {
+	C.gtk_widget_set_has_window(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) IsToplevel() bool {
-	return gboolean2bool(C.gtk_widget_is_toplevel(v.Widget));
+func (v *GtkWidget) IsToplevel() bool {
+	return gboolean2bool(C.gtk_widget_is_toplevel(v.Widget))
 }
-func (v GtkWidget) IsDrawable() bool {
-	return gboolean2bool(C.gtk_widget_is_drawable(v.Widget));
+func (v *GtkWidget) IsDrawable() bool {
+	return gboolean2bool(C.gtk_widget_is_drawable(v.Widget))
 }
-func (v GtkWidget) GetAppPrintable() bool {
-	return gboolean2bool(C.gtk_widget_get_app_paintable(v.Widget));
+func (v *GtkWidget) GetAppPrintable() bool {
+	return gboolean2bool(C.gtk_widget_get_app_paintable(v.Widget))
 }
-func (v GtkWidget) SetAppPrintable(setting bool) {
-	C.gtk_widget_set_app_paintable(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetAppPrintable(setting bool) {
+	C.gtk_widget_set_app_paintable(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) GetDoubleBuffered() bool {
-	return gboolean2bool(C.gtk_widget_get_double_buffered(v.Widget));
+func (v *GtkWidget) GetDoubleBuffered() bool {
+	return gboolean2bool(C.gtk_widget_get_double_buffered(v.Widget))
 }
-func (v GtkWidget) SetDoubleBuffered(setting bool) {
-	C.gtk_widget_set_double_buffered(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetDoubleBuffered(setting bool) {
+	C.gtk_widget_set_double_buffered(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) SetRedrawOnAllocate(setting bool) {
-	C.gtk_widget_set_redraw_on_allocate(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetRedrawOnAllocate(setting bool) {
+	C.gtk_widget_set_redraw_on_allocate(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) GetParent() *GtkWidget {
-	return &GtkWidget {
-		C.gtk_widget_get_parent(v.Widget) };
+func (v *GtkWidget) GetParent() *GtkWidget {
+	return &GtkWidget{
+		C.gtk_widget_get_parent(v.Widget)}
 }
-func (v GtkWidget) SetParent(parent *GtkWidget) {
-	C.gtk_widget_set_parent(v.Widget, parent.Widget);
+func (v *GtkWidget) SetParent(parent *GtkWidget) {
+	C.gtk_widget_set_parent(v.Widget, parent.Widget)
 }
-func (v GtkWidget) GetParentWindow() *gdk.GdkWindow {
-	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)));
-};
-func (v GtkWidget) SetParentWindow(parent *gdk.GdkWindow) {
-	C.gtk_widget_set_parent_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(parent.Window)));
+func (v *GtkWidget) GetParentWindow() *gdk.GdkWindow {
+	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)))
 }
-func (v GtkWidget) GetChildVisible() bool {
-	return gboolean2bool(C.gtk_widget_get_child_visible(v.Widget));
+func (v *GtkWidget) SetParentWindow(parent *gdk.GdkWindow) {
+	C.gtk_widget_set_parent_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(parent.Window)))
 }
-func (v GtkWidget) SetChildVisible(setting bool) {
-	C.gtk_widget_set_child_visible(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) GetChildVisible() bool {
+	return gboolean2bool(C.gtk_widget_get_child_visible(v.Widget))
 }
-func (v GtkWidget) GetWindow() *gdk.GdkWindow {
-	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_window(v.Widget)));
+func (v *GtkWidget) SetChildVisible(setting bool) {
+	C.gtk_widget_set_child_visible(v.Widget, bool2gboolean(setting))
 }
-func (v GtkWidget) SetWindow(window *gdk.GdkWindow) {
-	C.gtk_widget_set_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(window.Window)));
+func (v *GtkWidget) GetWindow() *gdk.GdkWindow {
+	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_window(v.Widget)))
+}
+func (v *GtkWidget) SetWindow(window *gdk.GdkWindow) {
+	C.gtk_widget_set_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(window.Window)))
 }
 // gtk_widget_get_allocation
 // gtk_widget_set_allocation
 // gtk_widget_child_focus
 // gtk_widget_keynav_failed
 // gtk_widget_error_bell
-func (v GtkWidget) SetSizeRequest(width int, height int) {
-	C.gtk_widget_set_size_request(v.Widget, C.gint(width), C.gint(height));
+func (v *GtkWidget) SetSizeRequest(width int, height int) {
+	C.gtk_widget_set_size_request(v.Widget, C.gint(width), C.gint(height))
 }
-func (v GtkWidget) GetSizeRequest(width *int, height *int) {
-	var w, h C.gint;
-	C.gtk_widget_get_size_request(v.Widget, &w, &h);
-	*width = int(w);
-	*height = int(h);
+func (v *GtkWidget) GetSizeRequest(width *int, height *int) {
+	var w, h C.gint
+	C.gtk_widget_get_size_request(v.Widget, &w, &h)
+	*width = int(w)
+	*height = int(h)
 }
 // gtk_widget_set_uposition
 // gtk_widget_set_usize
@@ -1037,22 +1039,22 @@ func (v GtkWidget) GetSizeRequest(width *int, height *int) {
 // gtk_widget_modify_base
 // gtk_widget_modify_cursor
 // gtk_widget_modify_font
-func (v GtkWidget) ModifyFontEasy(desc string) {
-	pdesc := C.CString(desc);
-	defer C.free_string(pdesc);
-	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc));
+func (v *GtkWidget) ModifyFontEasy(desc string) {
+	pdesc := C.CString(desc)
+	defer C.free_string(pdesc)
+	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc))
 }
 // gtk_widget_create_pango_context
 // gtk_widget_get_pango_context
 // gtk_widget_create_pango_layout
 // gtk_widget_render_icon
-func (v GtkWidget) RenderIcon(stock_id string, size int, detail string) *gdkpixbuf.GdkPixbuf {
-	pstock_id := C.CString(stock_id);
-	defer C.free_string(pstock_id);
-	pdetail := C.CString(detail);
-	defer C.free_string(pdetail);
-	return &gdkpixbuf.GdkPixbuf {
-		C.gtk_widget_render_icon(v.Widget, C.to_gcharptr(pstock_id), C.GtkIconSize(size), C.to_gcharptr(pdetail)) };
+func (v *GtkWidget) RenderIcon(stock_id string, size uint, detail string) *gdkpixbuf.GdkPixbuf {
+	pstock_id := C.CString(stock_id)
+	defer C.free_string(pstock_id)
+	pdetail := C.CString(detail)
+	defer C.free_string(pdetail)
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_widget_render_icon(v.Widget, C.to_gcharptr(pstock_id), C.GtkIconSize(size), C.to_gcharptr(pdetail))}
 }
 // gtk_widget_set_composite_name
 // gtk_widget_get_composite_name
@@ -1076,8 +1078,8 @@ func (v GtkWidget) RenderIcon(stock_id string, size int, detail string) *gdkpixb
 // gtk_widget_get_direction
 // gtk_widget_set_default_direction
 // gtk_widget_get_default_direction
-func (v GtkWidget) IsComposited() bool {
-	return gboolean2bool(C.gtk_widget_is_composited(v.Widget));
+func (v *GtkWidget) IsComposited() bool {
+	return gboolean2bool(C.gtk_widget_is_composited(v.Widget))
 }
 // gtk_widget_shape_combine_mask
 // gtk_widget_input_shape_combine_mask
@@ -1090,27 +1092,27 @@ func (v GtkWidget) IsComposited() bool {
 // gtk_widget_set_tooltip_window
 // gtk_widget_get_tooltip_window
 // gtk_widget_trigger_tooltip_query
-func (v GtkWidget) GetTooltipText() string {
-	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_text(v.Widget)));
+func (v *GtkWidget) GetTooltipText() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_text(v.Widget)))
 }
-func (v GtkWidget) SetTooltipText(text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	C.gtk_widget_set_tooltip_text(v.Widget, C.to_gcharptr(ptr));
+func (v *GtkWidget) SetTooltipText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_widget_set_tooltip_text(v.Widget, C.to_gcharptr(ptr))
 }
-func (v GtkWidget) GetTooltipMarkup() string {
-	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_markup(v.Widget)));
+func (v *GtkWidget) GetTooltipMarkup() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_markup(v.Widget)))
 }
-func (v GtkWidget) SetTooltipMarkup(markup string) {
-	ptr := C.CString(markup);
-	defer C.free_string(ptr);
-	C.gtk_widget_set_tooltip_markup(v.Widget, C.to_gcharptr(ptr));
+func (v *GtkWidget) SetTooltipMarkup(markup string) {
+	ptr := C.CString(markup)
+	defer C.free_string(ptr)
+	C.gtk_widget_set_tooltip_markup(v.Widget, C.to_gcharptr(ptr))
 }
-func (v GtkWidget) GetHasTooltip() bool {
-	return gboolean2bool(C.gtk_widget_get_has_tooltip(v.Widget));
+func (v *GtkWidget) GetHasTooltip() bool {
+	return gboolean2bool(C.gtk_widget_get_has_tooltip(v.Widget))
 }
-func (v GtkWidget) SetHasTooltip(setting bool) {
-	C.gtk_widget_set_has_tooltip(v.Widget, bool2gboolean(setting));
+func (v *GtkWidget) SetHasTooltip(setting bool) {
+	C.gtk_widget_set_has_tooltip(v.Widget, bool2gboolean(setting))
 }
 // gtk_requisition_get_type
 // gtk_requisition_copy
@@ -1120,14 +1122,15 @@ func (v GtkWidget) SetHasTooltip(setting bool) {
 // GtkContainer
 //-----------------------------------------------------------------------
 type ContainerLike interface {
-	WidgetLike;
-	Add(w WidgetLike);
+	WidgetLike
+	Add(w WidgetLike)
 }
 type GtkContainer struct {
-	GtkWidget;
+	GtkWidget
 }
-func (v GtkContainer) Add(w WidgetLike) {
-	C.gtk_container_add(C.to_GtkContainer(v.Widget), w.ToGtkWidget());
+
+func (v *GtkContainer) Add(w WidgetLike) {
+	C.gtk_container_add(C.to_GtkContainer(v.Widget), w.ToGtkWidget())
 }
 // TODO
 // gtk_container_set_border_width
@@ -1165,32 +1168,34 @@ func (v GtkContainer) Add(w WidgetLike) {
 // GtkWindow
 //-----------------------------------------------------------------------
 const (
-	GTK_WINDOW_TOPLEVEL = 0;
-	GTK_WINDOW_POPUP = 1;
-);
+	GTK_WINDOW_TOPLEVEL = 0
+	GTK_WINDOW_POPUP    = 1
+)
+
 type WindowLike interface {
-	ContainerLike;
-	SetTransientFor(parent WindowLike);
-	GetTitle() string;
-	SetTitle(title string);
+	ContainerLike
+	SetTransientFor(parent WindowLike)
+	GetTitle() string
+	SetTitle(title string)
 }
 type GtkWindow struct {
-	GtkContainer;
+	GtkContainer
 }
-func Window(t int) *GtkWindow {
-	return &GtkWindow { GtkContainer { GtkWidget {
-		C.gtk_window_new(C.GtkWindowType(t)) }}};
+
+func Window(t uint) *GtkWindow {
+	return &GtkWindow{GtkContainer{GtkWidget{
+		C.gtk_window_new(C.GtkWindowType(t))}}}
 }
-func (v GtkWindow) GetTitle() string {
-	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.Widget))));
+func (v *GtkWindow) GetTitle() string {
+	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.Widget))))
 }
-func (v GtkWindow) SetTitle(title string) {
-	ptr := C.CString(title);
-	defer C.free_string(ptr);
-	C.gtk_window_set_title(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkWindow) SetTitle(title string) {
+	ptr := C.CString(title)
+	defer C.free_string(ptr)
+	C.gtk_window_set_title(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr))
 }
-func (v GtkWindow) SetTransientFor(parent WindowLike) {
-	C.gtk_window_set_transient_for(C.to_GtkWindow(v.Widget), C.to_GtkWindow(parent.ToGtkWidget()));
+func (v *GtkWindow) SetTransientFor(parent WindowLike) {
+	C.gtk_window_set_transient_for(C.to_GtkWindow(v.Widget), C.to_GtkWindow(parent.ToGtkWidget()))
 }
 // TODO
 // gtk_window_set_wmclass
@@ -1200,12 +1205,12 @@ func (v GtkWindow) SetTransientFor(parent WindowLike) {
 // gtk_window_add_accel_group
 // gtk_window_remove_accel_group
 // gtk_window_set_position
-// gtk_window_activate_focus	
+// gtk_window_activate_focus
 // gtk_window_set_focus
 // gtk_window_get_focus
 // gtk_window_set_default
 // gtk_window_get_default_widget
-// gtk_window_activate_default	
+// gtk_window_activate_default
 // gtk_window_set_transient_for
 // gtk_window_get_transient_for
 // gtk_window_set_opacity
@@ -1229,8 +1234,8 @@ func (v GtkWindow) SetTransientFor(parent WindowLike) {
 // gtk_window_set_gravity
 // gtk_window_get_gravity
 // gtk_window_set_geometry_hints
-// gtk_window_set_screen	
-// gtk_window_get_screen	
+// gtk_window_set_screen
+// gtk_window_get_screen
 // gtk_window_is_active
 // gtk_window_has_toplevel_focus
 // gtk_window_set_has_frame
@@ -1301,29 +1306,31 @@ func (v GtkWindow) SetTransientFor(parent WindowLike) {
 // GtkDialog
 //-----------------------------------------------------------------------
 const (
-	GTK_DIALOG_MODAL               = 1 << 0; /* call gtk_window_set_modal (win, TRUE) */
-	GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1; /* call gtk_window_set_destroy_with_parent () */
-	GTK_DIALOG_NO_SEPARATOR        = 1 << 2; /* no separator bar above buttons */
+	GTK_DIALOG_MODAL               = 1 << 0 /* call gtk_window_set_modal (win, TRUE) */
+	GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1 /* call gtk_window_set_destroy_with_parent () */
+	GTK_DIALOG_NO_SEPARATOR        = 1 << 2 /* no separator bar above buttons */
 )
+
 type DialogLike interface {
-	WidgetLike;
-	Run() int;
-	Response(CallbackFunc);
+	WidgetLike
+	Run() int
+	Response(CallbackFunc)
 }
 type GtkDialog struct {
 	GtkWindow
-};
-func (v GtkDialog) Run() int {
-	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)));
 }
-func (v GtkDialog) Response(response CallbackFunc, data interface{}) {
-	v.Connect("response", response, data);
+
+func (v *GtkDialog) Run() int {
+	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
 }
-func (v GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
-	ptr := C.CString(button_text);
-	defer C.free_string(ptr);
-	return &GtkButton { GtkWidget {
-		C.gtk_dialog_add_button(C.to_GtkDialog(v.Widget), C.to_gcharptr(ptr), C.gint(response_id)) }};
+func (v *GtkDialog) Response(response CallbackFunc, data interface{}) {
+	v.Connect("response", response, data)
+}
+func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
+	ptr := C.CString(button_text)
+	defer C.free_string(ptr)
+	return &GtkButton{GtkWidget{
+		C.gtk_dialog_add_button(C.to_GtkDialog(v.Widget), C.to_gcharptr(ptr), C.gint(response_id))}}
 }
 // TODO
 // gtk_dialog_new_with_buttons
@@ -1344,20 +1351,22 @@ func (v GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
 // GtkFileChooser
 //-----------------------------------------------------------------------
 const (
-	GTK_FILE_CHOOSER_ACTION_OPEN = 0;
-	GTK_FILE_CHOOSER_ACTION_SAVE = 1;
-	GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2;
-	GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER = 3;
+	GTK_FILE_CHOOSER_ACTION_OPEN          = 0
+	GTK_FILE_CHOOSER_ACTION_SAVE          = 1
+	GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2
+	GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER = 3
 )
+
 type GtkFileChooser interface {
-	GetFilename() string;
-};
-type GtkFileChooserWidget struct {
-	GtkFileChooser;
-	GtkWidget;
+	GetFilename() string
 }
-func (v GtkFileChooserWidget) GetFilename() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))));
+type GtkFileChooserWidget struct {
+	GtkFileChooser
+	GtkWidget
+}
+
+func (v *GtkFileChooserWidget) GetFilename() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
 }
 // TODO
 // void gtk_file_chooser_set_action(GtkFileChooser* chooser, GtkFileChooserAction action);
@@ -1423,23 +1432,24 @@ func (v GtkFileChooserWidget) GetFilename() string {
 // GtkFileChooserDialog
 //-----------------------------------------------------------------------
 type GtkFileChooserDialog struct {
-	GtkDialog;
+	GtkDialog
 	//GtkFileChooser;
-};
+}
+
 func FileChooserDialog(title string, parent WindowLike, action int, button string) *GtkFileChooserDialog {
-	ptitle := C.CString(title);
-	defer C.free_string(ptitle);
-	pbutton := C.CString(button);
-	defer C.free_string(pbutton);
-	return &GtkFileChooserDialog { GtkDialog { GtkWindow { GtkContainer { GtkWidget {
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	pbutton := C.CString(button)
+	defer C.free_string(pbutton)
+	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkContainer{GtkWidget{
 		C._gtk_file_chooser_dialog_new(
 			C.to_gcharptr(ptitle),
 			parent.ToGtkWidget(),
 			C.int(action),
-			C.to_gcharptr(pbutton)) }}}}};
+			C.to_gcharptr(pbutton))}}}}}
 }
-func (v GtkFileChooserDialog) GetFilename() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))));
+func (v *GtkFileChooserDialog) GetFilename() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
 }
 // FINISH
 
@@ -1447,34 +1457,36 @@ func (v GtkFileChooserDialog) GetFilename() string {
 // GtkMessageDialog
 //-----------------------------------------------------------------------
 const (
-	GTK_MESSAGE_INFO = 0;
-	GTK_MESSAGE_WARNING = 1;
-	GTK_MESSAGE_QUESTION = 2;
-	GTK_MESSAGE_ERROR = 3;
-	GTK_MESSAGE_OTHER = 4;
+	GTK_MESSAGE_INFO     = 0
+	GTK_MESSAGE_WARNING  = 1
+	GTK_MESSAGE_QUESTION = 2
+	GTK_MESSAGE_ERROR    = 3
+	GTK_MESSAGE_OTHER    = 4
 )
+
 const (
-	GTK_BUTTONS_NONE = 0;
-	GTK_BUTTONS_OK = 1;
-	GTK_BUTTONS_CLOSE = 2;
-	GTK_BUTTONS_CANCEL = 3;
-	GTK_BUTTONS_YES_NO = 4;
-	GTK_BUTTONS_OK_CANCEL = 5;
+	GTK_BUTTONS_NONE      = 0
+	GTK_BUTTONS_OK        = 1
+	GTK_BUTTONS_CLOSE     = 2
+	GTK_BUTTONS_CANCEL    = 3
+	GTK_BUTTONS_YES_NO    = 4
+	GTK_BUTTONS_OK_CANCEL = 5
 )
+
 type GtkMessageDialog struct {
 	GtkDialog
-};
-func MessageDialog(parent WindowLike, flag int, t int, button int,
-                   message string) *GtkMessageDialog {
-	ptr := C.CString(message);
-	defer C.free_string(ptr);
-	return &GtkMessageDialog { GtkDialog { GtkWindow { GtkContainer { GtkWidget {
+}
+
+func MessageDialog(parent WindowLike, flag uint, t uint, button uint, message string) *GtkMessageDialog {
+	ptr := C.CString(message)
+	defer C.free_string(ptr)
+	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkContainer{GtkWidget{
 		C._gtk_message_dialog_new(
 			parent.ToGtkWidget(),
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(button),
-			C.to_gcharptr(ptr)) }}}}};
+			C.to_gcharptr(ptr))}}}}}
 }
 // TODO
 // gtk_message_dialog_new_with_markup
@@ -1483,72 +1495,75 @@ func MessageDialog(parent WindowLike, flag int, t int, button int,
 // gtk_message_dialog_set_markup
 // gtk_message_dialog_format_secondary_text
 // gtk_message_dialog_format_secondary_markup
- 
+
 //-----------------------------------------------------------------------
 // GtkBox
 //-----------------------------------------------------------------------
 const (
-		GTK_PACK_START = 0;
-		GTK_PACK_END = 1;
+	GTK_PACK_START = 0
+	GTK_PACK_END   = 1
 )
+
 type BoxLike interface {
-	ContainerLike;
-	PackStart(child WidgetLike, expand bool, fill bool, padding uint);
-	PackEnd(child WidgetLike, expand bool, fill bool, padding uint);
+	ContainerLike
+	PackStart(child WidgetLike, expand bool, fill bool, padding uint)
+	PackEnd(child WidgetLike, expand bool, fill bool, padding uint)
 }
 type GtkBox struct {
 	GtkContainer
-};
-func (v GtkBox) PackStart(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_start(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding));
 }
-func (v GtkBox) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_end(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding));
+
+func (v *GtkBox) PackStart(child WidgetLike, expand bool, fill bool, padding uint) {
+	C.gtk_box_pack_start(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding))
 }
-func (v GtkBox) PackStartDefaults(child WidgetLike) {
-	C.gtk_box_pack_start_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget());
+func (v *GtkBox) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
+	C.gtk_box_pack_end(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding))
 }
-func (v GtkBox) PackEndDefaults(child WidgetLike) {
-	C.gtk_box_pack_end_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget());
+func (v *GtkBox) PackStartDefaults(child WidgetLike) {
+	C.gtk_box_pack_start_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget())
 }
-func (v GtkBox) GetHomogeneous() bool {
-	return gboolean2bool(C.gtk_box_get_homogeneous(C.to_GtkBox(v.Widget)));
+func (v *GtkBox) PackEndDefaults(child WidgetLike) {
+	C.gtk_box_pack_end_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget())
 }
-func (v GtkBox) SetHomogeneous(homogeneous bool) {
-	C.gtk_box_set_homogeneous(C.to_GtkBox(v.Widget), bool2gboolean(homogeneous));
+func (v *GtkBox) GetHomogeneous() bool {
+	return gboolean2bool(C.gtk_box_get_homogeneous(C.to_GtkBox(v.Widget)))
 }
-func (v GtkBox) GetSpacing() int {
-	return int(C.gtk_box_get_spacing(C.to_GtkBox(v.Widget)));
+func (v *GtkBox) SetHomogeneous(homogeneous bool) {
+	C.gtk_box_set_homogeneous(C.to_GtkBox(v.Widget), bool2gboolean(homogeneous))
 }
-func (v GtkBox) SetSpacing(spacing int) {
-	C.gtk_box_set_spacing(C.to_GtkBox(v.Widget), C.gint(spacing));
+func (v *GtkBox) GetSpacing() int {
+	return int(C.gtk_box_get_spacing(C.to_GtkBox(v.Widget)))
 }
-func (v GtkBox) ReorderChild(child WidgetLike, position int) {
-	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToGtkWidget(), C.gint(position));
+func (v *GtkBox) SetSpacing(spacing int) {
+	C.gtk_box_set_spacing(C.to_GtkBox(v.Widget), C.gint(spacing))
 }
-func (v GtkBox) QueryChildPacking(child *GtkWidget, expand *bool, fill *bool, padding *uint, pack_type *int) {
-	var cexpand, cfill C.gboolean;
-	var cpadding C.guint;
-	var cpack_type C.GtkPackType;
-	C.gtk_box_query_child_packing(C.to_GtkBox(v.Widget), child.Widget, &cexpand, &cfill, &cpadding, &cpack_type);
-	*expand = gboolean2bool(cexpand);
-	*fill = gboolean2bool(cfill);
-	*padding = uint(cpadding);
-	*pack_type = int(cpack_type);
+func (v *GtkBox) ReorderChild(child WidgetLike, position int) {
+	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToGtkWidget(), C.gint(position))
 }
-func (v GtkBox) SetChildPacking(child *GtkWidget, expand bool, fill bool, padding uint, pack_type int) {
-	C.gtk_box_set_child_packing(C.to_GtkBox(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type));
+func (v *GtkBox) QueryChildPacking(child *GtkWidget, expand *bool, fill *bool, padding *uint, pack_type *uint) {
+	var cexpand, cfill C.gboolean
+	var cpadding C.guint
+	var cpack_type C.GtkPackType
+	C.gtk_box_query_child_packing(C.to_GtkBox(v.Widget), child.Widget, &cexpand, &cfill, &cpadding, &cpack_type)
+	*expand = gboolean2bool(cexpand)
+	*fill = gboolean2bool(cfill)
+	*padding = uint(cpadding)
+	*pack_type = uint(cpack_type)
+}
+func (v *GtkBox) SetChildPacking(child *GtkWidget, expand bool, fill bool, padding uint, pack_type uint) {
+	C.gtk_box_set_child_packing(C.to_GtkBox(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type))
 }
 
 //-----------------------------------------------------------------------
 // GtkVBox
 //-----------------------------------------------------------------------
 type GtkVBox struct {
-	GtkBox;
+	GtkBox
 }
+
 func VBox(homogeneous bool, spacing uint) *GtkVBox {
-	return &GtkVBox { GtkBox { GtkContainer { GtkWidget {
-		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}}};
+	return &GtkVBox{GtkBox{GtkContainer{GtkWidget{
+		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing))}}}}
 }
 // FINISH
 
@@ -1556,11 +1571,12 @@ func VBox(homogeneous bool, spacing uint) *GtkVBox {
 // GtkHBox
 //-----------------------------------------------------------------------
 type GtkHBox struct {
-	GtkBox;
+	GtkBox
 }
+
 func HBox(homogeneous bool, spacing uint) *GtkHBox {
-	return &GtkHBox { GtkBox { GtkContainer { GtkWidget {
-		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing)) }}}};
+	return &GtkHBox{GtkBox{GtkContainer{GtkWidget{
+		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing))}}}}
 }
 // FINISH
 
@@ -1568,24 +1584,25 @@ func HBox(homogeneous bool, spacing uint) *GtkHBox {
 // GtkEntry
 //-----------------------------------------------------------------------
 type TextInputLike interface {
-	WidgetLike;
-	GetText() string;
-	SetText(label string);
+	WidgetLike
+	GetText() string
+	SetText(label string)
 }
 type GtkEntry struct {
-	GtkWidget;
+	GtkWidget
 }
+
 func Entry() *GtkEntry {
-	return &GtkEntry { GtkWidget {
-		C.gtk_entry_new() }};
+	return &GtkEntry{GtkWidget{
+		C.gtk_entry_new()}}
 }
-func (v GtkEntry) GetText() string {
-	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))));
+func (v *GtkEntry) GetText() string {
+	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
 }
-func (v GtkEntry) SetText(text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkEntry) SetText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
 }
 // TODO
 // gtk_entry_new_with_buffer
@@ -1654,35 +1671,37 @@ func (v GtkEntry) SetText(text string) {
 // GtkImage
 //-----------------------------------------------------------------------
 const (
-	GTK_ICON_SIZE_INVALID = 0;
-	GTK_ICON_SIZE_MENU = 1;
-	GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
-	GTK_ICON_SIZE_LARGE_TOOLBAR = 3;
-	GTK_ICON_SIZE_BUTTON = 4;
-	GTK_ICON_SIZE_DND = 5;
-	GTK_ICON_SIZE_DIALOG = 6;
+	GTK_ICON_SIZE_INVALID       = 0
+	GTK_ICON_SIZE_MENU          = 1
+	GTK_ICON_SIZE_SMALL_TOOLBAR = 2
+	GTK_ICON_SIZE_LARGE_TOOLBAR = 3
+	GTK_ICON_SIZE_BUTTON        = 4
+	GTK_ICON_SIZE_DND           = 5
+	GTK_ICON_SIZE_DIALOG        = 6
 )
+
 type ImageLike interface {
-	WidgetLike;
+	WidgetLike
 }
 type GtkImage struct {
-	GtkWidget;
+	GtkWidget
 }
+
 func Image() *GtkImage {
-	return &GtkImage { GtkWidget {
-		C.gtk_image_new() }};
+	return &GtkImage{GtkWidget{
+		C.gtk_image_new()}}
 }
 func ImageFromFile(filename string) *GtkImage {
-	ptr := C.CString(filename);
-	defer C.free_string(ptr);
-	return &GtkImage { GtkWidget {
-		C.gtk_image_new_from_file(C.to_gcharptr(ptr)) }};
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	return &GtkImage{GtkWidget{
+		C.gtk_image_new_from_file(C.to_gcharptr(ptr))}}
 }
-func ImageFromStock(stock_id string, size int) *GtkImage {
-	ptr := C.CString(stock_id);
-	defer C.free_string(ptr);
-	return &GtkImage { GtkWidget {
-		C.gtk_image_new_from_stock(C.to_gcharptr(ptr), C.GtkIconSize(size)) }};
+func ImageFromStock(stock_id string, size uint) *GtkImage {
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	return &GtkImage{GtkWidget{
+		C.gtk_image_new_from_stock(C.to_gcharptr(ptr), C.GtkIconSize(size))}}
 }
 // TODO
 // gtk_image_new_from_pixmap
@@ -1709,9 +1728,9 @@ func ImageFromStock(stock_id string, size int) *GtkImage {
 // gtk_image_get_pixmap
 // gtk_image_get_image
 // gtk_image_get_pixbuf
-func (v GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf {
-		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget)) };
+func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget))}
 }
 // gtk_image_get_stock
 // gtk_image_get_icon_set
@@ -1726,26 +1745,27 @@ func (v GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
 // GtkLabel
 //-----------------------------------------------------------------------
 type LabelLike interface {
-	WidgetLike;
-	GetLabel() string;
-	SetLabel(label string);
+	WidgetLike
+	GetLabel() string
+	SetLabel(label string)
 }
 type GtkLabel struct {
-	GtkWidget;
+	GtkWidget
 }
+
 func Label(label string) *GtkLabel {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkLabel { GtkWidget {
-		C.gtk_label_new(C.to_gcharptr(ptr)) }};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkLabel{GtkWidget{
+		C.gtk_label_new(C.to_gcharptr(ptr))}}
 }
-func (v GtkLabel) GetLabel() string {
-	return C.GoString(C.to_charptr(C.gtk_label_get_text(C.to_GtkLabel(v.Widget))));
+func (v *GtkLabel) GetLabel() string {
+	return C.GoString(C.to_charptr(C.gtk_label_get_text(C.to_GtkLabel(v.Widget))))
 }
-func (v GtkLabel) SetLabel(label string) {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	C.gtk_label_set_text(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkLabel) SetLabel(label string) {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	C.gtk_label_set_text(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
 // TODO
 // gtk_label_new_with_mnemonic
@@ -1763,9 +1783,9 @@ func (v GtkLabel) SetLabel(label string) {
 // gtk_label_set_text_with_mnemonic
 // gtk_label_set_justify
 // gtk_label_get_justify
-// gtk_label_set_ellipsize		
+// gtk_label_set_ellipsize
 // gtk_label_get_ellipsize
-// gtk_label_set_width_chars		
+// gtk_label_set_width_chars
 // gtk_label_get_width_chars
 // gtk_label_set_max_width_chars
 // gtk_label_get_max_width_chars
@@ -1794,30 +1814,31 @@ func (v GtkLabel) SetLabel(label string) {
 // GtkAccelLabel
 //-----------------------------------------------------------------------
 type AccelLabelLike interface {
-	WidgetLike;
-	GetAccelWidget() GtkWidget;
-	SetAccelWidget(GtkWidget);
+	WidgetLike
+	GetAccelWidget() GtkWidget
+	SetAccelWidget(GtkWidget)
 }
 type GtkAccelLabel struct {
-	GtkWidget;
+	GtkWidget
 }
+
 func AccelLabel(label string) *GtkAccelLabel {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkAccelLabel { GtkWidget {
-		C.gtk_accel_label_new(C.to_gcharptr(ptr)) }};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkAccelLabel{GtkWidget{
+		C.gtk_accel_label_new(C.to_gcharptr(ptr))}}
 }
-func (v GtkAccelLabel) GetAccelWidget() GtkWidget {
-	return GtkWidget{ C.gtk_accel_label_get_accel_widget(C.to_GtkAccelLabel(v.Widget)) };
+func (v *GtkAccelLabel) GetAccelWidget() GtkWidget {
+	return GtkWidget{C.gtk_accel_label_get_accel_widget(C.to_GtkAccelLabel(v.Widget))}
 }
-func (v GtkAccelLabel) GetAccelWidth() uint {
-	return uint(C.gtk_accel_label_get_accel_width(C.to_GtkAccelLabel(v.Widget)));
+func (v *GtkAccelLabel) GetAccelWidth() uint {
+	return uint(C.gtk_accel_label_get_accel_width(C.to_GtkAccelLabel(v.Widget)))
 }
-func (v GtkAccelLabel) SetAccelWidget(w WidgetLike) {
-	C.gtk_accel_label_set_accel_widget(C.to_GtkAccelLabel(v.Widget), w.ToGtkWidget());
+func (v *GtkAccelLabel) SetAccelWidget(w WidgetLike) {
+	C.gtk_accel_label_set_accel_widget(C.to_GtkAccelLabel(v.Widget), w.ToGtkWidget())
 }
-func (v GtkAccelLabel) Refetch() bool {
-	return gboolean2bool(C.gtk_accel_label_refetch(C.to_GtkAccelLabel(v.Widget)));
+func (v *GtkAccelLabel) Refetch() bool {
+	return gboolean2bool(C.gtk_accel_label_refetch(C.to_GtkAccelLabel(v.Widget)))
 }
 // TODO
 // gtk_accel_label_set_accel_closure
@@ -1826,37 +1847,40 @@ func (v GtkAccelLabel) Refetch() bool {
 // GtkButton
 //-----------------------------------------------------------------------
 type ButtonLike interface { // Buttons are LabelLike Widgets!
-	LabelLike;
+	LabelLike
 	// the following should be just Clickable; ...
-	Clicked(CallbackFunc, interface{}); // this is a very simple interface...
+	Clicked(CallbackFunc, interface{}) // this is a very simple interface...
 }
 type Clickable interface {
-	WidgetLike;
-	Clicked(CallbackFunc, interface{}); // this is a very simple interface...
+	WidgetLike
+	Clicked(CallbackFunc, interface{}) // this is a very simple interface...
 }
-func (v GtkButton) Clicked(onclick CallbackFunc, data interface{}) {
-	v.Connect("clicked", onclick, data);
+
+func (v *GtkButton) Clicked(onclick CallbackFunc, data interface{}) {
+	v.Connect("clicked", onclick, data)
 }
+
 type GtkButton struct {
-	GtkWidget;
+	GtkWidget
 }
+
 func Button() *GtkButton {
-	return &GtkButton { GtkWidget {
-		C.gtk_button_new() }};
+	return &GtkButton{GtkWidget{
+		C.gtk_button_new()}}
 }
 func ButtonWithLabel(label string) *GtkButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkButton { GtkWidget {
-		C.gtk_button_new_with_label(C.to_gcharptr(ptr)) }};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkButton{GtkWidget{
+		C.gtk_button_new_with_label(C.to_gcharptr(ptr))}}
 }
-func (v GtkButton) GetLabel() string {
-	return C.GoString(C.to_charptr(C.gtk_button_get_label(C.to_GtkButton(v.Widget))));
+func (v *GtkButton) GetLabel() string {
+	return C.GoString(C.to_charptr(C.gtk_button_get_label(C.to_GtkButton(v.Widget))))
 }
-func (v GtkButton) SetLabel(label string) {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	C.gtk_button_set_label(C.to_GtkButton(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkButton) SetLabel(label string) {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	C.gtk_button_set_label(C.to_GtkButton(v.Widget), C.to_gcharptr(ptr))
 }
 // TODO
 // gtk_button_new_from_stock
@@ -1880,41 +1904,42 @@ func (v GtkButton) SetLabel(label string) {
 // GtkToggleButton
 //-----------------------------------------------------------------------
 type GtkToggleButton struct {
-	GtkButton;
+	GtkButton
 }
+
 func ToggleButton() *GtkToggleButton {
-	return &GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_toggle_button_new() }}};
+	return &GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_toggle_button_new()}}}
 }
 func ToggleButtonWithLabel(label string) *GtkToggleButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_toggle_button_new_with_label(C.to_gcharptr(ptr)) }}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_toggle_button_new_with_label(C.to_gcharptr(ptr))}}}
 }
 func ToggleButtonWithMnemonic(label string) *GtkToggleButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_toggle_button_new_with_mnemonic(C.to_gcharptr(ptr)) }}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_toggle_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}
 }
-func (v GtkToggleButton) GetMode() bool {
-	return gboolean2bool(C.gtk_toggle_button_get_mode(C.to_GtkToggleButton(v.Widget)));
+func (v *GtkToggleButton) GetMode() bool {
+	return gboolean2bool(C.gtk_toggle_button_get_mode(C.to_GtkToggleButton(v.Widget)))
 }
-func (v GtkToggleButton) SetMode(draw_indicator bool) {
-	C.gtk_toggle_button_set_mode(C.to_GtkToggleButton(v.Widget), bool2gboolean(draw_indicator));
+func (v *GtkToggleButton) SetMode(draw_indicator bool) {
+	C.gtk_toggle_button_set_mode(C.to_GtkToggleButton(v.Widget), bool2gboolean(draw_indicator))
 }
-func (v GtkToggleButton) GetActive() bool {
-	return gboolean2bool(C.gtk_toggle_button_get_active(C.to_GtkToggleButton(v.Widget)));
+func (v *GtkToggleButton) GetActive() bool {
+	return gboolean2bool(C.gtk_toggle_button_get_active(C.to_GtkToggleButton(v.Widget)))
 }
-func (v GtkToggleButton) SetActive(is_active bool) {
-	C.gtk_toggle_button_set_active(C.to_GtkToggleButton(v.Widget), bool2gboolean(is_active));
+func (v *GtkToggleButton) SetActive(is_active bool) {
+	C.gtk_toggle_button_set_active(C.to_GtkToggleButton(v.Widget), bool2gboolean(is_active))
 }
-func (v GtkToggleButton) GetInconsistent() bool {
-	return gboolean2bool(C.gtk_toggle_button_get_inconsistent(C.to_GtkToggleButton(v.Widget)));
+func (v *GtkToggleButton) GetInconsistent() bool {
+	return gboolean2bool(C.gtk_toggle_button_get_inconsistent(C.to_GtkToggleButton(v.Widget)))
 }
-func (v GtkToggleButton) SetInconsistent(setting bool) {
-	C.gtk_toggle_button_set_inconsistent(C.to_GtkToggleButton(v.Widget), bool2gboolean(setting));
+func (v *GtkToggleButton) SetInconsistent(setting bool) {
+	C.gtk_toggle_button_set_inconsistent(C.to_GtkToggleButton(v.Widget), bool2gboolean(setting))
 }
 // FINISH
 
@@ -1922,23 +1947,24 @@ func (v GtkToggleButton) SetInconsistent(setting bool) {
 // GtkCheckButton
 //-----------------------------------------------------------------------
 type GtkCheckButton struct {
-	GtkToggleButton;
+	GtkToggleButton
 }
+
 func CheckButton() *GtkCheckButton {
-	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new() }}}};
+	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_check_button_new()}}}}
 }
 func CheckButtonWithLabel(label string) *GtkCheckButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new_with_label(C.to_gcharptr(ptr)) }}}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_check_button_new_with_label(C.to_gcharptr(ptr))}}}}
 }
 func CheckButtonWithMnemonic(label string) *GtkCheckButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr)) }}}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
 }
 // FINISH
 
@@ -1946,60 +1972,61 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 // GtkRadioButton
 //-----------------------------------------------------------------------
 type GtkRadioButton struct {
-	GtkCheckButton;
+	GtkCheckButton
 }
+
 func RadioButton(group *glib.SList) *GtkRadioButton {
 	if group != nil {
-		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToSList()))) }}}}};
+		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}
 	}
-	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new(nil) }}}}};
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_radio_button_new(nil)}}}}}
 }
 func RadioButtonWithLabel(group *glib.SList, label string) *GtkRadioButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
 	if group != nil {
-		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr)) }}}}};
+		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}
 	}
-	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr)) }}}}};
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}
 }
 func RadioButtonFromWidget(w *GtkRadioButton) *GtkRadioButton {
-	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new_from_widget(C.to_GtkRadioButton(w.Widget)) }}}}};
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_radio_button_new_from_widget(C.to_GtkRadioButton(w.Widget))}}}}}
 }
 func RadioButtonWithLabelFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new_with_label_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr)) }}}}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_radio_button_new_with_label_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr))}}}}}
 }
 func RadioButtonWithMnemonic(group *glib.SList, label string) *GtkRadioButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
 	if group != nil {
-		return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-			C.gtk_radio_button_new_with_mnemonic(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr)) }}}}};
+		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+			C.gtk_radio_button_new_with_mnemonic(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}
 	}
-	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr)) }}}}};
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}
 }
 func RadioButtonWithMnemonicFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkRadioButton { GtkCheckButton { GtkToggleButton { GtkButton { GtkWidget {
-		C.gtk_radio_button_new_with_mnemonic_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr)) }}}}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
+		C.gtk_radio_button_new_with_mnemonic_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr))}}}}}
 }
-func (v GtkRadioButton) GetGroup() *glib.SList {
-	return glib.FromSList(unsafe.Pointer(C.gtk_radio_button_get_group(C.to_GtkRadioButton(v.Widget))));
+func (v *GtkRadioButton) GetGroup() *glib.SList {
+	return glib.FromSList(unsafe.Pointer(C.gtk_radio_button_get_group(C.to_GtkRadioButton(v.Widget))))
 }
-func (v GtkRadioButton) SetGroup(group *glib.SList) {
+func (v *GtkRadioButton) SetGroup(group *glib.SList) {
 	if group != nil {
-		C.gtk_radio_button_set_group(C.to_GtkRadioButton(v.Widget), C.to_gslist(unsafe.Pointer(group)));
+		C.gtk_radio_button_set_group(C.to_GtkRadioButton(v.Widget), C.to_gslist(unsafe.Pointer(group)))
 	} else {
-		C.gtk_radio_button_set_group(C.to_GtkRadioButton(v.Widget), nil);
+		C.gtk_radio_button_set_group(C.to_GtkRadioButton(v.Widget), nil)
 	}
 }
 // FINISH
@@ -2008,45 +2035,46 @@ func (v GtkRadioButton) SetGroup(group *glib.SList) {
 // GtkFontButton
 //-----------------------------------------------------------------------
 type GtkFontButton struct {
-	GtkButton;
+	GtkButton
 }
+
 func FontButton() *GtkFontButton {
-	return &GtkFontButton { GtkButton { GtkWidget {
-		C.gtk_font_button_new() }}};
+	return &GtkFontButton{GtkButton{GtkWidget{
+		C.gtk_font_button_new()}}}
 }
 func FontButtonWithFont(fontname string) *GtkFontButton {
-	ptr := C.CString(fontname);
-	defer C.free_string(ptr);
-	return &GtkFontButton { GtkButton { GtkWidget {
-		C.gtk_font_button_new_with_font(C.to_gcharptr(ptr)) }}};
+	ptr := C.CString(fontname)
+	defer C.free_string(ptr)
+	return &GtkFontButton{GtkButton{GtkWidget{
+		C.gtk_font_button_new_with_font(C.to_gcharptr(ptr))}}}
 }
-func (v GtkFontButton) GetTitle() string {
-	return C.GoString(C.to_charptr(C.gtk_font_button_get_title(C.to_GtkFontButton(v.Widget))));
+func (v *GtkFontButton) GetTitle() string {
+	return C.GoString(C.to_charptr(C.gtk_font_button_get_title(C.to_GtkFontButton(v.Widget))))
 }
-func (v GtkFontButton) SetTitle(title string) {
-	ptr := C.CString(title);
-	defer C.free_string(ptr);
-	C.gtk_font_button_set_title(C.to_GtkFontButton(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkFontButton) SetTitle(title string) {
+	ptr := C.CString(title)
+	defer C.free_string(ptr)
+	C.gtk_font_button_set_title(C.to_GtkFontButton(v.Widget), C.to_gcharptr(ptr))
 }
-func (v GtkFontButton) GetUseSize() bool {
-	return gboolean2bool(C.gtk_font_button_get_use_size(C.to_GtkFontButton(v.Widget)));
+func (v *GtkFontButton) GetUseSize() bool {
+	return gboolean2bool(C.gtk_font_button_get_use_size(C.to_GtkFontButton(v.Widget)))
 }
-func (v GtkFontButton) SetUseSize(use_size bool) {
-	C.gtk_font_button_set_use_size(C.to_GtkFontButton(v.Widget), bool2gboolean(use_size));
+func (v *GtkFontButton) SetUseSize(use_size bool) {
+	C.gtk_font_button_set_use_size(C.to_GtkFontButton(v.Widget), bool2gboolean(use_size))
 }
-func (v GtkFontButton) GetFontName() string {
-	return C.GoString(C.to_charptr(C.gtk_font_button_get_font_name(C.to_GtkFontButton(v.Widget))));
+func (v *GtkFontButton) GetFontName() string {
+	return C.GoString(C.to_charptr(C.gtk_font_button_get_font_name(C.to_GtkFontButton(v.Widget))))
 }
-func (v GtkFontButton) SetFontName(fontname string) {
-	ptr := C.CString(fontname);
-	defer C.free_string(ptr);
-	C.gtk_font_button_set_font_name(C.to_GtkFontButton(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkFontButton) SetFontName(fontname string) {
+	ptr := C.CString(fontname)
+	defer C.free_string(ptr)
+	C.gtk_font_button_set_font_name(C.to_GtkFontButton(v.Widget), C.to_gcharptr(ptr))
 }
-func (v GtkFontButton) GetShowSize() bool {
-	return gboolean2bool(C.gtk_font_button_get_show_size(C.to_GtkFontButton(v.Widget)));
+func (v *GtkFontButton) GetShowSize() bool {
+	return gboolean2bool(C.gtk_font_button_get_show_size(C.to_GtkFontButton(v.Widget)))
 }
-func (v GtkFontButton) SetShowSize(show_size bool) {
-	C.gtk_font_button_set_show_size(C.to_GtkFontButton(v.Widget), bool2gboolean(show_size));
+func (v *GtkFontButton) SetShowSize(show_size bool) {
+	C.gtk_font_button_set_show_size(C.to_GtkFontButton(v.Widget), bool2gboolean(show_size))
 }
 // FINISH
 
@@ -2054,100 +2082,102 @@ func (v GtkFontButton) SetShowSize(show_size bool) {
 // GtkLinkButton
 //-----------------------------------------------------------------------
 type GtkLinkButton struct {
-	GtkButton;
+	GtkButton
 }
+
 func LinkButton(uri string) *GtkLinkButton {
-	ptr := C.CString(uri);
-	defer C.free_string(ptr);
-	return &GtkLinkButton { GtkButton { GtkWidget {
-		C.gtk_link_button_new(C.to_gcharptr(ptr)) }}};
+	ptr := C.CString(uri)
+	defer C.free_string(ptr)
+	return &GtkLinkButton{GtkButton{GtkWidget{
+		C.gtk_link_button_new(C.to_gcharptr(ptr))}}}
 }
 func LinkButtonWithLabel(uri string, label string) *GtkLinkButton {
-	puri := C.CString(uri);
-	defer C.free_string(puri);
-	plabel := C.CString(label);
-	defer C.free_string(plabel);
-	return &GtkLinkButton { GtkButton { GtkWidget {
-		C.gtk_link_button_new_with_label(C.to_gcharptr(puri), C.to_gcharptr(plabel)) }}};
+	puri := C.CString(uri)
+	defer C.free_string(puri)
+	plabel := C.CString(label)
+	defer C.free_string(plabel)
+	return &GtkLinkButton{GtkButton{GtkWidget{
+		C.gtk_link_button_new_with_label(C.to_gcharptr(puri), C.to_gcharptr(plabel))}}}
 }
-func (v GtkLinkButton) GetUri() string {
-	return C.GoString(C.to_charptr(C.gtk_link_button_get_uri(C.to_GtkLinkButton(v.Widget))));
+func (v *GtkLinkButton) GetUri() string {
+	return C.GoString(C.to_charptr(C.gtk_link_button_get_uri(C.to_GtkLinkButton(v.Widget))))
 }
-func (v GtkLinkButton) SetUri(uri string) {
-	ptr := C.CString(uri);
-	defer C.free_string(ptr);
-	C.gtk_link_button_set_uri(C.to_GtkLinkButton(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkLinkButton) SetUri(uri string) {
+	ptr := C.CString(uri)
+	defer C.free_string(ptr)
+	C.gtk_link_button_set_uri(C.to_GtkLinkButton(v.Widget), C.to_gcharptr(ptr))
 }
 
 //func (v GtkLinkButton) SetUriHook(f func(button *GtkLinkButton, link string, user_data unsafe.Pointer), ) {
-	// GtkLinkButtonUriFunc gtk_link_button_set_uri_hook (GtkLinkButtonUriFunc func, gpointer data, GDestroyNotify destroy);
+// GtkLinkButtonUriFunc gtk_link_button_set_uri_hook (GtkLinkButtonUriFunc func, gpointer data, GDestroyNotify destroy);
 //}
-func (v GtkLinkButton) GetVisited() bool {
-	return gboolean2bool(C.gtk_link_button_get_visited(C.to_GtkLinkButton(v.Widget)));
+func (v *GtkLinkButton) GetVisited() bool {
+	return gboolean2bool(C.gtk_link_button_get_visited(C.to_GtkLinkButton(v.Widget)))
 }
-func (v GtkLinkButton) SetVisited(visited bool) {
-	C.gtk_link_button_set_visited(C.to_GtkLinkButton(v.Widget), bool2gboolean(visited));
+func (v *GtkLinkButton) SetVisited(visited bool) {
+	C.gtk_link_button_set_visited(C.to_GtkLinkButton(v.Widget), bool2gboolean(visited))
 }
 
 //-----------------------------------------------------------------------
 // GtkTreePath
 //-----------------------------------------------------------------------
 type GtkTreePath struct {
-	TreePath *C.GtkTreePath;
+	TreePath *C.GtkTreePath
 }
+
 func TreePath() *GtkTreePath {
-	return &GtkTreePath {
-		C.gtk_tree_path_new() };
+	return &GtkTreePath{
+		C.gtk_tree_path_new()}
 }
 func TreePathFromString(path string) *GtkTreePath {
-	ptr := C.CString(path);
-	defer C.free_string(ptr);
-	return &GtkTreePath {
-		C.gtk_tree_path_new_from_string(C.to_gcharptr(ptr)) };
+	ptr := C.CString(path)
+	defer C.free_string(ptr)
+	return &GtkTreePath{
+		C.gtk_tree_path_new_from_string(C.to_gcharptr(ptr))}
 }
 func TreePathNewFirst() *GtkTreePath {
-	return &GtkTreePath {
-		C.gtk_tree_path_new_first() };
+	return &GtkTreePath{
+		C.gtk_tree_path_new_first()}
 }
-func (v GtkTreePath) String() string {
-	return C.GoString(C.to_charptr(C.gtk_tree_path_to_string(v.TreePath)));
+func (v *GtkTreePath) String() string {
+	return C.GoString(C.to_charptr(C.gtk_tree_path_to_string(v.TreePath)))
 }
-func (v GtkTreePath) AppendIndex(index int) {
-	C.gtk_tree_path_append_index(v.TreePath, C.gint(index));
+func (v *GtkTreePath) AppendIndex(index int) {
+	C.gtk_tree_path_append_index(v.TreePath, C.gint(index))
 }
-func (v GtkTreePath) PrependIndex(index int) {
-	C.gtk_tree_path_prepend_index(v.TreePath, C.gint(index));
+func (v *GtkTreePath) PrependIndex(index int) {
+	C.gtk_tree_path_prepend_index(v.TreePath, C.gint(index))
 }
-func (v GtkTreePath) GetDepth() int {
-	return int(C.gtk_tree_path_get_depth(v.TreePath));
+func (v *GtkTreePath) GetDepth() int {
+	return int(C.gtk_tree_path_get_depth(v.TreePath))
 }
-func (v GtkTreePath) Free() {
-	C.gtk_tree_path_free(v.TreePath);
+func (v *GtkTreePath) Free() {
+	C.gtk_tree_path_free(v.TreePath)
 }
-func (v GtkTreePath) Copy() *GtkTreePath {
-	return &GtkTreePath {
-		C.gtk_tree_path_copy(v.TreePath) };
+func (v *GtkTreePath) Copy() *GtkTreePath {
+	return &GtkTreePath{
+		C.gtk_tree_path_copy(v.TreePath)}
 }
-func (v GtkTreePath) Compare(w GtkTreePath) int {
-	return int(C.gtk_tree_path_compare(v.TreePath, w.TreePath));
+func (v *GtkTreePath) Compare(w GtkTreePath) int {
+	return int(C.gtk_tree_path_compare(v.TreePath, w.TreePath))
 }
-func (v GtkTreePath) Next() {
-	C.gtk_tree_path_next(v.TreePath);
+func (v *GtkTreePath) Next() {
+	C.gtk_tree_path_next(v.TreePath)
 }
-func (v GtkTreePath) Prev() bool {
-	return gboolean2bool(C.gtk_tree_path_prev(v.TreePath));
+func (v *GtkTreePath) Prev() bool {
+	return gboolean2bool(C.gtk_tree_path_prev(v.TreePath))
 }
-func (v GtkTreePath) Up() bool {
-	return gboolean2bool(C.gtk_tree_path_up(v.TreePath));
+func (v *GtkTreePath) Up() bool {
+	return gboolean2bool(C.gtk_tree_path_up(v.TreePath))
 }
-func (v GtkTreePath) Down() {
-	C.gtk_tree_path_down(v.TreePath);
+func (v *GtkTreePath) Down() {
+	C.gtk_tree_path_down(v.TreePath)
 }
-func (v GtkTreePath) IsAncestor(descendant GtkTreePath) bool {
-	return gboolean2bool(C.gtk_tree_path_is_ancestor(v.TreePath, descendant.TreePath));
+func (v *GtkTreePath) IsAncestor(descendant GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_path_is_ancestor(v.TreePath, descendant.TreePath))
 }
-func (v GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
-	return gboolean2bool(C.gtk_tree_path_is_descendant(v.TreePath, ancestor.TreePath));
+func (v *GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_path_is_descendant(v.TreePath, ancestor.TreePath))
 }
 // TODO
 // gtk_tree_path_get_indices
@@ -2156,13 +2186,14 @@ func (v GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
 // GtkTreeIter
 //-----------------------------------------------------------------------
 type GtkTreeIter struct {
-	TreeIter C.GtkTreeIter;
+	TreeIter C.GtkTreeIter
 }
-func (v GtkTreeIter) Copy() *GtkTreeIter {
-	return &GtkTreeIter { *C.gtk_tree_iter_copy(&v.TreeIter) };
+
+func (v *GtkTreeIter) Copy() *GtkTreeIter {
+	return &GtkTreeIter{*C.gtk_tree_iter_copy(&v.TreeIter)}
 }
-func (v GtkTreeIter) Free() {
-	C.gtk_tree_iter_free(&v.TreeIter);
+func (v *GtkTreeIter) Free() {
+	C.gtk_tree_iter_free(&v.TreeIter)
 }
 // FINISH
 
@@ -2170,56 +2201,58 @@ func (v GtkTreeIter) Free() {
 // GtkTreeModel
 //-----------------------------------------------------------------------
 const (
-	GTK_TREE_MODEL_ITERS_PERSIST = 1 << 0;
-	GTK_TREE_MODEL_LIST_ONLY     = 1 << 1;
+	GTK_TREE_MODEL_ITERS_PERSIST = 1 << 0
+	GTK_TREE_MODEL_LIST_ONLY     = 1 << 1
 )
+
 type GtkTreeModel struct {
-	TreeModel *C.GtkTreeModel;
+	TreeModel *C.GtkTreeModel
 }
-func (v GtkTreeModel) GetFlags() int {
-	return int(C.gtk_tree_model_get_flags(v.TreeModel));
+
+func (v *GtkTreeModel) GetFlags() int {
+	return int(C.gtk_tree_model_get_flags(v.TreeModel))
 }
-func (v GtkTreeModel) GetNColumns() int {
-	return int(C.gtk_tree_model_get_n_columns(v.TreeModel));
+func (v *GtkTreeModel) GetNColumns() int {
+	return int(C.gtk_tree_model_get_n_columns(v.TreeModel))
 }
-func (v GtkTreeModel) GetIter(iter *GtkTreeIter, path *GtkTreePath) bool {
-	var path_ C.GtkTreePath;
-	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter.TreeIter, unsafe.Pointer(&path_)));
-	path.TreePath = &path_;
-	return ret;
+func (v *GtkTreeModel) GetIter(iter *GtkTreeIter, path *GtkTreePath) bool {
+	var path_ C.GtkTreePath
+	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter.TreeIter, unsafe.Pointer(&path_)))
+	path.TreePath = &path_
+	return ret
 }
-func (v GtkTreeModel) GetIterFromString(iter *GtkTreeIter, path_string string) bool {
-	ptr := C.CString(path_string);
-	defer C.free_string(ptr);
-	ret := gboolean2bool(C.gtk_tree_model_get_iter_from_string(v.TreeModel, &iter.TreeIter, C.to_gcharptr(ptr)));
-	return ret;
+func (v *GtkTreeModel) GetIterFromString(iter *GtkTreeIter, path_string string) bool {
+	ptr := C.CString(path_string)
+	defer C.free_string(ptr)
+	ret := gboolean2bool(C.gtk_tree_model_get_iter_from_string(v.TreeModel, &iter.TreeIter, C.to_gcharptr(ptr)))
+	return ret
 }
-func (v GtkTreeModel) GetStringFromIter(iter *GtkTreeIter) string {
-	return C.GoString(C.to_charptr(C.gtk_tree_model_get_string_from_iter(v.TreeModel, &iter.TreeIter)));
+func (v *GtkTreeModel) GetStringFromIter(iter *GtkTreeIter) string {
+	return C.GoString(C.to_charptr(C.gtk_tree_model_get_string_from_iter(v.TreeModel, &iter.TreeIter)))
 }
-func (v GtkTreeModel) GetIterFirst(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_model_get_iter_first(v.TreeModel, &iter.TreeIter));
+func (v *GtkTreeModel) GetIterFirst(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_get_iter_first(v.TreeModel, &iter.TreeIter))
 }
-func (v GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
-	return &GtkTreePath { C._gtk_tree_model_get_path(v.TreeModel, &iter.TreeIter) };
+func (v *GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
+	return &GtkTreePath{C._gtk_tree_model_get_path(v.TreeModel, &iter.TreeIter)}
 }
-func (v GtkTreeModel) IterNext(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_model_iter_next(v.TreeModel, &iter.TreeIter));
+func (v *GtkTreeModel) IterNext(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_next(v.TreeModel, &iter.TreeIter))
 }
-func (v GtkTreeModel) IterChildren(iter *GtkTreeIter, parent *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_model_iter_children(v.TreeModel, &iter.TreeIter, &parent.TreeIter));
+func (v *GtkTreeModel) IterChildren(iter *GtkTreeIter, parent *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_children(v.TreeModel, &iter.TreeIter, &parent.TreeIter))
 }
-func (v GtkTreeModel) IterHasChild(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_model_iter_has_child(v.TreeModel, &iter.TreeIter));
+func (v *GtkTreeModel) IterHasChild(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_has_child(v.TreeModel, &iter.TreeIter))
 }
-func (v GtkTreeModel) IterNChildren(iter *GtkTreeIter) int {
-	return int(C.gtk_tree_model_iter_n_children(v.TreeModel, &iter.TreeIter));
+func (v *GtkTreeModel) IterNChildren(iter *GtkTreeIter) int {
+	return int(C.gtk_tree_model_iter_n_children(v.TreeModel, &iter.TreeIter))
 }
-func (v GtkTreeModel) IterNthChild(iter *GtkTreeIter, parent *GtkTreeIter, n int) bool {
-	return gboolean2bool(C.gtk_tree_model_iter_nth_child(v.TreeModel, &iter.TreeIter, &parent.TreeIter, C.gint(n)));
+func (v *GtkTreeModel) IterNthChild(iter *GtkTreeIter, parent *GtkTreeIter, n int) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_nth_child(v.TreeModel, &iter.TreeIter, &parent.TreeIter, C.gint(n)))
 }
-func (v GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_model_iter_parent(v.TreeModel, &iter.TreeIter, &child.TreeIter));
+func (v *GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_model_iter_parent(v.TreeModel, &iter.TreeIter, &child.TreeIter))
 }
 // TODO
 // gtk_tree_model_get_value
@@ -2233,103 +2266,104 @@ func (v GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
 // GtkComboBox
 //-----------------------------------------------------------------------
 type GtkComboBox struct {
-	GtkContainer;
+	GtkContainer
 }
+
 func ComboBox() *GtkComboBox {
-	return &GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_new() }}};
+	return &GtkComboBox{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new()}}}
 }
 func ComboBoxWithModel(model *GtkTreeModel) *GtkComboBox {
-	return &GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_new_with_model(model.TreeModel) }}};
+	return &GtkComboBox{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new_with_model(model.TreeModel)}}}
 }
 func ComboBoxNewText() *GtkComboBox {
-	return &GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_new_text() }}};
+	return &GtkComboBox{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new_text()}}}
 }
-func (v GtkComboBox) GetWrapWidth() int {
-	return int(C.gtk_combo_box_get_wrap_width(C.to_GtkComboBox(v.Widget)));
+func (v *GtkComboBox) GetWrapWidth() int {
+	return int(C.gtk_combo_box_get_wrap_width(C.to_GtkComboBox(v.Widget)))
 }
-func (v GtkComboBox) SetWrapWidth(width int) {
-	C.gtk_combo_box_set_wrap_width(C.to_GtkComboBox(v.Widget), C.gint(width));
+func (v *GtkComboBox) SetWrapWidth(width int) {
+	C.gtk_combo_box_set_wrap_width(C.to_GtkComboBox(v.Widget), C.gint(width))
 }
-func (v GtkComboBox) AppendText(text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	C.gtk_combo_box_append_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkComboBox) AppendText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_combo_box_append_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr))
 }
-func (v GtkComboBox) InsertText(text string, position int) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	C.gtk_combo_box_insert_text(C.to_GtkComboBox(v.Widget), C.gint(position), C.to_gcharptr(ptr));
+func (v *GtkComboBox) InsertText(text string, position int) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_combo_box_insert_text(C.to_GtkComboBox(v.Widget), C.gint(position), C.to_gcharptr(ptr))
 }
-func (v GtkComboBox) PrependText(text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	C.gtk_combo_box_prepend_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkComboBox) PrependText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_combo_box_prepend_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr))
 }
-func (v GtkComboBox) RemoveText(position int) {
-	C.gtk_combo_box_remove_text(C.to_GtkComboBox(v.Widget), C.gint(position));
+func (v *GtkComboBox) RemoveText(position int) {
+	C.gtk_combo_box_remove_text(C.to_GtkComboBox(v.Widget), C.gint(position))
 }
-func (v GtkComboBox) GetActiveText() string {
-	return C.GoString(C.to_charptr(C.gtk_combo_box_get_active_text(C.to_GtkComboBox(v.Widget))));
+func (v *GtkComboBox) GetActiveText() string {
+	return C.GoString(C.to_charptr(C.gtk_combo_box_get_active_text(C.to_GtkComboBox(v.Widget))))
 }
-func (v GtkComboBox) GetActive() int {
-	return int(C.gtk_combo_box_get_active(C.to_GtkComboBox(v.Widget)));
+func (v *GtkComboBox) GetActive() int {
+	return int(C.gtk_combo_box_get_active(C.to_GtkComboBox(v.Widget)))
 }
-func (v GtkComboBox) SetActive(width int) {
-	C.gtk_combo_box_set_active(C.to_GtkComboBox(v.Widget), C.gint(width));
+func (v *GtkComboBox) SetActive(width int) {
+	C.gtk_combo_box_set_active(C.to_GtkComboBox(v.Widget), C.gint(width))
 }
-func (v GtkComboBox) GetTitle() string {
-	return C.GoString(C.to_charptr(C.gtk_combo_box_get_title(C.to_GtkComboBox(v.Widget))));
+func (v *GtkComboBox) GetTitle() string {
+	return C.GoString(C.to_charptr(C.gtk_combo_box_get_title(C.to_GtkComboBox(v.Widget))))
 }
-func (v GtkComboBox) SetTitle(title string) {
-	ptr := C.CString(title);
-	defer C.free_string(ptr);
-	C.gtk_combo_box_set_title(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkComboBox) SetTitle(title string) {
+	ptr := C.CString(title)
+	defer C.free_string(ptr)
+	C.gtk_combo_box_set_title(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr))
 }
-func (v GtkComboBox) GetModel() *GtkTreeModel {
-	return &GtkTreeModel {
-		C.gtk_combo_box_get_model(C.to_GtkComboBox(v.Widget)) };
+func (v *GtkComboBox) GetModel() *GtkTreeModel {
+	return &GtkTreeModel{
+		C.gtk_combo_box_get_model(C.to_GtkComboBox(v.Widget))}
 }
-func (v GtkComboBox) SetModel(model *GtkTreeModel) {
-	C.gtk_combo_box_set_model(C.to_GtkComboBox(v.Widget), model.TreeModel);
+func (v *GtkComboBox) SetModel(model *GtkTreeModel) {
+	C.gtk_combo_box_set_model(C.to_GtkComboBox(v.Widget), model.TreeModel)
 }
-func (v GtkComboBox) GetFocusOnClick() bool {
-	return gboolean2bool(C.gtk_combo_box_get_focus_on_click(C.to_GtkComboBox(v.Widget)));
+func (v *GtkComboBox) GetFocusOnClick() bool {
+	return gboolean2bool(C.gtk_combo_box_get_focus_on_click(C.to_GtkComboBox(v.Widget)))
 }
-func (v GtkComboBox) SetFocusOnClick(focus_on_click bool) {
-	C.gtk_combo_box_set_focus_on_click(C.to_GtkComboBox(v.Widget), bool2gboolean(focus_on_click));
+func (v *GtkComboBox) SetFocusOnClick(focus_on_click bool) {
+	C.gtk_combo_box_set_focus_on_click(C.to_GtkComboBox(v.Widget), bool2gboolean(focus_on_click))
 }
-func (v GtkComboBox) GetActiveIter(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_combo_box_get_active_iter(C.to_GtkComboBox(v.Widget), &iter.TreeIter));
+func (v *GtkComboBox) GetActiveIter(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_combo_box_get_active_iter(C.to_GtkComboBox(v.Widget), &iter.TreeIter))
 }
-func (v GtkComboBox) SetActiveIter(iter *GtkTreeIter) {
-	C.gtk_combo_box_set_active_iter(C.to_GtkComboBox(v.Widget), &iter.TreeIter);
+func (v *GtkComboBox) SetActiveIter(iter *GtkTreeIter) {
+	C.gtk_combo_box_set_active_iter(C.to_GtkComboBox(v.Widget), &iter.TreeIter)
 }
-func (v GtkComboBox) Popup() {
-	C.gtk_combo_box_popup(C.to_GtkComboBox(v.Widget));
+func (v *GtkComboBox) Popup() {
+	C.gtk_combo_box_popup(C.to_GtkComboBox(v.Widget))
 }
-func (v GtkComboBox) Popdown() {
-	C.gtk_combo_box_popdown(C.to_GtkComboBox(v.Widget));
+func (v *GtkComboBox) Popdown() {
+	C.gtk_combo_box_popdown(C.to_GtkComboBox(v.Widget))
 }
-func (v GtkComboBox) GetAddTearoffs() bool {
-	return gboolean2bool(C.gtk_combo_box_get_add_tearoffs(C.to_GtkComboBox(v.Widget)));
+func (v *GtkComboBox) GetAddTearoffs() bool {
+	return gboolean2bool(C.gtk_combo_box_get_add_tearoffs(C.to_GtkComboBox(v.Widget)))
 }
-func (v GtkComboBox) SetAddTearoffs(add_tearoffs bool) {
-	C.gtk_combo_box_set_add_tearoffs(C.to_GtkComboBox(v.Widget), bool2gboolean(add_tearoffs));
+func (v *GtkComboBox) SetAddTearoffs(add_tearoffs bool) {
+	C.gtk_combo_box_set_add_tearoffs(C.to_GtkComboBox(v.Widget), bool2gboolean(add_tearoffs))
 }
-func (v GtkComboBox) GetRowSpanColumn() int {
-	return int(C.gtk_combo_box_get_row_span_column(C.to_GtkComboBox(v.Widget)));
+func (v *GtkComboBox) GetRowSpanColumn() int {
+	return int(C.gtk_combo_box_get_row_span_column(C.to_GtkComboBox(v.Widget)))
 }
-func (v GtkComboBox) SetRowSpanColumn(row_span int) {
-	C.gtk_combo_box_set_row_span_column(C.to_GtkComboBox(v.Widget), C.gint(row_span));
+func (v *GtkComboBox) SetRowSpanColumn(row_span int) {
+	C.gtk_combo_box_set_row_span_column(C.to_GtkComboBox(v.Widget), C.gint(row_span))
 }
-func (v GtkComboBox) GetColumnSpanColumn() int {
-	return int(C.gtk_combo_box_get_column_span_column(C.to_GtkComboBox(v.Widget)));
+func (v *GtkComboBox) GetColumnSpanColumn() int {
+	return int(C.gtk_combo_box_get_column_span_column(C.to_GtkComboBox(v.Widget)))
 }
-func (v GtkComboBox) SetColumnSpanColumn(column_span int) {
-	C.gtk_combo_box_set_column_span_column(C.to_GtkComboBox(v.Widget), C.gint(column_span));
+func (v *GtkComboBox) SetColumnSpanColumn(column_span int) {
+	C.gtk_combo_box_set_column_span_column(C.to_GtkComboBox(v.Widget), C.gint(column_span))
 }
 // TODO
 // gtk_combo_box_get_popup_accessible
@@ -2342,21 +2376,22 @@ func (v GtkComboBox) SetColumnSpanColumn(column_span int) {
 // GtkComboBoxEntry
 //-----------------------------------------------------------------------
 type GtkComboBoxEntry struct {
-	GtkComboBox;
+	GtkComboBox
 }
+
 func ComboBoxEntry() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry { GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_entry_new() }}}};
+	return &GtkComboBoxEntry{GtkComboBox{GtkContainer{GtkWidget{
+		C.gtk_combo_box_entry_new()}}}}
 }
 func ComboBoxEntryNewText() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry { GtkComboBox { GtkContainer { GtkWidget {
-		C.gtk_combo_box_entry_new_text() }}}};
+	return &GtkComboBoxEntry{GtkComboBox{GtkContainer{GtkWidget{
+		C.gtk_combo_box_entry_new_text()}}}}
 }
-func (v GtkComboBoxEntry) GetTextColumn() int {
-	return int(C.gtk_combo_box_entry_get_text_column(C.to_GtkComboBoxEntry(v.Widget)));
+func (v *GtkComboBoxEntry) GetTextColumn() int {
+	return int(C.gtk_combo_box_entry_get_text_column(C.to_GtkComboBoxEntry(v.Widget)))
 }
-func (v GtkComboBoxEntry) SetTextColumn(text_column int) {
-	C.gtk_combo_box_entry_set_text_column(C.to_GtkComboBoxEntry(v.Widget), C.gint(text_column));
+func (v *GtkComboBoxEntry) SetTextColumn(text_column int) {
+	C.gtk_combo_box_entry_set_text_column(C.to_GtkComboBoxEntry(v.Widget), C.gint(text_column))
 }
 // FINISH
 
@@ -2364,33 +2399,34 @@ func (v GtkComboBoxEntry) SetTextColumn(text_column int) {
 // GtkStatusbar
 //-----------------------------------------------------------------------
 type GtkStatusbar struct {
-	GtkHBox;
+	GtkHBox
 }
+
 func Statusbar() *GtkStatusbar {
-	return &GtkStatusbar { GtkHBox { GtkBox { GtkContainer { GtkWidget {
-		C.gtk_statusbar_new() }}}}};
+	return &GtkStatusbar{GtkHBox{GtkBox{GtkContainer{GtkWidget{
+		C.gtk_statusbar_new()}}}}}
 }
-func (v GtkStatusbar) GetContextId(content_description string) uint {
-	ptr := C.CString(content_description);
-	defer C.free_string(ptr);
-	return uint(C.gtk_statusbar_get_context_id(C.to_GtkStatusbar(v.Widget), C.to_gcharptr(ptr)));
+func (v *GtkStatusbar) GetContextId(content_description string) uint {
+	ptr := C.CString(content_description)
+	defer C.free_string(ptr)
+	return uint(C.gtk_statusbar_get_context_id(C.to_GtkStatusbar(v.Widget), C.to_gcharptr(ptr)))
 }
-func (v GtkStatusbar) Push(context_id uint, text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	C.gtk_statusbar_push(C.to_GtkStatusbar(v.Widget), C.guint(context_id), C.to_gcharptr(ptr));
+func (v *GtkStatusbar) Push(context_id uint, text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_statusbar_push(C.to_GtkStatusbar(v.Widget), C.guint(context_id), C.to_gcharptr(ptr))
 }
-func (v GtkStatusbar) Pop(context_id uint) {
-	C.gtk_statusbar_pop(C.to_GtkStatusbar(v.Widget), C.guint(context_id));
+func (v *GtkStatusbar) Pop(context_id uint) {
+	C.gtk_statusbar_pop(C.to_GtkStatusbar(v.Widget), C.guint(context_id))
 }
-func (v GtkStatusbar) Remove(context_id uint, message_id uint) {
-	C.gtk_statusbar_remove(C.to_GtkStatusbar(v.Widget), C.guint(context_id), C.guint(message_id));
+func (v *GtkStatusbar) Remove(context_id uint, message_id uint) {
+	C.gtk_statusbar_remove(C.to_GtkStatusbar(v.Widget), C.guint(context_id), C.guint(message_id))
 }
-func (v GtkStatusbar) GetHasResizeGrip() bool {
-	return gboolean2bool(C.gtk_statusbar_get_has_resize_grip(C.to_GtkStatusbar(v.Widget)));
+func (v *GtkStatusbar) GetHasResizeGrip() bool {
+	return gboolean2bool(C.gtk_statusbar_get_has_resize_grip(C.to_GtkStatusbar(v.Widget)))
 }
-func (v GtkStatusbar) SetHasResizeGrip(add_tearoffs bool) {
-	C.gtk_statusbar_set_has_resize_grip(C.to_GtkStatusbar(v.Widget), bool2gboolean(add_tearoffs));
+func (v *GtkStatusbar) SetHasResizeGrip(add_tearoffs bool) {
+	C.gtk_statusbar_set_has_resize_grip(C.to_GtkStatusbar(v.Widget), bool2gboolean(add_tearoffs))
 }
 // FINISH
 
@@ -2398,49 +2434,51 @@ func (v GtkStatusbar) SetHasResizeGrip(add_tearoffs bool) {
 // GtkFrame
 //-----------------------------------------------------------------------
 const (
-	GTK_SHADOW_NONE = 0;
-	GTK_SHADOW_IN = 1;
-	GTK_SHADOW_OUT = 2;
-	GTK_SHADOW_ETCHED_IN = 3;
-	GTK_SHADOW_ETCHED_OUT = 4;
+	GTK_SHADOW_NONE       = 0
+	GTK_SHADOW_IN         = 1
+	GTK_SHADOW_OUT        = 2
+	GTK_SHADOW_ETCHED_IN  = 3
+	GTK_SHADOW_ETCHED_OUT = 4
 )
+
 type GtkFrame struct {
-	GtkContainer;
+	GtkContainer
 }
+
 func Frame(label string) *GtkFrame {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkFrame { GtkContainer { GtkWidget {
-		C.gtk_frame_new(C.to_gcharptr(ptr)) }}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkFrame{GtkContainer{GtkWidget{
+		C.gtk_frame_new(C.to_gcharptr(ptr))}}}
 }
-func (v GtkFrame) GetLabel() string {
-	return C.GoString(C.to_charptr(C.gtk_frame_get_label(C.to_GtkFrame(v.Widget))));
+func (v *GtkFrame) GetLabel() string {
+	return C.GoString(C.to_charptr(C.gtk_frame_get_label(C.to_GtkFrame(v.Widget))))
 }
-func (v GtkFrame) SetLabel(label string) {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	C.gtk_frame_set_label(C.to_GtkFrame(v.Widget), C.to_gcharptr(ptr));
+func (v *GtkFrame) SetLabel(label string) {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	C.gtk_frame_set_label(C.to_GtkFrame(v.Widget), C.to_gcharptr(ptr))
 }
-func (v GtkFrame) GetLabelWidget() LabelLike {
-	return &GtkLabel { GtkWidget {
-		C.gtk_frame_get_label_widget(C.to_GtkFrame(v.Widget)) }};
+func (v *GtkFrame) GetLabelWidget() LabelLike {
+	return &GtkLabel{GtkWidget{
+		C.gtk_frame_get_label_widget(C.to_GtkFrame(v.Widget))}}
 }
-func (v GtkFrame) SetLabelWidget(label_widget *LabelLike) {
-	C.gtk_frame_set_label_widget(C.to_GtkFrame(v.Widget), label_widget.ToGtkWidget());
+func (v *GtkFrame) SetLabelWidget(label_widget *LabelLike) {
+	C.gtk_frame_set_label_widget(C.to_GtkFrame(v.Widget), label_widget.ToGtkWidget())
 }
-func (v GtkFrame) GetLabelAlign() (xalign, yalign float) {
-	var xalign_, yalign_ C.gfloat;
-	C.gtk_frame_get_label_align(C.to_GtkFrame(v.Widget), &xalign_, &yalign_);
-	return float(xalign_), float(yalign_);
+func (v *GtkFrame) GetLabelAlign() (xalign, yalign float) {
+	var xalign_, yalign_ C.gfloat
+	C.gtk_frame_get_label_align(C.to_GtkFrame(v.Widget), &xalign_, &yalign_)
+	return float(xalign_), float(yalign_)
 }
-func (v GtkFrame) SetLabelAlign(xalign, yalign float) {
-	C.gtk_frame_set_label_align(C.to_GtkFrame(v.Widget), C.gfloat(xalign), C.gfloat(yalign));
+func (v *GtkFrame) SetLabelAlign(xalign, yalign float) {
+	C.gtk_frame_set_label_align(C.to_GtkFrame(v.Widget), C.gfloat(xalign), C.gfloat(yalign))
 }
-func (v GtkFrame) GetShadowType() int {
-	return int(C.gtk_frame_get_shadow_type(C.to_GtkFrame(v.Widget)));
+func (v *GtkFrame) GetShadowType() int {
+	return int(C.gtk_frame_get_shadow_type(C.to_GtkFrame(v.Widget)))
 }
-func (v GtkFrame) SetShadowType(shadow_type int) {
-	C.gtk_frame_set_shadow_type(C.to_GtkFrame(v.Widget), C.GtkShadowType(shadow_type));
+func (v *GtkFrame) SetShadowType(shadow_type uint) {
+	C.gtk_frame_set_shadow_type(C.to_GtkFrame(v.Widget), C.GtkShadowType(shadow_type))
 }
 // FINISH
 
@@ -2448,61 +2486,62 @@ func (v GtkFrame) SetShadowType(shadow_type int) {
 // GtkAdjustment
 //-----------------------------------------------------------------------
 type GtkAdjustment struct {
-	Adjustment *C.GtkAdjustment;
+	Adjustment *C.GtkAdjustment
 }
+
 func Adjustment(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) *GtkAdjustment {
-	return &GtkAdjustment {
-		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size))) };
+	return &GtkAdjustment{
+		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))}
 }
-func (v GtkAdjustment) GetValue() float64 {
-	return float64(C.gtk_adjustment_get_value(v.Adjustment));
+func (v *GtkAdjustment) GetValue() float64 {
+	return float64(C.gtk_adjustment_get_value(v.Adjustment))
 }
-func (v GtkAdjustment) SetValue(value float64) {
-	C.gtk_adjustment_set_value(v.Adjustment, C.gdouble(value));
+func (v *GtkAdjustment) SetValue(value float64) {
+	C.gtk_adjustment_set_value(v.Adjustment, C.gdouble(value))
 }
-func (v GtkAdjustment) GetLower() float64 {
-	panic_if_version_older(2,14,0,"gtk_adjustment_get_lower() is not provided on your GTK");
-	return float64(C._gtk_adjustment_get_lower(v.Adjustment));
+func (v *GtkAdjustment) GetLower() float64 {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_lower() is not provided on your GTK")
+	return float64(C._gtk_adjustment_get_lower(v.Adjustment))
 }
-func (v GtkAdjustment) SetLower(lower float64) {
-	panic_if_version_older(2,14,0,"gtk_adjustment_set_lower() is not provided on your GTK");
-	C._gtk_adjustment_set_lower(v.Adjustment, C.gdouble(lower));
+func (v *GtkAdjustment) SetLower(lower float64) {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_lower() is not provided on your GTK")
+	C._gtk_adjustment_set_lower(v.Adjustment, C.gdouble(lower))
 }
-func (v GtkAdjustment) GetUpper() float64 {
-	panic_if_version_older(2,14,0,"gtk_adjustment_get_upper() is not provided on your GTK");
-	return float64(C._gtk_adjustment_get_upper(v.Adjustment));
+func (v *GtkAdjustment) GetUpper() float64 {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_upper() is not provided on your GTK")
+	return float64(C._gtk_adjustment_get_upper(v.Adjustment))
 }
-func (v GtkAdjustment) SetUpper(upper float64) {
-	panic_if_version_older(2,14,0,"gtk_adjustment_set_upper() is not provided on your GTK");
-	C._gtk_adjustment_set_upper(v.Adjustment, C.gdouble(upper));
+func (v *GtkAdjustment) SetUpper(upper float64) {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_upper() is not provided on your GTK")
+	C._gtk_adjustment_set_upper(v.Adjustment, C.gdouble(upper))
 }
-func (v GtkAdjustment) GetStepIncrement() float64 {
-	panic_if_version_older(2,14,0,"gtk_adjustment_get_step_increment() is not provided on your GTK");
-	return float64(C._gtk_adjustment_get_step_increment(v.Adjustment));
+func (v *GtkAdjustment) GetStepIncrement() float64 {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_step_increment() is not provided on your GTK")
+	return float64(C._gtk_adjustment_get_step_increment(v.Adjustment))
 }
-func (v GtkAdjustment) SetStepIncrement(step_increment float64) {
-	panic_if_version_older(2,14,0,"gtk_adjustment_set_step_increment() is not provided on your GTK");
-	C._gtk_adjustment_set_step_increment(v.Adjustment, C.gdouble(step_increment));
+func (v *GtkAdjustment) SetStepIncrement(step_increment float64) {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_step_increment() is not provided on your GTK")
+	C._gtk_adjustment_set_step_increment(v.Adjustment, C.gdouble(step_increment))
 }
-func (v GtkAdjustment) GetPageIncrement() float64 {
-	panic_if_version_older(2,14,0,"gtk_adjustment_get_page_increment() is not provided on your GTK");
-	return float64(C._gtk_adjustment_get_page_increment(v.Adjustment));
+func (v *GtkAdjustment) GetPageIncrement() float64 {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_increment() is not provided on your GTK")
+	return float64(C._gtk_adjustment_get_page_increment(v.Adjustment))
 }
-func (v GtkAdjustment) SetPageIncrement(page_increment float64) {
-	panic_if_version_older(2,14,0,"gtk_adjustment_set_page_increment() is not provided on your GTK");
-	C._gtk_adjustment_set_page_increment(v.Adjustment, C.gdouble(page_increment));
+func (v *GtkAdjustment) SetPageIncrement(page_increment float64) {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_increment() is not provided on your GTK")
+	C._gtk_adjustment_set_page_increment(v.Adjustment, C.gdouble(page_increment))
 }
-func (v GtkAdjustment) GetPageSize() float64 {
-	panic_if_version_older(2,14,0,"gtk_adjustment_get_page_size() is not provided on your GTK");
-	return float64(C._gtk_adjustment_get_page_size(v.Adjustment));
+func (v *GtkAdjustment) GetPageSize() float64 {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_size() is not provided on your GTK")
+	return float64(C._gtk_adjustment_get_page_size(v.Adjustment))
 }
-func (v GtkAdjustment) SetPageSize(page_size float64) {
-	panic_if_version_older(2,14,0,"gtk_adjustment_set_page_size() is not provided on your GTK");
-	C._gtk_adjustment_set_page_size(v.Adjustment, C.gdouble(page_size));
+func (v *GtkAdjustment) SetPageSize(page_size float64) {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_size() is not provided on your GTK")
+	C._gtk_adjustment_set_page_size(v.Adjustment, C.gdouble(page_size))
 }
-func (v GtkAdjustment) Configure(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) {
-	panic_if_version_older(2,14,0,"gtk_adjustment_configure() is not provided on your GTK");
-	C._gtk_adjustment_configure(v.Adjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size));
+func (v *GtkAdjustment) Configure(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) {
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_configure() is not provided on your GTK")
+	C._gtk_adjustment_configure(v.Adjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size))
 }
 // FINISH
 
@@ -2510,46 +2549,52 @@ func (v GtkAdjustment) Configure(value float64, lower float64, upper float64, st
 // GtkScrolledWindow
 //-----------------------------------------------------------------------
 const (
-	GTK_POLICY_ALWAYS = 0;
-	GTK_POLICY_AUTOMATIC = 1;
-	GTK_POLICY_NEVER = 2;
+	GTK_POLICY_ALWAYS    = 0
+	GTK_POLICY_AUTOMATIC = 1
+	GTK_POLICY_NEVER     = 2
 )
+
 type GtkScrolledWindow struct {
-	GtkContainer;
+	GtkContainer
 }
+
 func ScrolledWindow(hadjustment *GtkAdjustment, vadjustment *GtkAdjustment) *GtkScrolledWindow {
-	var had, vad *C.GtkAdjustment;
-	if hadjustment != nil { had = hadjustment.Adjustment }
-	if vadjustment != nil { vad = vadjustment.Adjustment }
-	return &GtkScrolledWindow { GtkContainer { GtkWidget {
-		C.gtk_scrolled_window_new(had, vad) }}};
+	var had, vad *C.GtkAdjustment
+	if hadjustment != nil {
+		had = hadjustment.Adjustment
+	}
+	if vadjustment != nil {
+		vad = vadjustment.Adjustment
+	}
+	return &GtkScrolledWindow{GtkContainer{GtkWidget{
+		C.gtk_scrolled_window_new(had, vad)}}}
 }
-func (v GtkScrolledWindow) SetHAdjustment(hadjustment *GtkAdjustment) {
-	C.gtk_scrolled_window_set_hadjustment(C.to_GtkScrolledWindow(v.Widget), hadjustment.Adjustment);
+func (v *GtkScrolledWindow) SetHAdjustment(hadjustment *GtkAdjustment) {
+	C.gtk_scrolled_window_set_hadjustment(C.to_GtkScrolledWindow(v.Widget), hadjustment.Adjustment)
 }
-func (v GtkScrolledWindow) SetVAdjustment(vadjustment *GtkAdjustment) {
-	C.gtk_scrolled_window_set_vadjustment(C.to_GtkScrolledWindow(v.Widget), vadjustment.Adjustment);
+func (v *GtkScrolledWindow) SetVAdjustment(vadjustment *GtkAdjustment) {
+	C.gtk_scrolled_window_set_vadjustment(C.to_GtkScrolledWindow(v.Widget), vadjustment.Adjustment)
 }
-func (v GtkScrolledWindow) GetHAdjustment() *GtkAdjustment {
-	return &GtkAdjustment {
-		C.gtk_scrolled_window_get_hadjustment(C.to_GtkScrolledWindow(v.Widget)) };
+func (v *GtkScrolledWindow) GetHAdjustment() *GtkAdjustment {
+	return &GtkAdjustment{
+		C.gtk_scrolled_window_get_hadjustment(C.to_GtkScrolledWindow(v.Widget))}
 }
-func (v GtkScrolledWindow) GetVAdjustment() *GtkAdjustment {
-	return &GtkAdjustment {
-		C.gtk_scrolled_window_get_vadjustment(C.to_GtkScrolledWindow(v.Widget)) };
+func (v *GtkScrolledWindow) GetVAdjustment() *GtkAdjustment {
+	return &GtkAdjustment{
+		C.gtk_scrolled_window_get_vadjustment(C.to_GtkScrolledWindow(v.Widget))}
 }
 // TODO
 // gtk_scrolled_window_get_hscrollbar
 // gtk_scrolled_window_get_vscrollbar
-func (v GtkScrolledWindow) SetPolicy(hscrollbar_policy int, vscrollbar_policy int) {
-	C.gtk_scrolled_window_set_policy(C.to_GtkScrolledWindow(v.Widget), C.GtkPolicyType(hscrollbar_policy), C.GtkPolicyType(vscrollbar_policy));
+func (v *GtkScrolledWindow) SetPolicy(hscrollbar_policy uint, vscrollbar_policy uint) {
+	C.gtk_scrolled_window_set_policy(C.to_GtkScrolledWindow(v.Widget), C.GtkPolicyType(hscrollbar_policy), C.GtkPolicyType(vscrollbar_policy))
 }
 // gtk_scrolled_window_get_policy
 // gtk_scrolled_window_set_placement
 // gtk_scrolled_window_unset_placement
 // gtk_scrolled_window_get_placement
-func (v GtkScrolledWindow) SetShadowType(typ int) {
-	C.gtk_scrolled_window_set_shadow_type(C.to_GtkScrolledWindow(v.Widget), C.GtkShadowType(typ));
+func (v *GtkScrolledWindow) SetShadowType(typ uint) {
+	C.gtk_scrolled_window_set_shadow_type(C.to_GtkScrolledWindow(v.Widget), C.GtkShadowType(typ))
 }
 // gtk_scrolled_window_get_shadow_type
 // gtk_scrolled_window_add_with_viewport
@@ -2558,26 +2603,27 @@ func (v GtkScrolledWindow) SetShadowType(typ int) {
 // GtkTextTagTable
 //-----------------------------------------------------------------------
 type GtkTextTagTable struct {
-	TextTagTable *C.GtkTextTagTable;
+	TextTagTable *C.GtkTextTagTable
 }
+
 func TextTagTable() *GtkTextTagTable {
-	return &GtkTextTagTable {
-		C.gtk_text_tag_table_new() };
+	return &GtkTextTagTable{
+		C.gtk_text_tag_table_new()}
 }
-func (v GtkTextTagTable) Add(tag *GtkTextTag) {
-	C._gtk_text_tag_table_add(v.TextTagTable, unsafe.Pointer(tag.TextTag));
+func (v *GtkTextTagTable) Add(tag *GtkTextTag) {
+	C._gtk_text_tag_table_add(v.TextTagTable, unsafe.Pointer(tag.TextTag))
 }
-func (v GtkTextTagTable) Remove(tag *GtkTextTag) {
-	C._gtk_text_tag_table_remove(v.TextTagTable, unsafe.Pointer(tag.TextTag));
+func (v *GtkTextTagTable) Remove(tag *GtkTextTag) {
+	C._gtk_text_tag_table_remove(v.TextTagTable, unsafe.Pointer(tag.TextTag))
 }
-func (v GtkTextTagTable) Lookup(name string) *GtkTextTag {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	return &GtkTextTag {
-		C._gtk_text_tag_table_lookup(v.TextTagTable, C.to_gcharptr(ptr)) };
+func (v *GtkTextTagTable) Lookup(name string) *GtkTextTag {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	return &GtkTextTag{
+		C._gtk_text_tag_table_lookup(v.TextTagTable, C.to_gcharptr(ptr))}
 }
-func (v GtkTextTagTable) GetSize() int {
-	return int(C.gtk_text_tag_table_get_size(v.TextTagTable));
+func (v *GtkTextTagTable) GetSize() int {
+	return int(C.gtk_text_tag_table_get_size(v.TextTagTable))
 }
 // TODO
 // gtk_text_tag_table_foreach
@@ -2586,68 +2632,69 @@ func (v GtkTextTagTable) GetSize() int {
 // GtkTextChildAnchor
 //-----------------------------------------------------------------------
 type GtkTextChildAnchor struct {
-	TextChildAnchor *C.GtkTextChildAnchor;
+	TextChildAnchor *C.GtkTextChildAnchor
 }
 
 //-----------------------------------------------------------------------
 // GtkTextMark
 //-----------------------------------------------------------------------
 type GtkTextMark struct {
-	TextMark *C.GtkTextMark;
+	TextMark *C.GtkTextMark
 }
 
 //-----------------------------------------------------------------------
 // GtkTextIter
 //-----------------------------------------------------------------------
 type GtkTextIter struct {
-	TextIter C.GtkTextIter;
+	TextIter C.GtkTextIter
 }
-func (v GtkTextIter) GetBuffer() *GtkTextBuffer {
-	return &GtkTextBuffer {
-		C._gtk_text_iter_get_buffer(&v.TextIter) };
+
+func (v *GtkTextIter) GetBuffer() *GtkTextBuffer {
+	return &GtkTextBuffer{
+		C._gtk_text_iter_get_buffer(&v.TextIter)}
 }
-func (v GtkTextIter) Copy() *GtkTextIter {
-	return &GtkTextIter {
-		*C.gtk_text_iter_copy(&v.TextIter) };
+func (v *GtkTextIter) Copy() *GtkTextIter {
+	return &GtkTextIter{
+		*C.gtk_text_iter_copy(&v.TextIter)}
 }
-func (v GtkTextIter) Free() {
-	C.gtk_text_iter_free(&v.TextIter);
+func (v *GtkTextIter) Free() {
+	C.gtk_text_iter_free(&v.TextIter)
 }
-func (v GtkTextIter) GetOffset() int {
-	return int(C.gtk_text_iter_get_offset(&v.TextIter));
+func (v *GtkTextIter) GetOffset() int {
+	return int(C.gtk_text_iter_get_offset(&v.TextIter))
 }
-func (v GtkTextIter) GetLine() int {
-	return int(C.gtk_text_iter_get_line(&v.TextIter));
+func (v *GtkTextIter) GetLine() int {
+	return int(C.gtk_text_iter_get_line(&v.TextIter))
 }
-func (v GtkTextIter) GetLineOffset() int {
-	return int(C.gtk_text_iter_get_line_offset(&v.TextIter));
+func (v *GtkTextIter) GetLineOffset() int {
+	return int(C.gtk_text_iter_get_line_offset(&v.TextIter))
 }
-func (v GtkTextIter) GetLineIndex() int {
-	return int(C.gtk_text_iter_get_line_index(&v.TextIter));
+func (v *GtkTextIter) GetLineIndex() int {
+	return int(C.gtk_text_iter_get_line_index(&v.TextIter))
 }
-func (v GtkTextIter) GetVisibleLineOffset() int {
-	return int(C.gtk_text_iter_get_visible_line_offset(&v.TextIter));
+func (v *GtkTextIter) GetVisibleLineOffset() int {
+	return int(C.gtk_text_iter_get_visible_line_offset(&v.TextIter))
 }
-func (v GtkTextIter) GetVisibleLineIndex() int {
-	return int(C.gtk_text_iter_get_visible_line_index(&v.TextIter));
+func (v *GtkTextIter) GetVisibleLineIndex() int {
+	return int(C.gtk_text_iter_get_visible_line_index(&v.TextIter))
 }
-func (v GtkTextIter) GetChar() int {
-	return int(C.gtk_text_iter_get_char(&v.TextIter));
+func (v *GtkTextIter) GetChar() int {
+	return int(C.gtk_text_iter_get_char(&v.TextIter))
 }
-func (v GtkTextIter) GetSlice(end *GtkTextIter) string {
-	return C.GoString(C.to_charptr(C.gtk_text_iter_get_slice(&v.TextIter, &end.TextIter)));
+func (v *GtkTextIter) GetSlice(end *GtkTextIter) string {
+	return C.GoString(C.to_charptr(C.gtk_text_iter_get_slice(&v.TextIter, &end.TextIter)))
 }
-func (v GtkTextIter) GetText(end *GtkTextIter) string {
-	return C.GoString(C.to_charptr(C.gtk_text_iter_get_text(&v.TextIter, &end.TextIter)));
+func (v *GtkTextIter) GetText(end *GtkTextIter) string {
+	return C.GoString(C.to_charptr(C.gtk_text_iter_get_text(&v.TextIter, &end.TextIter)))
 }
-func (v GtkTextIter) GetVisibleSlice(end *GtkTextIter) string {
-	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_slice(&v.TextIter, &end.TextIter)));
+func (v *GtkTextIter) GetVisibleSlice(end *GtkTextIter) string {
+	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_slice(&v.TextIter, &end.TextIter)))
 }
-func (v GtkTextIter) GetVisibleText(end *GtkTextIter) string {
-	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_text(&v.TextIter, &end.TextIter)));
+func (v *GtkTextIter) GetVisibleText(end *GtkTextIter) string {
+	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_text(&v.TextIter, &end.TextIter)))
 }
-func (v GtkTextIter) GetMarks() *glib.SList {
-	return glib.FromSList(unsafe.Pointer(C.gtk_text_iter_get_marks(&v.TextIter)));
+func (v *GtkTextIter) GetMarks() *glib.SList {
+	return glib.FromSList(unsafe.Pointer(C.gtk_text_iter_get_marks(&v.TextIter)))
 }
 // TODO
 // gtk_text_iter_get_pixbuf
@@ -2731,206 +2778,207 @@ func (v GtkTextIter) GetMarks() *glib.SList {
 // GtkTextTag
 //-----------------------------------------------------------------------
 type GtkTextTag struct {
-	TextTag unsafe.Pointer;
+	TextTag unsafe.Pointer
 }
 
 //-----------------------------------------------------------------------
 // GtkTextBuffer
 //-----------------------------------------------------------------------
 type GtkTextBuffer struct {
-	TextBuffer unsafe.Pointer;
+	TextBuffer unsafe.Pointer
 }
+
 func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
-	return &GtkTextBuffer {
-		C._gtk_text_buffer_new(tagtable.TextTagTable) };
+	return &GtkTextBuffer{
+		C._gtk_text_buffer_new(tagtable.TextTagTable)}
 }
-func (v GtkTextBuffer) GetLineCount() int {
-	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer));
+func (v *GtkTextBuffer) GetLineCount() int {
+	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer))
 }
-func (v GtkTextBuffer) GetCharCount() int {
-	return int(C._gtk_text_buffer_get_char_count(v.TextBuffer));
+func (v *GtkTextBuffer) GetCharCount() int {
+	return int(C._gtk_text_buffer_get_char_count(v.TextBuffer))
 }
-func (v GtkTextBuffer) GetTextTagTable() *GtkTextTagTable {
-	return &GtkTextTagTable {
-		C._gtk_text_buffer_get_tag_table(v.TextBuffer) };
+func (v *GtkTextBuffer) GetTextTagTable() *GtkTextTagTable {
+	return &GtkTextTagTable{
+		C._gtk_text_buffer_get_tag_table(v.TextBuffer)}
 }
-func (v GtkTextBuffer) Insert(iter *GtkTextIter, text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	len := C.strlen(ptr);
-	C._gtk_text_buffer_insert(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len));
+func (v *GtkTextBuffer) Insert(iter *GtkTextIter, text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	len := C.strlen(ptr)
+	C._gtk_text_buffer_insert(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len))
 }
-func (v GtkTextBuffer) InsertInteractive(iter *GtkTextIter, text string, default_editable bool) bool {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	len := C.strlen(ptr);
-	return gboolean2bool(C._gtk_text_buffer_insert_interactive(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)));
+func (v *GtkTextBuffer) InsertInteractive(iter *GtkTextIter, text string, default_editable bool) bool {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	len := C.strlen(ptr)
+	return gboolean2bool(C._gtk_text_buffer_insert_interactive(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
 }
-func (v GtkTextBuffer) InsertAtCursor(text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	len := C.strlen(ptr);
-	C._gtk_text_buffer_insert_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len));
+func (v *GtkTextBuffer) InsertAtCursor(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	len := C.strlen(ptr)
+	C._gtk_text_buffer_insert_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
 }
-func (v GtkTextBuffer) InsertInteractiveAtCursor(text string, default_editable bool) bool {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	len := C.strlen(ptr);
-	return gboolean2bool(C._gtk_text_buffer_insert_interactive_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)));
+func (v *GtkTextBuffer) InsertInteractiveAtCursor(text string, default_editable bool) bool {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	len := C.strlen(ptr)
+	return gboolean2bool(C._gtk_text_buffer_insert_interactive_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
 }
-func (v GtkTextBuffer) InsertRange(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_insert_range(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter);
+func (v *GtkTextBuffer) InsertRange(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_insert_range(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) InsertRangeInteractive(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
-	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
+func (v *GtkTextBuffer) InsertRangeInteractive(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
+	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)))
 }
-func (v GtkTextBuffer) InsertWithTag(iter *GtkTextIter, text string, tag *GtkTextTag) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	len := C.strlen(ptr);
-	C._gtk_text_buffer_insert_with_tag(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), tag.TextTag);
+func (v *GtkTextBuffer) InsertWithTag(iter *GtkTextIter, text string, tag *GtkTextTag) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	len := C.strlen(ptr)
+	C._gtk_text_buffer_insert_with_tag(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), tag.TextTag)
 }
 //func (v GtkTextBuffer) InsertWithTags(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
 //	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
 //}
-func (v GtkTextBuffer) Delete(start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_delete(v.TextBuffer, &start.TextIter, &end.TextIter);
+func (v *GtkTextBuffer) Delete(start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_delete(v.TextBuffer, &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) DeleteInteractive(start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
-	return gboolean2bool(C._gtk_text_buffer_delete_interactive(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
+func (v *GtkTextBuffer) DeleteInteractive(start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
+	return gboolean2bool(C._gtk_text_buffer_delete_interactive(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)))
 }
-func (v GtkTextBuffer) Backspace(iter *GtkTextIter, interactive bool, default_editable bool) bool {
-	return gboolean2bool(C._gtk_text_buffer_backspace(v.TextBuffer, &iter.TextIter, bool2gboolean(interactive), bool2gboolean(default_editable)));
+func (v *GtkTextBuffer) Backspace(iter *GtkTextIter, interactive bool, default_editable bool) bool {
+	return gboolean2bool(C._gtk_text_buffer_backspace(v.TextBuffer, &iter.TextIter, bool2gboolean(interactive), bool2gboolean(default_editable)))
 }
-func (v GtkTextBuffer) SetText(iter *GtkTextIter, text string) {
-	ptr := C.CString(text);
-	defer C.free_string(ptr);
-	len := C.strlen(ptr);
-	C._gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len));
+func (v *GtkTextBuffer) SetText(iter *GtkTextIter, text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	len := C.strlen(ptr)
+	C._gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
 }
-func (v GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
-	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))));
+func (v *GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
+	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))))
 }
-func (v GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
-	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))));
+func (v *GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
+	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))))
 }
-func (v GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf);
+func (v *GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
+	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf)
 }
-func (v GtkTextBuffer) CreateMark(mark *GtkTextMark, mark_name string, where *GtkTextIter, left_gravity bool) {
-	ptr := C.CString(mark_name);
-	defer C.free_string(ptr);
-	C._gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter, bool2gboolean(left_gravity));
+func (v *GtkTextBuffer) CreateMark(mark *GtkTextMark, mark_name string, where *GtkTextIter, left_gravity bool) {
+	ptr := C.CString(mark_name)
+	defer C.free_string(ptr)
+	C._gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter, bool2gboolean(left_gravity))
 }
-func (v GtkTextBuffer) MoveMark(mark *GtkTextMark, where *GtkTextIter) {
-	C._gtk_text_buffer_move_mark(v.TextBuffer, mark.TextMark, &where.TextIter);
+func (v *GtkTextBuffer) MoveMark(mark *GtkTextMark, where *GtkTextIter) {
+	C._gtk_text_buffer_move_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
 }
-func (v GtkTextBuffer) MoveMarkByName(mark *GtkTextMark, name string, where *GtkTextIter) {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	C._gtk_text_buffer_move_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter);
+func (v *GtkTextBuffer) MoveMarkByName(mark *GtkTextMark, name string, where *GtkTextIter) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C._gtk_text_buffer_move_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter)
 }
-func (v GtkTextBuffer) AddMark(mark *GtkTextMark, where *GtkTextIter) {
-	C._gtk_text_buffer_add_mark(v.TextBuffer, mark.TextMark, &where.TextIter);
+func (v *GtkTextBuffer) AddMark(mark *GtkTextMark, where *GtkTextIter) {
+	C._gtk_text_buffer_add_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
 }
-func (v GtkTextBuffer) DeleteMark(mark *GtkTextMark) {
-	C._gtk_text_buffer_delete_mark(v.TextBuffer, mark.TextMark);
+func (v *GtkTextBuffer) DeleteMark(mark *GtkTextMark) {
+	C._gtk_text_buffer_delete_mark(v.TextBuffer, mark.TextMark)
 }
-func (v GtkTextBuffer) DeleteMarkByName(name string) {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	C._gtk_text_buffer_delete_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr));
+func (v *GtkTextBuffer) DeleteMarkByName(name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C._gtk_text_buffer_delete_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr))
 }
-func (v GtkTextBuffer) GetMark(name string) *GtkTextMark {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	return &GtkTextMark {
-		C._gtk_text_buffer_get_mark(v.TextBuffer, C.to_gcharptr(ptr)) };
+func (v *GtkTextBuffer) GetMark(name string) *GtkTextMark {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	return &GtkTextMark{
+		C._gtk_text_buffer_get_mark(v.TextBuffer, C.to_gcharptr(ptr))}
 }
-func (v GtkTextBuffer) GetInsert() *GtkTextMark {
-	return &GtkTextMark {
-		C._gtk_text_buffer_get_insert(v.TextBuffer) };
+func (v *GtkTextBuffer) GetInsert() *GtkTextMark {
+	return &GtkTextMark{
+		C._gtk_text_buffer_get_insert(v.TextBuffer)}
 }
-func (v GtkTextBuffer) GetSelectionBound() *GtkTextMark {
-	return &GtkTextMark {
-		C._gtk_text_buffer_get_selection_bound(v.TextBuffer) };
+func (v *GtkTextBuffer) GetSelectionBound() *GtkTextMark {
+	return &GtkTextMark{
+		C._gtk_text_buffer_get_selection_bound(v.TextBuffer)}
 }
-func (v GtkTextBuffer) GetHasSelection() bool {
-	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer));
+func (v *GtkTextBuffer) GetHasSelection() bool {
+	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer))
 }
-func (v GtkTextBuffer) PlaceCursor(where *GtkTextIter) {
-	C._gtk_text_buffer_place_cursor(v.TextBuffer, &where.TextIter);
+func (v *GtkTextBuffer) PlaceCursor(where *GtkTextIter) {
+	C._gtk_text_buffer_place_cursor(v.TextBuffer, &where.TextIter)
 }
-func (v GtkTextBuffer) SelectRange(ins *GtkTextIter, bound *GtkTextIter) {
-	C._gtk_text_buffer_select_range(v.TextBuffer, &ins.TextIter, &bound.TextIter);
+func (v *GtkTextBuffer) SelectRange(ins *GtkTextIter, bound *GtkTextIter) {
+	C._gtk_text_buffer_select_range(v.TextBuffer, &ins.TextIter, &bound.TextIter)
 }
-func (v GtkTextBuffer) ApplyTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_apply_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter);
+func (v *GtkTextBuffer) ApplyTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_apply_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) RemoveTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_remove_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter);
+func (v *GtkTextBuffer) RemoveTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_remove_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) ApplyTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	C._gtk_text_buffer_apply_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter);
+func (v *GtkTextBuffer) ApplyTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C._gtk_text_buffer_apply_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) RemoveTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	C._gtk_text_buffer_remove_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter);
+func (v *GtkTextBuffer) RemoveTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C._gtk_text_buffer_remove_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) RemoveAllTags(start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_remove_all_tags(v.TextBuffer, &start.TextIter, &end.TextIter);
+func (v *GtkTextBuffer) RemoveAllTags(start *GtkTextIter, end *GtkTextIter) {
+	C._gtk_text_buffer_remove_all_tags(v.TextBuffer, &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) CreateTag(tag_name string, props map[string] string) *GtkTextTag {
-	ptr := C.CString(tag_name);
-	defer C.free_string(ptr);
-	tag := C._gtk_text_buffer_create_tag(v.TextBuffer, C.to_gcharptr(ptr));
+func (v *GtkTextBuffer) CreateTag(tag_name string, props map[string]string) *GtkTextTag {
+	ptr := C.CString(tag_name)
+	defer C.free_string(ptr)
+	tag := C._gtk_text_buffer_create_tag(v.TextBuffer, C.to_gcharptr(ptr))
 	for prop, val := range props {
-		pprop := C.CString(prop);
-		pval := C.CString(val);
-		C._apply_property(tag, C.to_gcharptr(pprop), C.to_gcharptr(pval));
-		C.free_string(pprop);
-		C.free_string(pval);
+		pprop := C.CString(prop)
+		pval := C.CString(val)
+		C._apply_property(tag, C.to_gcharptr(pprop), C.to_gcharptr(pval))
+		C.free_string(pprop)
+		C.free_string(pval)
 	}
-	return &GtkTextTag { tag };
+	return &GtkTextTag{tag}
 }
-func (v GtkTextBuffer) GetIterAtLineOffset(iter *GtkTextIter, line_number int, char_offset int) {
-	C._gtk_text_buffer_get_iter_at_line_offset(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(char_offset));
+func (v *GtkTextBuffer) GetIterAtLineOffset(iter *GtkTextIter, line_number int, char_offset int) {
+	C._gtk_text_buffer_get_iter_at_line_offset(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(char_offset))
 }
-func (v GtkTextBuffer) GetIterAtOffset(iter *GtkTextIter, char_offset int) {
-	C._gtk_text_buffer_get_iter_at_offset(v.TextBuffer, &iter.TextIter, C.gint(char_offset));
+func (v *GtkTextBuffer) GetIterAtOffset(iter *GtkTextIter, char_offset int) {
+	C._gtk_text_buffer_get_iter_at_offset(v.TextBuffer, &iter.TextIter, C.gint(char_offset))
 }
-func (v GtkTextBuffer) GetIterAtLine(iter *GtkTextIter, line_number int) {
-	C._gtk_text_buffer_get_iter_at_line(v.TextBuffer, &iter.TextIter, C.gint(line_number));
+func (v *GtkTextBuffer) GetIterAtLine(iter *GtkTextIter, line_number int) {
+	C._gtk_text_buffer_get_iter_at_line(v.TextBuffer, &iter.TextIter, C.gint(line_number))
 }
-func (v GtkTextBuffer) GetIterAtLineIndex(iter *GtkTextIter, line_number int, byte_index int) {
-	C._gtk_text_buffer_get_iter_at_line_index(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(byte_index));
+func (v *GtkTextBuffer) GetIterAtLineIndex(iter *GtkTextIter, line_number int, byte_index int) {
+	C._gtk_text_buffer_get_iter_at_line_index(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(byte_index))
 }
-func (v GtkTextBuffer) GetIterAtMark(iter *GtkTextIter, mark *GtkTextMark) {
-	C._gtk_text_buffer_get_iter_at_mark(v.TextBuffer, &iter.TextIter, mark.TextMark);
+func (v *GtkTextBuffer) GetIterAtMark(iter *GtkTextIter, mark *GtkTextMark) {
+	C._gtk_text_buffer_get_iter_at_mark(v.TextBuffer, &iter.TextIter, mark.TextMark)
 }
-func (v GtkTextBuffer) GetIterAtChildAnchor(iter *GtkTextIter, anchor *GtkTextChildAnchor) {
-	C._gtk_text_buffer_get_iter_at_child_anchor(v.TextBuffer, &iter.TextIter, anchor.TextChildAnchor);
+func (v *GtkTextBuffer) GetIterAtChildAnchor(iter *GtkTextIter, anchor *GtkTextChildAnchor) {
+	C._gtk_text_buffer_get_iter_at_child_anchor(v.TextBuffer, &iter.TextIter, anchor.TextChildAnchor)
 }
-func (v GtkTextBuffer) GetStartIter(iter *GtkTextIter) {
-	C._gtk_text_buffer_get_start_iter(v.TextBuffer, &iter.TextIter);
+func (v *GtkTextBuffer) GetStartIter(iter *GtkTextIter) {
+	C._gtk_text_buffer_get_start_iter(v.TextBuffer, &iter.TextIter)
 }
-func (v GtkTextBuffer) GetEndIter(iter *GtkTextIter) {
+func (v *GtkTextBuffer) GetEndIter(iter *GtkTextIter) {
 	C._gtk_text_buffer_get_end_iter(v.TextBuffer, &iter.TextIter)
 }
-func (v GtkTextBuffer) GetBounds(start *GtkTextIter, end *GtkTextIter) {
+func (v *GtkTextBuffer) GetBounds(start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_get_bounds(v.TextBuffer, &start.TextIter, &end.TextIter)
 }
-func (v GtkTextBuffer) GetModified() bool {
-	return gboolean2bool(C._gtk_text_buffer_get_modified(v.TextBuffer));
+func (v *GtkTextBuffer) GetModified() bool {
+	return gboolean2bool(C._gtk_text_buffer_get_modified(v.TextBuffer))
 }
-func (v GtkTextBuffer) SetModified(setting bool) {
-	C._gtk_text_buffer_set_modified(v.TextBuffer, bool2gboolean(setting));
+func (v *GtkTextBuffer) SetModified(setting bool) {
+	C._gtk_text_buffer_set_modified(v.TextBuffer, bool2gboolean(setting))
 }
-func (v GtkTextBuffer) DeleteSelection(interactive bool, default_editable bool) {
-	C._gtk_text_buffer_delete_selection(v.TextBuffer, bool2gboolean(interactive), bool2gboolean(default_editable));
+func (v *GtkTextBuffer) DeleteSelection(interactive bool, default_editable bool) {
+	C._gtk_text_buffer_delete_selection(v.TextBuffer, bool2gboolean(interactive), bool2gboolean(default_editable))
 }
 // TODO
 
@@ -2938,22 +2986,23 @@ func (v GtkTextBuffer) DeleteSelection(interactive bool, default_editable bool) 
 // GtkTextView
 //-----------------------------------------------------------------------
 type GtkTextView struct {
-	GtkContainer;
+	GtkContainer
 }
+
 func TextView() *GtkTextView {
-	return &GtkTextView { GtkContainer { GtkWidget {
-		C.gtk_text_view_new() }}};
+	return &GtkTextView{GtkContainer{GtkWidget{
+		C.gtk_text_view_new()}}}
 }
 func TextViewWithBuffer(b GtkTextBuffer) *GtkTextView {
-	return &GtkTextView { GtkContainer { GtkWidget {
-		C._gtk_text_view_new_with_buffer(b.TextBuffer) }}};
+	return &GtkTextView{GtkContainer{GtkWidget{
+		C._gtk_text_view_new_with_buffer(b.TextBuffer)}}}
 }
-func (v GtkTextView) SetBuffer(b GtkTextBuffer) {
-	C._gtk_text_view_set_buffer(v.Widget, b.TextBuffer);
+func (v *GtkTextView) SetBuffer(b GtkTextBuffer) {
+	C._gtk_text_view_set_buffer(v.Widget, b.TextBuffer)
 }
-func (v GtkTextView) GetBuffer() *GtkTextBuffer {
-	return &GtkTextBuffer {
-		C._gtk_text_view_get_buffer(v.Widget) };
+func (v *GtkTextView) GetBuffer() *GtkTextBuffer {
+	return &GtkTextBuffer{
+		C._gtk_text_view_get_buffer(v.Widget)}
 }
 // TODO
 // gboolean gtk_text_view_scroll_to_iter(GtkTextView* text_view, GtkTextIter* iter, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
@@ -2961,11 +3010,11 @@ func (v GtkTextView) GetBuffer() *GtkTextBuffer {
 // void gtk_text_view_scroll_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_move_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_place_cursor_onscreen(GtkTextView* text_view);
-func (v GtkTextView) GetCursorVisible() bool {
-	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.to_GtkTextView(v.Widget)));
+func (v *GtkTextView) GetCursorVisible() bool {
+	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.to_GtkTextView(v.Widget)))
 }
-func (v GtkTextView) SetCursorVisible(setting bool) {
-	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.Widget), bool2gboolean(setting));
+func (v *GtkTextView) SetCursorVisible(setting bool) {
+	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.Widget), bool2gboolean(setting))
 }
 // void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
 // void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
@@ -2989,23 +3038,23 @@ func (v GtkTextView) SetCursorVisible(setting bool) {
 // void gtk_text_view_move_child(GtkTextView* text_view, GtkWidget* child, gint xpos, gint ypos);
 // void gtk_text_view_set_wrap_mode(GtkTextView* text_view, GtkWrapMode wrap_mode);
 // GtkWrapMode gtk_text_view_get_wrap_mode(GtkTextView* text_view);
-func (v GtkTextView) GetEditable() bool {
-	return gboolean2bool(C.gtk_text_view_get_editable(C.to_GtkTextView(v.Widget)));
+func (v *GtkTextView) GetEditable() bool {
+	return gboolean2bool(C.gtk_text_view_get_editable(C.to_GtkTextView(v.Widget)))
 }
-func (v GtkTextView) SetEditable(setting bool) {
-	C.gtk_text_view_set_editable(C.to_GtkTextView(v.Widget), bool2gboolean(setting));
+func (v *GtkTextView) SetEditable(setting bool) {
+	C.gtk_text_view_set_editable(C.to_GtkTextView(v.Widget), bool2gboolean(setting))
 }
-func (v GtkTextView) GetOverwrite() bool {
-	return gboolean2bool(C.gtk_text_view_get_overwrite(C.to_GtkTextView(v.Widget)));
+func (v *GtkTextView) GetOverwrite() bool {
+	return gboolean2bool(C.gtk_text_view_get_overwrite(C.to_GtkTextView(v.Widget)))
 }
-func (v GtkTextView) SetOverwrite(overwrite bool) {
-	C.gtk_text_view_set_overwrite(C.to_GtkTextView(v.Widget), bool2gboolean(overwrite));
+func (v *GtkTextView) SetOverwrite(overwrite bool) {
+	C.gtk_text_view_set_overwrite(C.to_GtkTextView(v.Widget), bool2gboolean(overwrite))
 }
-func (v GtkTextView) GetAcceptsTab() bool {
-	return gboolean2bool(C.gtk_text_view_get_accepts_tab(C.to_GtkTextView(v.Widget)));
+func (v *GtkTextView) GetAcceptsTab() bool {
+	return gboolean2bool(C.gtk_text_view_get_accepts_tab(C.to_GtkTextView(v.Widget)))
 }
-func (v GtkTextView) SetAcceptsTab(accepts_tab bool) {
-	C.gtk_text_view_set_accepts_tab(C.to_GtkTextView(v.Widget), bool2gboolean(accepts_tab));
+func (v *GtkTextView) SetAcceptsTab(accepts_tab bool) {
+	C.gtk_text_view_set_accepts_tab(C.to_GtkTextView(v.Widget), bool2gboolean(accepts_tab))
 }
 // void gtk_text_view_set_pixels_above_lines(GtkTextView* text_view, gint pixels_above_lines);
 // gint gtk_text_view_get_pixels_above_lines(GtkTextView* text_view);
@@ -3029,42 +3078,44 @@ func (v GtkTextView) SetAcceptsTab(accepts_tab bool) {
 // GtkItem
 //-----------------------------------------------------------------------
 type GtkItem struct {
-	GtkContainer;
+	GtkContainer
 }
-func (v GtkItem) Select() {
-	C.gtk_item_select(C.to_GtkItem(v.Widget));
+
+func (v *GtkItem) Select() {
+	C.gtk_item_select(C.to_GtkItem(v.Widget))
 }
-func (v GtkItem) Deselect() {
-	C.gtk_item_deselect(C.to_GtkItem(v.Widget));
+func (v *GtkItem) Deselect() {
+	C.gtk_item_deselect(C.to_GtkItem(v.Widget))
 }
-func (v GtkItem) Toggle() {
-	C.gtk_item_toggle(C.to_GtkItem(v.Widget));
+func (v *GtkItem) Toggle() {
+	C.gtk_item_toggle(C.to_GtkItem(v.Widget))
 }
 
 //-----------------------------------------------------------------------
 // GtkMenuItem
 //-----------------------------------------------------------------------
 type GtkMenuItem struct {
-	GtkItem;
+	GtkItem
 }
+
 func MenuItem() *GtkMenuItem {
-	return &GtkMenuItem { GtkItem { GtkContainer { GtkWidget {
-		C.gtk_menu_item_new() }}}};
+	return &GtkMenuItem{GtkItem{GtkContainer{GtkWidget{
+		C.gtk_menu_item_new()}}}}
 }
 func MenuItemWithLabel(label string) *GtkMenuItem {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkMenuItem { GtkItem { GtkContainer { GtkWidget {
-		C.gtk_menu_item_new_with_label(C.to_gcharptr(ptr)) }}}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkMenuItem{GtkItem{GtkContainer{GtkWidget{
+		C.gtk_menu_item_new_with_label(C.to_gcharptr(ptr))}}}}
 }
 func MenuItemWithMnemonic(label string) *GtkMenuItem {
-	ptr := C.CString(label);
-	defer C.free_string(ptr);
-	return &GtkMenuItem { GtkItem { GtkContainer { GtkWidget {
-		C.gtk_menu_item_new_with_mnemonic(C.to_gcharptr(ptr)) }}}};
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkMenuItem{GtkItem{GtkContainer{GtkWidget{
+		C.gtk_menu_item_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
 }
-func (v GtkMenuItem) SetSubmenu(w WidgetLike) {
-	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToGtkWidget());
+func (v *GtkMenuItem) SetSubmenu(w WidgetLike) {
+	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToGtkWidget())
 }
 // TODO
 // void gtk_menu_item_set_submenu(GtkMenuItem *menu_item, GtkWidget *submenu);
@@ -3089,20 +3140,21 @@ func (v GtkMenuItem) SetSubmenu(w WidgetLike) {
 // GtkMenu
 //-----------------------------------------------------------------------
 type GtkMenu struct {
-	GtkContainer;
+	GtkContainer
 }
+
 func Menu() *GtkMenu {
-	return &GtkMenu { GtkContainer { GtkWidget {
-		C.gtk_menu_new() }}};
+	return &GtkMenu{GtkContainer{GtkWidget{
+		C.gtk_menu_new()}}}
 }
-func (v GtkMenu) Append(child WidgetLike) {
-	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+func (v *GtkMenu) Append(child WidgetLike) {
+	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
 }
-func (v GtkMenu) Prepend(child WidgetLike) {
-	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+func (v *GtkMenu) Prepend(child WidgetLike) {
+	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
 }
-func (v GtkMenu) Insert(child WidgetLike, position int) {
-	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position));
+func (v *GtkMenu) Insert(child WidgetLike, position int) {
+	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position))
 }
 // TODO
 // void gtk_menu_popup (GtkMenu *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, GtkMenuPositionFunc func, gpointer data, guint button, guint32 activate_time);
@@ -3134,38 +3186,40 @@ func (v GtkMenu) Insert(child WidgetLike, position int) {
 // GtkMenuBar
 //-----------------------------------------------------------------------
 const (
-  GTK_PACK_DIRECTION_LTR = 0;
-  GTK_PACK_DIRECTION_RTL = 1;
-  GTK_PACK_DIRECTION_TTB = 2;
-  GTK_PACK_DIRECTION_BTT = 3;
+	GTK_PACK_DIRECTION_LTR = 0
+	GTK_PACK_DIRECTION_RTL = 1
+	GTK_PACK_DIRECTION_TTB = 2
+	GTK_PACK_DIRECTION_BTT = 3
 )
+
 type GtkMenuBar struct {
-	GtkWidget;
+	GtkWidget
 }
+
 func MenuBar() *GtkMenuBar {
-	return &GtkMenuBar { GtkWidget {
-		C.gtk_menu_bar_new() }};
+	return &GtkMenuBar{GtkWidget{
+		C.gtk_menu_bar_new()}}
 }
-func (v GtkMenuBar) GetPackDirection() int {
-	return int(C.gtk_menu_bar_get_pack_direction(C.to_GtkMenuBar(v.Widget)));
+func (v *GtkMenuBar) GetPackDirection() uint {
+	return uint(C.gtk_menu_bar_get_pack_direction(C.to_GtkMenuBar(v.Widget)))
 }
-func (v GtkMenuBar) SetPackDirection(pack_dir int) {
-	C.gtk_menu_bar_set_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir));
+func (v *GtkMenuBar) SetPackDirection(pack_dir uint) {
+	C.gtk_menu_bar_set_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir))
 }
-func (v GtkMenuBar) GetChildPackDirection() int {
-	return int(C.gtk_menu_bar_get_child_pack_direction(C.to_GtkMenuBar(v.Widget)));
+func (v *GtkMenuBar) GetChildPackDirection() uint {
+	return uint(C.gtk_menu_bar_get_child_pack_direction(C.to_GtkMenuBar(v.Widget)))
 }
-func (v GtkMenuBar) SetChildPackDirection(pack_dir int) {
-	C.gtk_menu_bar_set_child_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir));
+func (v *GtkMenuBar) SetChildPackDirection(pack_dir uint) {
+	C.gtk_menu_bar_set_child_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir))
 }
-func (v GtkMenuBar) Append(child WidgetLike) {
-	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+func (v *GtkMenuBar) Append(child WidgetLike) {
+	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
 }
-func (v GtkMenuBar) Prepend(child WidgetLike) {
-	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget());
+func (v *GtkMenuBar) Prepend(child WidgetLike) {
+	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
 }
-func (v GtkMenuBar) Insert(child WidgetLike, position int) {
-	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position));
+func (v *GtkMenuBar) Insert(child WidgetLike, position int) {
+	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position))
 }
 // FINISH
 
@@ -3173,13 +3227,14 @@ func (v GtkMenuBar) Insert(child WidgetLike, position int) {
 // GtkRange
 //-----------------------------------------------------------------------
 type GtkRange struct {
-	GtkWidget;
+	GtkWidget
 }
-func (v GtkRange) SetValue(value float) {
-	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value));
+
+func (v *GtkRange) SetValue(value float) {
+	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
-func (v GtkRange) GetValue() float {
-	return float(C.gtk_range_get_value(C.to_GtkRange(v.Widget)));
+func (v *GtkRange) GetValue() float {
+	return float(C.gtk_range_get_value(C.to_GtkRange(v.Widget)))
 }
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
@@ -3206,57 +3261,59 @@ func (v GtkRange) GetValue() float {
 // GtkScale
 //-----------------------------------------------------------------------
 const (
-	GTK_POS_LEFT = 0
-	GTK_POS_RIGHT = 1
-	GTK_POS_TOP = 2
+	GTK_POS_LEFT   = 0
+	GTK_POS_RIGHT  = 1
+	GTK_POS_TOP    = 2
 	GTK_POS_BOTTOM = 3
 )
+
 type GtkScale struct {
-	GtkRange;
+	GtkRange
 }
-func (v GtkScale) SetDigits(digits int) {
-	C.gtk_scale_set_digits(C.to_GtkScale(v.Widget), C.gint(digits));
+
+func (v *GtkScale) SetDigits(digits int) {
+	C.gtk_scale_set_digits(C.to_GtkScale(v.Widget), C.gint(digits))
 }
-func (v GtkScale) GetDigits() int {
-	return int(C.gtk_scale_get_digits(C.to_GtkScale(v.Widget)));
+func (v *GtkScale) GetDigits() int {
+	return int(C.gtk_scale_get_digits(C.to_GtkScale(v.Widget)))
 }
-func (v GtkScale) SetDrawValue(draw_value bool) {
-	C.gtk_scale_set_draw_value(C.to_GtkScale(v.Widget), bool2gboolean(draw_value));
+func (v *GtkScale) SetDrawValue(draw_value bool) {
+	C.gtk_scale_set_draw_value(C.to_GtkScale(v.Widget), bool2gboolean(draw_value))
 }
-func (v GtkScale) GetDrawValue() bool {
-	return gboolean2bool(C.gtk_scale_get_draw_value(C.to_GtkScale(v.Widget)));
+func (v *GtkScale) GetDrawValue() bool {
+	return gboolean2bool(C.gtk_scale_get_draw_value(C.to_GtkScale(v.Widget)))
 }
-func (v GtkScale) SetValuePos(pos int) {
-	C.gtk_scale_set_value_pos(C.to_GtkScale(v.Widget), C.GtkPositionType(pos));
+func (v *GtkScale) SetValuePos(pos uint) {
+	C.gtk_scale_set_value_pos(C.to_GtkScale(v.Widget), C.GtkPositionType(pos))
 }
-func (v GtkScale) GetValuePos() int {
-	return int(C.gtk_scale_get_value_pos(C.to_GtkScale(v.Widget)));
+func (v *GtkScale) GetValuePos() uint {
+	return uint(C.gtk_scale_get_value_pos(C.to_GtkScale(v.Widget)))
 }
 // PangoLayout * gtk_scale_get_layout (GtkScale *scale);
-func (v GtkScale) GetLayoutOffsets(x *int, y *int) {
+func (v *GtkScale) GetLayoutOffsets(x *int, y *int) {
 	var xx, yy C.gint
-	C.gtk_scale_get_layout_offsets(C.to_GtkScale(v.Widget), &xx, &yy);
-	*x = int(xx);
-	*y = int(yy);
+	C.gtk_scale_get_layout_offsets(C.to_GtkScale(v.Widget), &xx, &yy)
+	*x = int(xx)
+	*y = int(yy)
 }
-func (v GtkScale) AddMark(value float, position int, markup string) {
-	ptr := C.CString(markup);
-	defer C.free_string(ptr);
-	C.gtk_scale_add_mark(C.to_GtkScale(v.Widget), C.gdouble(value), C.GtkPositionType(position), C.to_gcharptr(ptr));
+func (v *GtkScale) AddMark(value float, position uint, markup string) {
+	ptr := C.CString(markup)
+	defer C.free_string(ptr)
+	C.gtk_scale_add_mark(C.to_GtkScale(v.Widget), C.gdouble(value), C.GtkPositionType(position), C.to_gcharptr(ptr))
 }
-func (v GtkScale) ClearMarks() {
-	C.gtk_scale_clear_marks(C.to_GtkScale(v.Widget));
+func (v *GtkScale) ClearMarks() {
+	C.gtk_scale_clear_marks(C.to_GtkScale(v.Widget))
 }
 //-----------------------------------------------------------------------
 // GtkHScale
 //-----------------------------------------------------------------------
 func HScale(adjustment *GtkAdjustment) *GtkScale {
-	return &GtkScale { GtkRange { GtkWidget {
-		C.gtk_hscale_new(adjustment.Adjustment) }}};
+	return &GtkScale{GtkRange{GtkWidget{
+		C.gtk_hscale_new(adjustment.Adjustment)}}}
 }
 func HScaleWithRange(min float, max float, step float) *GtkScale {
-	return &GtkScale { GtkRange { GtkWidget {
-		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }}};
+	return &GtkScale{GtkRange{GtkWidget{
+		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
 }
 // FINISH
 
@@ -3264,12 +3321,12 @@ func HScaleWithRange(min float, max float, step float) *GtkScale {
 // GtkVScale
 //-----------------------------------------------------------------------
 func VScale(adjustment *GtkAdjustment) *GtkScale {
-	return &GtkScale { GtkRange { GtkWidget {
-		C.gtk_vscale_new(adjustment.Adjustment) }}};
+	return &GtkScale{GtkRange{GtkWidget{
+		C.gtk_vscale_new(adjustment.Adjustment)}}}
 }
 func VScaleWithRange(min float, max float, step float) *GtkScale {
-	return &GtkScale { GtkRange { GtkWidget {
-		C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)) }}};
+	return &GtkScale{GtkRange{GtkWidget{
+		C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
 }
 // FINISH
 
@@ -3277,129 +3334,137 @@ func VScaleWithRange(min float, max float, step float) *GtkScale {
 // GtkCellRenderer
 //-----------------------------------------------------------------------
 type CellRendererLike interface {
-	ToGtkCellRenderer() *C.GtkCellRenderer;
+	ToGtkCellRenderer() *C.GtkCellRenderer
 }
 type GtkCellRenderer struct {
-	CellRenderer *C.GtkCellRenderer;
-	CellRendererLike;
+	CellRenderer *C.GtkCellRenderer
+	CellRendererLike
 }
-func (v GtkCellRenderer) ToGtkCellRenderer() *C.GtkCellRenderer {
-	return v.CellRenderer;
+
+func (v *GtkCellRenderer) ToGtkCellRenderer() *C.GtkCellRenderer {
+	return v.CellRenderer
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererText
 //-----------------------------------------------------------------------
 type GtkCellRendererText struct {
-	GtkCellRenderer;
+	GtkCellRenderer
 }
+
 func CellRendererText() *GtkCellRendererText {
-	return &GtkCellRendererText { GtkCellRenderer {
-		C.gtk_cell_renderer_text_new(), nil }};
+	return &GtkCellRendererText{GtkCellRenderer{
+		C.gtk_cell_renderer_text_new(), nil}}
 }
-func (v GtkCellRendererText) SetFixedHeightFromFont(number_of_rows int) {
-	C.gtk_cell_renderer_text_set_fixed_height_from_font(C.to_GtkCellRendererText(v.CellRenderer), C.gint(number_of_rows));
+func (v *GtkCellRendererText) SetFixedHeightFromFont(number_of_rows int) {
+	C.gtk_cell_renderer_text_set_fixed_height_from_font(C.to_GtkCellRendererText(v.CellRenderer), C.gint(number_of_rows))
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererPixbuf
 //-----------------------------------------------------------------------
 type GtkCellRendererPixbuf struct {
-	GtkCellRenderer;
+	GtkCellRenderer
 }
+
 func CellRendererPixbuf() *GtkCellRendererPixbuf {
-	return &GtkCellRendererPixbuf { GtkCellRenderer {
-		C.gtk_cell_renderer_pixbuf_new(), nil }};
+	return &GtkCellRendererPixbuf{GtkCellRenderer{
+		C.gtk_cell_renderer_pixbuf_new(), nil}}
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererProgress
 //-----------------------------------------------------------------------
 type GtkCellRendererProgress struct {
-	GtkCellRenderer;
+	GtkCellRenderer
 }
+
 func CellRendererProgress() *GtkCellRendererProgress {
-	return &GtkCellRendererProgress { GtkCellRenderer {
-		C.gtk_cell_renderer_progress_new(), nil }};
+	return &GtkCellRendererProgress{GtkCellRenderer{
+		C.gtk_cell_renderer_progress_new(), nil}}
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererSpinner
 //-----------------------------------------------------------------------
 type GtkCellRendererSpinner struct {
-	GtkCellRenderer;
+	GtkCellRenderer
 }
+
 func CellRendererSpinner() *GtkCellRendererSpinner {
-	return &GtkCellRendererSpinner { GtkCellRenderer {
-		C._gtk_cell_renderer_spinner_new(), nil }};
+	return &GtkCellRendererSpinner{GtkCellRenderer{
+		C._gtk_cell_renderer_spinner_new(), nil}}
 }
 //-----------------------------------------------------------------------
 // GtkCellRendererToggle
 //-----------------------------------------------------------------------
 type GtkCellRendererToggle struct {
-	GtkCellRenderer;
+	GtkCellRenderer
 }
+
 func CellRendererToggle() *GtkCellRendererToggle {
-	return &GtkCellRendererToggle { GtkCellRenderer {
-		C.gtk_cell_renderer_toggle_new(), nil }};
+	return &GtkCellRendererToggle{GtkCellRenderer{
+		C.gtk_cell_renderer_toggle_new(), nil}}
 }
-func (v GtkCellRendererToggle) GetRadio() bool {
-	return gboolean2bool(C.gtk_cell_renderer_toggle_get_radio(C.to_GtkCellRendererToggle(v.CellRenderer)));
+func (v *GtkCellRendererToggle) GetRadio() bool {
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_radio(C.to_GtkCellRendererToggle(v.CellRenderer)))
 }
-func (v GtkCellRendererToggle) SetRadio(radio bool) {
-	C.gtk_cell_renderer_toggle_set_radio(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(radio));
+func (v *GtkCellRendererToggle) SetRadio(radio bool) {
+	C.gtk_cell_renderer_toggle_set_radio(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(radio))
 }
-func (v GtkCellRendererToggle) GetActive() bool {
-	return gboolean2bool(C.gtk_cell_renderer_toggle_get_active(C.to_GtkCellRendererToggle(v.CellRenderer)));
+func (v *GtkCellRendererToggle) GetActive() bool {
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_active(C.to_GtkCellRendererToggle(v.CellRenderer)))
 }
-func (v GtkCellRendererToggle) SetActive(active bool) {
-	C.gtk_cell_renderer_toggle_set_active(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(active));
+func (v *GtkCellRendererToggle) SetActive(active bool) {
+	C.gtk_cell_renderer_toggle_set_active(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(active))
 }
-func (v GtkCellRendererToggle) GetActivatable() bool {
-	return gboolean2bool(C.gtk_cell_renderer_toggle_get_activatable(C.to_GtkCellRendererToggle(v.CellRenderer)));
+func (v *GtkCellRendererToggle) GetActivatable() bool {
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_activatable(C.to_GtkCellRendererToggle(v.CellRenderer)))
 }
-func (v GtkCellRendererToggle) SetActivatable(activatable bool) {
-	C.gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(activatable));
+func (v *GtkCellRendererToggle) SetActivatable(activatable bool) {
+	C.gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(activatable))
 }
 //-----------------------------------------------------------------------
 // GtkTreeViewColumn
 //-----------------------------------------------------------------------
 type GtkTreeViewColumn struct {
-	TreeViewColumn *C.GtkTreeViewColumn;
+	TreeViewColumn *C.GtkTreeViewColumn
 }
+
 func TreeViewColumn() *GtkTreeViewColumn {
-	return &GtkTreeViewColumn {
-		C.gtk_tree_view_column_new() };
+	return &GtkTreeViewColumn{
+		C.gtk_tree_view_column_new()}
 }
 func TreeViewColumnWithAttribute(title string, cell CellRendererLike) *GtkTreeViewColumn {
-	ptitle := C.CString(title);
-	defer C.free_string(ptitle);
-	return &GtkTreeViewColumn {
-		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer()) };
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	return &GtkTreeViewColumn{
+		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer())}
 }
 func TreeViewColumnWithAttributes(title string, cell CellRendererLike, attribute string, column int) *GtkTreeViewColumn {
-	ptitle := C.CString(title);
-	defer C.free_string(ptitle);
-	pattribute := C.CString(attribute);
-	defer C.free_string(pattribute);
-	return &GtkTreeViewColumn {
-		C._gtk_tree_view_column_new_with_attributes(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column)) };
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	pattribute := C.CString(attribute)
+	defer C.free_string(pattribute)
+	return &GtkTreeViewColumn{
+		C._gtk_tree_view_column_new_with_attributes(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column))}
 }
-func (v GtkTreeViewColumn) PackStart(cell CellRendererLike, expand bool) {
-	C.gtk_tree_view_column_pack_start(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand));
+func (v *GtkTreeViewColumn) PackStart(cell CellRendererLike, expand bool) {
+	C.gtk_tree_view_column_pack_start(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand))
 }
-func (v GtkTreeViewColumn) PackEnd(cell CellRendererLike, expand bool) {
-	C.gtk_tree_view_column_pack_end(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand));
+func (v *GtkTreeViewColumn) PackEnd(cell CellRendererLike, expand bool) {
+	C.gtk_tree_view_column_pack_end(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand))
 }
-func (v GtkTreeViewColumn) Clear() {
-	C.gtk_tree_view_column_clear(v.TreeViewColumn);
+func (v *GtkTreeViewColumn) Clear() {
+	C.gtk_tree_view_column_clear(v.TreeViewColumn)
 }
-func (v GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string, column int) {
-	ptr := C.CString(attribute);
-	defer C.free_string(ptr);
-	C.gtk_tree_view_column_add_attribute(v.TreeViewColumn, cell.ToGtkCellRenderer(), C.to_gcharptr(ptr), C.gint(column));
+func (v *GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string, column int) {
+	ptr := C.CString(attribute)
+	defer C.free_string(ptr)
+	C.gtk_tree_view_column_add_attribute(v.TreeViewColumn, cell.ToGtkCellRenderer(), C.to_gcharptr(ptr), C.gint(column))
 }
 
 //void gtk_tree_view_column_set_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, ...) G_GNUC_NULL_TERMINATED;
 //void gtk_tree_view_column_set_cell_data_func (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, GtkTreeCellDataFunc func, gpointer func_data, GDestroyNotify destroy);
-var tree_view_column_set_cell_data_funcs *vector.Vector;
-func (v GtkTreeViewColumn) SetCellDataFunc(cell CellRendererLike, f interface{}, data interface{}) {
+var tree_view_column_set_cell_data_funcs *vector.Vector
+
+func (v *GtkTreeViewColumn) SetCellDataFunc(cell CellRendererLike, f interface{}, data interface{}) {
 }
 
 //void gtk_tree_view_column_clear_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer);
@@ -3419,14 +3484,14 @@ func (v GtkTreeViewColumn) SetCellDataFunc(cell CellRendererLike, f interface{},
 //void gtk_tree_view_column_set_max_width (GtkTreeViewColumn *tree_column, gint max_width);
 //gint gtk_tree_view_column_get_max_width (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_clicked (GtkTreeViewColumn *tree_column);
-func (v GtkTreeViewColumn) SetTitle(title string) {
-	ptr := C.CString(title);
-	defer C.free_string(ptr);
-	C.gtk_tree_view_column_set_title(v.TreeViewColumn, C.to_gcharptr(ptr));
+func (v *GtkTreeViewColumn) SetTitle(title string) {
+	ptr := C.CString(title)
+	defer C.free_string(ptr)
+	C.gtk_tree_view_column_set_title(v.TreeViewColumn, C.to_gcharptr(ptr))
 
 }
-func (v GtkTreeViewColumn) GetTitle() string {
-	return C.GoString(C.to_charptr(C.gtk_tree_view_column_get_title(v.TreeViewColumn)));
+func (v *GtkTreeViewColumn) GetTitle() string {
+	return C.GoString(C.to_charptr(C.gtk_tree_view_column_get_title(v.TreeViewColumn)))
 }
 //void gtk_tree_view_column_set_expand (GtkTreeViewColumn *tree_column, gboolean expand);
 //gboolean gtk_tree_view_column_get_expand (GtkTreeViewColumn *tree_column);
@@ -3456,14 +3521,15 @@ func (v GtkTreeViewColumn) GetTitle() string {
 // GtkTreeView
 //-----------------------------------------------------------------------
 type GtkTreeView struct {
-	GtkContainer;
+	GtkContainer
 }
+
 func TreeView() *GtkTreeView {
-	return &GtkTreeView { GtkContainer { GtkWidget {
-		C.gtk_tree_view_new() }}};
+	return &GtkTreeView{GtkContainer{GtkWidget{
+		C.gtk_tree_view_new()}}}
 }
-func (v GtkTreeView) SetModel(model *GtkTreeModel) {
-	C.gtk_tree_view_set_model(C.to_GtkTreeView(v.Widget), model.TreeModel);
+func (v *GtkTreeView) SetModel(model *GtkTreeModel) {
+	C.gtk_tree_view_set_model(C.to_GtkTreeView(v.Widget), model.TreeModel)
 }
 //GtkWidget *gtk_tree_view_new (void);
 //GtkWidget *gtk_tree_view_new_with_model (GtkTreeModel *model);
@@ -3482,8 +3548,8 @@ func (v GtkTreeView) SetModel(model *GtkTreeModel) {
 //void gtk_tree_view_set_rules_hint (GtkTreeView *tree_view, gboolean setting);
 //gboolean gtk_tree_view_get_rules_hint (GtkTreeView *tree_view);
 //gint gtk_tree_view_append_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
-func (v GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
-	return int(C.gtk_tree_view_append_column(C.to_GtkTreeView(v.Widget), column.TreeViewColumn));
+func (v *GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
+	return int(C.gtk_tree_view_append_column(C.to_GtkTreeView(v.Widget), column.TreeViewColumn))
 }
 //gint gtk_tree_view_remove_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
 //gint gtk_tree_view_insert_column (GtkTreeView *tree_view, GtkTreeViewColumn *column, gint position);
@@ -3498,11 +3564,11 @@ func (v GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
 //void gtk_tree_view_scroll_to_point (GtkTreeView *tree_view, gint tree_x, gint tree_y);
 //void gtk_tree_view_scroll_to_cell (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gboolean use_align, gfloat row_align, gfloat col_align);
 //void gtk_tree_view_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column);
-func (v GtkTreeView) ExpandAll() {
-	C.gtk_tree_view_expand_all(C.to_GtkTreeView(v.Widget));
+func (v *GtkTreeView) ExpandAll() {
+	C.gtk_tree_view_expand_all(C.to_GtkTreeView(v.Widget))
 }
-func (v GtkTreeView) CollapseAll() {
-	C.gtk_tree_view_collapse_all(C.to_GtkTreeView(v.Widget));
+func (v *GtkTreeView) CollapseAll() {
+	C.gtk_tree_view_collapse_all(C.to_GtkTreeView(v.Widget))
 }
 //void gtk_tree_view_expand_to_path (GtkTreeView *tree_view, GtkTreePath *path);
 //gboolean gtk_tree_view_expand_row (GtkTreeView *tree_view, GtkTreePath *path, gboolean open_all);
@@ -3514,9 +3580,9 @@ func (v GtkTreeView) CollapseAll() {
 //void gtk_tree_view_set_cursor (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *focus_column, gboolean start_editing);
 //void gtk_tree_view_set_cursor_on_cell (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *focus_column, GtkCellRenderer *focus_cell, gboolean start_editing);
 //void gtk_tree_view_get_cursor (GtkTreeView *tree_view, GtkTreePath **path, GtkTreeViewColumn **focus_column);
-func (v GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewColumn) {
-	*path = &GtkTreePath { nil }
-	*focus_column = &GtkTreeViewColumn { nil }
+func (v *GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewColumn) {
+	*path = &GtkTreePath{nil}
+	*focus_column = &GtkTreeViewColumn{nil}
 	C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, &(*focus_column).TreeViewColumn)
 }
 //GdkWindow *gtk_tree_view_get_bin_window (GtkTreeView *tree_view);
@@ -3582,83 +3648,85 @@ func (v GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewCol
 // GtkListStore
 //-----------------------------------------------------------------------
 const (
-	TYPE_CHAR = 12;
-	TYPE_UCHAR = 16;
-	TYPE_BOOL = 20;
-	TYPE_INT = 24;
-	TYPE_UINT = 28;
-	TYPE_LONG = 32;
-	TYPE_ULONG = 36;
-	TYPE_FLOAT = 56;
-	TYPE_DOUBLE = 60;
-	TYPE_STRING = 64;
-	TYPE_BOXED = 72;
-	TYPE_POINTER = 68;
-	TYPE_PIXBUF = 68;
+	TYPE_CHAR    = 12
+	TYPE_UCHAR   = 16
+	TYPE_BOOL    = 20
+	TYPE_INT     = 24
+	TYPE_UINT    = 28
+	TYPE_LONG    = 32
+	TYPE_ULONG   = 36
+	TYPE_FLOAT   = 56
+	TYPE_DOUBLE  = 60
+	TYPE_STRING  = 64
+	TYPE_BOXED   = 72
+	TYPE_POINTER = 68
+	TYPE_PIXBUF  = 68
 )
+
 type GtkListStore struct {
-	ListStore *C.GtkListStore;
+	ListStore *C.GtkListStore
 }
+
 func ListStore(v ...interface{}) *GtkListStore {
-	types := C.make_gtypes(C.int(len(v)));
+	types := C.make_gtypes(C.int(len(v)))
 	for n := range v {
-		C.set_gtype(types, C.int(n), C.int(v[n].(int)));
+		C.set_gtype(types, C.int(n), C.int(v[n].(int)))
 	}
-	defer C.destroy_gtypes(types);
-	return &GtkListStore {
-		C.gtk_list_store_newv(C.gint(len(v)), types) }
+	defer C.destroy_gtypes(types)
+	return &GtkListStore{
+		C.gtk_list_store_newv(C.gint(len(v)), types)}
 }
-func (v GtkListStore) ToTreeModel() *GtkTreeModel {
-	return &GtkTreeModel {
-		C.to_GtkTreeModelFromListStore(v.ListStore) };
+func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
+	return &GtkTreeModel{
+		C.to_GtkTreeModelFromListStore(v.ListStore)}
 }
 //GtkListStore *gtk_list_store_new(gint n_columns, ...);
 //GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
 //void gtk_list_store_set_column_types (GtkListStore *list_store, gint n_columns, GType *types);
-func (v GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
-	gv := native2gvalue(a);
+func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
+	gv := native2gvalue(a)
 	if gv != nil {
-		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), gv);
+		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), gv)
 	} else {
-		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()));
+		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()))
 	}
 }
-func (v GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
+func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
 	for r := range a {
-		v.SetValue(iter, r, a[r]);
+		v.SetValue(iter, r, a[r])
 	}
 }
 //void gtk_list_store_set_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
 //void gtk_list_store_set_valist (GtkListStore *list_store, GtkTreeIter *iter, va_list var_args);
-func (v GtkListStore) Remove(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_list_store_remove(v.ListStore, &iter.TreeIter));
+func (v *GtkListStore) Remove(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_list_store_remove(v.ListStore, &iter.TreeIter))
 }
-func (v GtkListStore) Insert(iter *GtkTreeIter, position int) {
-	C.gtk_list_store_insert(v.ListStore, &iter.TreeIter, C.gint(position));
+func (v *GtkListStore) Insert(iter *GtkTreeIter, position int) {
+	C.gtk_list_store_insert(v.ListStore, &iter.TreeIter, C.gint(position))
 }
-func (v GtkListStore) InsertBefore(iter *GtkTreeIter, sibling *GtkTreeIter) {
-	C.gtk_list_store_insert_before(v.ListStore, &iter.TreeIter, &sibling.TreeIter);
+func (v *GtkListStore) InsertBefore(iter *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_list_store_insert_before(v.ListStore, &iter.TreeIter, &sibling.TreeIter)
 }
-func (v GtkListStore) InsertAfter(iter *GtkTreeIter, sibling *GtkTreeIter) {
-	C.gtk_list_store_insert_after(v.ListStore, &iter.TreeIter, &sibling.TreeIter);
+func (v *GtkListStore) InsertAfter(iter *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_list_store_insert_after(v.ListStore, &iter.TreeIter, &sibling.TreeIter)
 }
 //void gtk_list_store_insert_with_values (GtkListStore *list_store, GtkTreeIter *iter, gint position, ...);
 //void gtk_list_store_insert_with_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint position, gint *columns, GValue *values, gint n_values);
-func (v GtkListStore) Prepend(iter *GtkTreeIter) {
-	C.gtk_list_store_prepend(v.ListStore, &iter.TreeIter);
+func (v *GtkListStore) Prepend(iter *GtkTreeIter) {
+	C.gtk_list_store_prepend(v.ListStore, &iter.TreeIter)
 }
-func (v GtkListStore) Append(iter *GtkTreeIter) {
-	C.gtk_list_store_append(v.ListStore, &iter.TreeIter);
+func (v *GtkListStore) Append(iter *GtkTreeIter) {
+	C.gtk_list_store_append(v.ListStore, &iter.TreeIter)
 }
-func (v GtkListStore) Clear() {
-	C.gtk_list_store_clear(v.ListStore);
+func (v *GtkListStore) Clear() {
+	C.gtk_list_store_clear(v.ListStore)
 }
-func (v GtkListStore) IterIsValid(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_list_store_iter_is_valid(v.ListStore, &iter.TreeIter));
+func (v *GtkListStore) IterIsValid(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_list_store_iter_is_valid(v.ListStore, &iter.TreeIter))
 }
 //void gtk_list_store_reorder (GtkListStore *store, gint *new_order);
-func (v GtkListStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
-	C.gtk_list_store_swap(v.ListStore, &a.TreeIter, &b.TreeIter);
+func (v *GtkListStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
+	C.gtk_list_store_swap(v.ListStore, &a.TreeIter, &b.TreeIter)
 }
 //void gtk_list_store_move_after (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
 //void gtk_list_store_move_before (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
@@ -3668,288 +3736,291 @@ func (v GtkListStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
 //-----------------------------------------------------------------------
 // GtkTreeStore *gtk_tree_store_new (gint n_columns, ...);
 type GtkTreeStore struct {
-	TreeStore *C.GtkTreeStore;
+	TreeStore *C.GtkTreeStore
 }
+
 func TreeStore(v ...interface{}) *GtkTreeStore {
-	types := C.make_gtypes(C.int(len(v)));
+	types := C.make_gtypes(C.int(len(v)))
 	for n := range v {
-		C.set_gtype(types, C.int(n), C.int(v[n].(int)));
+		C.set_gtype(types, C.int(n), C.int(v[n].(int)))
 	}
-	defer C.destroy_gtypes(types);
-	return &GtkTreeStore {
-		C.gtk_tree_store_newv(C.gint(len(v)), types) }
+	defer C.destroy_gtypes(types)
+	return &GtkTreeStore{
+		C.gtk_tree_store_newv(C.gint(len(v)), types)}
 }
-func (v GtkTreeStore) ToTreeModel() *GtkTreeModel {
-	return &GtkTreeModel {
-		C.to_GtkTreeModelFromTreeStore(v.TreeStore) };
+func (v *GtkTreeStore) ToTreeModel() *GtkTreeModel {
+	return &GtkTreeModel{
+		C.to_GtkTreeModelFromTreeStore(v.TreeStore)}
 }
 // GtkTreeStore *gtk_tree_store_newv (gint n_columns, GType *types);
 // void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types); void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
-func (v GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
-	gv := native2gvalue(a);
+func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
+	gv := native2gvalue(a)
 	if gv != nil {
-		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), gv);
+		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), gv)
 	} else {
-		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()));
+		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()))
 	}
 }
-func (v GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
+func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
 	for r := range a {
-		v.SetValue(iter, r, a[r]);
+		v.SetValue(iter, r, a[r])
 	}
 }
 // void gtk_tree_store_set_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
 // void gtk_tree_store_set_valist (GtkTreeStore *tree_store, GtkTreeIter *iter, va_list var_args);
-func (v GtkTreeStore) Remove(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_store_remove(v.TreeStore, &iter.TreeIter));
+func (v *GtkTreeStore) Remove(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_store_remove(v.TreeStore, &iter.TreeIter))
 }
-func (v GtkTreeStore) Insert(iter *GtkTreeIter, parent *GtkTreeIter, position int) {
-	C.gtk_tree_store_insert(v.TreeStore, &iter.TreeIter, &parent.TreeIter, C.gint(position));
+func (v *GtkTreeStore) Insert(iter *GtkTreeIter, parent *GtkTreeIter, position int) {
+	C.gtk_tree_store_insert(v.TreeStore, &iter.TreeIter, &parent.TreeIter, C.gint(position))
 }
-func (v GtkTreeStore) InsertBefore(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
-	C.gtk_tree_store_insert_before(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter);
+func (v *GtkTreeStore) InsertBefore(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_tree_store_insert_before(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter)
 }
-func (v GtkTreeStore) InsertAfter(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
-	C.gtk_tree_store_insert_after(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter);
+func (v *GtkTreeStore) InsertAfter(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
+	C.gtk_tree_store_insert_after(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter)
 }
 // void gtk_tree_store_insert_with_values (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, ...);
 // void gtk_tree_store_insert_with_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, gint *columns, GValue *values, gint n_values);
-func (v GtkTreeStore) Prepend(iter *GtkTreeIter, parent *GtkTreeIter) {
+func (v *GtkTreeStore) Prepend(iter *GtkTreeIter, parent *GtkTreeIter) {
 	if parent == nil {
-		C.gtk_tree_store_prepend(v.TreeStore, &iter.TreeIter, nil);
+		C.gtk_tree_store_prepend(v.TreeStore, &iter.TreeIter, nil)
 	} else {
-		C.gtk_tree_store_prepend(v.TreeStore, &iter.TreeIter, &parent.TreeIter);
+		C.gtk_tree_store_prepend(v.TreeStore, &iter.TreeIter, &parent.TreeIter)
 	}
 }
-func (v GtkTreeStore) Append(iter *GtkTreeIter, parent *GtkTreeIter) {
+func (v *GtkTreeStore) Append(iter *GtkTreeIter, parent *GtkTreeIter) {
 	if parent == nil {
-		C.gtk_tree_store_append(v.TreeStore, &iter.TreeIter, nil);
+		C.gtk_tree_store_append(v.TreeStore, &iter.TreeIter, nil)
 	} else {
-		C.gtk_tree_store_append(v.TreeStore, &iter.TreeIter, &parent.TreeIter);
+		C.gtk_tree_store_append(v.TreeStore, &iter.TreeIter, &parent.TreeIter)
 	}
 }
-func (v GtkTreeStore) IterDepth(iter *GtkTreeIter) int {
-	return int(C.gtk_tree_store_iter_depth(v.TreeStore, &iter.TreeIter));
+func (v *GtkTreeStore) IterDepth(iter *GtkTreeIter) int {
+	return int(C.gtk_tree_store_iter_depth(v.TreeStore, &iter.TreeIter))
 }
-func (v GtkTreeStore) Clear() {
-	C.gtk_tree_store_clear(v.TreeStore);
+func (v *GtkTreeStore) Clear() {
+	C.gtk_tree_store_clear(v.TreeStore)
 }
-func (v GtkTreeStore) IterIsValid(iter *GtkTreeIter) bool {
-	return gboolean2bool(C.gtk_tree_store_iter_is_valid(v.TreeStore, &iter.TreeIter));
+func (v *GtkTreeStore) IterIsValid(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_store_iter_is_valid(v.TreeStore, &iter.TreeIter))
 }
 // void gtk_tree_store_reorder (GtkTreeStore *tree_store, GtkTreeIter *parent, gint *new_order);
-func (v GtkTreeStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
-	C.gtk_tree_store_swap(v.TreeStore, &a.TreeIter, &b.TreeIter);
+func (v *GtkTreeStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
+	C.gtk_tree_store_swap(v.TreeStore, &a.TreeIter, &b.TreeIter)
 }
-func (v GtkTreeStore) MoveBefore(iter *GtkTreeIter, position *GtkTreeIter) {
-	C.gtk_tree_store_move_before(v.TreeStore, &iter.TreeIter, &position.TreeIter);
+func (v *GtkTreeStore) MoveBefore(iter *GtkTreeIter, position *GtkTreeIter) {
+	C.gtk_tree_store_move_before(v.TreeStore, &iter.TreeIter, &position.TreeIter)
 }
-func (v GtkTreeStore) MoveAfter(iter *GtkTreeIter, position *GtkTreeIter) {
-	C.gtk_tree_store_move_after(v.TreeStore, &iter.TreeIter, &position.TreeIter);
+func (v *GtkTreeStore) MoveAfter(iter *GtkTreeIter, position *GtkTreeIter) {
+	C.gtk_tree_store_move_after(v.TreeStore, &iter.TreeIter, &position.TreeIter)
 }
 
 //-----------------------------------------------------------------------
 // GtkNotebook
 //-----------------------------------------------------------------------
 type GtkNotebook struct {
-	GtkContainer;
+	GtkContainer
 }
+
 func Notebook() *GtkNotebook {
-	return &GtkNotebook { GtkContainer { GtkWidget {
-		C.gtk_notebook_new() }}};
+	return &GtkNotebook{GtkContainer{GtkWidget{
+		C.gtk_notebook_new()}}}
 }
-func (v GtkNotebook) AppendPage(child WidgetLike, tab_label WidgetLike) int {
-	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget()));
+func (v *GtkNotebook) AppendPage(child WidgetLike, tab_label WidgetLike) int {
+	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget()))
 }
-func (v GtkNotebook) AppendPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
-	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget));
+func (v *GtkNotebook) AppendPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
+	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget))
 }
-func (v GtkNotebook) PrependPage(child *GtkWidget, tab_label *GtkWidget) int {
-	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget));
+func (v *GtkNotebook) PrependPage(child *GtkWidget, tab_label *GtkWidget) int {
+	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget))
 }
-func (v GtkNotebook) PrependPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
-	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget));
+func (v *GtkNotebook) PrependPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget) int {
+	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget))
 }
-func (v GtkNotebook) InsertPage(child *GtkWidget, tab_label *GtkWidget, position int) int {
-	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, C.gint(position)));
+func (v *GtkNotebook) InsertPage(child *GtkWidget, tab_label *GtkWidget, position int) int {
+	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, C.gint(position)))
 }
-func (v GtkNotebook) InsertPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget, position int) int {
-	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget, C.gint(position)));
+func (v *GtkNotebook) InsertPageMenu(child *GtkWidget, tab_label *GtkWidget, menu_label *GtkWidget, position int) int {
+	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget, menu_label.Widget, C.gint(position)))
 }
-func (v GtkNotebook) RemovePage(child *GtkWidget, page_num int) {
-	C.gtk_notebook_remove_page(C.to_GtkNotebook(v.Widget), C.gint(page_num));
+func (v *GtkNotebook) RemovePage(child *GtkWidget, page_num int) {
+	C.gtk_notebook_remove_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))
 }
 // void gtk_notebook_set_window_creation_hook (GtkNotebookWindowCreationFunc func, gpointer data, GDestroyNotify destroy);
-func (v GtkNotebook) SetGroupId(group_id int) {
-	C.gtk_notebook_set_group_id(C.to_GtkNotebook(v.Widget), C.gint(group_id));
+func (v *GtkNotebook) SetGroupId(group_id int) {
+	C.gtk_notebook_set_group_id(C.to_GtkNotebook(v.Widget), C.gint(group_id))
 }
-func (v GtkNotebook) GetGroupId() int {
-	return int(C.gtk_notebook_get_group_id(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetGroupId() int {
+	return int(C.gtk_notebook_get_group_id(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) SetGroup(group unsafe.Pointer) {
-	C.gtk_notebook_set_group(C.to_GtkNotebook(v.Widget), C.gpointer(group));
+func (v *GtkNotebook) SetGroup(group unsafe.Pointer) {
+	C.gtk_notebook_set_group(C.to_GtkNotebook(v.Widget), C.gpointer(group))
 }
-func (v GtkNotebook) GetGroup() unsafe.Pointer {
-	return unsafe.Pointer(C.gtk_notebook_get_group(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetGroup() unsafe.Pointer {
+	return unsafe.Pointer(C.gtk_notebook_get_group(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) GetCurrentPage() int {
-	return int(C.gtk_notebook_get_current_page(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetCurrentPage() int {
+	return int(C.gtk_notebook_get_current_page(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) GetNthPage(page_num int) *GtkWidget {
-	return &GtkWidget {
-		C.gtk_notebook_get_nth_page(C.to_GtkNotebook(v.Widget), C.gint(page_num)) };
+func (v *GtkNotebook) GetNthPage(page_num int) *GtkWidget {
+	return &GtkWidget{
+		C.gtk_notebook_get_nth_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))}
 }
-func (v GtkNotebook) GetNPages() int {
-	return int(C.gtk_notebook_get_n_pages(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetNPages() int {
+	return int(C.gtk_notebook_get_n_pages(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) PageNum(child *GtkWidget) int {
-	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.Widget), child.Widget));
+func (v *GtkNotebook) PageNum(child *GtkWidget) int {
+	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.Widget), child.Widget))
 }
-func (v GtkNotebook) GetPageNum(page_num int) {
-	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.Widget), C.gint(page_num));
+func (v *GtkNotebook) GetPageNum(page_num int) {
+	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))
 }
-func (v GtkNotebook) NextPage() {
-	C.gtk_notebook_next_page(C.to_GtkNotebook(v.Widget));
+func (v *GtkNotebook) NextPage() {
+	C.gtk_notebook_next_page(C.to_GtkNotebook(v.Widget))
 }
-func (v GtkNotebook) PrevPage() {
-	C.gtk_notebook_prev_page(C.to_GtkNotebook(v.Widget));
+func (v *GtkNotebook) PrevPage() {
+	C.gtk_notebook_prev_page(C.to_GtkNotebook(v.Widget))
 }
-func (v GtkNotebook) GetShowBorder() bool {
-	return gboolean2bool(C.gtk_notebook_get_show_border(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetShowBorder() bool {
+	return gboolean2bool(C.gtk_notebook_get_show_border(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) SetShowBorder(show_border bool) {
-	C.gtk_notebook_set_show_border(C.to_GtkNotebook(v.Widget), bool2gboolean(show_border));
+func (v *GtkNotebook) SetShowBorder(show_border bool) {
+	C.gtk_notebook_set_show_border(C.to_GtkNotebook(v.Widget), bool2gboolean(show_border))
 }
-func (v GtkNotebook) GetShowTabs() bool {
-	return gboolean2bool(C.gtk_notebook_get_show_tabs(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetShowTabs() bool {
+	return gboolean2bool(C.gtk_notebook_get_show_tabs(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) SetShowTabs(show_tabs bool) {
-	C.gtk_notebook_set_show_tabs(C.to_GtkNotebook(v.Widget), bool2gboolean(show_tabs));
+func (v *GtkNotebook) SetShowTabs(show_tabs bool) {
+	C.gtk_notebook_set_show_tabs(C.to_GtkNotebook(v.Widget), bool2gboolean(show_tabs))
 }
-func (v GtkNotebook) SetTabPos(pos int) {
-	C.gtk_notebook_set_tab_pos(C.to_GtkNotebook(v.Widget), C.GtkPositionType(pos));
+func (v *GtkNotebook) SetTabPos(pos uint) {
+	C.gtk_notebook_set_tab_pos(C.to_GtkNotebook(v.Widget), C.GtkPositionType(pos))
 }
-func (v GtkNotebook) GetTabPos() int {
-	return int(C.gtk_notebook_get_tab_pos(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetTabPos() uint {
+	return uint(C.gtk_notebook_get_tab_pos(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) SeHomogeneousTabs(homogeneous bool) {
-	C.gtk_notebook_set_homogeneous_tabs(C.to_GtkNotebook(v.Widget), bool2gboolean(homogeneous));
+func (v *GtkNotebook) SeHomogeneousTabs(homogeneous bool) {
+	C.gtk_notebook_set_homogeneous_tabs(C.to_GtkNotebook(v.Widget), bool2gboolean(homogeneous))
 }
-func (v GtkNotebook) SetTabBorder(border_width uint) {
-	C.gtk_notebook_set_tab_border(C.to_GtkNotebook(v.Widget), C.guint(border_width));
+func (v *GtkNotebook) SetTabBorder(border_width uint) {
+	C.gtk_notebook_set_tab_border(C.to_GtkNotebook(v.Widget), C.guint(border_width))
 }
-func (v GtkNotebook) SetTabHBorder(tab_hborder uint) {
-	C.gtk_notebook_set_tab_hborder(C.to_GtkNotebook(v.Widget), C.guint(tab_hborder));
+func (v *GtkNotebook) SetTabHBorder(tab_hborder uint) {
+	C.gtk_notebook_set_tab_hborder(C.to_GtkNotebook(v.Widget), C.guint(tab_hborder))
 }
-func (v GtkNotebook) SetTabVBorder(tab_vborder uint) {
-	C.gtk_notebook_set_tab_vborder(C.to_GtkNotebook(v.Widget), C.guint(tab_vborder));
+func (v *GtkNotebook) SetTabVBorder(tab_vborder uint) {
+	C.gtk_notebook_set_tab_vborder(C.to_GtkNotebook(v.Widget), C.guint(tab_vborder))
 }
-func (v GtkNotebook) GetScrollable() bool {
-	return gboolean2bool(C.gtk_notebook_get_scrollable(C.to_GtkNotebook(v.Widget)));
+func (v *GtkNotebook) GetScrollable() bool {
+	return gboolean2bool(C.gtk_notebook_get_scrollable(C.to_GtkNotebook(v.Widget)))
 }
-func (v GtkNotebook) SetScrollable(scrollable bool) {
-	C.gtk_notebook_set_scrollable(C.to_GtkNotebook(v.Widget), bool2gboolean(scrollable));
+func (v *GtkNotebook) SetScrollable(scrollable bool) {
+	C.gtk_notebook_set_scrollable(C.to_GtkNotebook(v.Widget), bool2gboolean(scrollable))
 }
-func (v GtkNotebook) PopupEnable() {
-	C.gtk_notebook_popup_enable(C.to_GtkNotebook(v.Widget));
+func (v *GtkNotebook) PopupEnable() {
+	C.gtk_notebook_popup_enable(C.to_GtkNotebook(v.Widget))
 }
-func (v GtkNotebook) PopupDisable() {
-	C.gtk_notebook_popup_disable(C.to_GtkNotebook(v.Widget));
+func (v *GtkNotebook) PopupDisable() {
+	C.gtk_notebook_popup_disable(C.to_GtkNotebook(v.Widget))
 }
-func (v GtkNotebook) GetTabLabel(child *GtkWidget) *GtkWidget {
-	return &GtkWidget {
-		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.Widget), child.Widget) };
+func (v *GtkNotebook) GetTabLabel(child *GtkWidget) *GtkWidget {
+	return &GtkWidget{
+		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.Widget), child.Widget)}
 }
-func (v GtkNotebook) SetTabLabel(child *GtkWidget, tab_label *GtkWidget) {
-	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget);
+func (v *GtkNotebook) SetTabLabel(child *GtkWidget, tab_label *GtkWidget) {
+	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.Widget), child.Widget, tab_label.Widget)
 }
-func (v GtkNotebook) SetTabLabelText(child *GtkWidget, name string) {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr));
+func (v *GtkNotebook) SetTabLabelText(child *GtkWidget, name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr))
 }
-func (v GtkNotebook) GetTabLabelText(child *GtkWidget) string {
-	return C.GoString(C.to_charptr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget)));
+func (v *GtkNotebook) GetTabLabelText(child *GtkWidget) string {
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.Widget), child.Widget)))
 }
-func (v GtkNotebook) GetMenuLabel(child *GtkWidget) *GtkWidget {
-	return &GtkWidget {
-		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.Widget), child.Widget) };
+func (v *GtkNotebook) GetMenuLabel(child *GtkWidget) *GtkWidget {
+	return &GtkWidget{
+		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.Widget), child.Widget)}
 }
-func (v GtkNotebook) SetMenuLabel(child *GtkWidget, menu_label *GtkWidget) {
-	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.Widget), child.Widget, menu_label.Widget);
+func (v *GtkNotebook) SetMenuLabel(child *GtkWidget, menu_label *GtkWidget) {
+	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.Widget), child.Widget, menu_label.Widget)
 }
-func (v GtkNotebook) SetMenuLabelText(child *GtkWidget, name string) {
-	ptr := C.CString(name);
-	defer C.free_string(ptr);
-	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr));
+func (v *GtkNotebook) SetMenuLabelText(child *GtkWidget, name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget, C.to_gcharptr(ptr))
 }
-func (v GtkNotebook) GetMenuLabelText(child *GtkWidget) string {
-	return C.GoString(C.to_charptr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget)));
+func (v *GtkNotebook) GetMenuLabelText(child *GtkWidget) string {
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.Widget), child.Widget)))
 }
-func (v GtkNotebook) QueryTabLabelPacking(child *GtkWidget, expand *bool, fill *bool, pack_type *int) {
-	var cexpand, cfill C.gboolean;
-	var cpack_type C.GtkPackType;
-	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, &cexpand, &cfill, &cpack_type);
-	*expand = gboolean2bool(cexpand);
-	*fill = gboolean2bool(cfill);
-	*pack_type = int(cpack_type);
+func (v *GtkNotebook) QueryTabLabelPacking(child *GtkWidget, expand *bool, fill *bool, pack_type *uint) {
+	var cexpand, cfill C.gboolean
+	var cpack_type C.GtkPackType
+	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, &cexpand, &cfill, &cpack_type)
+	*expand = gboolean2bool(cexpand)
+	*fill = gboolean2bool(cfill)
+	*pack_type = uint(cpack_type)
 }
-func (v GtkNotebook) SetTabLabelPacking(child *GtkWidget, expand bool, fill bool, pack_type int) {
-	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type));
+func (v *GtkNotebook) SetTabLabelPacking(child *GtkWidget, expand bool, fill bool, pack_type uint) {
+	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type))
 }
-func (v GtkNotebook) ReorderChild(child *GtkWidget, position int) {
-	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.Widget), child.Widget, C.gint(position));
+func (v *GtkNotebook) ReorderChild(child *GtkWidget, position int) {
+	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.Widget), child.Widget, C.gint(position))
 }
-func (v GtkNotebook) GetTabReorderable(child *GtkWidget) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget));
+func (v *GtkNotebook) GetTabReorderable(child *GtkWidget) bool {
+	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget))
 }
-func (v GtkNotebook) SetReorderable(child *GtkWidget, reorderable bool) {
-	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(reorderable));
+func (v *GtkNotebook) SetReorderable(child *GtkWidget, reorderable bool) {
+	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(reorderable))
 }
-func (v GtkNotebook) GetTabDetachable(child *GtkWidget) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget));
+func (v *GtkNotebook) GetTabDetachable(child *GtkWidget) bool {
+	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget))
 }
-func (v GtkNotebook) SetDetachable(child *GtkWidget, detachable bool) {
-	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(detachable));
+func (v *GtkNotebook) SetDetachable(child *GtkWidget, detachable bool) {
+	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.Widget, bool2gboolean(detachable))
 }
 //-----------------------------------------------------------------------
 // GtkPaned
 //-----------------------------------------------------------------------
 type PanedLike interface {
-	ContainerLike;
-	Add1(child WidgetLike, expand bool, fill bool, padding uint);
-	Add2(child WidgetLike, expand bool, fill bool, padding uint);
-	Pack1(child WidgetLike, expand bool, fill bool, padding uint);
-	Pack2(child WidgetLike, expand bool, fill bool, padding uint);
+	ContainerLike
+	Add1(child WidgetLike, expand bool, fill bool, padding uint)
+	Add2(child WidgetLike, expand bool, fill bool, padding uint)
+	Pack1(child WidgetLike, expand bool, fill bool, padding uint)
+	Pack2(child WidgetLike, expand bool, fill bool, padding uint)
 }
 type GtkPaned struct {
-	GtkContainer;
+	GtkContainer
 }
-func (v GtkPaned) Add1(child *GtkWidget) {
-	C.gtk_paned_add1(C.to_GtkPaned(v.Widget), child.Widget);
+
+func (v *GtkPaned) Add1(child *GtkWidget) {
+	C.gtk_paned_add1(C.to_GtkPaned(v.Widget), child.Widget)
 }
-func (v GtkPaned) Add2(child *GtkWidget) {
-	C.gtk_paned_add2(C.to_GtkPaned(v.Widget), child.Widget);
+func (v *GtkPaned) Add2(child *GtkWidget) {
+	C.gtk_paned_add2(C.to_GtkPaned(v.Widget), child.Widget)
 }
-func (v GtkPaned) Pack1(child *GtkWidget, resize bool, shrink bool) {
-	C.gtk_paned_pack1(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink));
+func (v *GtkPaned) Pack1(child *GtkWidget, resize bool, shrink bool) {
+	C.gtk_paned_pack1(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink))
 }
-func (v GtkPaned) Pack2(child *GtkWidget, resize bool, shrink bool) {
-	C.gtk_paned_pack2(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink));
+func (v *GtkPaned) Pack2(child *GtkWidget, resize bool, shrink bool) {
+	C.gtk_paned_pack2(C.to_GtkPaned(v.Widget), child.Widget, bool2gboolean(resize), bool2gboolean(shrink))
 }
-func (v GtkPaned) GetPosition() int {
-	return int(C.gtk_paned_get_position(C.to_GtkPaned(v.Widget)));
+func (v *GtkPaned) GetPosition() int {
+	return int(C.gtk_paned_get_position(C.to_GtkPaned(v.Widget)))
 }
-func (v GtkPaned) SetPosition(position int) {
-	C.gtk_paned_set_position(C.to_GtkPaned(v.Widget), C.gint(position));
+func (v *GtkPaned) SetPosition(position int) {
+	C.gtk_paned_set_position(C.to_GtkPaned(v.Widget), C.gint(position))
 }
-func (v GtkPaned) GetChild1() *GtkWidget {
-	return &GtkWidget {
-		C.gtk_paned_get_child1(C.to_GtkPaned(v.Widget)) };
+func (v *GtkPaned) GetChild1() *GtkWidget {
+	return &GtkWidget{
+		C.gtk_paned_get_child1(C.to_GtkPaned(v.Widget))}
 }
-func (v GtkPaned) GetChild2() *GtkWidget {
-	return &GtkWidget {
-		C.gtk_paned_get_child2(C.to_GtkPaned(v.Widget)) };
+func (v *GtkPaned) GetChild2() *GtkWidget {
+	return &GtkWidget{
+		C.gtk_paned_get_child2(C.to_GtkPaned(v.Widget))}
 }
 // FINISH
 
@@ -3957,11 +4028,12 @@ func (v GtkPaned) GetChild2() *GtkWidget {
 // GtkHPaned
 //-----------------------------------------------------------------------
 type GtkHPaned struct {
-	GtkPaned;
+	GtkPaned
 }
+
 func HPaned() *GtkHPaned {
-	return &GtkHPaned { GtkPaned { GtkContainer { GtkWidget {
-		C.gtk_hpaned_new() }}}};
+	return &GtkHPaned{GtkPaned{GtkContainer{GtkWidget{
+		C.gtk_hpaned_new()}}}}
 }
 // FINISH
 
@@ -3971,16 +4043,74 @@ func HPaned() *GtkHPaned {
 type GtkVPaned struct {
 	GtkPaned
 }
+
 func VPaned() *GtkVPaned {
-	return &GtkVPaned { GtkPaned { GtkContainer { GtkWidget {
-		C.gtk_vpaned_new() }}}};
+	return &GtkVPaned{GtkPaned{GtkContainer{GtkWidget{
+		C.gtk_vpaned_new()}}}}
 }
 // FINISH
 
 //-----------------------------------------------------------------------
+// GtkTable
+//-----------------------------------------------------------------------
+const (
+	GTK_EXPAND = 1 << 0
+	GTK_SHRINK = 1 << 1
+	GTK_FILL   = 1 << 2
+)
+
+type GtkTable struct {
+	GtkContainer
+}
+
+func Table(rows uint, columns uint, homogeneous bool) *GtkTable {
+	return &GtkTable{GtkContainer{GtkWidget{
+		C.gtk_table_new(C.guint(rows), C.guint(columns), bool2gboolean(homogeneous))}}}
+}
+func (v *GtkTable) Resize(rows uint, columns uint) {
+	C.gtk_table_resize(C.to_GtkTable(v.Widget), C.guint(rows), C.guint(columns))
+}
+func (v *GtkTable) Attach(child *GtkWidget, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint, xoptions uint, yoptions uint, xpadding uint, ypadding uint) {
+	C.gtk_table_attach(C.to_GtkTable(v.Widget), child.Widget, C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), C.guint(xpadding), C.guint(ypadding))
+}
+func (v *GtkTable) AttachDefaults(child *GtkWidget, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
+	C.gtk_table_attach_defaults(C.to_GtkTable(v.Widget), child.Widget, C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach));
+}
+func (v *GtkTable) SetRowSpacing(child *GtkWidget, row uint, spacing uint) {
+	C.gtk_table_set_row_spacing(C.to_GtkTable(v.Widget), C.guint(row), C.guint(spacing))
+}
+func (v *GtkTable) GetRowSpacing(child *GtkWidget, row uint) uint {
+	return uint(C.gtk_table_get_row_spacing(C.to_GtkTable(v.Widget), C.guint(row)))
+}
+func (v *GtkTable) SetColSpacing(child *GtkWidget, column uint, spacing uint) {
+	C.gtk_table_set_col_spacing(C.to_GtkTable(v.Widget), C.guint(column), C.guint(spacing))
+}
+func (v *GtkTable) GetColSpacing(child *GtkWidget, column uint) uint {
+	return uint(C.gtk_table_get_col_spacing(C.to_GtkTable(v.Widget), C.guint(column)))
+}
+func (v *GtkTable) SetRowSpacings(child *GtkWidget, spacing uint) {
+	C.gtk_table_set_row_spacings(C.to_GtkTable(v.Widget), C.guint(spacing))
+}
+func (v *GtkTable) GetDefaultRowSpacing(child *GtkWidget) uint {
+	return uint(C.gtk_table_get_default_row_spacing(C.to_GtkTable(v.Widget)))
+}
+func (v *GtkTable) SetColSpacings(child *GtkWidget, spacing uint) {
+	C.gtk_table_set_col_spacings(C.to_GtkTable(v.Widget), C.guint(spacing))
+}
+func (v *GtkTable) GetDefaultColSpacing(child *GtkWidget) uint {
+	return uint(C.gtk_table_get_default_col_spacing(C.to_GtkTable(v.Widget)))
+}
+func (v *GtkTable) SetHomogeneous(child *GtkWidget, homogeneous bool) {
+	C.gtk_table_set_homogeneous(C.to_GtkTable(v.Widget), bool2gboolean(homogeneous));
+}
+func (v *GtkTable) GetHomogeneous(child *GtkWidget) bool {
+	return gboolean2bool(C.gtk_table_get_homogeneous(C.to_GtkTable(v.Widget)))
+}
+
+//-----------------------------------------------------------------------
 // Events
 //-----------------------------------------------------------------------
-var use_gtk_main bool = false;
+var use_gtk_main bool = false
 
 // the go-gtk Callback is simpler than the one in C, because we have
 // full closures, so there is never a need to pass additional data via
@@ -3988,39 +4118,40 @@ var use_gtk_main bool = false;
 // instead just use func () { ... using data } to pass the data in.
 type CallbackFunc interface{}
 type CallbackContext struct {
-	f CallbackFunc;
-	data reflect.Value;
+	f    CallbackFunc
+	data reflect.Value
 }
-var funcs *vector.Vector;
-var main_loop bool = true;
+
+var funcs *vector.Vector
+var main_loop bool = true
+
 func pollEvents() {
 	for main_loop {
 		if use_gtk_main == false {
-			C.gtk_main_iteration_do(C.gboolean(1));
+			C.gtk_main_iteration_do(C.gboolean(1))
 		}
-		var cbi C.callback_info;
+		var cbi C.callback_info
 		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
-			context := funcs.At(int(cbi.func_no)).(*CallbackContext);
-			rf := reflect.NewValue(context.f).(*reflect.FuncValue);
-			t := rf.Type().(*reflect.FuncType);
-			fargs := make([]reflect.Value, t.NumIn());
+			context := funcs.At(int(cbi.func_no)).(*CallbackContext)
+			rf := reflect.NewValue(context.f).(*reflect.FuncValue)
+			t := rf.Type().(*reflect.FuncType)
+			fargs := make([]reflect.Value, t.NumIn())
 			for i := 0; i < len(fargs); i++ {
 				if i == 0 {
-					fargs[i] = reflect.NewValue(&GtkWidget { cbi.widget });
-				} else
-				if i == len(fargs)-1 {
-					fargs[i] = context.data;
+					fargs[i] = reflect.NewValue(&GtkWidget{cbi.widget})
+				} else if i == len(fargs)-1 {
+					fargs[i] = context.data
 				} else {
 					if i-1 < int(cbi.args_no) {
-						fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)));
+						fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)))
 					} else {
-						fargs[i] = reflect.NewValue(nil);
+						fargs[i] = reflect.NewValue(nil)
 					}
 				}
 			}
-			rf.Call(fargs);
-			cbi.fire = C.int(1);
-			C.callback_info_free_args(&cbi);
+			rf.Call(fargs)
+			cbi.fire = C.int(1)
+			C.callback_info_free_args(&cbi)
 		}
 	}
 }
@@ -4028,31 +4159,37 @@ func pollEvents() {
 func Init(args *[]string) {
 	//runtime.GOMAXPROCS(10);
 	if args != nil {
-		var argc C.int = C.int(len(*args));
-		cargs := make([]*C.char, argc);
-		for i, arg := range *args { cargs[i] = C.CString(arg) }
-		C._gtk_init(unsafe.Pointer(&argc), unsafe.Pointer(&cargs));
-		goargs := make([]string, argc);
-		for i := 0;i < int(argc); i++ { goargs[i] = C.GoString(cargs[i]); }
-		for i := 0;i < int(argc); i++ { C.free_string(cargs[i]); }
-		*args = goargs;
+		var argc C.int = C.int(len(*args))
+		cargs := make([]*C.char, argc)
+		for i, arg := range *args {
+			cargs[i] = C.CString(arg)
+		}
+		C._gtk_init(unsafe.Pointer(&argc), unsafe.Pointer(&cargs))
+		goargs := make([]string, argc)
+		for i := 0; i < int(argc); i++ {
+			goargs[i] = C.GoString(cargs[i])
+		}
+		for i := 0; i < int(argc); i++ {
+			C.free_string(cargs[i])
+		}
+		*args = goargs
 	} else {
-		C._gtk_init(nil, nil);
+		C._gtk_init(nil, nil)
 	}
-	funcs = new(vector.Vector);
+	funcs = new(vector.Vector)
 }
 
 func Main() {
 	if use_gtk_main {
-		go pollEvents();
-		C.gtk_main();
+		go pollEvents()
+		C.gtk_main()
 	} else {
-		pollEvents();
+		pollEvents()
 	}
 }
 func MainQuit() {
-	main_loop = false;
+	main_loop = false
 	if use_gtk_main {
-		C.gtk_main_quit();
+		C.gtk_main_quit()
 	}
 }
