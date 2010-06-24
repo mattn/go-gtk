@@ -37,6 +37,7 @@ GOAL:
 
   Hopefully support following widgets and methods enough to run general application. 
 
+    GtkAboutDialog: 0%
     GtkAccelLabel: 90%
     GtkAdjustment: 100%
     GtkAssistant: 0%
@@ -54,6 +55,7 @@ GOAL:
     GtkFontSelectionDialog: 0%
     GtkFrame: 100%
     GtkHBox: 100%
+    GtkHButtonBox: 0%
     GtkIconView: 0%
     GtkImage: 10%
     GtkItem: 100%
@@ -83,6 +85,7 @@ GOAL:
     GtkTreeView: 10%
     GtkTreeViewColumn: 5%
     GtkVBox: 100%
+    GtkVButtonBox: 0%
     GtkVolumeButton: 0%
     GtkWidget: 5%
     GtkWindow: 5%
