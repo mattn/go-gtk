@@ -1,0 +1,15 @@
+include $(GOROOT)/src/Make.$(GOARCH) 
+
+TARG=callback
+CGOFILES=callback.go
+CFLAGS:=$(CFLAGS) -I$(GOROOT)/pkg/$(GOOS)_$(GOARCH)
+CGO_LDFLAGS:=_cgo_export.o -Wl,-R `pwd`
+CGO_DEPS=_cgo_export.o
+
+include $(GOROOT)/src/Make.pkg 
+GC:=${O}g -I../glib/_obj -I../gdk/_obj -I../gdkpixbuf/_obj -I$(GOROOT)/pkg/$(GOOS)_$(GOARCH)
+GOROOT:=.
+
+installlocal: _cgo_.so _obj/callback.a
+	mkdir -p pkg/$(GOOS)_$(GOARCH)
+	mv _cgo_.so pkg/$(GOOS)_$(GOARCH)/callback.so
