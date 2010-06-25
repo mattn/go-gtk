@@ -18,6 +18,7 @@ static void free_string(char* s) { free(s); }
 //static void free_string(char* s) { free(s); }
 */
 import "C"
+import "glib"
 import "unsafe"
 
 func gboolean2bool(b C.gboolean) bool {
@@ -34,12 +35,14 @@ type GdkPixbuf struct {
 	Pixbuf *C.GdkPixbuf
 }
 
-func PixbufFromFile(path string) (pixbuf *GdkPixbuf, err *C.GError) {
+func PixbufFromFile(path string) (pixbuf *GdkPixbuf, err **glib.Error) {
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
 	pixbuf = &GdkPixbuf{C.gdk_pixbuf_new_from_file(ptr, &error)}
-	err = error
+	if err != nil && error != nil {
+		*err = glib.FromError(unsafe.Pointer(error))
+	}
 	return
 }
 
