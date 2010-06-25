@@ -24,6 +24,9 @@ static void _g_thread_init(GThreadFunctions *vtable) {
 import "C"
 import "unsafe"
 
+//-----------------------------------------------------------------------
+// GdkCursor
+//-----------------------------------------------------------------------
 const (
 	GDK_X_CURSOR            = 0
 	GDK_ARROW               = 2
@@ -120,6 +123,9 @@ func Cursor(cursor_type int) *GdkCursor {
 		C.gdk_cursor_new(C.GdkCursorType(cursor_type))}
 }
 
+//-----------------------------------------------------------------------
+// GdkWindow
+//-----------------------------------------------------------------------
 type GdkWindow struct {
 	Window *C.GdkWindow
 }
@@ -129,6 +135,9 @@ func FromWindow(window unsafe.Pointer) *GdkWindow {
 		C.to_GdkWindow(window)}
 }
 
+//-----------------------------------------------------------------------
+// Threads
+//-----------------------------------------------------------------------
 func ThreadsInit() {
 	if first {
 		first = false
@@ -144,3 +153,34 @@ func ThreadsEnter() {
 func ThreadsLeave() {
 	C.gdk_threads_leave()
 }
+
+//-----------------------------------------------------------------------
+// Drawing
+//-----------------------------------------------------------------------
+// void gdk_draw_point (GdkDrawable *drawable, GdkGC *gc, gint x, gint y);
+// void gdk_draw_line (GdkDrawable *drawable, GdkGC *gc, gint x1_, gint y1_, gint x2_, gint y2_);
+// void gdk_draw_rectangle (GdkDrawable *drawable, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height);
+// void gdk_draw_arc (GdkDrawable *drawable, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height, gint angle1, gint angle2);
+// void gdk_draw_polygon (GdkDrawable *drawable, GdkGC *gc, gboolean filled, const GdkPoint *points, gint n_points);
+// void gdk_draw_string (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *string);
+// void gdk_draw_text (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *text, gint text_length);
+// void gdk_draw_text_wc (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const GdkWChar *text, gint text_length);
+// void gdk_draw_drawable (GdkDrawable *drawable, GdkGC *gc, GdkDrawable *src, gint xsrc, gint ysrc, gint xdest, gint ydest, gint width, gint height);
+// void gdk_draw_image (GdkDrawable *drawable, GdkGC *gc, GdkImage *image, gint xsrc, gint ysrc, gint xdest, gint ydest, gint width, gint height);
+// void gdk_draw_points (GdkDrawable *drawable, GdkGC *gc, const GdkPoint *points, gint n_points);
+// void gdk_draw_segments (GdkDrawable *drawable, GdkGC *gc, const GdkSegment *segs, gint n_segs);
+// void gdk_draw_lines (GdkDrawable *drawable, GdkGC *gc, const GdkPoint *points, gint n_points);
+// void gdk_draw_pixbuf (GdkDrawable *drawable, GdkGC *gc, const GdkPixbuf *pixbuf, gint src_x, gint src_y, gint dest_x, gint dest_y, gint width, gint height, GdkRgbDither dither, gint x_dither, gint y_dither);
+// void gdk_draw_glyphs (GdkDrawable *drawable, GdkGC *gc, PangoFont *font, gint x, gint y, PangoGlyphString *glyphs);
+// void gdk_draw_layout_line (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayoutLine *line);
+// void gdk_draw_layout (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayout *layout);
+// void gdk_draw_layout_line_with_colors (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayoutLine *line, const GdkColor *foreground, const GdkColor *background);
+// void gdk_draw_layout_with_colors (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayout *layout, const GdkColor *foreground, const GdkColor *background);
+// void gdk_draw_glyphs_transformed (GdkDrawable *drawable, GdkGC	 *gc, const PangoMatrix *matrix, PangoFont *font, gint x, gint y, PangoGlyphString *glyphs);
+// void gdk_draw_trapezoids (GdkDrawable *drawable, GdkGC	 *gc, const GdkTrapezoid *trapezoids, gint n_trapezoids);
+// #define gdk_draw_pixmap gdk_draw_drawable
+// #define gdk_draw_bitmap gdk_draw_drawable
+// GdkImage* gdk_drawable_get_image (GdkDrawable *drawable, gint x, gint y, gint width, gint height);
+// GdkImage *gdk_drawable_copy_to_image (GdkDrawable *drawable, GdkImage *image, gint src_x, gint src_y, gint dest_x, gint dest_y, gint width, gint height);
+// GdkRegion *gdk_drawable_get_clip_region (GdkDrawable *drawable);
+// GdkRegion *gdk_drawable_get_visible_region (GdkDrawable *drawable);
