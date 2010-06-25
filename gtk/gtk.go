@@ -633,11 +633,18 @@ func native2gvalue(val interface{}) *C.GValue {
 }
 
 //-----------------------------------------------------------------------
-// GtkObject
+// GObject
 //-----------------------------------------------------------------------
 type ObjectLike interface{}
+type GObject struct {
+	Object *C.GObject
+}
+
+//-----------------------------------------------------------------------
+// GtkObject
+//-----------------------------------------------------------------------
 type GtkObject struct {
-	Object *C.GtkObject
+	GObject
 }
 
 //-----------------------------------------------------------------------
@@ -788,6 +795,10 @@ type WidgetLike interface {
 }
 type GtkWidget struct {
 	Widget *C.GtkWidget
+}
+func WidgetFromObject(object *GObject) *GtkWidget {
+	return &GtkWidget {
+		C.to_GtkWidget(unsafe.Pointer(object.Object))}
 }
 
 func (v *GtkWidget) ToGtkWidget() *C.GtkWidget {
@@ -4386,6 +4397,61 @@ func (v *GtkTable) GetHomogeneous(child WidgetLike) bool {
 	return gboolean2bool(C.gtk_table_get_homogeneous(C.to_GtkTable(v.Widget)))
 }
 // FINISH
+
+//-----------------------------------------------------------------------
+// GtkBuilder
+//-----------------------------------------------------------------------
+type GtkBuilder struct {
+	Builder *C.GtkBuilder
+}
+
+func Builder() *GtkBuilder {
+	return &GtkBuilder{
+		C.gtk_builder_new()}
+}
+func (v *GtkBuilder) AddFromFile(filename string, err **glib.Error) uint {
+	var error *C.GError
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	ret := uint(C.gtk_builder_add_from_file(v.Builder, C.to_gcharptr(ptr), &error))
+	if err != nil && error != nil {
+		*err = glib.FromError(unsafe.Pointer(error));
+	}
+	return ret;
+}
+func (v *GtkBuilder) AddFromString(buffer string, err **glib.Error) uint {
+	var error *C.GError
+	ptr := C.CString(buffer)
+	defer C.free_string(ptr)
+	ret := uint(C.gtk_builder_add_from_string(v.Builder, C.to_gcharptr(ptr), C.gsize(C.strlen(ptr)), &error))
+	if err != nil && error != nil {
+		*err = glib.FromError(unsafe.Pointer(error));
+	}
+	return ret;
+}
+// guint gtk_builder_add_objects_from_file (GtkBuilder *builder, const gchar *filename, gchar **object_ids, GError **error);
+// guint gtk_builder_add_objects_from_string (GtkBuilder *builder, const gchar *buffer, gsize length, gchar **object_ids, GError **error);
+// GObject* gtk_builder_get_object (GtkBuilder *builder, const gchar *name);
+func (v *GtkBuilder) GetObject(name string) *GObject {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	return &GObject {
+		C.gtk_builder_get_object(v.Builder, C.to_gcharptr(ptr)) }
+}
+// GSList* gtk_builder_get_objects (GtkBuilder *builder);
+func (v *GtkBuilder) GetObjects() *glib.SList {
+	return glib.FromSList(unsafe.Pointer(C.gtk_builder_get_objects(v.Builder)))
+}
+// void gtk_builder_connect_signals (GtkBuilder *builder, gpointer user_data);
+func (v *GtkBuilder) ConnectSignals(user_data interface{}) {
+	C.gtk_builder_connect_signals(v.Builder, nil);
+}
+// void gtk_builder_connect_signals_full (GtkBuilder *builder, GtkBuilderConnectFunc func, gpointer user_data);
+// void gtk_builder_set_translation_domain (GtkBuilder *builder, const gchar *domain);
+// const gchar* gtk_builder_get_translation_domain (GtkBuilder *builder);
+// GType gtk_builder_get_type_from_name (GtkBuilder *builder, const char *type_name);
+// gboolean gtk_builder_value_from_string (GtkBuilder *builder, GParamSpec *pspec, const gchar *string, GValue *value, GError **error);
+// gboolean gtk_builder_value_from_string_type (GtkBuilder *builder, GType type, const gchar *string, GValue *value, GError **error);
 
 //-----------------------------------------------------------------------
 // Events
