@@ -558,6 +558,7 @@ static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_
 static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
+static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
 
 static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
 static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
@@ -4431,27 +4432,50 @@ func (v *GtkBuilder) AddFromString(buffer string, err **glib.Error) uint {
 }
 // guint gtk_builder_add_objects_from_file (GtkBuilder *builder, const gchar *filename, gchar **object_ids, GError **error);
 // guint gtk_builder_add_objects_from_string (GtkBuilder *builder, const gchar *buffer, gsize length, gchar **object_ids, GError **error);
-// GObject* gtk_builder_get_object (GtkBuilder *builder, const gchar *name);
 func (v *GtkBuilder) GetObject(name string) *GObject {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 	return &GObject {
 		C.gtk_builder_get_object(v.Builder, C.to_gcharptr(ptr)) }
 }
-// GSList* gtk_builder_get_objects (GtkBuilder *builder);
 func (v *GtkBuilder) GetObjects() *glib.SList {
 	return glib.FromSList(unsafe.Pointer(C.gtk_builder_get_objects(v.Builder)))
 }
-// void gtk_builder_connect_signals (GtkBuilder *builder, gpointer user_data);
 func (v *GtkBuilder) ConnectSignals(user_data interface{}) {
-	C.gtk_builder_connect_signals(v.Builder, nil);
+	C.gtk_builder_connect_signals(v.Builder, nil)
 }
 // void gtk_builder_connect_signals_full (GtkBuilder *builder, GtkBuilderConnectFunc func, gpointer user_data);
-// void gtk_builder_set_translation_domain (GtkBuilder *builder, const gchar *domain);
-// const gchar* gtk_builder_get_translation_domain (GtkBuilder *builder);
-// GType gtk_builder_get_type_from_name (GtkBuilder *builder, const char *type_name);
+func (v *GtkBuilder) SetTranslationDomain(domain string) {
+	ptr := C.CString(domain)
+	defer C.free_string(ptr)
+	C.gtk_builder_set_translation_domain(v.Builder, C.to_gcharptr(ptr))
+}
+func (v *GtkBuilder) GetTranslationDomain() string {
+	return C.GoString(C.to_charptr(C.gtk_builder_get_translation_domain(v.Builder)))
+}
+func (v *GtkBuilder) GetTypeFromName(type_name string) int {
+	ptr := C.CString(type_name)
+	defer C.free_string(ptr)
+	return int(C.gtk_builder_get_type_from_name(v.Builder, ptr))
+}
 // gboolean gtk_builder_value_from_string (GtkBuilder *builder, GParamSpec *pspec, const gchar *string, GValue *value, GError **error);
 // gboolean gtk_builder_value_from_string_type (GtkBuilder *builder, GType type, const gchar *string, GValue *value, GError **error);
+
+//-----------------------------------------------------------------------
+// GtkDrawingArea
+//-----------------------------------------------------------------------
+type GtkDrawingArea struct {
+	GtkWidget
+}
+
+func DrawingArea() *GtkDrawingArea {
+	return &GtkDrawingArea{GtkWidget{
+		C.gtk_drawing_area_new()}}
+}
+func (v *GtkDrawingArea) GetSizeRequest(width int, height int) {
+	C.gtk_drawing_area_size(C.to_GtkDrawingArea(v.Widget), C.gint(width), C.gint(height))
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // Events
