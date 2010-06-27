@@ -19,5 +19,6 @@ _go_.8: _obj/callback.a
 
 all: pkg/$(GOOS)_$(GOARCH)/builder
 	echo "#!/bin/sh" > builder &&\
-	echo "LD_LIBRARY_PATH=`pwd`/pkg/$(GOOS)_$(GOARCH) `pwd`/pkg/$(GOOS)_$(GOARCH)/builder" >> builder &&\
+	echo "cd `pwd`" >> builder &&\
+	echo "LD_LIBRARY_PATH=./pkg/$(GOOS)_$(GOARCH) ./pkg/$(GOOS)_$(GOARCH)/builder" >> builder &&\
 	chmod +x builder
