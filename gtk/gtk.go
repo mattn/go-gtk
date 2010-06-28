@@ -559,6 +559,7 @@ static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
+static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 
 static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
 static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
@@ -4476,6 +4477,92 @@ func (v *GtkDrawingArea) GetSizeRequest(width int, height int) {
 	C.gtk_drawing_area_size(C.to_GtkDrawingArea(v.Widget), C.gint(width), C.gint(height))
 }
 // FINISH
+
+//-----------------------------------------------------------------------
+// GtkAssistant
+//-----------------------------------------------------------------------
+const (
+  GTK_ASSISTANT_PAGE_CONTENT = 0
+  GTK_ASSISTANT_PAGE_INTRO = 1
+  GTK_ASSISTANT_PAGE_CONFIRM = 2
+  GTK_ASSISTANT_PAGE_SUMMARY = 3
+  GTK_ASSISTANT_PAGE_PROGRESS = 4
+)
+
+type GtkAssistant struct {
+	GtkWidget
+}
+
+func Assistant() *GtkAssistant {
+	return &GtkAssistant{GtkWidget{
+		C.gtk_assistant_new()}}
+}
+func (v *GtkAssistant) GetCurrentPage() int {
+	return int(C.gtk_assistant_get_current_page(C.to_GtkAssistant(v.Widget)));
+}
+func (v *GtkAssistant) SetCurrentPage(page_num int) {
+	C.gtk_assistant_set_current_page(C.to_GtkAssistant(v.Widget), C.gint(page_num));
+}
+func (v *GtkAssistant) GetNPages() int {
+	return int(C.gtk_assistant_get_n_pages(C.to_GtkAssistant(v.Widget)));
+}
+func (v *GtkAssistant) GetNthPage(page_num int) *GtkWidget {
+	return &GtkWidget {
+		C.gtk_assistant_get_nth_page(C.to_GtkAssistant(v.Widget), C.gint(page_num)) }
+}
+func (v *GtkAssistant) PrependPage(page *GtkWidget) int {
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.Widget));
+}
+func (v *GtkAssistant) AppendPage(page *GtkWidget) int {
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.Widget));
+}
+func (v *GtkAssistant) InsertPage(page *GtkWidget, position int) int {
+	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.Widget, C.gint(position)));
+}
+// void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
+func (v *GtkAssistant) SetPageType(page *GtkWidget, t int) {
+	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.Widget, C.GtkAssistantPageType(t));
+}
+func (v *GtkAssistant) GetPageType(page *GtkWidget) int {
+	return int(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.Widget), page.Widget));
+}
+func (v *GtkAssistant) SetPageTitle(page *GtkWidget, title string) {
+	ptr := C.CString(title)
+	defer C.free_string(ptr)
+	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.Widget), page.Widget, C.to_gcharptr(ptr));
+}
+func (v *GtkAssistant) GetPageTitle(page *GtkWidget) string {
+	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.Widget), page.Widget)));
+}
+func (v *GtkAssistant) SetPageHeaderImage(page *GtkWidget, pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.Widget), page.Widget, pixbuf.Pixbuf);
+}
+func (v *GtkAssistant) GetPageHeaderImage(page *GtkWidget) *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf {
+		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.Widget), page.Widget) };
+}
+func (v *GtkAssistant) SetPageSideImage(page *GtkWidget, pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.Widget), page.Widget, pixbuf.Pixbuf);
+}
+func (v *GtkAssistant) GetPageSideImage(page *GtkWidget) *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf {
+		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.Widget), page.Widget) };
+}
+func (v *GtkAssistant) SetPageComplete(page *GtkWidget, complete bool) {
+	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.Widget), page.Widget, bool2gboolean(complete));
+}
+func (v *GtkAssistant) GetPageComplete(page *GtkWidget) bool {
+	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.Widget), page.Widget));
+}
+func (v *GtkAssistant) AddActionWidget(child *GtkWidget) {
+	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.Widget), child.Widget);
+}
+func (v *GtkAssistant) RemoveActionWidget(child *GtkWidget) {
+	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.Widget), child.Widget);
+}
+func (v *GtkAssistant) UpdateButtonsState() {
+	C.gtk_assistant_update_buttons_state(C.to_GtkAssistant(v.Widget));
+}
 
 //-----------------------------------------------------------------------
 // Events
