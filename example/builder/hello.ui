@@ -38,13 +38,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label1">
+          <object class="GtkLinkButton" id="linkbutton1">
             <property name="visible">True</property>
-            <property name="xalign">0.4699999988079071</property>
-            <property name="label" translatable="yes">Hello</property>
-            <attributes>
-              <attribute name="size" value="100000"/>
-            </attributes>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="has_tooltip">True</property>
+            <property name="image">image1</property>
+            <property name="relief">none</property>
+            <property name="uri">http://mattn.kaoriya.net/</property>
           </object>
           <packing>
             <property name="position">1</property>
@@ -52,5 +53,9 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+	<property name="pixbuf">../../data/mattn-logo.png</property>
   </object>
 </interface>
