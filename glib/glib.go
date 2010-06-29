@@ -2,12 +2,14 @@ package glib
 
 /*
 #include <glib.h>
+#include <glib-object.h>
 static GSList* to_slist(void* sl) {
 	return (GSList*)sl;
 }
 static GError* to_error(void* err) {
 	return (GError*)err;
 }
+static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
 
 static inline char* to_charptr(gpointer s) { return (char*)s; }
 */
@@ -117,4 +119,29 @@ type Error struct {
 func FromError(err unsafe.Pointer) *Error {
 	return &Error{
 		C.to_error(err)}
+}
+
+//-----------------------------------------------------------------------
+// GObject
+//-----------------------------------------------------------------------
+type ObjectLike interface {
+	Ref()
+	Unref()
+}
+type GObject struct {
+	Object unsafe.Pointer
+}
+
+func ObjectFromUnsafe(object unsafe.Pointer) *GObject {
+//	return &GObject {
+//		C.to_GObject(object) }
+	return &GObject {
+		object}
+}
+
+func (v *GObject) Ref() {
+	C.g_object_ref(C.gpointer(v.Object));
+}
+func (v *GObject) Unref() {
+	C.g_object_unref(C.gpointer(v.Object));
 }

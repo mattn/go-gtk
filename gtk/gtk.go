@@ -636,19 +636,16 @@ func native2gvalue(val interface{}) *C.GValue {
 }
 
 //-----------------------------------------------------------------------
-// GObject
-//-----------------------------------------------------------------------
-type ObjectLike interface{}
-type GObject struct {
-	Object *C.GObject
-}
-
-//-----------------------------------------------------------------------
 // GtkObject
 //-----------------------------------------------------------------------
 type GtkObject struct {
-	GObject
+	glib.GObject
 }
+
+//-----------------------------------------------------------------------
+// GtkAllocation
+//-----------------------------------------------------------------------
+type GtkAllocation gdk.Rectangle
 
 //-----------------------------------------------------------------------
 // GtkStock
@@ -799,11 +796,10 @@ type WidgetLike interface {
 type GtkWidget struct {
 	Widget *C.GtkWidget
 }
-func WidgetFromObject(object *GObject) *GtkWidget {
+func WidgetFromObject(object *glib.GObject) *GtkWidget {
 	return &GtkWidget {
 		C.to_GtkWidget(unsafe.Pointer(object.Object))}
 }
-
 func (v *GtkWidget) ToGtkWidget() *C.GtkWidget {
 	return v.Widget
 }
@@ -1007,7 +1003,7 @@ func (v *GtkWidget) SetParent(parent WidgetLike) {
 	C.gtk_widget_set_parent(v.Widget, parent.ToGtkWidget())
 }
 func (v *GtkWidget) GetParentWindow() *gdk.GdkWindow {
-	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)))
+	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)))
 }
 func (v *GtkWidget) SetParentWindow(parent *gdk.GdkWindow) {
 	C.gtk_widget_set_parent_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(parent.Window)))
@@ -1019,13 +1015,27 @@ func (v *GtkWidget) SetChildVisible(setting bool) {
 	C.gtk_widget_set_child_visible(v.Widget, bool2gboolean(setting))
 }
 func (v *GtkWidget) GetWindow() *gdk.GdkWindow {
-	return gdk.FromWindow(unsafe.Pointer(C.gtk_widget_get_window(v.Widget)))
+	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_window(v.Widget)))
 }
 func (v *GtkWidget) SetWindow(window *gdk.GdkWindow) {
 	C.gtk_widget_set_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(window.Window)))
 }
-// gtk_widget_get_allocation
-// gtk_widget_set_allocation
+func (v *GtkWidget) GetAllocation(allocation *GtkAllocation) {
+	var _allocation C.GtkAllocation;
+	C.gtk_widget_get_allocation(v.Widget, &_allocation)
+	allocation.X = int(_allocation.x)
+	allocation.Y = int(_allocation.y)
+	allocation.Width = int(_allocation.width)
+	allocation.Height = int(_allocation.height)
+}
+func (v *GtkWidget) SetAllocation(allocation *GtkAllocation) {
+	var _allocation C.GtkAllocation;
+	_allocation.x = C.gint(allocation.X)
+	_allocation.y = C.gint(allocation.Y)
+	_allocation.width = C.gint(allocation.Width)
+	_allocation.height = C.gint(allocation.Height)
+	C.gtk_widget_set_allocation(v.Widget, &_allocation);
+}
 // gtk_widget_child_focus
 // gtk_widget_keynav_failed
 // gtk_widget_error_bell
@@ -1038,10 +1048,16 @@ func (v *GtkWidget) GetSizeRequest(width *int, height *int) {
 	*width = int(w)
 	*height = int(h)
 }
+func (v *GtkWidget) SetUSize(width int, height int) {
+	C.gtk_widget_set_usize(v.Widget, C.gint(width), C.gint(height))
+}
 // gtk_widget_set_uposition
-// gtk_widget_set_usize
-// gtk_widget_set_events
-// gtk_widget_add_events
+func (v *GtkWidget) SetEvents(events int) {
+	C.gtk_widget_set_events(v.Widget, C.gint(events))
+}
+func (v *GtkWidget) AddEvents(events int) {
+	C.gtk_widget_add_events(v.Widget, C.gint(events))
+}
 // gtk_widget_set_extension_events
 // gtk_widget_get_extension_events
 // gtk_widget_get_ancestor
@@ -1838,6 +1854,7 @@ func Entry() *GtkEntry {
 	return &GtkEntry{GtkWidget{
 		C.gtk_entry_new()}}
 }
+// gtk_entry_new_with_max_length
 //func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
 //	return &GtkEntry{GtkWidget{
 //		C.gtk_entry_new_with_buffer(C.to_GtkTextbuffer.TextBuffer)}}
@@ -1863,9 +1880,15 @@ func (v *GtkEntry) GetVisibility() bool {
 func (v *GtkEntry) SetVisibility(setting bool) {
 	C.gtk_entry_set_visibility(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
-// gtk_entry_set_invisible_char
-// gtk_entry_get_invisible_char
-// gtk_entry_unset_invisible_char
+func (v *GtkEntry) GetInvisibleChar() int {
+	return int(C.gtk_entry_get_invisible_char(C.to_GtkEntry(v.Widget)))
+}
+func (v *GtkEntry) SetInvisibleChar(ch int) {
+	C.gtk_entry_set_invisible_char(C.to_GtkEntry(v.Widget), C.gunichar(ch))
+}
+func (v *GtkEntry) UnsetInvisibleChar() {
+	C.gtk_entry_unset_invisible_char(C.to_GtkEntry(v.Widget))
+}
 func (v *GtkEntry) GetHasFrame() bool {
 	return gboolean2bool(C.gtk_entry_get_has_frame(C.to_GtkEntry(v.Widget)))
 }
@@ -1882,7 +1905,6 @@ func (v *GtkEntry) SetHasFrame(setting bool) {
 // gtk_entry_get_activates_default
 // gtk_entry_set_width_chars
 // gtk_entry_get_width_chars
-// gtk_entry_set_text
 // gtk_entry_get_layout
 // gtk_entry_get_layout_offsets
 // gtk_entry_set_alignment
@@ -1917,7 +1939,6 @@ func (v *GtkEntry) SetHasFrame(setting bool) {
 // gtk_entry_get_icon_tooltip_markup
 // gtk_entry_set_icon_drag_source
 // gtk_entry_get_current_icon_drag_source
-// gtk_entry_new_with_max_length
 func (v *GtkEntry) AppendText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
@@ -1928,7 +1949,9 @@ func (v *GtkEntry) PrependText(text string) {
 	defer C.free_string(ptr)
 	C.gtk_entry_prepend_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
 }
-// gtk_entry_set_position
+func (v *GtkEntry) SetPosition(position int) {
+	C.gtk_entry_set_position(C.to_GtkEntry(v.Widget), C.gint(position))
+}
 // gtk_entry_select_region
 func (v *GtkEntry) SetEditable(setting bool) {
 	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
@@ -4449,11 +4472,11 @@ func (v *GtkBuilder) AddFromString(buffer string, err **glib.Error) uint {
 }
 // guint gtk_builder_add_objects_from_file (GtkBuilder *builder, const gchar *filename, gchar **object_ids, GError **error);
 // guint gtk_builder_add_objects_from_string (GtkBuilder *builder, const gchar *buffer, gsize length, gchar **object_ids, GError **error);
-func (v *GtkBuilder) GetObject(name string) *GObject {
+func (v *GtkBuilder) GetObject(name string) *glib.GObject {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	return &GObject {
-		C.gtk_builder_get_object(v.Builder, C.to_gcharptr(ptr)) }
+	return &glib.GObject {
+		unsafe.Pointer(C.gtk_builder_get_object(v.Builder, C.to_gcharptr(ptr))) }
 }
 func (v *GtkBuilder) GetObjects() *glib.SList {
 	return glib.FromSList(unsafe.Pointer(C.gtk_builder_get_objects(v.Builder)))
@@ -4640,6 +4663,22 @@ func (v *GtkExpander) SetLabelWidget(label_widget LabelLike) {
 	C.gtk_expander_set_label_widget(C.to_GtkExpander(v.Widget), label_widget.ToGtkWidget())
 }
 // FINISH
+
+//-----------------------------------------------------------------------
+// GtkEventBox
+//-----------------------------------------------------------------------
+type GtkEventBox struct {
+	GtkContainer
+}
+
+func EventBox() *GtkEventBox {
+	return &GtkEventBox{GtkContainer{GtkWidget{
+		C.gtk_event_box_new()}}}
+}
+// gboolean gtk_event_box_get_visible_window (GtkEventBox *event_box);
+// void gtk_event_box_set_visible_window (GtkEventBox *event_box, gboolean visible_window);
+// gboolean gtk_event_box_get_above_child (GtkEventBox *event_box);
+// void gtk_event_box_set_above_child (GtkEventBox *event_box, gboolean above_child);
 
 //-----------------------------------------------------------------------
 // Events
