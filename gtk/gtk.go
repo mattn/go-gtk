@@ -1170,13 +1170,20 @@ type GtkContainer struct {
 func (v *GtkContainer) Add(w WidgetLike) {
 	C.gtk_container_add(C.to_GtkContainer(v.Widget), w.ToGtkWidget())
 }
-// TODO
-// gtk_container_set_border_width
-// gtk_container_get_border_width
-// gtk_container_remove
+func (v *GtkContainer) SetBorderWidth(border_width uint) {
+	C.gtk_container_set_border_width(C.to_GtkContainer(v.Widget), C.guint(border_width));
+}
+func (v *GtkContainer) GetBorderWidth() uint {
+	return uint(C.gtk_container_get_border_width(C.to_GtkContainer(v.Widget)))
+}
+func (v *GtkContainer) Remove(w WidgetLike) {
+	C.gtk_container_remove(C.to_GtkContainer(v.Widget), w.ToGtkWidget())
+}
 // gtk_container_set_resize_mode
 // gtk_container_get_resize_mode
-// gtk_container_check_resize
+func (v *GtkContainer) CheckResize() {
+	C.gtk_container_check_resize(C.to_GtkContainer(v.Widget))
+}
 // gtk_container_foreach
 // gtk_container_foreach_full
 // gtk_container_get_children
