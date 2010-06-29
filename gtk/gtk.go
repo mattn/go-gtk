@@ -560,6 +560,7 @@ static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
 static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
+static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 
 static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
 static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
@@ -2177,8 +2178,12 @@ func (v *GtkButton) SetLabel(label string) {
 // gtk_button_new_with_mnemonic
 // gtk_button_set_relief
 // gtk_button_get_relief
-// gtk_button_set_use_underline
-// gtk_button_get_use_underline
+func (v *GtkButton) GetUseUnderline() bool {
+	return gboolean2bool(C.gtk_button_get_use_underline(C.to_GtkButton(v.Widget)))
+}
+func (v *GtkButton) SetUseUnderline(setting bool) {
+	C.gtk_button_set_use_underline(C.to_GtkButton(v.Widget), bool2gboolean(setting))
+}
 // gtk_button_set_use_stock
 // gtk_button_get_use_stock
 // gtk_button_set_focus_on_click
@@ -2753,7 +2758,7 @@ func (v *GtkFrame) GetLabelWidget() LabelLike {
 	return &GtkLabel{GtkWidget{
 		C.gtk_frame_get_label_widget(C.to_GtkFrame(v.Widget))}}
 }
-func (v *GtkFrame) SetLabelWidget(label_widget *LabelLike) {
+func (v *GtkFrame) SetLabelWidget(label_widget LabelLike) {
 	C.gtk_frame_set_label_widget(C.to_GtkFrame(v.Widget), label_widget.ToGtkWidget())
 }
 func (v *GtkFrame) GetLabelAlign() (xalign, yalign float) {
@@ -3424,8 +3429,12 @@ func (v *GtkMenuItem) SetSubmenu(w WidgetLike) {
 // G_CONST_RETURN gchar* gtk_menu_item_get_accel_path(GtkMenuItem *menu_item);
 // void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
 // G_CONST_RETURN gchar *gtk_menu_item_get_label(GtkMenuItem *menu_item);
-// void gtk_menu_item_set_use_underline(GtkMenuItem *menu_item, gboolean setting);
-// gboolean gtk_menu_item_get_use_underline(GtkMenuItem *menu_item);
+func (v *GtkMenuItem) GetUseUnderline() bool {
+	return gboolean2bool(C.gtk_menu_item_get_use_underline(C.to_GtkMenuItem(v.Widget)))
+}
+func (v *GtkMenuItem) SetUseUnderline(setting bool) {
+	C.gtk_menu_item_set_use_underline(C.to_GtkMenuItem(v.Widget), bool2gboolean(setting))
+}
 // void gtk_menu_item_remove_submenu(GtkMenuItem *menu_item);
 // #define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
 
@@ -4510,59 +4519,120 @@ func (v *GtkAssistant) GetNthPage(page_num int) *GtkWidget {
 	return &GtkWidget {
 		C.gtk_assistant_get_nth_page(C.to_GtkAssistant(v.Widget), C.gint(page_num)) }
 }
-func (v *GtkAssistant) PrependPage(page *GtkWidget) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.Widget));
+func (v *GtkAssistant) PrependPage(page WidgetLike) int {
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
 }
-func (v *GtkAssistant) AppendPage(page *GtkWidget) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.Widget));
+func (v *GtkAssistant) AppendPage(page WidgetLike) int {
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
 }
-func (v *GtkAssistant) InsertPage(page *GtkWidget, position int) int {
-	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.Widget, C.gint(position)));
+func (v *GtkAssistant) InsertPage(page WidgetLike, position int) int {
+	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.gint(position)));
 }
 // void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
-func (v *GtkAssistant) SetPageType(page *GtkWidget, t int) {
-	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.Widget, C.GtkAssistantPageType(t));
+func (v *GtkAssistant) SetPageType(page WidgetLike, t int) {
+	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.GtkAssistantPageType(t));
 }
-func (v *GtkAssistant) GetPageType(page *GtkWidget) int {
-	return int(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.Widget), page.Widget));
+func (v *GtkAssistant) GetPageType(page WidgetLike) int {
+	return int(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
 }
-func (v *GtkAssistant) SetPageTitle(page *GtkWidget, title string) {
+func (v *GtkAssistant) SetPageTitle(page WidgetLike, title string) {
 	ptr := C.CString(title)
 	defer C.free_string(ptr)
-	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.Widget), page.Widget, C.to_gcharptr(ptr));
+	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.to_gcharptr(ptr));
 }
-func (v *GtkAssistant) GetPageTitle(page *GtkWidget) string {
-	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.Widget), page.Widget)));
+func (v *GtkAssistant) GetPageTitle(page WidgetLike) string {
+	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())));
 }
-func (v *GtkAssistant) SetPageHeaderImage(page *GtkWidget, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.Widget), page.Widget, pixbuf.Pixbuf);
+func (v *GtkAssistant) SetPageHeaderImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf);
 }
-func (v *GtkAssistant) GetPageHeaderImage(page *GtkWidget) *gdkpixbuf.GdkPixbuf {
+func (v *GtkAssistant) GetPageHeaderImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
 	return &gdkpixbuf.GdkPixbuf {
-		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.Widget), page.Widget) };
+		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()) };
 }
-func (v *GtkAssistant) SetPageSideImage(page *GtkWidget, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.Widget), page.Widget, pixbuf.Pixbuf);
+func (v *GtkAssistant) SetPageSideImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf);
 }
-func (v *GtkAssistant) GetPageSideImage(page *GtkWidget) *gdkpixbuf.GdkPixbuf {
+func (v *GtkAssistant) GetPageSideImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
 	return &gdkpixbuf.GdkPixbuf {
-		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.Widget), page.Widget) };
+		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()) };
 }
-func (v *GtkAssistant) SetPageComplete(page *GtkWidget, complete bool) {
-	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.Widget), page.Widget, bool2gboolean(complete));
+func (v *GtkAssistant) SetPageComplete(page WidgetLike, complete bool) {
+	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), bool2gboolean(complete));
 }
-func (v *GtkAssistant) GetPageComplete(page *GtkWidget) bool {
-	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.Widget), page.Widget));
+func (v *GtkAssistant) GetPageComplete(page WidgetLike) bool {
+	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
 }
-func (v *GtkAssistant) AddActionWidget(child *GtkWidget) {
-	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.Widget), child.Widget);
+func (v *GtkAssistant) AddActionWidget(child WidgetLike) {
+	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget());
 }
-func (v *GtkAssistant) RemoveActionWidget(child *GtkWidget) {
-	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.Widget), child.Widget);
+func (v *GtkAssistant) RemoveActionWidget(child WidgetLike) {
+	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget());
 }
 func (v *GtkAssistant) UpdateButtonsState() {
 	C.gtk_assistant_update_buttons_state(C.to_GtkAssistant(v.Widget));
 }
+
+//-----------------------------------------------------------------------
+// GtkExpander
+//-----------------------------------------------------------------------
+type GtkExpander struct {
+	GtkContainer
+}
+
+func Expander(label string) *GtkExpander {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkExpander{GtkContainer{GtkWidget{
+		C.gtk_expander_new(C.to_gcharptr(ptr))}}}
+}
+func ExpanderWithMnemonic(label string) *GtkExpander {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkExpander{GtkContainer{GtkWidget{
+		C.gtk_expander_new_with_mnemonic(C.to_gcharptr(ptr))}}}
+}
+
+func (v *GtkExpander) SetExpanded(expanded bool) {
+	C.gtk_expander_set_expanded(C.to_GtkExpander(v.Widget), bool2gboolean(expanded));
+}
+func (v *GtkExpander) GetExpanded() bool {
+	return gboolean2bool(C.gtk_expander_get_expanded(C.to_GtkExpander(v.Widget)));
+}
+func (v *GtkExpander) SetSpacing(spacing int) {
+	C.gtk_expander_set_spacing(C.to_GtkExpander(v.Widget), C.gint(spacing));
+}
+func (v *GtkExpander) GetSpacing() int {
+	return int(C.gtk_expander_get_spacing(C.to_GtkExpander(v.Widget)));
+}
+func (v *GtkExpander) SetLabel(label string) {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	C.gtk_expander_set_label(C.to_GtkExpander(v.Widget), C.to_gcharptr(ptr));
+}
+func (v *GtkExpander) GetLabel() string {
+	return C.GoString(C.to_charptr(C.gtk_expander_get_label(C.to_GtkExpander(v.Widget))));
+}
+func (v *GtkExpander) GetUseUnderline() bool {
+	return gboolean2bool(C.gtk_expander_get_use_underline(C.to_GtkExpander(v.Widget)))
+}
+func (v *GtkExpander) SetUseUnderline(setting bool) {
+	C.gtk_expander_set_use_underline(C.to_GtkExpander(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkExpander) GetUseMarkup() bool {
+	return gboolean2bool(C.gtk_expander_get_use_markup(C.to_GtkExpander(v.Widget)))
+}
+func (v *GtkExpander) SetUseMarkup(setting bool) {
+	C.gtk_expander_set_use_markup(C.to_GtkExpander(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkExpander) GetLabelWidget() LabelLike {
+	return &GtkLabel{GtkWidget{
+		C.gtk_expander_get_label_widget(C.to_GtkExpander(v.Widget))}}
+}
+func (v *GtkExpander) SetLabelWidget(label_widget LabelLike) {
+	C.gtk_expander_set_label_widget(C.to_GtkExpander(v.Widget), label_widget.ToGtkWidget())
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // Events
