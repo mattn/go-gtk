@@ -8,7 +8,7 @@ import (
 func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
-	window.SetTitle("GTK Stock Icons");
+	window.SetTitle("We love Expander");
 	window.Connect("destroy", func() {
 		gtk.MainQuit();
 	}, nil);
