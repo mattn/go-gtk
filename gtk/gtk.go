@@ -1672,7 +1672,7 @@ func (v *GtkAboutDialog) GetAuthors() []string {
 			break;
 		}
 	}
-	return authors.Data()
+	return authors.Copy()
 }
 func (v *GtkAboutDialog) SetAuthors(authors []string) {
 	cauthors := C.make_strings(C.int(len(authors)+1));
@@ -1695,7 +1695,7 @@ func (v *GtkAboutDialog) GetDocumenters() []string {
 			break;
 		}
 	}
-	return documenters.Data()
+	return documenters.Copy()
 }
 func (v *GtkAboutDialog) SetDocumenters(documenters []string) {
 	cdocumenters := C.make_strings(C.int(len(documenters)));
@@ -1717,7 +1717,7 @@ func (v *GtkAboutDialog) GetArtists() []string {
 			break;
 		}
 	}
-	return artists.Data()
+	return artists.Copy()
 }
 func (v *GtkAboutDialog) SetArtists(artists []string) {
 	cartists := C.make_strings(C.int(len(artists)));
