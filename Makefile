@@ -1,3 +1,5 @@
+include $(GOROOT)/src/Make.inc
+
 GC=${O}g -I../glib/_obj -I../gdk/_obj -I../gdkpixbuf/_obj -I$(GOROOT)/pkg/$(GOOS)_$(GOARCH)
 
 all:
