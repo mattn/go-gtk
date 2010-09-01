@@ -184,6 +184,52 @@ func Color(name string) *GdkColor {
 }
 
 //-----------------------------------------------------------------------
+// GdkFont
+//-----------------------------------------------------------------------
+type GdkFont struct {
+	Font *C.GdkFont;
+}
+func FontLoad(name string) *GdkFont {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	return &GdkFont {
+		C.gdk_font_load(C.to_gcharptr(ptr)) }
+}
+
+func FontsetLoad(name string) *GdkFont {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	return &GdkFont {
+		C.gdk_fontset_load(C.to_gcharptr(ptr)) }
+}
+
+// GdkFont* gdk_font_ref (GdkFont *font);
+// void gdk_font_unref (GdkFont *font);
+// gint gdk_font_id (const GdkFont *font);
+// gboolean gdk_font_equal (const GdkFont *fonta, const GdkFont *fontb);
+// GdkFont *gdk_font_load_for_display (GdkDisplay *display, const gchar *font_name);
+// GdkFont *gdk_fontset_load_for_display (GdkDisplay *display, const gchar *fontset_name);
+// GdkFont *gdk_font_from_description_for_display (GdkDisplay *display, PangoFontDescription *font_desc);
+// GdkFont* gdk_font_load (const gchar *font_name);
+// GdkFont* gdk_fontset_load (const gchar *fontset_name);
+// GdkFont* gdk_font_from_description (PangoFontDescription *font_desc);
+// gint gdk_string_width (GdkFont *font, const gchar *string);
+// gint gdk_text_width (GdkFont *font, const gchar *text, gint text_length);
+// gint gdk_text_width_wc (GdkFont *font, const GdkWChar *text, gint text_length);
+// gint gdk_char_width (GdkFont *font, gchar character);
+// gint gdk_char_width_wc (GdkFont *font, GdkWChar character);
+// gint gdk_string_measure (GdkFont *font, const gchar *string);
+// gint gdk_text_measure (GdkFont *font, const gchar *text, gint text_length);
+// gint gdk_char_measure (GdkFont *font, gchar character);
+// gint gdk_string_height (GdkFont *font, const gchar *string);
+// gint gdk_text_height (GdkFont *font, const gchar *text, gint text_length);
+// gint gdk_char_height (GdkFont *font, gchar character);
+// void gdk_text_extents (GdkFont *font, const gchar *text, gint text_length, gint *lbearing, gint *rbearing, gint *width, gint *ascent, gint *descent);
+// void gdk_text_extents_wc (GdkFont *font, const GdkWChar *text, gint text_length, gint *lbearing, gint *rbearing, gint *width, gint *ascent, gint *descent);
+// void gdk_string_extents (GdkFont *font, const gchar *string, gint *lbearing, gint *rbearing, gint *width, gint *ascent, gint *descent);
+// GdkDisplay * gdk_font_get_display (GdkFont *font);
+
+//-----------------------------------------------------------------------
 // GdkGC
 //-----------------------------------------------------------------------
 type GdkGC struct {
@@ -247,9 +293,16 @@ func (v *GdkDrawable) DrawLine(gc *GdkGC, x1 int, y1 int, x2 int, y2 int) {
 func (v *GdkDrawable) DrawRectangle(gc *GdkGC, filled bool, x int, y int, width int, height int) {
 	C.gdk_draw_rectangle(v.Drawable, gc.GC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height));
 }
-// void gdk_draw_arc (GdkDrawable *drawable, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height, gint angle1, gint angle2);
+func (v *GdkDrawable) DrawArc(gc *GdkGC, filled bool, x int, y int, width int, height int, angle1 int, angle2 int) {
+	C.gdk_draw_arc(v.Drawable, gc.GC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height), C.gint(angle1), C.gint(angle2));
+}
 // void gdk_draw_polygon (GdkDrawable *drawable, GdkGC *gc, gboolean filled, const GdkPoint *points, gint n_points);
 // void gdk_draw_string (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *string);
+func (v *GdkDrawable) DrawString(font *GdkFont, gc *GdkGC, x int, y int, str string) {
+	ptr := C.CString(str)
+	defer C.free_string(ptr)
+	C.gdk_draw_string(v.Drawable, font.Font, gc.GC, C.gint(x), C.gint(y), C.to_gcharptr(ptr));
+}
 // void gdk_draw_text (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *text, gint text_length);
 // void gdk_draw_text_wc (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const GdkWChar *text, gint text_length);
 func (v *GdkDrawable) DrawDrawable(gc *GdkGC, src *GdkDrawable, xsrc int, ysrc int, xdest int, ydest int, width int, height int) {
@@ -417,7 +470,6 @@ func Pixmap(drawable *GdkDrawable, width int, height int, depth int) *GdkPixmap 
 	return &GdkPixmap{
 		C.gdk_pixmap_new(drawable.Drawable, C.gint(width), C.gint(height), C.gint(depth)) }
 }
-// GdkPixmap* gdk_pixmap_new (GdkDrawable *drawable, gint width, gint height, gint depth);
 // GdkBitmap* gdk_bitmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height);
 // GdkPixmap* gdk_pixmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height, gint depth, const GdkColor *fg, const GdkColor *bg);
 // GdkPixmap* gdk_pixmap_create_from_xpm (GdkDrawable *drawable, GdkBitmap **mask, const GdkColor *transparent_color, const gchar *filename);
