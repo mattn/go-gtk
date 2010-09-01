@@ -2,7 +2,7 @@
 # lines I copied are copyrightable (and don't want to bother copying
 # the LICENSE, etc files around just yet.
 
-include $(GOROOT)/src/Make.$(GOARCH)
+include $(GOROOT)/src/Make.inc
 
 TARG=twitter
 GOFILES=\
