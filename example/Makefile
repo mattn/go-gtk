@@ -1,15 +1,15 @@
 all:
-	cd demo && make
-	cd twitter && make
-	cd listview && make
-	cd treeview && make
-	cd notebook && make
-	cd thread && make
+	cd demo && gomake
+	cd twitter && gomake
+	cd listview && gomake
+	cd treeview && gomake
+	cd notebook && gomake
+	cd thread && gomake
 
 clean:
-	cd demo && make clean
-	cd twitter && make clean
-	cd listview && make clean
-	cd treeview && make clean
-	cd notebook && make clean
-	cd thread && make clean
+	cd demo && gomake clean
+	cd twitter && gomake clean
+	cd listview && gomake clean
+	cd treeview && gomake clean
+	cd notebook && gomake clean
+	cd thread && gomake clean
