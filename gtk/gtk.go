@@ -474,11 +474,11 @@ static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attributes(gchar* title
 }
 
 static void _gtk_list_store_set_ptr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_list_store_set(list_store, iter, column, *(uint**)data, -1);
+	gtk_list_store_set(list_store, iter, column, *(guint**)data, -1);
 }
 
 static void _gtk_tree_store_set_ptr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_tree_store_set(tree_store, iter, column, *(uint**)data, -1);
+	gtk_tree_store_set(tree_store, iter, column, *(guint**)data, -1);
 }
 
 static inline GType* make_gtypes(int count) {
@@ -554,7 +554,7 @@ static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
 static GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
-//static GType to_GType(uint type) { return (GType)type; }
+//static GType to_GType(guint type) { return (GType)type; }
 static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
