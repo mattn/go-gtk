@@ -3,23 +3,23 @@ include $(GOROOT)/src/Make.inc
 GC=${O}g -I../glib/_obj -I../gdk/_obj -I../gdkpixbuf/_obj -I$(GOROOT)/pkg/$(GOOS)_$(GOARCH)
 
 all:
-	cd glib && make
-	cd gdk && make
-	cd gdkpixbuf && make
-	cd gtk && make
+	cd glib && gomake
+	cd gdk && gomake
+	cd gdkpixbuf && gomake
+	cd gtk && gomake
 
 install:
-	cd glib && make install
-	cd gdk && make install
-	cd gdkpixbuf && make install
-	cd gtk && make install
+	cd glib && gomake install
+	cd gdk && gomake install
+	cd gdkpixbuf && gomake install
+	cd gtk && gomake install
 
 clean:
-	cd glib && make clean
-	cd gdk && make clean
-	cd gdkpixbuf && make clean
-	cd gtk && make clean
-	cd example && make clean
+	cd glib && gomake clean
+	cd gdk && gomake clean
+	cd gdkpixbuf && gomake clean
+	cd gtk && gomake clean
+	cd example && gomake clean
 
 example: install
-	cd example && make
+	cd example && gomake
