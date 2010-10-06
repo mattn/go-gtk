@@ -2038,6 +2038,13 @@ func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
 //-----------------------------------------------------------------------
 // GtkLabel
 //-----------------------------------------------------------------------
+const (
+	GTK_JUSTIFY_LEFT = 0
+	GTK_JUSTIFY_RIGHT = 1
+	GTK_JUSTIFY_CENTER = 2
+	GTK_JUSTIFY_FILL = 3
+)
+
 type LabelLike interface {
 	WidgetLike
 	GetLabel() string
@@ -2095,6 +2102,12 @@ func (v *GtkLabel) SetTextWithMnemonic(str string) {
 	ptr := C.CString(str)
 	defer C.free_string(ptr)
 	C.gtk_label_set_text_with_mnemonic(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkLabel) SetJustify(jtype uint) {
+	C.gtk_label_set_justify(C.to_GtkLabel(v.Widget), C.GtkJustification(jtype))
+}
+func (v *GtkLabel) GetJustify() uint {
+	return uint(C.gtk_label_get_justify(C.to_GtkLabel(v.Widget)))
 }
 // gtk_label_set_justify
 // gtk_label_get_justify
