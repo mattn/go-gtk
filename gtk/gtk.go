@@ -554,6 +554,7 @@ static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
 static GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
+static GtkListStore* to_GtkListStoreFromTreeModel(GtkTreeModel* w) { return GTK_LIST_STORE(w); }
 //static GType to_GType(uint type) { return (GType)type; }
 static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
@@ -4027,6 +4028,10 @@ func ListStore(v ...interface{}) *GtkListStore {
 func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
 	return &GtkTreeModel{
 		C.to_GtkTreeModelFromListStore(v.ListStore)}
+}
+func (v *GtkTreeModel) ToListStore() *GtkListStore {
+	return &GtkListStore{
+		C.to_GtkListStoreFromTreeModel(v.TreeModel)}
 }
 //GtkListStore *gtk_list_store_new(gint n_columns, ...);
 //GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
