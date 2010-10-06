@@ -1258,6 +1258,12 @@ func (v *GtkWindow) SetTitle(title string) {
 func (v *GtkWindow) SetTransientFor(parent WindowLike) {
 	C.gtk_window_set_transient_for(C.to_GtkWindow(v.Widget), C.to_GtkWindow(parent.ToGtkWidget()))
 }
+func (v *GtkWindow) GetResizable() bool {
+	return gboolean2bool(C.gtk_window_get_resizable(C.to_GtkWindow(v.Widget)))
+}
+func (v *GtkWindow) SetResizable(resizable bool) {
+	C.gtk_window_set_resizable(C.to_GtkWindow(v.Widget), bool2gboolean(resizable))
+}
 // TODO
 // gtk_window_set_wmclass
 // gtk_window_set_role
@@ -1290,8 +1296,6 @@ func (v *GtkWindow) SetTransientFor(parent WindowLike) {
 // gtk_window_get_focus_on_map
 // gtk_window_set_destroy_with_parent
 // gtk_window_get_destroy_with_parent
-// gtk_window_set_resizable
-// gtk_window_get_resizable
 // gtk_window_set_gravity
 // gtk_window_get_gravity
 // gtk_window_set_geometry_hints
