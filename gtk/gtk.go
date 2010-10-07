@@ -529,6 +529,7 @@ static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w)
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
 static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
 static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
+static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
 static GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
 static GtkBox* to_GtkBox(GtkWidget* w) { return GTK_BOX(w); }
@@ -2609,20 +2610,20 @@ func (v *GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
 // GtkComboBox
 //-----------------------------------------------------------------------
 type GtkComboBox struct {
-	GtkContainer
+	GtkBin
 }
 
 func ComboBox() *GtkComboBox {
-	return &GtkComboBox{GtkContainer{GtkWidget{
-		C.gtk_combo_box_new()}}}
+	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new()}}}}
 }
 func ComboBoxWithModel(model *GtkTreeModel) *GtkComboBox {
-	return &GtkComboBox{GtkContainer{GtkWidget{
-		C.gtk_combo_box_new_with_model(model.TreeModel)}}}
+	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new_with_model(model.TreeModel)}}}}
 }
 func ComboBoxNewText() *GtkComboBox {
-	return &GtkComboBox{GtkContainer{GtkWidget{
-		C.gtk_combo_box_new_text()}}}
+	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new_text()}}}}
 }
 func (v *GtkComboBox) GetWrapWidth() int {
 	return int(C.gtk_combo_box_get_wrap_width(C.to_GtkComboBox(v.Widget)))
@@ -2716,6 +2717,17 @@ func (v *GtkComboBox) SetColumnSpanColumn(column_span int) {
 // gtk_combo_box_get_button_sensitivity
 
 //-----------------------------------------------------------------------
+// GtkBin
+//-----------------------------------------------------------------------
+type GtkBin struct {
+	GtkContainer
+}
+func (v *GtkBin) GetChild() *GtkWidget {
+	return &GtkWidget{C.gtk_bin_get_child(C.to_GtkBin(v.Widget))}
+}
+// FINISH
+
+//-----------------------------------------------------------------------
 // GtkComboBoxEntry
 //-----------------------------------------------------------------------
 type GtkComboBoxEntry struct {
@@ -2723,12 +2735,12 @@ type GtkComboBoxEntry struct {
 }
 
 func ComboBoxEntry() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry{GtkComboBox{GtkContainer{GtkWidget{
-		C.gtk_combo_box_entry_new()}}}}
+	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_entry_new()}}}}}
 }
 func ComboBoxEntryNewText() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry{GtkComboBox{GtkContainer{GtkWidget{
-		C.gtk_combo_box_entry_new_text()}}}}
+	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_entry_new_text()}}}}}
 }
 func (v *GtkComboBoxEntry) GetTextColumn() int {
 	return int(C.gtk_combo_box_entry_get_text_column(C.to_GtkComboBoxEntry(v.Widget)))
