@@ -14,7 +14,7 @@ package gtk
 typedef struct {
 	char name[256];
 	int func_no;
-	GtkWidget* widget;
+	void* target;
 	uintptr_t** args;
 	int args_no;
 	int index;
@@ -61,20 +61,20 @@ static void free_callback_info(gpointer data, GClosure *closure) {
 	g_slice_free(callback_info, data);
 }
 
-static long _gtk_signal_connect(GtkWidget* widget, gchar* name, int func_no) {
+static long _gtk_signal_connect(void* obj, gchar* name, int func_no) {
 	static int index = 0;
 	GSignalQuery query;
 	callback_info* cbi;
-	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(widget));
+	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(obj));
 	g_signal_query(signal_id, &query);
 	cbi = g_slice_new0(callback_info);
 	strcpy(cbi->name, name);
 	cbi->func_no = func_no;
-	cbi->widget = widget;
+	cbi->target = obj;
 	cbi->args_no = query.n_params;
 	cbi->index = index;
 	index++;
-	return g_signal_connect_data(widget, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	return g_signal_connect_data((gpointer)obj, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 }
 
 static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, gchar *message) {
@@ -827,7 +827,7 @@ func (v *GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
 	callback_contexts.Push(&CallbackContext{f, reflect.NewValue(data)})
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	C._gtk_signal_connect(v.Widget, C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
+	C._gtk_signal_connect(unsafe.Pointer(v.Widget), C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
 }
 func (v *GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget{
@@ -3150,6 +3150,12 @@ func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_buffer_new(tagtable.TextTagTable)}
 }
+func (v *GtkTextBuffer) Connect(s string, f CallbackFunc, data interface{}) {
+	callback_contexts.Push(&CallbackContext{f, reflect.NewValue(data)})
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	C._gtk_signal_connect(unsafe.Pointer(v.TextBuffer), C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
+}
 func (v *GtkTextBuffer) GetLineCount() int {
 	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer))
 }
@@ -4745,7 +4751,12 @@ func pollEvents() {
 			fargs := make([]reflect.Value, t.NumIn())
 			for i := 0; i < len(fargs); i++ {
 				if i == 0 {
-					fargs[i] = reflect.NewValue(&GtkWidget{cbi.widget})
+					if t.In(0).String() == "*gtk.GtkWidget" {
+						fargs[i] = reflect.NewValue(&GtkWidget{(*C.GtkWidget)(cbi.target)})
+					}
+					if t.In(0).String() == "*gtk.TextBuffer" {
+						fargs[i] = reflect.NewValue(&GtkTextBuffer{(unsafe.Pointer)(cbi.target)})
+					}
 				} else if i == len(fargs)-1 {
 					fargs[i] = context.data
 				} else {
