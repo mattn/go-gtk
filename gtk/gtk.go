@@ -834,8 +834,8 @@ func (v *GtkWidget) GetTopLevel() *GtkWidget {
 		C.gtk_widget_get_toplevel(v.Widget)}
 }
 func (v *GtkWidget) GetTopLevelAsWindow() *GtkWindow {
-	return &GtkWindow{GtkContainer{GtkWidget{
-		C.gtk_widget_get_toplevel(v.Widget)}}}
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_widget_get_toplevel(v.Widget)}}}}
 }
 func (v *GtkWidget) HideOnDelete() {
 	C.gtk_widget_hide_on_delete(v.Widget)
@@ -1144,8 +1144,8 @@ func (v *GtkWidget) SetTooltipWindow(w WindowLike) {
 	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToGtkWidget()))
 }
 func (v *GtkWidget) GetTooltipWindow() *GtkWindow {
-	return &GtkWindow{GtkContainer{GtkWidget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.Widget)))}}}
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.Widget)))}}}}
 }
 // gtk_widget_trigger_tooltip_query
 func (v *GtkWidget) GetTooltipText() string {
@@ -1242,12 +1242,12 @@ type WindowLike interface {
 	SetTitle(title string)
 }
 type GtkWindow struct {
-	GtkContainer
+	GtkBin
 }
 
 func Window(t uint) *GtkWindow {
-	return &GtkWindow{GtkContainer{GtkWidget{
-		C.gtk_window_new(C.GtkWindowType(t))}}}
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_window_new(C.GtkWindowType(t))}}}}
 }
 func (v *GtkWindow) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.Widget))))
@@ -1417,8 +1417,8 @@ func (v *GtkDialog) Response(response CallbackFunc, data interface{}) {
 func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
 	ptr := C.CString(button_text)
 	defer C.free_string(ptr)
-	return &GtkButton{GtkWidget{
-		C.gtk_dialog_add_button(C.to_GtkDialog(v.Widget), C.to_gcharptr(ptr), C.gint(response_id))}}
+	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_dialog_add_button(C.to_GtkDialog(v.Widget), C.to_gcharptr(ptr), C.gint(response_id))}}}}
 }
 // TODO
 // gtk_dialog_new_with_buttons
@@ -1529,12 +1529,12 @@ func FileChooserDialog(title string, parent WindowLike, action int, button strin
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button)
 	defer C.free_string(pbutton)
-	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkContainer{GtkWidget{
+	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_file_chooser_dialog_new(
 			C.to_gcharptr(ptitle),
 			parent.ToGtkWidget(),
 			C.int(action),
-			C.to_gcharptr(pbutton))}}}}}
+			C.to_gcharptr(pbutton))}}}}}}
 }
 func (v *GtkFileChooserDialog) GetFilename() string {
 	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
@@ -1568,13 +1568,13 @@ type GtkMessageDialog struct {
 func MessageDialog(parent WindowLike, flag uint, t uint, button uint, message string) *GtkMessageDialog {
 	ptr := C.CString(message)
 	defer C.free_string(ptr)
-	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkContainer{GtkWidget{
+	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_message_dialog_new(
 			parent.ToGtkWidget(),
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(button),
-			C.to_gcharptr(ptr))}}}}}
+			C.to_gcharptr(ptr))}}}}}}
 }
 // TODO
 // gtk_message_dialog_new_with_markup
@@ -1592,8 +1592,8 @@ type GtkAboutDialog struct {
 }
 
 func AboutDialog() *GtkAboutDialog {
-	return &GtkAboutDialog { GtkDialog { GtkWindow{ GtkContainer { GtkWidget {
-		C.gtk_about_dialog_new() }}}}}
+	return &GtkAboutDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_about_dialog_new() }}}}}}
 }
 func ShowAboutDialog(v ...interface{}) {
 	//TODO
@@ -2201,18 +2201,18 @@ func (v *GtkButton) Clicked(onclick CallbackFunc, data interface{}) {
 }
 
 type GtkButton struct {
-	GtkWidget
+	GtkBin
 }
 
 func Button() *GtkButton {
-	return &GtkButton{GtkWidget{
-		C.gtk_button_new()}}
+	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_button_new()}}}}
 }
 func ButtonWithLabel(label string) *GtkButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkButton{GtkWidget{
-		C.gtk_button_new_with_label(C.to_gcharptr(ptr))}}
+	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_button_new_with_label(C.to_gcharptr(ptr))}}}}
 }
 func (v *GtkButton) GetLabel() string {
 	return C.GoString(C.to_charptr(C.gtk_button_get_label(C.to_GtkButton(v.Widget))))
@@ -2252,20 +2252,20 @@ type GtkToggleButton struct {
 }
 
 func ToggleButton() *GtkToggleButton {
-	return &GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_toggle_button_new()}}}
+	return &GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_toggle_button_new()}}}}}
 }
 func ToggleButtonWithLabel(label string) *GtkToggleButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_toggle_button_new_with_label(C.to_gcharptr(ptr))}}}
+	return &GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_toggle_button_new_with_label(C.to_gcharptr(ptr))}}}}}
 }
 func ToggleButtonWithMnemonic(label string) *GtkToggleButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_toggle_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}
+	return &GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_toggle_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}
 }
 func (v *GtkToggleButton) GetMode() bool {
 	return gboolean2bool(C.gtk_toggle_button_get_mode(C.to_GtkToggleButton(v.Widget)))
@@ -2295,20 +2295,20 @@ type GtkCheckButton struct {
 }
 
 func CheckButton() *GtkCheckButton {
-	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_check_button_new()}}}}
+	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_check_button_new()}}}}}}
 }
 func CheckButtonWithLabel(label string) *GtkCheckButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_check_button_new_with_label(C.to_gcharptr(ptr))}}}}
+	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_check_button_new_with_label(C.to_gcharptr(ptr))}}}}}}
 }
 func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
+	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}}
 }
 // FINISH
 
@@ -2321,47 +2321,47 @@ type GtkRadioButton struct {
 
 func RadioButton(group *glib.SList) *GtkRadioButton {
 	if group != nil {
-		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}
+		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}}}
 	}
-	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_radio_button_new(nil)}}}}}
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_button_new(nil)}}}}}}}
 }
 func RadioButtonWithLabel(group *glib.SList, label string) *GtkRadioButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
 	if group != nil {
-		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}
+		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}}}
 	}
-	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}}}
 }
 func RadioButtonFromWidget(w *GtkRadioButton) *GtkRadioButton {
-	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_radio_button_new_from_widget(C.to_GtkRadioButton(w.Widget))}}}}}
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_button_new_from_widget(C.to_GtkRadioButton(w.Widget))}}}}}}}
 }
 func RadioButtonWithLabelFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_radio_button_new_with_label_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr))}}}}}
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_button_new_with_label_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr))}}}}}}}
 }
 func RadioButtonWithMnemonic(group *glib.SList, label string) *GtkRadioButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
 	if group != nil {
-		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-			C.gtk_radio_button_new_with_mnemonic(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}
+		return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+			C.gtk_radio_button_new_with_mnemonic(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}}}
 	}
-	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}}}
 }
 func RadioButtonWithMnemonicFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkWidget{
-		C.gtk_radio_button_new_with_mnemonic_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr))}}}}}
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_button_new_with_mnemonic_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr))}}}}}}}
 }
 func (v *GtkRadioButton) GetGroup() *glib.SList {
 	return glib.FromSList(unsafe.Pointer(C.gtk_radio_button_get_group(C.to_GtkRadioButton(v.Widget))))
@@ -2383,14 +2383,14 @@ type GtkFontButton struct {
 }
 
 func FontButton() *GtkFontButton {
-	return &GtkFontButton{GtkButton{GtkWidget{
-		C.gtk_font_button_new()}}}
+	return &GtkFontButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_font_button_new()}}}}}
 }
 func FontButtonWithFont(fontname string) *GtkFontButton {
 	ptr := C.CString(fontname)
 	defer C.free_string(ptr)
-	return &GtkFontButton{GtkButton{GtkWidget{
-		C.gtk_font_button_new_with_font(C.to_gcharptr(ptr))}}}
+	return &GtkFontButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_font_button_new_with_font(C.to_gcharptr(ptr))}}}}}
 }
 func (v *GtkFontButton) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_font_button_get_title(C.to_GtkFontButton(v.Widget))))
@@ -2432,16 +2432,16 @@ type GtkLinkButton struct {
 func LinkButton(uri string) *GtkLinkButton {
 	ptr := C.CString(uri)
 	defer C.free_string(ptr)
-	return &GtkLinkButton{GtkButton{GtkWidget{
-		C.gtk_link_button_new(C.to_gcharptr(ptr))}}}
+	return &GtkLinkButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_link_button_new(C.to_gcharptr(ptr))}}}}}
 }
 func LinkButtonWithLabel(uri string, label string) *GtkLinkButton {
 	puri := C.CString(uri)
 	defer C.free_string(puri)
 	plabel := C.CString(label)
 	defer C.free_string(plabel)
-	return &GtkLinkButton{GtkButton{GtkWidget{
-		C.gtk_link_button_new_with_label(C.to_gcharptr(puri), C.to_gcharptr(plabel))}}}
+	return &GtkLinkButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_link_button_new_with_label(C.to_gcharptr(puri), C.to_gcharptr(plabel))}}}}}
 }
 func (v *GtkLinkButton) GetUri() string {
 	return C.GoString(C.to_charptr(C.gtk_link_button_get_uri(C.to_GtkLinkButton(v.Widget))))
@@ -2797,14 +2797,14 @@ const (
 )
 
 type GtkFrame struct {
-	GtkContainer
+	GtkBin
 }
 
 func Frame(label string) *GtkFrame {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkFrame{GtkContainer{GtkWidget{
-		C.gtk_frame_new(C.to_gcharptr(ptr))}}}
+	return &GtkFrame{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_frame_new(C.to_gcharptr(ptr))}}}}
 }
 func (v *GtkFrame) GetLabel() string {
 	return C.GoString(C.to_charptr(C.gtk_frame_get_label(C.to_GtkFrame(v.Widget))))
@@ -2910,7 +2910,7 @@ const (
 )
 
 type GtkScrolledWindow struct {
-	GtkContainer
+	GtkBin
 }
 
 func ScrolledWindow(hadjustment *GtkAdjustment, vadjustment *GtkAdjustment) *GtkScrolledWindow {
@@ -2921,8 +2921,8 @@ func ScrolledWindow(hadjustment *GtkAdjustment, vadjustment *GtkAdjustment) *Gtk
 	if vadjustment != nil {
 		vad = vadjustment.Adjustment
 	}
-	return &GtkScrolledWindow{GtkContainer{GtkWidget{
-		C.gtk_scrolled_window_new(had, vad)}}}
+	return &GtkScrolledWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_scrolled_window_new(had, vad)}}}}
 }
 func (v *GtkScrolledWindow) SetHAdjustment(hadjustment *GtkAdjustment) {
 	C.gtk_scrolled_window_set_hadjustment(C.to_GtkScrolledWindow(v.Widget), hadjustment.Adjustment)
@@ -3436,7 +3436,7 @@ func (v *GtkTextView) SetAcceptsTab(accepts_tab bool) {
 // GtkItem
 //-----------------------------------------------------------------------
 type GtkItem struct {
-	GtkContainer
+	GtkBin
 }
 
 func (v *GtkItem) Select() {
@@ -3457,20 +3457,20 @@ type GtkMenuItem struct {
 }
 
 func MenuItem() *GtkMenuItem {
-	return &GtkMenuItem{GtkItem{GtkContainer{GtkWidget{
-		C.gtk_menu_item_new()}}}}
+	return &GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_menu_item_new()}}}}}
 }
 func MenuItemWithLabel(label string) *GtkMenuItem {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkMenuItem{GtkItem{GtkContainer{GtkWidget{
-		C.gtk_menu_item_new_with_label(C.to_gcharptr(ptr))}}}}
+	return &GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_menu_item_new_with_label(C.to_gcharptr(ptr))}}}}}
 }
 func MenuItemWithMnemonic(label string) *GtkMenuItem {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkMenuItem{GtkItem{GtkContainer{GtkWidget{
-		C.gtk_menu_item_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
+	return &GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_menu_item_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}
 }
 func (v *GtkMenuItem) SetSubmenu(w WidgetLike) {
 	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToGtkWidget())
@@ -4641,20 +4641,20 @@ func (v *GtkAssistant) UpdateButtonsState() {
 // GtkExpander
 //-----------------------------------------------------------------------
 type GtkExpander struct {
-	GtkContainer
+	GtkBin
 }
 
 func Expander(label string) *GtkExpander {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkExpander{GtkContainer{GtkWidget{
-		C.gtk_expander_new(C.to_gcharptr(ptr))}}}
+	return &GtkExpander{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_expander_new(C.to_gcharptr(ptr))}}}}
 }
 func ExpanderWithMnemonic(label string) *GtkExpander {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkExpander{GtkContainer{GtkWidget{
-		C.gtk_expander_new_with_mnemonic(C.to_gcharptr(ptr))}}}
+	return &GtkExpander{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_expander_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
 }
 
 func (v *GtkExpander) SetExpanded(expanded bool) {
@@ -4702,12 +4702,12 @@ func (v *GtkExpander) SetLabelWidget(label_widget LabelLike) {
 // GtkEventBox
 //-----------------------------------------------------------------------
 type GtkEventBox struct {
-	GtkContainer
+	GtkBin
 }
 
 func EventBox() *GtkEventBox {
-	return &GtkEventBox{GtkContainer{GtkWidget{
-		C.gtk_event_box_new()}}}
+	return &GtkEventBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_event_box_new()}}}}
 }
 // gboolean gtk_event_box_get_visible_window (GtkEventBox *event_box);
 // void gtk_event_box_set_visible_window (GtkEventBox *event_box, gboolean visible_window);
