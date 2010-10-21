@@ -4,6 +4,7 @@ TARG=builder
 GOFILES=builder.go
 CGOFILES=builder.go
 GC=${O}g -Ipkg/$(GOOS)_$(GOARCH)
+LD=${O}l -Lpkg/$(GOOS)_$(GOARCH)
 
 include $(GOROOT)/src/Make.cmd
 
