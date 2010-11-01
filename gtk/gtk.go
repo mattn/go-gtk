@@ -804,8 +804,9 @@ type WidgetLike interface {
 type GtkWidget struct {
 	Widget *C.GtkWidget
 }
+
 func WidgetFromObject(object *glib.GObject) *GtkWidget {
-	return &GtkWidget {
+	return &GtkWidget{
 		C.to_GtkWidget(unsafe.Pointer(object.Object))}
 }
 func (v *GtkWidget) ToGtkWidget() *C.GtkWidget {
@@ -1029,7 +1030,7 @@ func (v *GtkWidget) SetWindow(window *gdk.GdkWindow) {
 	C.gtk_widget_set_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(window.Window)))
 }
 func (v *GtkWidget) GetAllocation(allocation *GtkAllocation) {
-	var _allocation C.GtkAllocation;
+	var _allocation C.GtkAllocation
 	C.gtk_widget_get_allocation(v.Widget, &_allocation)
 	allocation.X = int(_allocation.x)
 	allocation.Y = int(_allocation.y)
@@ -1037,12 +1038,12 @@ func (v *GtkWidget) GetAllocation(allocation *GtkAllocation) {
 	allocation.Height = int(_allocation.height)
 }
 func (v *GtkWidget) SetAllocation(allocation *GtkAllocation) {
-	var _allocation C.GtkAllocation;
+	var _allocation C.GtkAllocation
 	_allocation.x = C.gint(allocation.X)
 	_allocation.y = C.gint(allocation.Y)
 	_allocation.width = C.gint(allocation.Width)
 	_allocation.height = C.gint(allocation.Height)
-	C.gtk_widget_set_allocation(v.Widget, &_allocation);
+	C.gtk_widget_set_allocation(v.Widget, &_allocation)
 }
 // gtk_widget_child_focus
 // gtk_widget_keynav_failed
@@ -1195,7 +1196,7 @@ func (v *GtkContainer) Add(w WidgetLike) {
 	C.gtk_container_add(C.to_GtkContainer(v.Widget), w.ToGtkWidget())
 }
 func (v *GtkContainer) SetBorderWidth(border_width uint) {
-	C.gtk_container_set_border_width(C.to_GtkContainer(v.Widget), C.guint(border_width));
+	C.gtk_container_set_border_width(C.to_GtkContainer(v.Widget), C.guint(border_width))
 }
 func (v *GtkContainer) GetBorderWidth() uint {
 	return uint(C.gtk_container_get_border_width(C.to_GtkContainer(v.Widget)))
@@ -1363,7 +1364,7 @@ func (v *GtkWindow) SetDefaultSize(width int, height int) {
 }
 func (v *GtkWindow) GetDefaultSize(width *int, height *int) {
 	var cwidth, cheight C.gint
-	C.gtk_window_get_default_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight);
+	C.gtk_window_get_default_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight)
 	*width = int(cwidth)
 	*height = int(cheight)
 }
@@ -1372,7 +1373,7 @@ func (v *GtkWindow) Resize(width int, height int) {
 }
 func (v *GtkWindow) GetSize(width *int, height *int) {
 	var cwidth, cheight C.gint
-	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight);
+	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight)
 	*width = int(cwidth)
 	*height = int(cheight)
 }
@@ -1381,7 +1382,7 @@ func (v *GtkWindow) Move(x int, y int) {
 }
 func (v *GtkWindow) GetPosition(root_x *int, root_y *int) {
 	var croot_x, croot_y C.gint
-	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &croot_x, &croot_y);
+	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &croot_x, &croot_y)
 	*root_x = int(croot_x)
 	*root_y = int(croot_y)
 }
@@ -1599,7 +1600,7 @@ type GtkAboutDialog struct {
 
 func AboutDialog() *GtkAboutDialog {
 	return &GtkAboutDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_about_dialog_new() }}}}}}
+		C.gtk_about_dialog_new()}}}}}}
 }
 func ShowAboutDialog(v ...interface{}) {
 	//TODO
@@ -1679,67 +1680,67 @@ func (v *GtkAboutDialog) GetAuthors() []string {
 	cauthors := C.gtk_about_dialog_get_authors(C.to_GtkAboutDialog(v.Widget))
 	for {
 		authors.Push(C.GoString(C.to_charptr(*cauthors)))
-		cauthors = C.next_gcharptr(cauthors);
+		cauthors = C.next_gcharptr(cauthors)
 		if *cauthors == nil {
-			break;
+			break
 		}
 	}
 	return authors.Copy()
 }
 func (v *GtkAboutDialog) SetAuthors(authors []string) {
-	cauthors := C.make_strings(C.int(len(authors)+1));
+	cauthors := C.make_strings(C.int(len(authors) + 1))
 	for i, author := range authors {
 		ptr := C.CString(author)
-		defer C.free_string(ptr);
-		C.set_string(cauthors, C.int(i), C.to_gcharptr(ptr));
+		defer C.free_string(ptr)
+		C.set_string(cauthors, C.int(i), C.to_gcharptr(ptr))
 	}
-	C.set_string(cauthors, C.int(len(authors)), nil);
-	C.gtk_about_dialog_set_authors(C.to_GtkAboutDialog(v.Widget), cauthors);
-	C.destroy_strings(cauthors);
+	C.set_string(cauthors, C.int(len(authors)), nil)
+	C.gtk_about_dialog_set_authors(C.to_GtkAboutDialog(v.Widget), cauthors)
+	C.destroy_strings(cauthors)
 }
 func (v *GtkAboutDialog) GetDocumenters() []string {
 	var documenters *vector.StringVector
 	cdocumenters := C.gtk_about_dialog_get_documenters(C.to_GtkAboutDialog(v.Widget))
 	for {
 		documenters.Push(C.GoString(C.to_charptr(*cdocumenters)))
-		cdocumenters = C.next_gcharptr(cdocumenters);
+		cdocumenters = C.next_gcharptr(cdocumenters)
 		if *cdocumenters == nil {
-			break;
+			break
 		}
 	}
 	return documenters.Copy()
 }
 func (v *GtkAboutDialog) SetDocumenters(documenters []string) {
-	cdocumenters := C.make_strings(C.int(len(documenters)));
+	cdocumenters := C.make_strings(C.int(len(documenters)))
 	for i, author := range documenters {
 		ptr := C.CString(author)
-		defer C.free_string(ptr);
-		C.set_string(cdocumenters, C.int(i), C.to_gcharptr(ptr));
+		defer C.free_string(ptr)
+		C.set_string(cdocumenters, C.int(i), C.to_gcharptr(ptr))
 	}
-	C.gtk_about_dialog_set_documenters(C.to_GtkAboutDialog(v.Widget), cdocumenters);
-	C.destroy_strings(cdocumenters);
+	C.gtk_about_dialog_set_documenters(C.to_GtkAboutDialog(v.Widget), cdocumenters)
+	C.destroy_strings(cdocumenters)
 }
 func (v *GtkAboutDialog) GetArtists() []string {
 	var artists *vector.StringVector
 	cartists := C.gtk_about_dialog_get_artists(C.to_GtkAboutDialog(v.Widget))
 	for {
 		artists.Push(C.GoString(C.to_charptr(*cartists)))
-		cartists = C.next_gcharptr(cartists);
+		cartists = C.next_gcharptr(cartists)
 		if *cartists == nil {
-			break;
+			break
 		}
 	}
 	return artists.Copy()
 }
 func (v *GtkAboutDialog) SetArtists(artists []string) {
-	cartists := C.make_strings(C.int(len(artists)));
+	cartists := C.make_strings(C.int(len(artists)))
 	for i, author := range artists {
 		ptr := C.CString(author)
-		defer C.free_string(ptr);
-		C.set_string(cartists, C.int(i), C.to_gcharptr(ptr));
+		defer C.free_string(ptr)
+		C.set_string(cartists, C.int(i), C.to_gcharptr(ptr))
 	}
-	C.gtk_about_dialog_set_artists(C.to_GtkAboutDialog(v.Widget), cartists);
-	C.destroy_strings(cartists);
+	C.gtk_about_dialog_set_artists(C.to_GtkAboutDialog(v.Widget), cartists)
+	C.destroy_strings(cartists)
 }
 func (v *GtkAboutDialog) GetTranslatorCredits() string {
 	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_translator_credits(C.to_GtkAboutDialog(v.Widget))))
@@ -1754,7 +1755,7 @@ func (v *GtkAboutDialog) GetLogo() *gdkpixbuf.GdkPixbuf {
 		C.gtk_about_dialog_get_logo(C.to_GtkAboutDialog(v.Widget))}
 }
 func (v *GtkAboutDialog) SetLogo(logo *gdkpixbuf.GdkPixbuf) {
-	C.gtk_about_dialog_set_logo(C.to_GtkAboutDialog(v.Widget), logo.Pixbuf);
+	C.gtk_about_dialog_set_logo(C.to_GtkAboutDialog(v.Widget), logo.Pixbuf)
 }
 func (v *GtkAboutDialog) GetLogoIconName() string {
 	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_logo_icon_name(C.to_GtkAboutDialog(v.Widget))))
@@ -2047,10 +2048,10 @@ func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
 // GtkLabel
 //-----------------------------------------------------------------------
 const (
-	GTK_JUSTIFY_LEFT = 0
-	GTK_JUSTIFY_RIGHT = 1
+	GTK_JUSTIFY_LEFT   = 0
+	GTK_JUSTIFY_RIGHT  = 1
 	GTK_JUSTIFY_CENTER = 2
-	GTK_JUSTIFY_FILL = 3
+	GTK_JUSTIFY_FILL   = 3
 )
 
 type LabelLike interface {
@@ -2728,6 +2729,7 @@ func (v *GtkComboBox) SetColumnSpanColumn(column_span int) {
 type GtkBin struct {
 	GtkContainer
 }
+
 func (v *GtkBin) GetChild() *GtkWidget {
 	return &GtkWidget{C.gtk_bin_get_child(C.to_GtkBin(v.Widget))}
 }
@@ -3046,8 +3048,8 @@ func (v *GtkTextIter) GetChar() int {
 	return int(C.gtk_text_iter_get_char(&v.TextIter))
 }
 func (v *GtkTextIter) GetSlice(end *GtkTextIter) string {
-  pchar := C.to_charptr(C.gtk_text_iter_get_slice(&v.TextIter, &end.TextIter))
-  defer C.free(unsafe.Pointer(pchar))
+	pchar := C.to_charptr(C.gtk_text_iter_get_slice(&v.TextIter, &end.TextIter))
+	defer C.free(unsafe.Pointer(pchar))
 	return C.GoString(pchar)
 }
 func (v *GtkTextIter) GetText(end *GtkTextIter) string {
@@ -3278,7 +3280,7 @@ func (v *GtkTextBuffer) GetSelectionBound() *GtkTextMark {
 		C._gtk_text_buffer_get_selection_bound(v.TextBuffer)}
 }
 func (v *GtkTextBuffer) GetSelectionBounds(be, en *GtkTextIter) bool {
-  return gboolean2bool(C._gtk_text_buffer_get_selection_bounds(v.TextBuffer, &be.TextIter, &en.TextIter))
+	return gboolean2bool(C._gtk_text_buffer_get_selection_bounds(v.TextBuffer, &be.TextIter, &en.TextIter))
 }
 func (v *GtkTextBuffer) GetHasSelection() bool {
 	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer))
@@ -4509,9 +4511,9 @@ func (v *GtkBuilder) AddFromFile(filename string, err **glib.Error) uint {
 	defer C.free_string(ptr)
 	ret := uint(C.gtk_builder_add_from_file(v.Builder, C.to_gcharptr(ptr), &error))
 	if err != nil && error != nil {
-		*err = glib.FromError(unsafe.Pointer(error));
+		*err = glib.FromError(unsafe.Pointer(error))
 	}
-	return ret;
+	return ret
 }
 func (v *GtkBuilder) AddFromString(buffer string, err **glib.Error) uint {
 	var error *C.GError
@@ -4519,17 +4521,17 @@ func (v *GtkBuilder) AddFromString(buffer string, err **glib.Error) uint {
 	defer C.free_string(ptr)
 	ret := uint(C.gtk_builder_add_from_string(v.Builder, C.to_gcharptr(ptr), C.gsize(C.strlen(ptr)), &error))
 	if err != nil && error != nil {
-		*err = glib.FromError(unsafe.Pointer(error));
+		*err = glib.FromError(unsafe.Pointer(error))
 	}
-	return ret;
+	return ret
 }
 // guint gtk_builder_add_objects_from_file (GtkBuilder *builder, const gchar *filename, gchar **object_ids, GError **error);
 // guint gtk_builder_add_objects_from_string (GtkBuilder *builder, const gchar *buffer, gsize length, gchar **object_ids, GError **error);
 func (v *GtkBuilder) GetObject(name string) *glib.GObject {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	return &glib.GObject {
-		unsafe.Pointer(C.gtk_builder_get_object(v.Builder, C.to_gcharptr(ptr))) }
+	return &glib.GObject{
+		unsafe.Pointer(C.gtk_builder_get_object(v.Builder, C.to_gcharptr(ptr)))}
 }
 func (v *GtkBuilder) GetObjects() *glib.SList {
 	return glib.FromSList(unsafe.Pointer(C.gtk_builder_get_objects(v.Builder)))
@@ -4574,11 +4576,11 @@ func (v *GtkDrawingArea) GetSizeRequest(width int, height int) {
 // GtkAssistant
 //-----------------------------------------------------------------------
 const (
-  GTK_ASSISTANT_PAGE_CONTENT = 0
-  GTK_ASSISTANT_PAGE_INTRO = 1
-  GTK_ASSISTANT_PAGE_CONFIRM = 2
-  GTK_ASSISTANT_PAGE_SUMMARY = 3
-  GTK_ASSISTANT_PAGE_PROGRESS = 4
+	GTK_ASSISTANT_PAGE_CONTENT  = 0
+	GTK_ASSISTANT_PAGE_INTRO    = 1
+	GTK_ASSISTANT_PAGE_CONFIRM  = 2
+	GTK_ASSISTANT_PAGE_SUMMARY  = 3
+	GTK_ASSISTANT_PAGE_PROGRESS = 4
 )
 
 type GtkAssistant struct {
@@ -4590,70 +4592,70 @@ func Assistant() *GtkAssistant {
 		C.gtk_assistant_new()}}
 }
 func (v *GtkAssistant) GetCurrentPage() int {
-	return int(C.gtk_assistant_get_current_page(C.to_GtkAssistant(v.Widget)));
+	return int(C.gtk_assistant_get_current_page(C.to_GtkAssistant(v.Widget)))
 }
 func (v *GtkAssistant) SetCurrentPage(page_num int) {
-	C.gtk_assistant_set_current_page(C.to_GtkAssistant(v.Widget), C.gint(page_num));
+	C.gtk_assistant_set_current_page(C.to_GtkAssistant(v.Widget), C.gint(page_num))
 }
 func (v *GtkAssistant) GetNPages() int {
-	return int(C.gtk_assistant_get_n_pages(C.to_GtkAssistant(v.Widget)));
+	return int(C.gtk_assistant_get_n_pages(C.to_GtkAssistant(v.Widget)))
 }
 func (v *GtkAssistant) GetNthPage(page_num int) *GtkWidget {
-	return &GtkWidget {
-		C.gtk_assistant_get_nth_page(C.to_GtkAssistant(v.Widget), C.gint(page_num)) }
+	return &GtkWidget{
+		C.gtk_assistant_get_nth_page(C.to_GtkAssistant(v.Widget), C.gint(page_num))}
 }
 func (v *GtkAssistant) PrependPage(page WidgetLike) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
 }
 func (v *GtkAssistant) AppendPage(page WidgetLike) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
 }
 func (v *GtkAssistant) InsertPage(page WidgetLike, position int) int {
-	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.gint(position)));
+	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.gint(position)))
 }
 // void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
 func (v *GtkAssistant) SetPageType(page WidgetLike, t int) {
-	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.GtkAssistantPageType(t));
+	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.GtkAssistantPageType(t))
 }
 func (v *GtkAssistant) GetPageType(page WidgetLike) int {
-	return int(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
+	return int(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
 }
 func (v *GtkAssistant) SetPageTitle(page WidgetLike, title string) {
 	ptr := C.CString(title)
 	defer C.free_string(ptr)
-	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.to_gcharptr(ptr));
+	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.to_gcharptr(ptr))
 }
 func (v *GtkAssistant) GetPageTitle(page WidgetLike) string {
-	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())));
+	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())))
 }
 func (v *GtkAssistant) SetPageHeaderImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf);
+	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf)
 }
 func (v *GtkAssistant) GetPageHeaderImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf {
-		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()) };
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())}
 }
 func (v *GtkAssistant) SetPageSideImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf);
+	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf)
 }
 func (v *GtkAssistant) GetPageSideImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf {
-		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()) };
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())}
 }
 func (v *GtkAssistant) SetPageComplete(page WidgetLike, complete bool) {
-	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), bool2gboolean(complete));
+	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), bool2gboolean(complete))
 }
 func (v *GtkAssistant) GetPageComplete(page WidgetLike) bool {
-	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()));
+	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
 }
 func (v *GtkAssistant) AddActionWidget(child WidgetLike) {
-	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget());
+	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget())
 }
 func (v *GtkAssistant) RemoveActionWidget(child WidgetLike) {
-	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget());
+	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget())
 }
 func (v *GtkAssistant) UpdateButtonsState() {
-	C.gtk_assistant_update_buttons_state(C.to_GtkAssistant(v.Widget));
+	C.gtk_assistant_update_buttons_state(C.to_GtkAssistant(v.Widget))
 }
 
 //-----------------------------------------------------------------------
@@ -4677,24 +4679,24 @@ func ExpanderWithMnemonic(label string) *GtkExpander {
 }
 
 func (v *GtkExpander) SetExpanded(expanded bool) {
-	C.gtk_expander_set_expanded(C.to_GtkExpander(v.Widget), bool2gboolean(expanded));
+	C.gtk_expander_set_expanded(C.to_GtkExpander(v.Widget), bool2gboolean(expanded))
 }
 func (v *GtkExpander) GetExpanded() bool {
-	return gboolean2bool(C.gtk_expander_get_expanded(C.to_GtkExpander(v.Widget)));
+	return gboolean2bool(C.gtk_expander_get_expanded(C.to_GtkExpander(v.Widget)))
 }
 func (v *GtkExpander) SetSpacing(spacing int) {
-	C.gtk_expander_set_spacing(C.to_GtkExpander(v.Widget), C.gint(spacing));
+	C.gtk_expander_set_spacing(C.to_GtkExpander(v.Widget), C.gint(spacing))
 }
 func (v *GtkExpander) GetSpacing() int {
-	return int(C.gtk_expander_get_spacing(C.to_GtkExpander(v.Widget)));
+	return int(C.gtk_expander_get_spacing(C.to_GtkExpander(v.Widget)))
 }
 func (v *GtkExpander) SetLabel(label string) {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	C.gtk_expander_set_label(C.to_GtkExpander(v.Widget), C.to_gcharptr(ptr));
+	C.gtk_expander_set_label(C.to_GtkExpander(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkExpander) GetLabel() string {
-	return C.GoString(C.to_charptr(C.gtk_expander_get_label(C.to_GtkExpander(v.Widget))));
+	return C.GoString(C.to_charptr(C.gtk_expander_get_label(C.to_GtkExpander(v.Widget))))
 }
 func (v *GtkExpander) GetUseUnderline() bool {
 	return gboolean2bool(C.gtk_expander_get_use_underline(C.to_GtkExpander(v.Widget)))
@@ -4831,64 +4833,68 @@ func MainQuit() {
 type GtkSourceView struct {
 	GtkTextView
 }
+
 func SourceView() *GtkSourceView {
 	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{C.gtk_source_view_new()}}}}
 }
 func (v *GtkSourceView) SetAutoIndent(enable bool) {
-  C.gtk_source_view_set_auto_indent(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+	C.gtk_source_view_set_auto_indent(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
 }
 func (v *GtkSourceView) SetHighlightCurrentLine(enable bool) {
-  C.gtk_source_view_set_highlight_current_line(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+	C.gtk_source_view_set_highlight_current_line(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
 }
 func (v *GtkSourceView) SetShowLineNumbers(enable bool) {
-  C.gtk_source_view_set_show_line_numbers(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+	C.gtk_source_view_set_show_line_numbers(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
 }
 func (v *GtkSourceView) SetRightMarginPosition(pos uint) {
-  C.gtk_source_view_set_right_margin_position(C.to_GtkSourceView(v.Widget), C.guint(pos))
+	C.gtk_source_view_set_right_margin_position(C.to_GtkSourceView(v.Widget), C.guint(pos))
 }
 func (v *GtkSourceView) SetIndentWidth(pos int) {
-  C.gtk_source_view_set_indent_width(C.to_GtkSourceView(v.Widget), C.gint(pos))
+	C.gtk_source_view_set_indent_width(C.to_GtkSourceView(v.Widget), C.gint(pos))
 }
 func (v *GtkSourceView) SetShowRightMargin(enable bool) {
-  C.gtk_source_view_set_show_right_margin(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+	C.gtk_source_view_set_show_right_margin(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
 }
 func (v *GtkSourceView) SetInsertSpacesInsteadOfTabs(enable bool) {
-  C.gtk_source_view_set_insert_spaces_instead_of_tabs(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+	C.gtk_source_view_set_insert_spaces_instead_of_tabs(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
 }
 
 const (
-  GTK_SOURCE_DRAW_SPACES_SPACE      = 1 << 0
-	GTK_SOURCE_DRAW_SPACES_TAB        = 1 << 1
-	GTK_SOURCE_DRAW_SPACES_NEWLINE    = 1 << 2
-	GTK_SOURCE_DRAW_SPACES_NBSP       = 1 << 3
-	GTK_SOURCE_DRAW_SPACES_LEADING    = 1 << 4
-	GTK_SOURCE_DRAW_SPACES_TEXT       = 1 << 5
-	GTK_SOURCE_DRAW_SPACES_TRAILING   = 1 << 6
-	GTK_SOURCE_DRAW_SPACES_ALL        = (GTK_SOURCE_DRAW_SPACES_SPACE   |
-	                                     GTK_SOURCE_DRAW_SPACES_TAB     |
-	                                     GTK_SOURCE_DRAW_SPACES_NEWLINE |
-	                                     GTK_SOURCE_DRAW_SPACES_NBSP |
-	                                     GTK_SOURCE_DRAW_SPACES_LEADING |
-	                                     GTK_SOURCE_DRAW_SPACES_TEXT |
-	                                     GTK_SOURCE_DRAW_SPACES_TRAILING)
+	GTK_SOURCE_DRAW_SPACES_SPACE    = 1 << 0
+	GTK_SOURCE_DRAW_SPACES_TAB      = 1 << 1
+	GTK_SOURCE_DRAW_SPACES_NEWLINE  = 1 << 2
+	GTK_SOURCE_DRAW_SPACES_NBSP     = 1 << 3
+	GTK_SOURCE_DRAW_SPACES_LEADING  = 1 << 4
+	GTK_SOURCE_DRAW_SPACES_TEXT     = 1 << 5
+	GTK_SOURCE_DRAW_SPACES_TRAILING = 1 << 6
+	GTK_SOURCE_DRAW_SPACES_ALL      = (GTK_SOURCE_DRAW_SPACES_SPACE |
+		GTK_SOURCE_DRAW_SPACES_TAB |
+		GTK_SOURCE_DRAW_SPACES_NEWLINE |
+		GTK_SOURCE_DRAW_SPACES_NBSP |
+		GTK_SOURCE_DRAW_SPACES_LEADING |
+		GTK_SOURCE_DRAW_SPACES_TEXT |
+		GTK_SOURCE_DRAW_SPACES_TRAILING)
 )
+
 func (v *GtkSourceView) SetDrawSpaces(flags int) {
-  C.gtk_source_view_set_draw_spaces(C.to_GtkSourceView(v.Widget),
-                                    C.GtkSourceDrawSpacesFlags(flags))
+	C.gtk_source_view_set_draw_spaces(C.to_GtkSourceView(v.Widget),
+		C.GtkSourceDrawSpacesFlags(flags))
 }
 func (v *GtkSourceView) SetTabWidth(width uint) {
-  C.gtk_source_view_set_tab_width(C.to_GtkSourceView(v.Widget),
-                                    C.guint(width))
+	C.gtk_source_view_set_tab_width(C.to_GtkSourceView(v.Widget),
+		C.guint(width))
 }
+
 const (
-  GTK_SOURCE_SMART_HOME_END_DISABLED = 0
-	GTK_SOURCE_SMART_HOME_END_BEFORE = 1
-	GTK_SOURCE_SMART_HOME_END_AFTER = 2
-	GTK_SOURCE_SMART_HOME_END_ALWAYS = 3
+	GTK_SOURCE_SMART_HOME_END_DISABLED = 0
+	GTK_SOURCE_SMART_HOME_END_BEFORE   = 1
+	GTK_SOURCE_SMART_HOME_END_AFTER    = 2
+	GTK_SOURCE_SMART_HOME_END_ALWAYS   = 3
 )
+
 func (v *GtkSourceView) SetSmartHomeEnd(flags int) {
-  C.gtk_source_view_set_smart_home_end(C.to_GtkSourceView(v.Widget),
-                                       C.GtkSourceSmartHomeEndType(flags))
+	C.gtk_source_view_set_smart_home_end(C.to_GtkSourceView(v.Widget),
+		C.GtkSourceSmartHomeEndType(flags))
 }
 
 
