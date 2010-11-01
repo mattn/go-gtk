@@ -20,6 +20,7 @@ clean:
 	cd gdkpixbuf && gomake clean
 	cd gtk && gomake clean
 	cd example && gomake clean
+	cd gtksourceview && gomake clean
 
 example: install
 	cd example && gomake

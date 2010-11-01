@@ -5,6 +5,7 @@ package gtk
 #define uintptr unsigned int*
 #endif
 #include <gtk/gtk.h>
+#include <gtksourceview/gtksourceview.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -313,6 +314,10 @@ static GtkTextMark* _gtk_text_buffer_get_selection_bound(void* buffer) {
 	return gtk_text_buffer_get_selection_bound(GTK_TEXT_BUFFER(buffer));
 }
 
+static gboolean _gtk_text_buffer_get_selection_bounds(void* buffer, GtkTextIter* be, GtkTextIter* en) {
+	return gtk_text_buffer_get_selection_bounds(GTK_TEXT_BUFFER(buffer), be, en);
+}
+
 static gboolean _gtk_text_buffer_get_has_selection(void* buffer) {
 	return gtk_text_buffer_get_has_selection(GTK_TEXT_BUFFER(buffer));
 }
@@ -539,6 +544,7 @@ static GtkAccelLabel* to_GtkAccelLabel(GtkWidget* w) { return GTK_ACCEL_LABEL(w)
 static GtkEntry* to_GtkEntry(GtkWidget* w) { return GTK_ENTRY(w); }
 static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 static GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
+static GtkSourceView* to_GtkSourceView(GtkWidget* w) { return GTK_SOURCE_VIEW(w); }
 static GtkMenuBar* to_GtkMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
 static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
 static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
@@ -3040,7 +3046,9 @@ func (v *GtkTextIter) GetChar() int {
 	return int(C.gtk_text_iter_get_char(&v.TextIter))
 }
 func (v *GtkTextIter) GetSlice(end *GtkTextIter) string {
-	return C.GoString(C.to_charptr(C.gtk_text_iter_get_slice(&v.TextIter, &end.TextIter)))
+  pchar := C.to_charptr(C.gtk_text_iter_get_slice(&v.TextIter, &end.TextIter))
+  defer C.free(unsafe.Pointer(pchar))
+	return C.GoString(pchar)
 }
 func (v *GtkTextIter) GetText(end *GtkTextIter) string {
 	return C.GoString(C.to_charptr(C.gtk_text_iter_get_text(&v.TextIter, &end.TextIter)))
@@ -3225,9 +3233,8 @@ func (v *GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkT
 }
 func (v *GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
 	pchar := C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
-	result_string := C.GoString(pchar)
-	C.free(unsafe.Pointer(pchar))
-	return result_string
+	defer C.free(unsafe.Pointer(pchar))
+	return C.GoString(pchar)
 }
 func (v *GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
 	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf)
@@ -3269,6 +3276,9 @@ func (v *GtkTextBuffer) GetInsert() *GtkTextMark {
 func (v *GtkTextBuffer) GetSelectionBound() *GtkTextMark {
 	return &GtkTextMark{
 		C._gtk_text_buffer_get_selection_bound(v.TextBuffer)}
+}
+func (v *GtkTextBuffer) GetSelectionBounds(be, en *GtkTextIter) bool {
+  return gboolean2bool(C._gtk_text_buffer_get_selection_bounds(v.TextBuffer, &be.TextIter, &en.TextIter))
 }
 func (v *GtkTextBuffer) GetHasSelection() bool {
 	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer))
@@ -4813,4 +4823,78 @@ func MainQuit() {
 	if use_gtk_main {
 		C.gtk_main_quit()
 	}
+}
+
+//-----------------------------------------------------------------------
+// GtkSourceView
+//-----------------------------------------------------------------------
+type GtkSourceView struct {
+	GtkTextView
+}
+func SourceView() *GtkSourceView {
+	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{C.gtk_source_view_new()}}}}
+}
+func (v *GtkSourceView) SetAutoIndent(enable bool) {
+  C.gtk_source_view_set_auto_indent(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+}
+func (v *GtkSourceView) SetHighlightCurrentLine(enable bool) {
+  C.gtk_source_view_set_highlight_current_line(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+}
+func (v *GtkSourceView) SetShowLineNumbers(enable bool) {
+  C.gtk_source_view_set_show_line_numbers(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+}
+func (v *GtkSourceView) SetRightMarginPosition(pos uint) {
+  C.gtk_source_view_set_right_margin_position(C.to_GtkSourceView(v.Widget), C.guint(pos))
+}
+func (v *GtkSourceView) SetIndentWidth(pos int) {
+  C.gtk_source_view_set_indent_width(C.to_GtkSourceView(v.Widget), C.gint(pos))
+}
+func (v *GtkSourceView) SetShowRightMargin(enable bool) {
+  C.gtk_source_view_set_show_right_margin(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+}
+func (v *GtkSourceView) SetInsertSpacesInsteadOfTabs(enable bool) {
+  C.gtk_source_view_set_insert_spaces_instead_of_tabs(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
+}
+
+const (
+  GTK_SOURCE_DRAW_SPACES_SPACE      = 1 << 0
+	GTK_SOURCE_DRAW_SPACES_TAB        = 1 << 1
+	GTK_SOURCE_DRAW_SPACES_NEWLINE    = 1 << 2
+	GTK_SOURCE_DRAW_SPACES_NBSP       = 1 << 3
+	GTK_SOURCE_DRAW_SPACES_LEADING    = 1 << 4
+	GTK_SOURCE_DRAW_SPACES_TEXT       = 1 << 5
+	GTK_SOURCE_DRAW_SPACES_TRAILING   = 1 << 6
+	GTK_SOURCE_DRAW_SPACES_ALL        = (GTK_SOURCE_DRAW_SPACES_SPACE   |
+	                                     GTK_SOURCE_DRAW_SPACES_TAB     |
+	                                     GTK_SOURCE_DRAW_SPACES_NEWLINE |
+	                                     GTK_SOURCE_DRAW_SPACES_NBSP |
+	                                     GTK_SOURCE_DRAW_SPACES_LEADING |
+	                                     GTK_SOURCE_DRAW_SPACES_TEXT |
+	                                     GTK_SOURCE_DRAW_SPACES_TRAILING)
+)
+func (v *GtkSourceView) SetDrawSpaces(flags int) {
+  C.gtk_source_view_set_draw_spaces(C.to_GtkSourceView(v.Widget),
+                                    C.GtkSourceDrawSpacesFlags(flags))
+}
+func (v *GtkSourceView) SetTabWidth(width uint) {
+  C.gtk_source_view_set_tab_width(C.to_GtkSourceView(v.Widget),
+                                    C.guint(width))
+}
+const (
+  GTK_SOURCE_SMART_HOME_END_DISABLED = 0
+	GTK_SOURCE_SMART_HOME_END_BEFORE = 1
+	GTK_SOURCE_SMART_HOME_END_AFTER = 2
+	GTK_SOURCE_SMART_HOME_END_ALWAYS = 3
+)
+func (v *GtkSourceView) SetSmartHomeEnd(flags int) {
+  C.gtk_source_view_set_smart_home_end(C.to_GtkSourceView(v.Widget),
+                                       C.GtkSourceSmartHomeEndType(flags))
+}
+
+
+//-----------------------------------------------------------------------
+// GtkSourceBuffer
+//-----------------------------------------------------------------------
+type GtkSourceBuffer struct {
+	SourceBuffer unsafe.Pointer
 }
