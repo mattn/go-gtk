@@ -6,6 +6,9 @@ package gtk
 #endif
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksourceview.h>
+#include <gtksourceview/gtksourcebuffer.h>
+#include <gtksourceview/gtksourcelanguage.h>
+#include <gtksourceview/gtksourcelanguagemanager.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -402,6 +405,33 @@ static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interac
 	return gtk_text_buffer_delete_selection(GTK_TEXT_BUFFER(buffer), interactive, default_editable);
 }
 
+static void _gtk_source_buffer_set_language(void* buf, void* lan) {
+  gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buf), GTK_SOURCE_LANGUAGE(lan));
+}
+
+static void* _gtk_source_language_manager_get_default() {
+  return gtk_source_language_manager_get_default();
+}
+
+static void* _gtk_source_language_manager_get_language(void* lang_man, gchar* id) {
+  return gtk_source_language_manager_get_language(GTK_SOURCE_LANGUAGE_MANAGER(lang_man), id);
+}
+
+static GtkWidget* _gtk_source_view_new_with_buffer(void* buf) {
+  return gtk_source_view_new_with_buffer(GTK_SOURCE_BUFFER(buf));
+}
+
+static void* _gtk_source_buffer_new() {
+  return gtk_source_buffer_new(NULL);
+}
+
+static void _gtk_source_language_manager_set_search_path(void* man, gchar* str) {
+  gchar* arr[2];
+  arr[0] = str;
+  arr[1] = NULL;
+  gtk_source_language_manager_set_search_path(GTK_SOURCE_LANGUAGE_MANAGER(man), arr);
+}
+
 // static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
 // static void gtk_text_buffer_copy_clipboard(void* buffer, GtkClipboard* clipboard);
 // static void gtk_text_buffer_cut_clipboard(void* buffer, GtkClipboard* clipboard, gboolean default_editable);
@@ -445,6 +475,10 @@ static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
 
 static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
 	return gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+}
+
+static void _gtk_text_iter_assign(GtkTextIter* one, GtkTextIter* two) {
+  *one = *two;
 }
 
 static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
@@ -3015,6 +3049,25 @@ type GtkTextIter struct {
 	TextIter C.GtkTextIter
 }
 
+const (
+	GTK_TEXT_SEARCH_VISIBLE_ONLY     = 1 << 0
+	GTK_TEXT_SEARCH_TEXT_ONLY        = 1 << 1
+	GTK_TEXT_SEARCH_CASE_INSENSITIVE = 1 << 2
+)
+
+func (v *GtkTextIter) Assign(iter *GtkTextIter) {
+	C._gtk_text_iter_assign(&v.TextIter, &iter.TextIter)
+}
+func (v *GtkTextIter) ForwardSearch(str string, flags int, start *GtkTextIter, end *GtkTextIter, limit *GtkTextIter) bool {
+	cstr := C.CString(str)
+	defer C.free_string(cstr)
+	return gboolean2bool(C.gtk_text_iter_forward_search(&v.TextIter,
+		C.to_gcharptr(cstr), C.GtkTextSearchFlags(flags), &start.TextIter,
+		&end.TextIter, &limit.TextIter))
+}
+func (v *GtkTextIter) ForwardChar() bool {
+	return gboolean2bool(C.gtk_text_iter_forward_char(&v.TextIter))
+}
 func (v *GtkTextIter) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_iter_get_buffer(&v.TextIter)}
@@ -3923,7 +3976,9 @@ func (v *GtkTreeView) SetModel(model *GtkTreeModel) {
 //GtkAdjustment *gtk_tree_view_get_vadjustment (GtkTreeView *tree_view);
 //void gtk_tree_view_set_vadjustment (GtkTreeView *tree_view, GtkAdjustment *adjustment);
 //gboolean gtk_tree_view_get_headers_visible (GtkTreeView *tree_view);
-//void gtk_tree_view_set_headers_visible (GtkTreeView *tree_view, gboolean headers_visible);
+func (v *GtkTreeView) SetHeadersVisible(flag bool) {
+	C.gtk_tree_view_set_headers_visible(C.to_GtkTreeView(v.Widget), bool2gboolean(flag))
+}
 //void gtk_tree_view_columns_autosize (GtkTreeView *tree_view);
 //gboolean gtk_tree_view_get_headers_clickable (GtkTreeView *tree_view);
 //void gtk_tree_view_set_headers_clickable (GtkTreeView *tree_view, gboolean setting);
@@ -4828,14 +4883,32 @@ func MainQuit() {
 }
 
 //-----------------------------------------------------------------------
+// GtkSourceBuffer
+//-----------------------------------------------------------------------
+type GtkSourceBuffer struct {
+	GtkTextBuffer
+}
+
+func GtkSourceBufferNew() *GtkSourceBuffer {
+	return &GtkSourceBuffer{GtkTextBuffer{C._gtk_source_buffer_new()}}
+}
+func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
+	C._gtk_source_buffer_set_language(v.TextBuffer, lang.SourceLanguage)
+}
+
+//-----------------------------------------------------------------------
 // GtkSourceView
 //-----------------------------------------------------------------------
 type GtkSourceView struct {
 	GtkTextView
 }
 
-func SourceView() *GtkSourceView {
+func GtkSourceViewNew() *GtkSourceView {
 	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{C.gtk_source_view_new()}}}}
+}
+func GtkSourceViewNewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
+	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{
+		C._gtk_source_view_new_with_buffer(buf.TextBuffer)}}}}
 }
 func (v *GtkSourceView) SetAutoIndent(enable bool) {
 	C.gtk_source_view_set_auto_indent(C.to_GtkSourceView(v.Widget), bool2gboolean(enable))
@@ -4897,10 +4970,31 @@ func (v *GtkSourceView) SetSmartHomeEnd(flags int) {
 		C.GtkSourceSmartHomeEndType(flags))
 }
 
+//-----------------------------------------------------------------------
+// GtkSourceLanguage
+//-----------------------------------------------------------------------
+type GtkSourceLanguage struct {
+	SourceLanguage unsafe.Pointer
+}
 
 //-----------------------------------------------------------------------
-// GtkSourceBuffer
+// GtkSourceLanguageManager
 //-----------------------------------------------------------------------
-type GtkSourceBuffer struct {
-	SourceBuffer unsafe.Pointer
+type GtkSourceLanguageManager struct {
+	LanguageManager unsafe.Pointer
+}
+
+func GtkSourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
+	return &GtkSourceLanguageManager{C._gtk_source_language_manager_get_default()}
+}
+func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
+	cid := C.CString(id)
+	defer C.free_string(cid)
+	return &GtkSourceLanguage{C._gtk_source_language_manager_get_language(v.LanguageManager,
+		C.to_gcharptr(cid))}
+}
+func (v *GtkSourceLanguageManager) SetSearchPath(path string) {
+	cpath := C.CString(path)
+	defer C.free_string(cpath)
+	C._gtk_source_language_manager_set_search_path(v.LanguageManager, C.to_gcharptr(cpath))
 }
