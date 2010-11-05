@@ -45,9 +45,9 @@ type Point struct {
 }
 
 type Rectangle struct {
-	X int
-	Y int
-	Width int
+	X      int
+	Y      int
+	Width  int
 	Height int
 }
 
@@ -173,34 +173,36 @@ func Cursor(cursor_type int) *GdkCursor {
 // GdkColor
 //-----------------------------------------------------------------------
 type GdkColor struct {
-	Color C.GdkColor;
+	Color C.GdkColor
 }
+
 func Color(name string) *GdkColor {
 	var color C.GdkColor
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 	C.gdk_color_parse(C.to_gcharptr(ptr), &color)
-	return &GdkColor{ color }
+	return &GdkColor{color}
 }
 
 //-----------------------------------------------------------------------
 // GdkFont
 //-----------------------------------------------------------------------
 type GdkFont struct {
-	Font *C.GdkFont;
+	Font *C.GdkFont
 }
+
 func FontLoad(name string) *GdkFont {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	return &GdkFont {
-		C.gdk_font_load(C.to_gcharptr(ptr)) }
+	return &GdkFont{
+		C.gdk_font_load(C.to_gcharptr(ptr))}
 }
 
 func FontsetLoad(name string) *GdkFont {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	return &GdkFont {
-		C.gdk_fontset_load(C.to_gcharptr(ptr)) }
+	return &GdkFont{
+		C.gdk_fontset_load(C.to_gcharptr(ptr))}
 }
 
 // GdkFont* gdk_font_ref (GdkFont *font);
@@ -233,8 +235,9 @@ func FontsetLoad(name string) *GdkFont {
 // GdkGC
 //-----------------------------------------------------------------------
 type GdkGC struct {
-	GC *C.GdkGC;
+	GC *C.GdkGC
 }
+
 func GC(drawable *GdkDrawable) *GdkGC {
 	return &GdkGC{
 		C.gdk_gc_new(drawable.Drawable)}
@@ -246,10 +249,10 @@ func GC(drawable *GdkDrawable) *GdkGC {
 // void gdk_gc_get_values (GdkGC *gc, GdkGCValues *values);
 // void gdk_gc_set_values (GdkGC *gc, GdkGCValues *values, GdkGCValuesMask values_mask);
 func (v *GdkGC) SetForeground(color *GdkColor) {
-	C.gdk_gc_set_foreground(v.GC, &color.Color);
+	C.gdk_gc_set_foreground(v.GC, &color.Color)
 }
 func (v *GdkGC) SetBackground(color *GdkColor) {
-	C.gdk_gc_set_background(v.GC, &color.Color);
+	C.gdk_gc_set_background(v.GC, &color.Color)
 }
 // void gdk_gc_set_font (GdkGC *gc, GdkFont *font);
 // void gdk_gc_set_function (GdkGC *gc, GdkFunction function);
@@ -270,10 +273,10 @@ func (v *GdkGC) SetBackground(color *GdkColor) {
 // void gdk_gc_set_colormap (GdkGC *gc, GdkColormap *colormap);
 // GdkColormap *gdk_gc_get_colormap (GdkGC *gc);
 func (v *GdkGC) SetRgbFgColor(color *GdkColor) {
-	C.gdk_gc_set_rgb_fg_color(v.GC, &color.Color);
+	C.gdk_gc_set_rgb_fg_color(v.GC, &color.Color)
 }
 func (v *GdkGC) SetRgbBgColor(color *GdkColor) {
-	C.gdk_gc_set_rgb_bg_color(v.GC, &color.Color);
+	C.gdk_gc_set_rgb_bg_color(v.GC, &color.Color)
 }
 // GdkScreen * gdk_gc_get_screen (GdkGC *gc);
 
@@ -285,28 +288,28 @@ type GdkDrawable struct {
 }
 
 func (v *GdkDrawable) DrawPoint(gc *GdkGC, x int, y int) {
-	C.gdk_draw_point(v.Drawable, gc.GC, C.gint(x), C.gint(y));
+	C.gdk_draw_point(v.Drawable, gc.GC, C.gint(x), C.gint(y))
 }
 func (v *GdkDrawable) DrawLine(gc *GdkGC, x1 int, y1 int, x2 int, y2 int) {
-	C.gdk_draw_line(v.Drawable, gc.GC, C.gint(x1), C.gint(y1), C.gint(x2), C.gint(y2));
+	C.gdk_draw_line(v.Drawable, gc.GC, C.gint(x1), C.gint(y1), C.gint(x2), C.gint(y2))
 }
 func (v *GdkDrawable) DrawRectangle(gc *GdkGC, filled bool, x int, y int, width int, height int) {
-	C.gdk_draw_rectangle(v.Drawable, gc.GC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height));
+	C.gdk_draw_rectangle(v.Drawable, gc.GC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height))
 }
 func (v *GdkDrawable) DrawArc(gc *GdkGC, filled bool, x int, y int, width int, height int, angle1 int, angle2 int) {
-	C.gdk_draw_arc(v.Drawable, gc.GC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height), C.gint(angle1), C.gint(angle2));
+	C.gdk_draw_arc(v.Drawable, gc.GC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height), C.gint(angle1), C.gint(angle2))
 }
 // void gdk_draw_polygon (GdkDrawable *drawable, GdkGC *gc, gboolean filled, const GdkPoint *points, gint n_points);
 // void gdk_draw_string (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *string);
 func (v *GdkDrawable) DrawString(font *GdkFont, gc *GdkGC, x int, y int, str string) {
 	ptr := C.CString(str)
 	defer C.free_string(ptr)
-	C.gdk_draw_string(v.Drawable, font.Font, gc.GC, C.gint(x), C.gint(y), C.to_gcharptr(ptr));
+	C.gdk_draw_string(v.Drawable, font.Font, gc.GC, C.gint(x), C.gint(y), C.to_gcharptr(ptr))
 }
 // void gdk_draw_text (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *text, gint text_length);
 // void gdk_draw_text_wc (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const GdkWChar *text, gint text_length);
 func (v *GdkDrawable) DrawDrawable(gc *GdkGC, src *GdkDrawable, xsrc int, ysrc int, xdest int, ydest int, width int, height int) {
-	C.gdk_draw_drawable(v.Drawable, gc.GC, src.Drawable, C.gint(xsrc), C.gint(ysrc), C.gint(xdest), C.gint(ydest), C.gint(width), C.gint(height));
+	C.gdk_draw_drawable(v.Drawable, gc.GC, src.Drawable, C.gint(xsrc), C.gint(ysrc), C.gint(xdest), C.gint(ydest), C.gint(width), C.gint(height))
 }
 // void gdk_draw_image (GdkDrawable *drawable, GdkGC *gc, GdkImage *image, gint xsrc, gint ysrc, gint xdest, gint ydest, gint width, gint height);
 // void gdk_draw_points (GdkDrawable *drawable, GdkGC *gc, const GdkPoint *points, gint n_points);
@@ -331,97 +334,97 @@ func (v *GdkDrawable) DrawDrawable(gc *GdkGC, src *GdkDrawable, xsrc int, ysrc i
 // GdkWindow
 //-----------------------------------------------------------------------
 const (
-		GDK_SHIFT_MASK    = 1 << 0;
-		GDK_LOCK_MASK	    = 1 << 1;
-		GDK_CONTROL_MASK  = 1 << 2;
-		GDK_MOD1_MASK	    = 1 << 3;
-		GDK_MOD2_MASK	    = 1 << 4;
-		GDK_MOD3_MASK	    = 1 << 5;
-		GDK_MOD4_MASK	    = 1 << 6;
-		GDK_MOD5_MASK	    = 1 << 7;
-		GDK_BUTTON1_MASK  = 1 << 8;
-		GDK_BUTTON2_MASK  = 1 << 9;
-		GDK_BUTTON3_MASK  = 1 << 10;
-		GDK_BUTTON4_MASK  = 1 << 11;
-		GDK_BUTTON5_MASK  = 1 << 12;
+	GDK_SHIFT_MASK   = 1 << 0
+	GDK_LOCK_MASK    = 1 << 1
+	GDK_CONTROL_MASK = 1 << 2
+	GDK_MOD1_MASK    = 1 << 3
+	GDK_MOD2_MASK    = 1 << 4
+	GDK_MOD3_MASK    = 1 << 5
+	GDK_MOD4_MASK    = 1 << 6
+	GDK_MOD5_MASK    = 1 << 7
+	GDK_BUTTON1_MASK = 1 << 8
+	GDK_BUTTON2_MASK = 1 << 9
+	GDK_BUTTON3_MASK = 1 << 10
+	GDK_BUTTON4_MASK = 1 << 11
+	GDK_BUTTON5_MASK = 1 << 12
 
-		/* The next few modifiers are used by XKB, so we skip to the end.
-		 * Bits 15 - 25 are currently unused. Bit 29 is used internally.
-		 */
+	/* The next few modifiers are used by XKB, so we skip to the end.
+	 * Bits 15 - 25 are currently unused. Bit 29 is used internally.
+	 */
 
-		GDK_SUPER_MASK    = 1 << 26;
-		GDK_HYPER_MASK    = 1 << 27;
-		GDK_META_MASK     = 1 << 28;
+	GDK_SUPER_MASK = 1 << 26
+	GDK_HYPER_MASK = 1 << 27
+	GDK_META_MASK  = 1 << 28
 
-		GDK_RELEASE_MASK  = 1 << 30;
+	GDK_RELEASE_MASK = 1 << 30
 
-		GDK_MODIFIER_MASK = 0x5c001fff;
+	GDK_MODIFIER_MASK = 0x5c001fff
 )
 const (
-	GDK_NOTHING		= -1;
-	GDK_DELETE		= 0;
-	GDK_DESTROY		= 1;
-	GDK_EXPOSE		= 2;
-	GDK_MOTION_NOTIFY	= 3;
-	GDK_BUTTON_PRESS	= 4;
-	GDK_2BUTTON_PRESS	= 5;
-	GDK_3BUTTON_PRESS	= 6;
-	GDK_BUTTON_RELEASE	= 7;
-	GDK_KEY_PRESS		= 8;
-	GDK_KEY_RELEASE	= 9;
-	GDK_ENTER_NOTIFY	= 10;
-	GDK_LEAVE_NOTIFY	= 11;
-	GDK_FOCUS_CHANGE	= 12;
-	GDK_CONFIGURE		= 13;
-	GDK_MAP		= 14;
-	GDK_UNMAP		= 15;
-	GDK_PROPERTY_NOTIFY	= 16;
-	GDK_SELECTION_CLEAR	= 17;
-	GDK_SELECTION_REQUEST = 18;
-	GDK_SELECTION_NOTIFY	= 19;
-	GDK_PROXIMITY_IN	= 20;
-	GDK_PROXIMITY_OUT	= 21;
-	GDK_DRAG_ENTER        = 22;
-	GDK_DRAG_LEAVE        = 23;
-	GDK_DRAG_MOTION       = 24;
-	GDK_DRAG_STATUS       = 25;
-	GDK_DROP_START        = 26;
-	GDK_DROP_FINISHED     = 27;
-	GDK_CLIENT_EVENT	= 28;
-	GDK_VISIBILITY_NOTIFY = 29;
-	GDK_NO_EXPOSE		= 30;
-	GDK_SCROLL            = 31;
-	GDK_WINDOW_STATE      = 32;
-	GDK_SETTING           = 33;
-	GDK_OWNER_CHANGE      = 34;
-	GDK_GRAB_BROKEN       = 35;
-	GDK_DAMAGE            = 36;
-	GDK_EVENT_LAST        = 37; /* helper variable for decls */
+	GDK_NOTHING           = -1
+	GDK_DELETE            = 0
+	GDK_DESTROY           = 1
+	GDK_EXPOSE            = 2
+	GDK_MOTION_NOTIFY     = 3
+	GDK_BUTTON_PRESS      = 4
+	GDK_2BUTTON_PRESS     = 5
+	GDK_3BUTTON_PRESS     = 6
+	GDK_BUTTON_RELEASE    = 7
+	GDK_KEY_PRESS         = 8
+	GDK_KEY_RELEASE       = 9
+	GDK_ENTER_NOTIFY      = 10
+	GDK_LEAVE_NOTIFY      = 11
+	GDK_FOCUS_CHANGE      = 12
+	GDK_CONFIGURE         = 13
+	GDK_MAP               = 14
+	GDK_UNMAP             = 15
+	GDK_PROPERTY_NOTIFY   = 16
+	GDK_SELECTION_CLEAR   = 17
+	GDK_SELECTION_REQUEST = 18
+	GDK_SELECTION_NOTIFY  = 19
+	GDK_PROXIMITY_IN      = 20
+	GDK_PROXIMITY_OUT     = 21
+	GDK_DRAG_ENTER        = 22
+	GDK_DRAG_LEAVE        = 23
+	GDK_DRAG_MOTION       = 24
+	GDK_DRAG_STATUS       = 25
+	GDK_DROP_START        = 26
+	GDK_DROP_FINISHED     = 27
+	GDK_CLIENT_EVENT      = 28
+	GDK_VISIBILITY_NOTIFY = 29
+	GDK_NO_EXPOSE         = 30
+	GDK_SCROLL            = 31
+	GDK_WINDOW_STATE      = 32
+	GDK_SETTING           = 33
+	GDK_OWNER_CHANGE      = 34
+	GDK_GRAB_BROKEN       = 35
+	GDK_DAMAGE            = 36
+	GDK_EVENT_LAST        = 37 /* helper variable for decls */
 )
 
 const (
-	GDK_EXPOSURE_MASK		= 1 << 1;
-	GDK_POINTER_MOTION_MASK	= 1 << 2;
-	GDK_POINTER_MOTION_HINT_MASK	= 1 << 3;
-	GDK_BUTTON_MOTION_MASK	= 1 << 4;
-	GDK_BUTTON1_MOTION_MASK	= 1 << 5;
-	GDK_BUTTON2_MOTION_MASK	= 1 << 6;
-	GDK_BUTTON3_MOTION_MASK	= 1 << 7;
-	GDK_BUTTON_PRESS_MASK		= 1 << 8;
-	GDK_BUTTON_RELEASE_MASK	= 1 << 9;
-	GDK_KEY_PRESS_MASK		= 1 << 10;
-	GDK_KEY_RELEASE_MASK		= 1 << 11;
-	GDK_ENTER_NOTIFY_MASK		= 1 << 12;
-	GDK_LEAVE_NOTIFY_MASK		= 1 << 13;
-	GDK_FOCUS_CHANGE_MASK		= 1 << 14;
-	GDK_STRUCTURE_MASK		= 1 << 15;
-	GDK_PROPERTY_CHANGE_MASK	= 1 << 16;
-	GDK_VISIBILITY_NOTIFY_MASK	= 1 << 17;
-	GDK_PROXIMITY_IN_MASK		= 1 << 18;
-	GDK_PROXIMITY_OUT_MASK	= 1 << 19;
-	GDK_SUBSTRUCTURE_MASK		= 1 << 20;
-	GDK_SCROLL_MASK               = 1 << 21;
-	GDK_ALL_EVENTS_MASK		= 0x3FFFFE;
+	GDK_EXPOSURE_MASK            = 1 << 1
+	GDK_POINTER_MOTION_MASK      = 1 << 2
+	GDK_POINTER_MOTION_HINT_MASK = 1 << 3
+	GDK_BUTTON_MOTION_MASK       = 1 << 4
+	GDK_BUTTON1_MOTION_MASK      = 1 << 5
+	GDK_BUTTON2_MOTION_MASK      = 1 << 6
+	GDK_BUTTON3_MOTION_MASK      = 1 << 7
+	GDK_BUTTON_PRESS_MASK        = 1 << 8
+	GDK_BUTTON_RELEASE_MASK      = 1 << 9
+	GDK_KEY_PRESS_MASK           = 1 << 10
+	GDK_KEY_RELEASE_MASK         = 1 << 11
+	GDK_ENTER_NOTIFY_MASK        = 1 << 12
+	GDK_LEAVE_NOTIFY_MASK        = 1 << 13
+	GDK_FOCUS_CHANGE_MASK        = 1 << 14
+	GDK_STRUCTURE_MASK           = 1 << 15
+	GDK_PROPERTY_CHANGE_MASK     = 1 << 16
+	GDK_VISIBILITY_NOTIFY_MASK   = 1 << 17
+	GDK_PROXIMITY_IN_MASK        = 1 << 18
+	GDK_PROXIMITY_OUT_MASK       = 1 << 19
+	GDK_SUBSTRUCTURE_MASK        = 1 << 20
+	GDK_SCROLL_MASK              = 1 << 21
+	GDK_ALL_EVENTS_MASK          = 0x3FFFFE
 )
 
 type GdkWindow struct {
@@ -434,28 +437,28 @@ func WindowFromUnsafe(window unsafe.Pointer) *GdkWindow {
 }
 func (v *GdkWindow) GetPointer(x *int, y *int, mask *uint) *GdkWindow {
 	var cx, cy C.gint
-	var mt C.GdkModifierType;
-	ret := &GdkWindow {
-		C.gdk_window_get_pointer(v.Window, &cx, &cy, &mt) }
-	*x = int(cx);
-	*y = int(cy);
+	var mt C.GdkModifierType
+	ret := &GdkWindow{
+		C.gdk_window_get_pointer(v.Window, &cx, &cy, &mt)}
+	*x = int(cx)
+	*y = int(cy)
 	*mask = uint(mt)
 	return ret
 }
 func (v *GdkWindow) GetDrawable() *GdkDrawable {
-	return &GdkDrawable {
-		(*C.GdkDrawable)(v.Window) }
+	return &GdkDrawable{
+		(*C.GdkDrawable)(v.Window)}
 }
 func (v *GdkWindow) Invalidate(rect *Rectangle, invalidate_children bool) {
 	if rect != nil {
-		var _rect C.GdkRectangle;
+		var _rect C.GdkRectangle
 		_rect.x = C.gint(rect.X)
 		_rect.y = C.gint(rect.Y)
 		_rect.width = C.gint(rect.Width)
 		_rect.height = C.gint(rect.Height)
-		C.gdk_window_invalidate_rect(v.Window, &_rect, bool2gboolean(invalidate_children));
+		C.gdk_window_invalidate_rect(v.Window, &_rect, bool2gboolean(invalidate_children))
 	} else {
-		C.gdk_window_invalidate_rect(v.Window, nil, bool2gboolean(invalidate_children));
+		C.gdk_window_invalidate_rect(v.Window, nil, bool2gboolean(invalidate_children))
 	}
 }
 
@@ -468,7 +471,7 @@ type GdkPixmap struct {
 
 func Pixmap(drawable *GdkDrawable, width int, height int, depth int) *GdkPixmap {
 	return &GdkPixmap{
-		C.gdk_pixmap_new(drawable.Drawable, C.gint(width), C.gint(height), C.gint(depth)) }
+		C.gdk_pixmap_new(drawable.Drawable, C.gint(width), C.gint(height), C.gint(depth))}
 }
 // GdkBitmap* gdk_bitmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height);
 // GdkPixmap* gdk_pixmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height, gint depth, const GdkColor *fg, const GdkColor *bg);
@@ -488,6 +491,86 @@ func (v *GdkPixmap) Unref() {
 	C.g_object_unref(C.gpointer(v.Pixmap))
 }
 func (v *GdkPixmap) GetDrawable() *GdkDrawable {
-	return &GdkDrawable {
-		(*C.GdkDrawable)(v.Pixmap) }
+	return &GdkDrawable{
+		(*C.GdkDrawable)(v.Pixmap)}
 }
+
+// Subset of gdkkeysyms.h
+const (
+	GDK_0            = 0x030
+	GDK_1            = 0x031
+	GDK_2            = 0x032
+	GDK_3            = 0x033
+	GDK_4            = 0x034
+	GDK_5            = 0x035
+	GDK_6            = 0x036
+	GDK_7            = 0x037
+	GDK_8            = 0x038
+	GDK_9            = 0x039
+	GDK_colon        = 0x03a
+	GDK_semicolon    = 0x03b
+	GDK_less         = 0x03c
+	GDK_equal        = 0x03d
+	GDK_greater      = 0x03e
+	GDK_question     = 0x03f
+	GDK_at           = 0x040
+	GDK_A            = 0x041
+	GDK_B            = 0x042
+	GDK_C            = 0x043
+	GDK_D            = 0x044
+	GDK_E            = 0x045
+	GDK_F            = 0x046
+	GDK_G            = 0x047
+	GDK_H            = 0x048
+	GDK_I            = 0x049
+	GDK_J            = 0x04a
+	GDK_K            = 0x04b
+	GDK_L            = 0x04c
+	GDK_M            = 0x04d
+	GDK_N            = 0x04e
+	GDK_O            = 0x04f
+	GDK_P            = 0x050
+	GDK_Q            = 0x051
+	GDK_R            = 0x052
+	GDK_S            = 0x053
+	GDK_T            = 0x054
+	GDK_U            = 0x055
+	GDK_V            = 0x056
+	GDK_W            = 0x057
+	GDK_X            = 0x058
+	GDK_Y            = 0x059
+	GDK_Z            = 0x05a
+	GDK_bracketleft  = 0x05b
+	GDK_backslash    = 0x05c
+	GDK_bracketright = 0x05d
+	GDK_asciicircum  = 0x05e
+	GDK_underscore   = 0x05f
+	GDK_grave        = 0x060
+	GDK_quoteleft    = 0x060
+	GDK_a            = 0x061
+	GDK_b            = 0x062
+	GDK_c            = 0x063
+	GDK_d            = 0x064
+	GDK_e            = 0x065
+	GDK_f            = 0x066
+	GDK_g            = 0x067
+	GDK_h            = 0x068
+	GDK_i            = 0x069
+	GDK_j            = 0x06a
+	GDK_k            = 0x06b
+	GDK_l            = 0x06c
+	GDK_m            = 0x06d
+	GDK_n            = 0x06e
+	GDK_o            = 0x06f
+	GDK_p            = 0x070
+	GDK_q            = 0x071
+	GDK_r            = 0x072
+	GDK_s            = 0x073
+	GDK_t            = 0x074
+	GDK_u            = 0x075
+	GDK_v            = 0x076
+	GDK_w            = 0x077
+	GDK_x            = 0x078
+	GDK_y            = 0x079
+	GDK_z            = 0x07a
+)

@@ -5,6 +5,7 @@ package gtk
 #define uintptr unsigned int*
 #endif
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksourcebuffer.h>
 #include <gtksourceview/gtksourcelanguage.h>
@@ -90,13 +91,29 @@ static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flag
 			message, NULL);
 }
 
-static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title, GtkWidget* parent, int action, const gchar* button) {
+static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
+    GtkWidget* parent, int file_chooser_action, int action, const gchar* button) {
 	return gtk_file_chooser_dialog_new(
 			title,
 			GTK_WINDOW(parent),
-			action,
+      file_chooser_action,
 			button,
-			NULL, NULL);
+			action,
+			NULL);
+}
+
+static GtkWidget* _gtk_file_chooser_dialog_new2(const gchar* title,
+    GtkWidget* parent, int file_chooser_action, int action, const gchar* button,
+    int action2, const gchar* button2) {
+	return gtk_file_chooser_dialog_new(
+			title,
+			GTK_WINDOW(parent),
+      file_chooser_action,
+			button,
+			action,
+			button2,
+			action2,
+			NULL);
 }
 
 static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, GtkTreeIter* iter, void* path) {
@@ -520,6 +537,15 @@ static void _gtk_tree_store_set_ptr(GtkTreeStore* tree_store, GtkTreeIter* iter,
 	gtk_tree_store_set(tree_store, iter, column, *(guint**)data, -1);
 }
 
+static void _gtk_widget_add_accelerator(GtkWidget* w, gchar* s, void* g,
+    guint key, int mods, int flags) {
+  gtk_widget_add_accelerator(w, (const gchar*)s, GTK_ACCEL_GROUP(g), key, mods, flags);
+}
+
+static void _gtk_window_add_accel_group(GtkWidget* w, void* ag) {
+  gtk_window_add_accel_group(GTK_WINDOW(w), GTK_ACCEL_GROUP(ag));
+}
+
 static inline GType* make_gtypes(int count) {
 	return g_new0(GType, count);
 }
@@ -819,6 +845,16 @@ func GtkStockListIDs() *glib.SList {
 	return glib.FromSList(unsafe.Pointer(C.gtk_stock_list_ids()))
 }
 //-----------------------------------------------------------------------
+// GtkAccelGroup
+//-----------------------------------------------------------------------
+type GtkAccelGroup struct {
+	AccelGroup unsafe.Pointer
+}
+
+func AccelGroupNew() *GtkAccelGroup {
+	return &GtkAccelGroup{unsafe.Pointer(C.gtk_accel_group_new())}
+}
+//-----------------------------------------------------------------------
 // GtkWidget
 //-----------------------------------------------------------------------
 type WidgetLike interface {
@@ -929,7 +965,20 @@ func (v *GtkWidget) QueueResizeNoRedraw() {
 // gtk_widget_size_request
 // gtk_widget_size_allocate
 // gtk_widget_get_child_requisition
-// gtk_widget_add_accelerator
+
+// GtkAccelFlags
+const (
+	GTK_ACCEL_VISIBLE = 1 << 0
+	GTK_ACCEL_LOCKED  = 1 << 1
+	GTK_ACCEL_MASK    = 0x07
+)
+
+func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint, mods int, flags int) {
+	csignal := C.CString(signal)
+	defer C.free_string(csignal)
+	C._gtk_widget_add_accelerator(v.Widget, C.to_gcharptr(csignal),
+		group.AccelGroup, C.guint(key), C.int(mods), C.int(flags))
+}
 // gtk_widget_remove_accelerator
 // gtk_widget_set_accel_path
 // gtk_widget_list_accel_closures
@@ -1312,7 +1361,9 @@ func (v *GtkWindow) SetResizable(resizable bool) {
 // gtk_window_set_role
 // gtk_window_set_startup_id
 // gtk_window_get_role
-// gtk_window_add_accel_group
+func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
+	C._gtk_window_add_accel_group(v.Widget, group.AccelGroup)
+}
 // gtk_window_remove_accel_group
 // gtk_window_set_position
 // gtk_window_activate_focus
@@ -1384,7 +1435,9 @@ func (v *GtkWindow) SetResizable(resizable bool) {
 // gtk_window_deiconify
 // gtk_window_stick
 // gtk_window_unstick
-// gtk_window_maximize
+func (v *GtkWindow) Maximize() {
+	C.gtk_window_maximize(C.to_GtkWindow(v.Widget))
+}
 // gtk_window_unmaximize
 // gtk_window_fullscreen
 // gtk_window_unfullscreen
@@ -1439,6 +1492,19 @@ const (
 	GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1 /* call gtk_window_set_destroy_with_parent () */
 	GTK_DIALOG_NO_SEPARATOR        = 1 << 2 /* no separator bar above buttons */
 )
+const (
+	GTK_RESPONSE_NONE         = -1
+	GTK_RESPONSE_REJECT       = -2
+	GTK_RESPONSE_ACCEPT       = -3
+	GTK_RESPONSE_DELETE_EVENT = -4
+	GTK_RESPONSE_OK           = -5
+	GTK_RESPONSE_CANCEL       = -6
+	GTK_RESPONSE_CLOSE        = -7
+	GTK_RESPONSE_YES          = -8
+	GTK_RESPONSE_NO           = -9
+	GTK_RESPONSE_APPLY        = -10
+	GTK_RESPONSE_HELP         = -11
+)
 
 type DialogLike interface {
 	WidgetLike
@@ -1488,6 +1554,8 @@ const (
 
 type GtkFileChooser interface {
 	GetFilename() string
+	GetCurrentFolder() string
+	SetCurrentFolder(f string) bool
 }
 type GtkFileChooserWidget struct {
 	GtkFileChooser
@@ -1565,7 +1633,7 @@ type GtkFileChooserDialog struct {
 	//GtkFileChooser;
 }
 
-func FileChooserDialog(title string, parent WindowLike, action int, button string) *GtkFileChooserDialog {
+func FileChooserDialog(title string, parent WindowLike, file_chooser_action int, button string, action int) *GtkFileChooserDialog {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button)
@@ -1574,11 +1642,40 @@ func FileChooserDialog(title string, parent WindowLike, action int, button strin
 		C._gtk_file_chooser_dialog_new(
 			C.to_gcharptr(ptitle),
 			parent.ToGtkWidget(),
+			C.int(file_chooser_action),
 			C.int(action),
 			C.to_gcharptr(pbutton))}}}}}}
 }
+// two buttons
+// TODO(mikhailt): Find out how to bind variable parameter list methods.
+func FileChooserDialog2(title string, parent WindowLike, file_chooser_action int, button string, action int, button2 string, action2 int) *GtkFileChooserDialog {
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	pbutton := C.CString(button)
+	defer C.free_string(pbutton)
+	pbutton2 := C.CString(button2)
+	defer C.free_string(pbutton2)
+	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C._gtk_file_chooser_dialog_new2(
+			C.to_gcharptr(ptitle),
+			parent.ToGtkWidget(),
+			C.int(file_chooser_action),
+			C.int(action),
+			C.to_gcharptr(pbutton),
+			C.int(action2),
+			C.to_gcharptr(pbutton2))}}}}}}
+}
 func (v *GtkFileChooserDialog) GetFilename() string {
 	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
+}
+func (v *GtkFileChooserDialog) GetCurrentFolder() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_current_folder(C.to_GtkFileChooser(v.Widget))))
+}
+func (v *GtkFileChooserDialog) SetCurrentFolder(f string) bool {
+	cf := C.CString(f)
+	defer C.free_string(cf)
+	return gboolean2bool(C.gtk_file_chooser_set_current_folder(
+		C.to_GtkFileChooser(v.Widget), C.to_gcharptr(cf)))
 }
 // FINISH
 
@@ -3106,7 +3203,9 @@ func (v *GtkTextIter) GetSlice(end *GtkTextIter) string {
 	return C.GoString(pchar)
 }
 func (v *GtkTextIter) GetText(end *GtkTextIter) string {
-	return C.GoString(C.to_charptr(C.gtk_text_iter_get_text(&v.TextIter, &end.TextIter)))
+	pchar := C.to_charptr(C.gtk_text_iter_get_text(&v.TextIter, &end.TextIter))
+	defer C.free(unsafe.Pointer(pchar))
+	return C.GoString(pchar)
 }
 func (v *GtkTextIter) GetVisibleSlice(end *GtkTextIter) string {
 	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_slice(&v.TextIter, &end.TextIter)))
@@ -3277,14 +3376,16 @@ func (v *GtkTextBuffer) DeleteInteractive(start *GtkTextIter, end *GtkTextIter, 
 func (v *GtkTextBuffer) Backspace(iter *GtkTextIter, interactive bool, default_editable bool) bool {
 	return gboolean2bool(C._gtk_text_buffer_backspace(v.TextBuffer, &iter.TextIter, bool2gboolean(interactive), bool2gboolean(default_editable)))
 }
-func (v *GtkTextBuffer) SetText(iter *GtkTextIter, text string) {
+func (v *GtkTextBuffer) SetText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	len := C.strlen(ptr)
 	C._gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
 }
-func (v *GtkTextBuffer) GetText(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
-	return C.GoString(C.to_charptr(C._gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars))))
+func (v *GtkTextBuffer) GetText(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
+	pchar := C.to_charptr(C._gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
+	defer C.free(unsafe.Pointer(pchar))
+	return C.GoString(pchar)
 }
 func (v *GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
 	pchar := C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
