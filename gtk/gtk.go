@@ -7,9 +7,6 @@ package gtk
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gtksourceview/gtksourceview.h>
-#include <gtksourceview/gtksourcebuffer.h>
-#include <gtksourceview/gtksourcelanguage.h>
-#include <gtksourceview/gtksourcelanguagemanager.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
