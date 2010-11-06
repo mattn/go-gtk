@@ -15,6 +15,9 @@ package gtk
 #include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdio.h>
+
+#define Q_SIZE 256
 
 typedef struct {
 	char name[256];
@@ -27,7 +30,42 @@ typedef struct {
 	int fire;
 } callback_info;
 
-static callback_info* current_callback_info = NULL;
+//static callback_info* current_callback_info = NULL;
+
+static callback_info* event_queue[Q_SIZE];
+static int q_front = 0;
+static int q_back = 0;
+static int q_next(int cur) {
+  if (cur < (Q_SIZE - 1)) {
+    return cur + 1;
+  } else {
+    return 0;
+  }
+}
+static int q_empty() {
+  return (q_front == q_back);
+}
+static int q_full() {
+  return (q_next(q_back) == q_front);
+}
+static callback_info* q_pop() {
+  printf("q_pop called\n");
+  callback_info* res = event_queue[q_front];
+  event_queue[q_front] = NULL;
+  q_front = q_next(q_front);
+  return res;
+}
+static void q_push(callback_info* info) {
+  printf("q_push called\n");
+  event_queue[q_back] = info;
+  if (q_full()) {
+    // In this case we lose oldest event in the queue.
+    printf("Go-gkt bindings error: event queue overwhelmed, event lost\n");
+    q_front = q_next(q_front);
+  }
+  q_back = q_next(q_back);
+}
+
 static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
@@ -35,19 +73,21 @@ static void callback_info_free_args(callback_info* cbi) {
 	free(cbi->args);
 }
 static int callback_info_get_current(callback_info* cbi) {
-	if (current_callback_info) {
-		memcpy(cbi, current_callback_info, sizeof(callback_info));
-		current_callback_info = NULL;
+	if (!q_empty()) {
+    callback_info* cur_info = q_pop();
+		memcpy(cbi, cur_info, sizeof(callback_info));
+		// Isn't it memory leak?
+		cur_info = NULL;
 		return 1;
 	}
 	return 0;
 }
-
+#include <stdio.h>
 static void _callback(void *data, ...) {
+  printf("__callback start\n");
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
 	int i;
-
 	cbi->fire = 0;
 	cbi->args = (uintptr_t**)malloc(sizeof(uintptr_t*)*cbi->args_no);
 	va_start(ap, data);
@@ -55,7 +95,8 @@ static void _callback(void *data, ...) {
 		cbi->args[i] = va_arg(ap, void*);
 	}
 	va_end(ap);
-	current_callback_info = cbi;
+	q_push(cbi);
+	printf("__callback end\n");
 }
 
 static void _gtk_init(void* argc, void* argv) {
@@ -582,6 +623,7 @@ static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 
 static inline void free_string(char* s) { free(s); }
 
+static GtkSourceBuffer* to_GtkSourceBuffer(void* p) { return GTK_SOURCE_BUFFER(p); }
 static GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
 static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
 static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
@@ -4996,6 +5038,12 @@ func GtkSourceBufferNew() *GtkSourceBuffer {
 func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
 	C._gtk_source_buffer_set_language(v.TextBuffer, lang.SourceLanguage)
 }
+func (v *GtkSourceBuffer) BeginNotUndoableAction() {
+  C.gtk_source_buffer_begin_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
+}
+func (v *GtkSourceBuffer) EndNotUndoableAction() {
+  C.gtk_source_buffer_end_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
+}
 
 //-----------------------------------------------------------------------
 // GtkSourceView
@@ -5041,7 +5089,8 @@ const (
 	GTK_SOURCE_DRAW_SPACES_LEADING  = 1 << 4
 	GTK_SOURCE_DRAW_SPACES_TEXT     = 1 << 5
 	GTK_SOURCE_DRAW_SPACES_TRAILING = 1 << 6
-	GTK_SOURCE_DRAW_SPACES_ALL      = (GTK_SOURCE_DRAW_SPACES_SPACE |
+	GTK_SOURCE_DRAW_SPACES_ALL      = (
+		GTK_SOURCE_DRAW_SPACES_SPACE |
 		GTK_SOURCE_DRAW_SPACES_TAB |
 		GTK_SOURCE_DRAW_SPACES_NEWLINE |
 		GTK_SOURCE_DRAW_SPACES_NBSP |
