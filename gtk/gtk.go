@@ -4990,7 +4990,7 @@ type GtkSourceBuffer struct {
 	GtkTextBuffer
 }
 
-func GtkSourceBufferNew() *GtkSourceBuffer {
+func GtkSourceBuffer() *GtkSourceBuffer {
 	return &GtkSourceBuffer{GtkTextBuffer{C._gtk_source_buffer_new()}}
 }
 func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
