@@ -851,7 +851,7 @@ type GtkAccelGroup struct {
 	AccelGroup unsafe.Pointer
 }
 
-func AccelGroupNew() *GtkAccelGroup {
+func AccelGroup() *GtkAccelGroup {
 	return &GtkAccelGroup{unsafe.Pointer(C.gtk_accel_group_new())}
 }
 //-----------------------------------------------------------------------
@@ -5004,10 +5004,10 @@ type GtkSourceView struct {
 	GtkTextView
 }
 
-func GtkSourceViewNew() *GtkSourceView {
+func SourceView() *GtkSourceView {
 	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{C.gtk_source_view_new()}}}}
 }
-func GtkSourceViewNewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
+func SourceViewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
 	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{
 		C._gtk_source_view_new_with_buffer(buf.TextBuffer)}}}}
 }
