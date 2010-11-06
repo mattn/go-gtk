@@ -5085,7 +5085,7 @@ type GtkSourceLanguageManager struct {
 	LanguageManager unsafe.Pointer
 }
 
-func GtkSourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
+func SourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
 	return &GtkSourceLanguageManager{C._gtk_source_language_manager_get_default()}
 }
 func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
