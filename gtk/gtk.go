@@ -5063,10 +5063,10 @@ func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
 	C._gtk_source_buffer_set_language(v.TextBuffer, lang.SourceLanguage)
 }
 func (v *GtkSourceBuffer) BeginNotUndoableAction() {
-  C.gtk_source_buffer_begin_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
+	C.gtk_source_buffer_begin_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
 }
 func (v *GtkSourceBuffer) EndNotUndoableAction() {
-  C.gtk_source_buffer_end_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
+	C.gtk_source_buffer_end_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
 }
 
 //-----------------------------------------------------------------------
@@ -5113,8 +5113,7 @@ const (
 	GTK_SOURCE_DRAW_SPACES_LEADING  = 1 << 4
 	GTK_SOURCE_DRAW_SPACES_TEXT     = 1 << 5
 	GTK_SOURCE_DRAW_SPACES_TRAILING = 1 << 6
-	GTK_SOURCE_DRAW_SPACES_ALL      = (
-		GTK_SOURCE_DRAW_SPACES_SPACE |
+	GTK_SOURCE_DRAW_SPACES_ALL      = (GTK_SOURCE_DRAW_SPACES_SPACE |
 		GTK_SOURCE_DRAW_SPACES_TAB |
 		GTK_SOURCE_DRAW_SPACES_NEWLINE |
 		GTK_SOURCE_DRAW_SPACES_NBSP |
