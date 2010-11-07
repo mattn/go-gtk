@@ -16,7 +16,9 @@ package gtk
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
+#include <pthread.h>
 
+// The problem can occur if somebody makes more than Q_SIZE - 1 signal connects
 #define Q_SIZE 256
 
 typedef struct {
@@ -28,11 +30,14 @@ typedef struct {
 	int index;
 	GSignalQuery query;
 	int fire;
+	int in_queue;
 } callback_info;
 
 //static callback_info* current_callback_info = NULL;
 
 static callback_info* event_queue[Q_SIZE];
+// One global mutex for event handling synchronization.
+static pthread_mutex_t event_mu = PTHREAD_MUTEX_INITIALIZER;
 static int q_front = 0;
 static int q_back = 0;
 static int q_next(int cur) {
@@ -42,11 +47,15 @@ static int q_next(int cur) {
     return 0;
   }
 }
+
+// Note that queue methods aren't thread safe. The only reason they are used
+// w/o lock is that all the methods which use queue use their own global lock.
 static int q_empty() {
   return (q_front == q_back);
 }
 static int q_full() {
-  return (q_next(q_back) == q_front);
+  int res = (q_next(q_back) == q_front);
+  return res;
 }
 static callback_info* q_pop() {
   printf("q_pop called\n");
@@ -70,33 +79,46 @@ static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
 static void callback_info_free_args(callback_info* cbi) {
-	free(cbi->args);
+  free(cbi->args);
 }
 static int callback_info_get_current(callback_info* cbi) {
+  pthread_mutex_lock(&event_mu);
 	if (!q_empty()) {
     callback_info* cur_info = q_pop();
 		memcpy(cbi, cur_info, sizeof(callback_info));
-		// Isn't it memory leak?
-		cur_info = NULL;
+		cur_info->in_queue = 0;
+		pthread_mutex_unlock(&event_mu); // Why there is no defer in C :(?
 		return 1;
 	}
+	pthread_mutex_unlock(&event_mu);
 	return 0;
 }
-#include <stdio.h>
+
 static void _callback(void *data, ...) {
+  pthread_mutex_lock(&event_mu);
   printf("__callback start\n");
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
+
 	int i;
 	cbi->fire = 0;
+	if (1 == cbi->in_queue) {
+    // In case event is already in the queue there is no need to push it again.
+    // We just put newer args in it and free old.
+    free(cbi->args);
+	}
 	cbi->args = (uintptr_t**)malloc(sizeof(uintptr_t*)*cbi->args_no);
 	va_start(ap, data);
 	for (i = 0; i < cbi->args_no; i++) {
 		cbi->args[i] = va_arg(ap, void*);
 	}
 	va_end(ap);
-	q_push(cbi);
+	if (0 == cbi->in_queue) {
+    q_push(cbi);
+    cbi->in_queue = 1;
+	}
 	printf("__callback end\n");
+	pthread_mutex_unlock(&event_mu);
 }
 
 static void _gtk_init(void* argc, void* argv) {
@@ -115,7 +137,9 @@ static long _gtk_signal_connect(void* obj, gchar* name, int func_no) {
 	g_signal_query(signal_id, &query);
 	cbi = g_slice_new0(callback_info);
 	strcpy(cbi->name, name);
+	cbi->in_queue = 0;
 	cbi->func_no = func_no;
+	cbi->args = NULL;
 	cbi->target = obj;
 	cbi->args_no = query.n_params;
 	cbi->index = index;
