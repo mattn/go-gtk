@@ -7,6 +7,9 @@ package gtk
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gtksourceview/gtksourceview.h>
+#include <gtksourceview/gtksourcebuffer.h>
+#include <gtksourceview/gtksourcelanguage.h>
+#include <gtksourceview/gtksourcelanguagemanager.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -55,14 +58,12 @@ static int q_full() {
   return res;
 }
 static callback_info* q_pop() {
-  printf("q_pop called\n");
   callback_info* res = event_queue[q_front];
   event_queue[q_front] = NULL;
   q_front = q_next(q_front);
   return res;
 }
 static void q_push(callback_info* info) {
-  printf("q_push called\n");
   event_queue[q_back] = info;
   if (q_full()) {
     // In this case we lose oldest event in the queue.
@@ -93,7 +94,6 @@ static int callback_info_get_current(callback_info* cbi) {
 
 static void _callback(void *data, ...) {
   pthread_mutex_lock(&event_mu);
-  printf("__callback start\n");
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
 
@@ -114,7 +114,6 @@ static void _callback(void *data, ...) {
     q_push(cbi);
     cbi->in_queue = 1;
 	}
-	printf("__callback end\n");
 	pthread_mutex_unlock(&event_mu);
 }
 
