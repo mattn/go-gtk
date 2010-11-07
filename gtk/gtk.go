@@ -7,9 +7,6 @@ package gtk
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gtksourceview/gtksourceview.h>
-#include <gtksourceview/gtksourcebuffer.h>
-#include <gtksourceview/gtksourcelanguage.h>
-#include <gtksourceview/gtksourcelanguagemanager.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -917,7 +914,7 @@ type GtkAccelGroup struct {
 	AccelGroup unsafe.Pointer
 }
 
-func AccelGroupNew() *GtkAccelGroup {
+func AccelGroup() *GtkAccelGroup {
 	return &GtkAccelGroup{unsafe.Pointer(C.gtk_accel_group_new())}
 }
 //-----------------------------------------------------------------------
@@ -5056,7 +5053,7 @@ type GtkSourceBuffer struct {
 	GtkTextBuffer
 }
 
-func GtkSourceBufferNew() *GtkSourceBuffer {
+func SourceBuffer() *GtkSourceBuffer {
 	return &GtkSourceBuffer{GtkTextBuffer{C._gtk_source_buffer_new()}}
 }
 func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
@@ -5076,10 +5073,10 @@ type GtkSourceView struct {
 	GtkTextView
 }
 
-func GtkSourceViewNew() *GtkSourceView {
+func SourceView() *GtkSourceView {
 	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{C.gtk_source_view_new()}}}}
 }
-func GtkSourceViewNewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
+func SourceViewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
 	return &GtkSourceView{GtkTextView{GtkContainer{GtkWidget{
 		C._gtk_source_view_new_with_buffer(buf.TextBuffer)}}}}
 }
@@ -5157,7 +5154,7 @@ type GtkSourceLanguageManager struct {
 	LanguageManager unsafe.Pointer
 }
 
-func GtkSourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
+func SourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
 	return &GtkSourceLanguageManager{C._gtk_source_language_manager_get_default()}
 }
 func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
