@@ -41,48 +41,48 @@ static pthread_mutex_t event_mu = PTHREAD_MUTEX_INITIALIZER;
 static int q_front = 0;
 static int q_back = 0;
 static int q_next(int cur) {
-  if (cur < (Q_SIZE - 1)) {
-    return cur + 1;
-  } else {
-    return 0;
-  }
+	if (cur < (Q_SIZE - 1)) {
+		return cur + 1;
+	} else {
+		return 0;
+	}
 }
 
 // Note that queue methods aren't thread safe. The only reason they are used
 // w/o lock is that all the methods which use queue use their own global lock.
 static int q_empty() {
-  return (q_front == q_back);
+	return (q_front == q_back);
 }
 static int q_full() {
-  int res = (q_next(q_back) == q_front);
-  return res;
+	int res = (q_next(q_back) == q_front);
+	return res;
 }
 static callback_info* q_pop() {
-  callback_info* res = event_queue[q_front];
-  event_queue[q_front] = NULL;
-  q_front = q_next(q_front);
-  return res;
+	callback_info* res = event_queue[q_front];
+	event_queue[q_front] = NULL;
+	q_front = q_next(q_front);
+	return res;
 }
 static void q_push(callback_info* info) {
-  event_queue[q_back] = info;
-  if (q_full()) {
-    // In this case we lose oldest event in the queue.
-    printf("Go-gkt bindings error: event queue overwhelmed, event lost\n");
-    q_front = q_next(q_front);
-  }
-  q_back = q_next(q_back);
+	event_queue[q_back] = info;
+	if (q_full()) {
+		// In this case we lose oldest event in the queue.
+		printf("Go-gkt bindings error: event queue overwhelmed, event lost\n");
+		q_front = q_next(q_front);
+	}
+	q_back = q_next(q_back);
 }
 
 static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
 static void callback_info_free_args(callback_info* cbi) {
-  free(cbi->args);
+	free(cbi->args);
 }
 static int callback_info_get_current(callback_info* cbi) {
-  pthread_mutex_lock(&event_mu);
+	pthread_mutex_lock(&event_mu);
 	if (!q_empty()) {
-    callback_info* cur_info = q_pop();
+		callback_info* cur_info = q_pop();
 		memcpy(cbi, cur_info, sizeof(callback_info));
 		cur_info->in_queue = 0;
 		pthread_mutex_unlock(&event_mu); // Why there is no defer in C :(?
@@ -93,16 +93,16 @@ static int callback_info_get_current(callback_info* cbi) {
 }
 
 static void _callback(void *data, ...) {
-  pthread_mutex_lock(&event_mu);
+	pthread_mutex_lock(&event_mu);
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
 
 	int i;
 	cbi->fire = 0;
 	if (1 == cbi->in_queue) {
-    // In case event is already in the queue there is no need to push it again.
-    // We just put newer args in it and free old.
-    free(cbi->args);
+		// In case event is already in the queue there is no need to push it again.
+		// We just put newer args in it and free old.
+		free(cbi->args);
 	}
 	cbi->args = (uintptr_t**)malloc(sizeof(uintptr_t*)*cbi->args_no);
 	va_start(ap, data);
@@ -111,8 +111,8 @@ static void _callback(void *data, ...) {
 	}
 	va_end(ap);
 	if (0 == cbi->in_queue) {
-    q_push(cbi);
-    cbi->in_queue = 1;
+		q_push(cbi);
+		cbi->in_queue = 1;
 	}
 	pthread_mutex_unlock(&event_mu);
 }
@@ -153,23 +153,23 @@ static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flag
 }
 
 static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
-    GtkWidget* parent, int file_chooser_action, int action, const gchar* button) {
+		GtkWidget* parent, int file_chooser_action, int action, const gchar* button) {
 	return gtk_file_chooser_dialog_new(
 			title,
 			GTK_WINDOW(parent),
-      file_chooser_action,
+			file_chooser_action,
 			button,
 			action,
 			NULL);
 }
 
 static GtkWidget* _gtk_file_chooser_dialog_new2(const gchar* title,
-    GtkWidget* parent, int file_chooser_action, int action, const gchar* button,
-    int action2, const gchar* button2) {
+		GtkWidget* parent, int file_chooser_action, int action, const gchar* button,
+		int action2, const gchar* button2) {
 	return gtk_file_chooser_dialog_new(
 			title,
 			GTK_WINDOW(parent),
-      file_chooser_action,
+			file_chooser_action,
 			button,
 			action,
 			button2,
@@ -484,30 +484,30 @@ static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interac
 }
 
 static void _gtk_source_buffer_set_language(void* buf, void* lan) {
-  gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buf), GTK_SOURCE_LANGUAGE(lan));
+	gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buf), GTK_SOURCE_LANGUAGE(lan));
 }
 
 static void* _gtk_source_language_manager_get_default() {
-  return gtk_source_language_manager_get_default();
+	return gtk_source_language_manager_get_default();
 }
 
 static void* _gtk_source_language_manager_get_language(void* lang_man, gchar* id) {
-  return gtk_source_language_manager_get_language(GTK_SOURCE_LANGUAGE_MANAGER(lang_man), id);
+	return gtk_source_language_manager_get_language(GTK_SOURCE_LANGUAGE_MANAGER(lang_man), id);
 }
 
 static GtkWidget* _gtk_source_view_new_with_buffer(void* buf) {
-  return gtk_source_view_new_with_buffer(GTK_SOURCE_BUFFER(buf));
+	return gtk_source_view_new_with_buffer(GTK_SOURCE_BUFFER(buf));
 }
 
 static void* _gtk_source_buffer_new() {
-  return gtk_source_buffer_new(NULL);
+	return gtk_source_buffer_new(NULL);
 }
 
 static void _gtk_source_language_manager_set_search_path(void* man, gchar* str) {
-  gchar* arr[2];
-  arr[0] = str;
-  arr[1] = NULL;
-  gtk_source_language_manager_set_search_path(GTK_SOURCE_LANGUAGE_MANAGER(man), arr);
+	gchar* arr[2];
+	arr[0] = str;
+	arr[1] = NULL;
+	gtk_source_language_manager_set_search_path(GTK_SOURCE_LANGUAGE_MANAGER(man), arr);
 }
 
 // static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
@@ -556,7 +556,7 @@ static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
 }
 
 static void _gtk_text_iter_assign(GtkTextIter* one, GtkTextIter* two) {
-  *one = *two;
+	*one = *two;
 }
 
 static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
@@ -599,12 +599,12 @@ static void _gtk_tree_store_set_ptr(GtkTreeStore* tree_store, GtkTreeIter* iter,
 }
 
 static void _gtk_widget_add_accelerator(GtkWidget* w, gchar* s, void* g,
-    guint key, int mods, int flags) {
-  gtk_widget_add_accelerator(w, (const gchar*)s, GTK_ACCEL_GROUP(g), key, mods, flags);
+		guint key, int mods, int flags) {
+	gtk_widget_add_accelerator(w, (const gchar*)s, GTK_ACCEL_GROUP(g), key, mods, flags);
 }
 
 static void _gtk_window_add_accel_group(GtkWidget* w, void* ag) {
-  gtk_window_add_accel_group(GTK_WINDOW(w), GTK_ACCEL_GROUP(ag));
+	gtk_window_add_accel_group(GTK_WINDOW(w), GTK_ACCEL_GROUP(ag));
 }
 
 static inline GType* make_gtypes(int count) {

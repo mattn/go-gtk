@@ -12,9 +12,20 @@ static GError* to_error(void* err) {
 static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
 
 static inline char* to_charptr(gpointer s) { return (char*)s; }
+
+static gboolean _g_utf8_validate(void* str, int len, void* ppbar) {
+	return g_utf8_validate((const gchar*)str, (gssize)len, (const gchar**)ppbar);
+}
 */
 import "C"
 import "unsafe"
+
+func gboolean2bool(b C.gboolean) bool {
+	if b != 0 {
+		return true
+	}
+	return false
+}
 
 func GPtrToString(p interface{}) string {
 	return C.GoString(C.to_charptr(p.(C.gpointer)))
@@ -133,15 +144,20 @@ type GObject struct {
 }
 
 func ObjectFromUnsafe(object unsafe.Pointer) *GObject {
-//	return &GObject {
-//		C.to_GObject(object) }
-	return &GObject {
+	//	return &GObject {
+	//		C.to_GObject(object) }
+	return &GObject{
 		object}
 }
 
 func (v *GObject) Ref() {
-	C.g_object_ref(C.gpointer(v.Object));
+	C.g_object_ref(C.gpointer(v.Object))
 }
 func (v *GObject) Unref() {
-	C.g_object_unref(C.gpointer(v.Object));
+	C.g_object_unref(C.gpointer(v.Object))
+}
+
+func Utf8Validate(str []byte, len int, bar **byte) bool {
+	return gboolean2bool(C._g_utf8_validate(unsafe.Pointer(&str[0]),
+		C.int(len), unsafe.Pointer(bar)))
 }

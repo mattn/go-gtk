@@ -7,6 +7,13 @@ import (
   "strconv";
 )
 
+type FileRecord struct {
+  name string
+  iter Gtk
+}
+
+var file_map map[string]FileRecord
+
 func main() {
 	gtk.Init(&os.Args);
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
