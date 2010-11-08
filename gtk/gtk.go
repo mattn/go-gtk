@@ -692,10 +692,34 @@ static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA
 static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 
-static GValue* init_gvalue_string(gchar* val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_STRING); g_value_set_string(gv, val); return gv; }
-static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
+
+static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
+static void g_value_init_string(GValue* gv) { g_value_init(gv, G_TYPE_STRING); }
+
+static GValue* init_gvalue_string_type() {
+  GValue* gv = g_new0(GValue, 1);
+  g_value_init(gv, G_TYPE_STRING);
+  return gv;
+}
+static GValue* init_gvalue_string(gchar* val) {
+  GValue* gv = init_gvalue_string_type();
+  g_value_set_string(gv, val);
+  return gv;
+}
+
+static GValue* init_gvalue_int_type() {
+  GValue* gv = g_new0(GValue, 1);
+  g_value_init(gv, G_TYPE_INT);
+  return gv;
+}
+static GValue* init_gvalue_int(gint val) {
+  GValue* gv = init_gvalue_int_type();
+  g_value_set_int(gv, val);
+  return gv;
+}
+
 static GValue* init_gvalue_uint(guint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UINT); g_value_set_uint(gv, val); return gv; }
-static GValue* init_gvalue_int(gint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_INT); g_value_set_int(gv, val); return gv; }
+static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
 static GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return gv; }
 static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return gv; }
 //static GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return gv; }
@@ -763,6 +787,31 @@ func native2gvalue(val interface{}) *C.GValue {
 		break
 	}
 	return gv
+}
+
+//-----------------------------------------------------------------------
+// GValue
+//-----------------------------------------------------------------------
+type GValue struct {
+	Value C.GValue
+}
+
+const (
+	G_TYPE_INT    = 0
+	G_TYPE_STRING = 1
+)
+
+func (v *GValue) Init(t int) {
+	if t == G_TYPE_INT {
+		C.g_value_init_int(&v.Value)
+	} else if t == G_TYPE_STRING {
+		C.g_value_init_string(&v.Value)
+	}
+}
+
+func (v *GValue) GetString() string {
+	cstr := C.g_value_get_string(&v.Value)
+	return C.GoString(C.to_charptr(cstr))
 }
 
 //-----------------------------------------------------------------------
@@ -2798,8 +2847,10 @@ func (v *GtkTreeModel) IterNthChild(iter *GtkTreeIter, parent *GtkTreeIter, n in
 func (v *GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_tree_model_iter_parent(v.TreeModel, &iter.TreeIter, &child.TreeIter))
 }
+func (v *GtkTreeModel) GetValue(iter *GtkTreeIter, col int, val *GValue) {
+	C.gtk_tree_model_get_value(v.TreeModel, &iter.TreeIter, C.gint(col), &val.Value)
+}
 // TODO
-// gtk_tree_model_get_value
 // gtk_tree_model_ref_node
 // gtk_tree_model_unref_node
 // gtk_tree_model_get
