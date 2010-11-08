@@ -22,6 +22,7 @@ func main() {
 
 	var start gtk.GtkTextIter
 	sourcebuffer.GetStartIter(&start)
+	sourcebuffer.BeginNotUndoableAction()
 	sourcebuffer.Insert(&start, `#include <iostream>
 template<class T>
 struct foo_base {
@@ -50,6 +51,7 @@ int main(void) {
 	std::cout << (int)a << std::endl;
 }
 `)
+	sourcebuffer.EndNotUndoableAction()
 
 	swin.Add(sourceview)
 
