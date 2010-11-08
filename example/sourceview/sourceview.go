@@ -22,6 +22,7 @@ func main() {
 
 	var start gtk.GtkTextIter
 	sourcebuffer.GetStartIter(&start)
+	sourcebuffer.BeginNotUndoableAction()
 	sourcebuffer.Insert(&start, `#include <iostream>
 template<class T>
 struct foo_base {
@@ -45,11 +46,12 @@ public:
 };
 
 int main(void) {
-	foo a(1), b(2);
-	a += b;
-	std::cout << (int)a << std::endl;
+  foo a(1), b(2);
+  a += b;
+  std::cout << (int)a << std::endl;
 }
 `)
+	sourcebuffer.EndNotUndoableAction()
 
 	swin.Add(sourceview)
 

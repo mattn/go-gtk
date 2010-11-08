@@ -5,6 +5,11 @@ all:
 	cd treeview && gomake
 	cd notebook && gomake
 	cd thread && gomake
+	cd table && gomake
+	cd expander && gomake
+	cd drawable && gomake
+	cd builder && gomake
+	cd sourceview && gomake
 
 clean:
 	cd demo && gomake clean

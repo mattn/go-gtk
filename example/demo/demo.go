@@ -139,15 +139,14 @@ func main() {
 				"Choose File...",
 				button.GetTopLevelAsWindow(),
 				gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
-				gtk.GTK_STOCK_OK)
+				gtk.GTK_STOCK_OK,
+				gtk.GTK_RESPONSE_ACCEPT)
 			filechooserdialog.Response(func() {
 				println(filechooserdialog.GetFilename())
 				filechooserdialog.Destroy()
-			},
-				nil)
+			}, nil)
 			filechooserdialog.Run()
-		},
-			nil)
+		}, nil)
 		messagedialog.Run()
 		messagedialog.Destroy()
 	}, nil)
