@@ -11,10 +11,16 @@ static GError* to_error(void* err) {
 }
 static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
 
-static inline char* to_charptr(gpointer s) { return (char*)s; }
+static inline char* to_charptr(const gchar* s) { return (char*)s; }
+
+static inline char* to_charptr_from_gpointer(gpointer s) { return (char*)s; }
 
 static gboolean _g_utf8_validate(void* str, int len, void* ppbar) {
 	return g_utf8_validate((const gchar*)str, (gssize)len, (const gchar**)ppbar);
+}
+
+static gchar* _g_locale_to_utf8(void* opsysstring, int len, int* bytes_read, int* bytes_written, GError** error) {
+	return g_locale_from_utf8((const gchar*)opsysstring, (gssize)len, (gsize*)bytes_read, (gsize*)bytes_written, error);
 }
 */
 import "C"
@@ -28,7 +34,7 @@ func gboolean2bool(b C.gboolean) bool {
 }
 
 func GPtrToString(p interface{}) string {
-	return C.GoString(C.to_charptr(p.(C.gpointer)))
+	return C.GoString(C.to_charptr_from_gpointer(p.(C.gpointer)))
 }
 
 //-----------------------------------------------------------------------
@@ -127,6 +133,13 @@ type Error struct {
 	GError *C.GError
 }
 
+func (v *Error) Message() string {
+	if unsafe.Pointer(v.GError) == nil || unsafe.Pointer(v.GError.message) == nil {
+		return ""
+	}
+	return C.GoString(C.to_charptr(v.GError.message))
+}
+
 func FromError(err unsafe.Pointer) *Error {
 	return &Error{
 		C.to_error(err)}
@@ -161,3 +174,23 @@ func Utf8Validate(str []byte, len int, bar **byte) bool {
 	return gboolean2bool(C._g_utf8_validate(unsafe.Pointer(&str[0]),
 		C.int(len), unsafe.Pointer(bar)))
 }
+
+func LocaleToUtf8(opsysstring []byte) (ret string, bytes_read int, bytes_written int, error *Error) {
+	var gerror *C.GError
+	var cbytes_read, cbytes_written C.int
+	str := C._g_locale_to_utf8(unsafe.Pointer(&opsysstring[0]), C.int(len(opsysstring)), &cbytes_read, &cbytes_written, &gerror)
+	if unsafe.Pointer(str) != nil {
+		ret = C.GoString(C.to_charptr(str))
+	} else {
+		ret = ""
+	}
+	bytes_read = int(cbytes_read)
+	bytes_written = int(cbytes_written)
+	if unsafe.Pointer(gerror) != nil {
+		error = FromError(unsafe.Pointer(gerror))
+	} else {
+		error = nil
+	}
+	return
+}
+
