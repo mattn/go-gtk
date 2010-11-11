@@ -3,6 +3,8 @@ package glib
 /*
 #include <glib.h>
 #include <glib-object.h>
+#include <stdlib.h>
+#include <string.h>
 static GSList* to_slist(void* sl) {
 	return (GSList*)sl;
 }
@@ -11,9 +13,13 @@ static GError* to_error(void* err) {
 }
 static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
 
+static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
+
 static inline char* to_charptr(const gchar* s) { return (char*)s; }
 
 static inline char* to_charptr_from_gpointer(gpointer s) { return (char*)s; }
+
+static inline void free_string(char* s) { free(s); }
 
 static gboolean _g_utf8_validate(void* str, int len, void* ppbar) {
 	return g_utf8_validate((const gchar*)str, (gssize)len, (const gchar**)ppbar);
@@ -21,6 +27,10 @@ static gboolean _g_utf8_validate(void* str, int len, void* ppbar) {
 
 static gchar* _g_locale_to_utf8(void* opsysstring, int len, int* bytes_read, int* bytes_written, GError** error) {
 	return g_locale_from_utf8((const gchar*)opsysstring, (gssize)len, (gsize*)bytes_read, (gsize*)bytes_written, error);
+}
+
+static gchar* _g_locale_from_utf8(char* utf8string, int len, int* bytes_read, int* bytes_written, GError** error) {
+	return g_locale_from_utf8((const gchar*)utf8string, (gssize)len, (gsize*)bytes_read, (gsize*)bytes_written, error);
 }
 */
 import "C"
@@ -180,9 +190,32 @@ func LocaleToUtf8(opsysstring []byte) (ret string, bytes_read int, bytes_written
 	var cbytes_read, cbytes_written C.int
 	str := C._g_locale_to_utf8(unsafe.Pointer(&opsysstring[0]), C.int(len(opsysstring)), &cbytes_read, &cbytes_written, &gerror)
 	if unsafe.Pointer(str) != nil {
+		defer C.free_string(C.to_charptr(str))
 		ret = C.GoString(C.to_charptr(str))
 	} else {
 		ret = ""
+	}
+	bytes_read = int(cbytes_read)
+	bytes_written = int(cbytes_written)
+	if unsafe.Pointer(gerror) != nil {
+		error = FromError(unsafe.Pointer(gerror))
+	} else {
+		error = nil
+	}
+	return
+}
+
+func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_written int, error *Error) {
+	var gerror *C.GError
+	var cbytes_read, cbytes_written C.int
+	src := C.CString(utf8string)
+	defer C.free_string(src)
+	str := C._g_locale_from_utf8(src, C.int(C.strlen(src)), &cbytes_read, &cbytes_written, &gerror)
+	if unsafe.Pointer(str) != nil {
+		defer C.free_string(C.to_charptr(str))
+		ret = ([]byte)(C.GoString(C.to_charptr(str)))
+	} else {
+		ret = ([]byte)("")
 	}
 	bytes_read = int(cbytes_read)
 	bytes_written = int(cbytes_written)
