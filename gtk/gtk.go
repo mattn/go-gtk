@@ -4774,25 +4774,29 @@ func Builder() *GtkBuilder {
 	return &GtkBuilder{
 		C.gtk_builder_new()}
 }
-func (v *GtkBuilder) AddFromFile(filename string, err **glib.Error) uint {
-	var error *C.GError
+func (v *GtkBuilder) AddFromFile(filename string) (ret uint, error *glib.Error) {
+	var gerror *C.GError
 	ptr := C.CString(filename)
 	defer C.free_string(ptr)
-	ret := uint(C.gtk_builder_add_from_file(v.Builder, C.to_gcharptr(ptr), &error))
-	if err != nil && error != nil {
-		*err = glib.FromError(unsafe.Pointer(error))
+	ret = uint(C.gtk_builder_add_from_file(v.Builder, C.to_gcharptr(ptr), &gerror))
+	if gerror != nil {
+		error = glib.FromError(unsafe.Pointer(gerror))
+	} else {
+		error = nil
 	}
-	return ret
+	return
 }
-func (v *GtkBuilder) AddFromString(buffer string, err **glib.Error) uint {
-	var error *C.GError
+func (v *GtkBuilder) AddFromString(buffer string) (ret uint, error *glib.Error) {
+	var gerror *C.GError
 	ptr := C.CString(buffer)
 	defer C.free_string(ptr)
-	ret := uint(C.gtk_builder_add_from_string(v.Builder, C.to_gcharptr(ptr), C.gsize(C.strlen(ptr)), &error))
-	if err != nil && error != nil {
-		*err = glib.FromError(unsafe.Pointer(error))
+	ret = uint(C.gtk_builder_add_from_string(v.Builder, C.to_gcharptr(ptr), C.gsize(C.strlen(ptr)), &gerror))
+	if gerror != nil {
+		error = glib.FromError(unsafe.Pointer(gerror))
+	} else {
+		error = nil
 	}
-	return ret
+	return
 }
 // guint gtk_builder_add_objects_from_file (GtkBuilder *builder, const gchar *filename, gchar **object_ids, GError **error);
 // guint gtk_builder_add_objects_from_string (GtkBuilder *builder, const gchar *buffer, gsize length, gchar **object_ids, GError **error);
@@ -5056,6 +5060,10 @@ func pollEvents() {
 			C.callback_info_free_args(&cbi)
 		}
 	}
+}
+
+func SetLocale() {
+	C.gtk_set_locale();
 }
 
 func Init(args *[]string) {
