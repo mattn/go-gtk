@@ -226,4 +226,3 @@ func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_writte
 	}
 	return
 }
-

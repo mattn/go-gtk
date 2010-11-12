@@ -731,6 +731,10 @@ static GSList* to_gslist(void* gs) {
 static int _check_version(int major, int minor, int micro) {
 	return GTK_CHECK_VERSION(major, minor, micro);
 }
+
+static void _gtk_tree_iter_assign(void* iter, void* to) {
+	*(GtkTreeIter*)iter = *(GtkTreeIter*)to;
+}
 */
 import "C"
 import "glib"
@@ -811,6 +815,7 @@ func (v *GValue) Init(t int) {
 
 func (v *GValue) GetString() string {
 	cstr := C.g_value_get_string(&v.Value)
+	defer C.free_string(C.to_charptr(cstr))
 	return C.GoString(C.to_charptr(cstr))
 }
 
@@ -2782,11 +2787,8 @@ type GtkTreeIter struct {
 	TreeIter C.GtkTreeIter
 }
 
-func (v *GtkTreeIter) Copy() *GtkTreeIter {
-	return &GtkTreeIter{*C.gtk_tree_iter_copy(&v.TreeIter)}
-}
-func (v *GtkTreeIter) Free() {
-	C.gtk_tree_iter_free(&v.TreeIter)
+func (v *GtkTreeIter) Assign(to *GtkTreeIter) {
+	C._gtk_tree_iter_assign(unsafe.Pointer(&v.TreeIter), unsafe.Pointer(&to.TreeIter))
 }
 // FINISH
 
@@ -3508,7 +3510,7 @@ func (v *GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_h
 func (v *GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
 	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf)
 }
-func (v *GtkTextBuffer) CreateMark(mark *GtkTextMark, mark_name string, where *GtkTextIter, left_gravity bool) {
+func (v *GtkTextBuffer) CreateMark(mark_name string, where *GtkTextIter, left_gravity bool) {
 	ptr := C.CString(mark_name)
 	defer C.free_string(ptr)
 	C._gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter, bool2gboolean(left_gravity))
@@ -3516,7 +3518,7 @@ func (v *GtkTextBuffer) CreateMark(mark *GtkTextMark, mark_name string, where *G
 func (v *GtkTextBuffer) MoveMark(mark *GtkTextMark, where *GtkTextIter) {
 	C._gtk_text_buffer_move_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
 }
-func (v *GtkTextBuffer) MoveMarkByName(mark *GtkTextMark, name string, where *GtkTextIter) {
+func (v *GtkTextBuffer) MoveMarkByName(name string, where *GtkTextIter) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 	C._gtk_text_buffer_move_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter)
@@ -3650,9 +3652,15 @@ func (v *GtkTextView) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_view_get_buffer(v.Widget)}
 }
+func (v *GtkTextView) ScrollToIter(iter *GtkTextIter, wm float, ua bool, xa float, ya float) bool {
+	return gboolean2bool(C.gtk_text_view_scroll_to_iter(C.to_GtkTextView(v.Widget),
+		&iter.TextIter, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya)))
+}
+func (v *GtkTextView) ScrollToMark(mark *GtkTextMark, wm float, ua bool, xa float, ya float) {
+	C.gtk_text_view_scroll_to_mark(C.to_GtkTextView(v.Widget),
+		mark.TextMark, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya))
+}
 // TODO
-// gboolean gtk_text_view_scroll_to_iter(GtkTextView* text_view, GtkTextIter* iter, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
-// void gtk_text_view_scroll_to_mark(GtkTextView* text_view, GtkTextMark* mark, gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
 // void gtk_text_view_scroll_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_move_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_place_cursor_onscreen(GtkTextView* text_view);
@@ -3664,8 +3672,21 @@ func (v *GtkTextView) SetCursorVisible(setting bool) {
 }
 // void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
 // void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
-// void gtk_text_view_get_iter_at_position(GtkTextView* text_view, GtkTextIter* iter, gint* trailing, gint x, gint y);
-// void gtk_text_view_get_line_yrange(GtkTextView* text_view, const GtkTextIter* iter, gint* y, gint* height);
+func (v *GtkTextView) GetIterAtPosition(iter *GtkTextIter, trailing *int, x int, y int) {
+	if nil != trailing {
+		var tt C.gint
+		C.gtk_text_view_get_iter_at_position(C.to_GtkTextView(v.Widget), &iter.TextIter, &tt, C.gint(x), C.gint(y))
+		*trailing = int(tt)
+	} else {
+		C.gtk_text_view_get_iter_at_position(C.to_GtkTextView(v.Widget), &iter.TextIter, nil, C.gint(x), C.gint(y))
+	}
+}
+func (v *GtkTextView) GetLineYrange(iter *GtkTextIter, y *int, h *int) {
+	var yy, hh C.gint
+	C.gtk_text_view_get_line_yrange(C.to_GtkTextView(v.Widget), &iter.TextIter, &yy, &hh)
+	*y = int(yy)
+	*h = int(hh)
+}
 // void gtk_text_view_get_line_at_y(GtkTextView* text_view, GtkTextIter* target_iter, gint y, gint* line_top);
 // void gtk_text_view_buffer_to_window_coords(GtkTextView* text_view, GtkTextWindowType win, gint buffer_x, gint buffer_y, gint* window_x, gint* window_y);
 // void gtk_text_view_window_to_buffer_coords(GtkTextView* text_view, GtkTextWindowType win, gint window_x, gint window_y, gint* buffer_x, gint* buffer_y);
@@ -5063,7 +5084,7 @@ func pollEvents() {
 }
 
 func SetLocale() {
-	C.gtk_set_locale();
+	C.gtk_set_locale()
 }
 
 func Init(args *[]string) {
