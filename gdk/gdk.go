@@ -573,4 +573,19 @@ const (
 	GDK_x            = 0x078
 	GDK_y            = 0x079
 	GDK_z            = 0x07a
+	GDK_F1           = 0xffbe
+	GDK_F2           = 0xffbf
+	GDK_F3           = 0xffc0
+	GDK_F4           = 0xffc1
+	GDK_F5           = 0xffc2
+	GDK_F6           = 0xffc3
+	GDK_F7           = 0xffc4
+	GDK_F8           = 0xffc5
+	GDK_F9           = 0xffc6
+	GDK_F10          = 0xffc7
+	GDK_F11          = 0xffc8
+	GDK_Return       = 0xff0d
+	GDK_KP_Enter     = 0xff8d
+	GDK_ISO_Enter    = 0xfe34
+	GDK_bar          = 0x07c
 )

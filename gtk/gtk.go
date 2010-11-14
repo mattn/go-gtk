@@ -735,6 +735,10 @@ static int _check_version(int major, int minor, int micro) {
 static void _gtk_tree_iter_assign(void* iter, void* to) {
 	*(GtkTreeIter*)iter = *(GtkTreeIter*)to;
 }
+
+static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
+  return GTK_DIALOG(w)->vbox;
+}
 */
 import "C"
 import "glib"
@@ -1485,7 +1489,9 @@ func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
 // gtk_window_activate_focus
 // gtk_window_set_focus
 // gtk_window_get_focus
-// gtk_window_set_default
+func (v *GtkWindow) SetDefault(w *GtkWidget) {
+	C.gtk_window_set_default(C.to_GtkWindow(v.Widget), w.Widget)
+}
 // gtk_window_get_default_widget
 // gtk_window_activate_default
 // gtk_window_set_transient_for
@@ -1631,6 +1637,13 @@ type GtkDialog struct {
 	GtkWindow
 }
 
+func Dialog() *GtkDialog {
+	return &GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_dialog_new()}}}}}
+}
+func (v *GtkDialog) GetVBox() *GtkVBox {
+	return &GtkVBox{GtkBox{GtkContainer{GtkWidget{C._gtk_dialog_get_vbox(v.Widget)}}}}
+}
 func (v *GtkDialog) Run() int {
 	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
 }
@@ -1648,9 +1661,17 @@ func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
 // gtk_dialog_add_action_widget
 // gtk_dialog_add_buttons
 // gtk_dialog_set_response_sensitive
-// gtk_dialog_set_default_response
+func (v *GtkDialog) SetDefaultResponse(id int) {
+	C.gtk_dialog_set_default_response(C.to_GtkDialog(v.Widget), C.gint(id))
+}
+func (v *GtkDialog) GetWidgetForResponse(id int) *GtkWidget {
+	return &GtkWidget{C.gtk_dialog_get_widget_for_response(C.to_GtkDialog(v.Widget), C.gint(id))}
+}
 // gtk_dialog_get_response_for_widget
 // gtk_dialog_set_has_separator
+func (v *GtkDialog) SetHasSeparator(f bool) {
+	C.gtk_dialog_set_has_separator(C.to_GtkDialog(v.Widget), bool2gboolean(f))
+}
 // gtk_dialog_get_has_separator
 // gtk_alternative_dialog_button_order
 // gtk_dialog_set_alternative_button_order
@@ -2111,8 +2132,7 @@ type GtkEntry struct {
 }
 
 func Entry() *GtkEntry {
-	return &GtkEntry{GtkWidget{
-		C.gtk_entry_new()}}
+	return &GtkEntry{GtkWidget{C.gtk_entry_new()}}
 }
 // gtk_entry_new_with_max_length
 //func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
@@ -4144,7 +4164,15 @@ func (v *GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string
 //gboolean gtk_tree_view_column_get_visible (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_resizable (GtkTreeViewColumn *tree_column, gboolean resizable);
 //gboolean gtk_tree_view_column_get_resizable (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_set_sizing (GtkTreeViewColumn *tree_column, GtkTreeViewColumnSizing type);
+const (
+	GTK_TREE_VIEW_COLUMN_GROW_ONLY = 0
+	GTK_TREE_VIEW_COLUMN_AUTOSIZE  = 1
+	GTK_TREE_VIEW_COLUMN_FIXED     = 2
+)
+
+func (v *GtkTreeViewColumn) SetSizing(s int) {
+	C.gtk_tree_view_column_set_sizing(v.TreeViewColumn, C.GtkTreeViewColumnSizing(s))
+}
 //GtkTreeViewColumnSizing gtk_tree_view_column_get_sizing (GtkTreeViewColumn *tree_column);
 //gint gtk_tree_view_column_get_width (GtkTreeViewColumn *tree_column);
 //gint gtk_tree_view_column_get_fixed_width (GtkTreeViewColumn *tree_column);
@@ -4227,7 +4255,9 @@ func (v *GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
 //gint gtk_tree_view_insert_column (GtkTreeView *tree_view, GtkTreeViewColumn *column, gint position);
 //gint gtk_tree_view_insert_column_with_attributes (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, ...) G_GNUC_NULL_TERMINATED;
 //gint gtk_tree_view_insert_column_with_data_func (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, GtkTreeCellDataFunc func, gpointer data, GDestroyNotify dnotify);
-//GtkTreeViewColumn *gtk_tree_view_get_column (GtkTreeView *tree_view, gint n);
+func (v *GtkTreeView) GetColumn(n int) *GtkTreeViewColumn {
+	return &GtkTreeViewColumn{C.gtk_tree_view_get_column(C.to_GtkTreeView(v.Widget), C.gint(n))}
+}
 //GList *gtk_tree_view_get_columns (GtkTreeView *tree_view);
 //void gtk_tree_view_move_column_after (GtkTreeView *tree_view, GtkTreeViewColumn *column, GtkTreeViewColumn *base_column);
 //void gtk_tree_view_set_expander_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
