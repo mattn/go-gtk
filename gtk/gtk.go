@@ -3723,7 +3723,17 @@ func (v *GtkTextView) GetLineYrange(iter *GtkTextIter, y *int, h *int) {
 // void gtk_text_view_add_child_at_anchor(GtkTextView* text_view, GtkWidget* child, GtkTextChildAnchor* anchor);
 // void gtk_text_view_add_child_in_window(GtkTextView* text_view, GtkWidget* child, GtkTextWindowType which_window, gint xpos, gint ypos);
 // void gtk_text_view_move_child(GtkTextView* text_view, GtkWidget* child, gint xpos, gint ypos);
-// void gtk_text_view_set_wrap_mode(GtkTextView* text_view, GtkWrapMode wrap_mode);
+const (
+	GTK_WRAP_NONE      = 0
+	GTK_WRAP_CHAR      = 1
+	GTK_WRAP_WORD      = 2
+	GTK_WRAP_WORD_CHAR = 3
+)
+
+func (v *GtkTextView) SetWrapMode(mode int) {
+	C.gtk_text_view_set_wrap_mode(C.to_GtkTextView(v.Widget), C.GtkWrapMode(mode))
+}
+
 // GtkWrapMode gtk_text_view_get_wrap_mode(GtkTextView* text_view);
 func (v *GtkTextView) GetEditable() bool {
 	return gboolean2bool(C.gtk_text_view_get_editable(C.to_GtkTextView(v.Widget)))
