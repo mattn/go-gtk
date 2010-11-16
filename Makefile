@@ -22,5 +22,13 @@ clean:
 	cd example && gomake clean
 	cd gtksourceview && gomake clean
 
+fmt_all:
+	gofmt ./gdk/gdk.go  > ./gdk/gdk.go.fmt
+	gofmt ./gtk/gtk.go > ./gtk/gtk.go.fmt
+	gofmt ./glib/glib.go > ./glib/glib.go.fmt
+	mv ./gtk/gtk.go.fmt ./gtk/gtk.go
+	mv ./gdk/gdk.go.fmt ./gdk/gdk.go
+	mv ./glib/glib.go.fmt ./glib/glib.go
+
 example: install
 	cd example && gomake
