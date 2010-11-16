@@ -7,7 +7,7 @@ import "fmt"
 func main() {
 	gtk.SetLocale()	
 
-	bs := ([]byte)("あいう")
+	bs := ([]byte)("こんにちわ世界")
 
 	str, bytes_read, bytes_written, error := glib.LocaleToUtf8(bs)
 	if error == nil {
