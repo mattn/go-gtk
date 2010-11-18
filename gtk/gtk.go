@@ -691,7 +691,7 @@ static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
 static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
-
+static GObject* to_GObject(void* o) { return (GObject*)o; }
 
 static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
 static void g_value_init_string(GValue* gv) { g_value_init(gv, G_TYPE_STRING); }
@@ -828,6 +828,12 @@ func (v *GValue) GetString() string {
 //-----------------------------------------------------------------------
 type GtkObject struct {
 	glib.GObject
+}
+
+func (v *GtkObject) SetProperty(name string, val *GValue) {
+	str := C.CString(name)
+	defer C.free_string(str)
+	C.g_object_set_property(C.to_GObject(v.Object), C.to_gcharptr(str), &val.Value)
 }
 
 //-----------------------------------------------------------------------
@@ -1383,6 +1389,10 @@ func (v *GtkWidget) SetHasTooltip(setting bool) {
 // gtk_requisition_get_type
 // gtk_requisition_copy
 // gtk_requisition_free
+
+func ToGtkWidget(p unsafe.Pointer) *C.GtkWidget {
+	return C.to_GtkWidget(p)
+}
 
 //-----------------------------------------------------------------------
 // GtkContainer
