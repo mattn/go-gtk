@@ -4284,7 +4284,16 @@ func (v *GtkTreeView) GetColumn(n int) *GtkTreeViewColumn {
 //GtkTreeViewColumn *gtk_tree_view_get_expander_column (GtkTreeView *tree_view);
 //void gtk_tree_view_set_column_drag_function (GtkTreeView *tree_view, GtkTreeViewColumnDropFunc func, gpointer user_data, GDestroyNotify destroy);
 //void gtk_tree_view_scroll_to_point (GtkTreeView *tree_view, gint tree_x, gint tree_y);
-//void gtk_tree_view_scroll_to_cell (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gboolean use_align, gfloat row_align, gfloat col_align);
+func (v *GtkTreeView) ScrollToCell(path *GtkTreePath, col *GtkTreeViewColumn, use bool, ra float, ca float) {
+	var pcol *C.GtkTreeViewColumn
+	if nil == col {
+		pcol = nil
+	} else {
+		pcol = col.TreeViewColumn
+	}
+	C.gtk_tree_view_scroll_to_cell(C.to_GtkTreeView(v.Widget), path.TreePath,
+		pcol, bool2gboolean(use), C.gfloat(ra), C.gfloat(ca))
+}
 //void gtk_tree_view_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column);
 func (v *GtkTreeView) ExpandAll() {
 	C.gtk_tree_view_expand_all(C.to_GtkTreeView(v.Widget))
