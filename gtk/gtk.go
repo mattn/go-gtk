@@ -4308,7 +4308,16 @@ func (v *GtkTreeView) CollapseAll() {
 //gboolean gtk_tree_view_row_expanded (GtkTreeView *tree_view, GtkTreePath *path);
 //void gtk_tree_view_set_reorderable (GtkTreeView *tree_view, gboolean reorderable);
 //gboolean gtk_tree_view_get_reorderable (GtkTreeView *tree_view);
-//void gtk_tree_view_set_cursor (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *focus_column, gboolean start_editing);
+func (v *GtkTreeView) SetCursor(path *GtkTreePath, col *GtkTreeViewColumn, se bool) {
+	var pcol *C.GtkTreeViewColumn
+	if nil == col {
+		pcol = nil
+	} else {
+		pcol = col.TreeViewColumn
+	}
+	C.gtk_tree_view_set_cursor(C.to_GtkTreeView(v.Widget), path.TreePath,
+		pcol, bool2gboolean(se))
+}
 //void gtk_tree_view_set_cursor_on_cell (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *focus_column, GtkCellRenderer *focus_cell, gboolean start_editing);
 //void gtk_tree_view_get_cursor (GtkTreeView *tree_view, GtkTreePath **path, GtkTreeViewColumn **focus_column);
 func (v *GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewColumn) {
