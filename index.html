@@ -1,0 +1,257 @@
+<!doctype html>
+<head>
+	<title>Go-GTK</title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="static/css/style-sites.css" type="text/css" />
+	<!--[if IE]>
+	<script type="text/javascript">
+		document.createElement('header');
+		document.createElement('section');
+		document.createElement('nav');
+		document.createElement('aside');
+		document.createElement('footer');
+		document.createElement('article');
+		</script>
+	<![endif]--> 
+	<script type="text/javascript" src="static/js/jquery-latest.js"></script>
+</head>
+<body>
+	<img id="logo" alt="go-gtk" src="static/images/go-gtk-logo.png" title="go-gtk" />
+	<section id="content">
+		<div class="blocked-content">
+			<article id="whats">
+				<h2 class="maintitle">Whats</h2>
+				<p>Go bindings for GTK</p>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="install">
+				<h2 class="maintitle">Install</h2>
+				<p>To experiment with go-gtk, you can just compile and run the example program:</p>
+<pre class="code">
+# make example
+# ./example/main
+</pre>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="coding">
+				<h2 class="maintitle">Coding Style</h2>
+<blockquote class="code">
+<span class="PreProc">package</span>&nbsp;main<br />
+<br />
+<span class="PreProc">import</span>&nbsp;(<br />
+&nbsp;&nbsp;<span class="Constant">&quot;os&quot;</span>;<br />
+&nbsp;&nbsp;<span class="Constant">&quot;gtk&quot;</span>;<br />
+&nbsp;&nbsp;<span class="Constant">&quot;unsafe&quot;</span>;<br />
+&nbsp;&nbsp;<span class="Constant">&quot;path&quot;</span>;<br />
+)<br />
+<br />
+<span class="Type">func</span>&nbsp;main()&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;gtk.Init(&amp;os.Args);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.SetTitle(<span class="Constant">&quot;GTK Go!&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.Connect(<span class="Constant">&quot;destroy&quot;</span>, <span class="Type">func</span>(w *gtk.GtkWidget, args []unsafe.Pointer)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println(<span class="Constant">&quot;got destroy!&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.MainQuit();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}, nil);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkVBox</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox := gtk.VBox(<span class="Constant">false</span>, <span class="Constant">1</span>);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkImage</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;dir, _ := path.Split(os.Args[<span class="Constant">0</span>]);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;imagefile := path.Join(dir, <span class="Constant">&quot;../data/go-gtk-logo.png&quot;</span>); <br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;label := gtk.Label(<span class="Constant">&quot;Go Binding for GTK&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.PackStart(label, <span class="Constant">false</span>, <span class="Constant">true</span>, <span class="Constant">0</span>);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;entry := gtk.Entry();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;entry.SetText(<span class="Constant">&quot;Hello world&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(entry);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;image := gtk.ImageFromFile(imagefile);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(image);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkHBox</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons := gtk.HBox(<span class="Constant">false</span>, <span class="Constant">1</span>);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkButton</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;button := gtk.ButtonWithLabel(<span class="Constant">&quot;Button with label&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;button.Clicked(<span class="Type">func</span>(w *gtk.GtkWidget, args []unsafe.Pointer)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;button clicked: &quot;</span>, button.GetLabel(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog := gtk.MessageDialog(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;button.GetTopLevelAsWindow(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.GTK_DIALOG_MODAL,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.GTK_MESSAGE_INFO,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.GTK_BUTTONS_OK,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry.GetText()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Response(<span class="Type">func</span>(w *gtk.GtkWidget, args []unsafe.Pointer)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println(<span class="Constant">&quot;Dialog OK!&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, nil);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Run();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Destroy();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}, nil);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(button);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkFontButton</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;fontbutton := gtk.FontButton();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;fontbutton.Connect(<span class="Constant">&quot;font-set&quot;</span>, <span class="Type">func</span>(w *gtk.GtkWidget, args []unsafe.Pointer)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;title: &quot;</span>, fontbutton.GetTitle(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;fontname: &quot;</span>, fontbutton.GetFontName(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;use_size: &quot;</span>, fontbutton.GetUseSize(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;show_size: &quot;</span>, fontbutton.GetShowSize(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}, nil);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(fontbutton);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(buttons);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons = gtk.HBox(<span class="Constant">false</span>, <span class="Constant">1</span>);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkToggleButton</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;togglebutton := gtk.ToggleButtonWithLabel(<span class="Constant">&quot;ToggleButton with label&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.Connect(<span class="Constant">&quot;toggled&quot;</span>, <span class="Type">func</span>(w *gtk.GtkWidget, args []unsafe.Pointer)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;togglebutton.GetActive()&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.SetLabel(<span class="Constant">&quot;ToggleButton ON!&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span class="Statement">else</span>&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.SetLabel(<span class="Constant">&quot;ToggleButton OFF!&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}, nil);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(togglebutton);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkCheckButton</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;checkbutton := gtk.CheckButtonWithLabel(<span class="Constant">&quot;CheckButton with label&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.Connect(<span class="Constant">&quot;toggled&quot;</span>, <span class="Type">func</span>(w *gtk.GtkWidget, args []unsafe.Pointer)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;checkbutton.GetActive()&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.SetLabel(<span class="Constant">&quot;CheckButton CHECKED!&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span class="Statement">else</span>&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.SetLabel(<span class="Constant">&quot;CheckButton UNCHECKED!&quot;</span>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}, nil);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(checkbutton);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(buttons);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combos := gtk.HBox(<span class="Constant">false</span>, <span class="Constant">1</span>);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry := gtk.ComboBoxEntryNewText();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry.Connect(<span class="Constant">&quot;changed&quot;</span>, <span class="Type">func</span>(w *gtk.GtkWidget, args []unsafe.Pointer)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//comboboxentry...</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;}, nil);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combos.Add(comboboxentry);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(combos);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.Add(vbox);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.ShowAll();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;gtk.Main();<br />
+}<br />
+</blockquote>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="screenshot">
+				<h2 class="maintitle">Screenshot</h2>
+				<p>
+				<img src="static/images/screenshot.png" alt="Go GTK!" title="Go GTK!" />
+				<br />
+				<img src="static/images/screenshot-twitter.png" alt="Twitter Client!" title="Twitter Client!" />
+				</p>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="repo">
+				<h2 class="maintitle">Repository</h2>
+				<p>
+				<a href="http://github.com/mattn/go-gtk/">http://github.com/mattn/go-gtk/</a>
+				</p>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="license">
+				<h2 class="maintitle">License</h2>
+				<p>The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.</p>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="author">
+				<h2 class="maintitle">Author</h2>
+				<p>Project authors:</p>
+				<div>
+					<ul>
+						<li>Yasuhiro Matsumoto</li>
+					</ul>
+				</div>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="goal">
+				<h2 class="maintitle">Goal</h2>
+				<p>Project goal:</p>
+				<div>
+					<p>Hopefully support following widgets and methods enough to run general application.</p>
+					<blockquote>
+						GtkAccelLabel<br />
+						GtkButton<br />
+						GtkCheckButton<br />
+						GtkColorButton<br />
+						GtkComboBox<br />
+						GtkComboBoxEntry<br />
+						GtkEntry<br />
+						GtkFileChooserButton<br />
+						GtkFontButton<br />
+						GtkFrame<br />
+						GtkIconView<br />
+						GtkImage<br />
+						GtkLabel<br />
+						GtkLinkButton<br />
+						GtkMenuBar<br />
+						GtkNotebook<br />
+						GtkPaned<br />
+						GtkVolumeButton<br />
+						GtkPageSetupUnixDialog<br />
+						GtkPrintUnixDialog<br />
+						GtkProgressBar<br />
+						GtkRadioButton<br />
+						GtkRecentChooserDialog<br />
+						GtkScale<br />
+						GtkScrolledWindow<br />
+						GtkSeparator<br />
+						GtkSpinButton<br />
+						GtkStatusbar<br />
+						GtkTextView<br />
+						GtkToggleButton<br />
+						GtkToolbar<br />
+						GtkTreeView<br />
+						GtkWindow<br />
+						GtkMessageDialog<br />
+						GtkAssistant<br />
+						GtkFontSelectionDialog<br />
+						GtkColorSelectionDialog<br />
+						GtkFileChooserDialog<br />
+					</blockquote>
+				</div>
+			</article>
+		</div>
+	</section>
+</body>
