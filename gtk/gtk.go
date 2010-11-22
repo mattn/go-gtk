@@ -143,6 +143,18 @@ static long _gtk_signal_connect(void* obj, gchar* name, int func_no) {
 	return g_signal_connect_data((gpointer)obj, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 }
 
+static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
+#if GTK_CHECK_VERSION(2,20,0)
+	return gtk_dialog_get_widget_for_response(dialog, id);
+#else
+	return NULL;
+#endif
+}
+
+static gint _gtk_dialog_get_response_for_widget(GtkDialog* dialog, GtkWidget* widget) {
+	return gtk_dialog_get_response_for_widget(dialog, widget);
+}
+
 static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, gchar *message) {
 	return gtk_message_dialog_new(
 			GTK_WINDOW(parent),
@@ -1675,9 +1687,12 @@ func (v *GtkDialog) SetDefaultResponse(id int) {
 	C.gtk_dialog_set_default_response(C.to_GtkDialog(v.Widget), C.gint(id))
 }
 func (v *GtkDialog) GetWidgetForResponse(id int) *GtkWidget {
-	return &GtkWidget{C.gtk_dialog_get_widget_for_response(C.to_GtkDialog(v.Widget), C.gint(id))}
+	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response() is not provided on your GTK")
+	return &GtkWidget{C._gtk_dialog_get_widget_for_response(C.to_GtkDialog(v.Widget), C.gint(id))}
 }
-// gtk_dialog_get_response_for_widget
+func (v *GtkDialog) GetResponseForWidget(w *GtkWidget) int {
+	return int(C._gtk_dialog_get_response_for_widget(C.to_GtkDialog(v.Widget), w.Widget))
+}
 // gtk_dialog_set_has_separator
 func (v *GtkDialog) SetHasSeparator(f bool) {
 	C.gtk_dialog_set_has_separator(C.to_GtkDialog(v.Widget), bool2gboolean(f))
