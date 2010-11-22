@@ -20,7 +20,6 @@ clean:
 	cd gdkpixbuf && gomake clean
 	cd gtk && gomake clean
 	cd example && gomake clean
-	cd gtksourceview && gomake clean
 
 fmt_all:
 	gofmt ./gdk/gdk.go  > ./gdk/gdk.go.fmt
