@@ -996,7 +996,7 @@ func AccelGroup() *GtkAccelGroup {
 // GtkWidget
 //-----------------------------------------------------------------------
 type WidgetLike interface {
-	ToGtkWidget() *C.GtkWidget
+	ToNative() *C.GtkWidget
 	Hide()
 	HideAll()
 	Show()
@@ -1017,7 +1017,7 @@ func WidgetFromObject(object *glib.GObject) *GtkWidget {
 	return &GtkWidget{
 		C.to_GtkWidget(unsafe.Pointer(object.Object))}
 }
-func (v *GtkWidget) ToGtkWidget() *C.GtkWidget {
+func (v *GtkWidget) ToNative() *C.GtkWidget {
 	return v.Widget
 }
 func (v *GtkWidget) Hide() {
@@ -1133,7 +1133,7 @@ func (v *GtkWidget) Activate() {
 }
 // gtk_widget_set_scroll_adjustments
 func (v *GtkWidget) Reparent(parent WidgetLike) {
-	C.gtk_widget_reparent(v.Widget, parent.ToGtkWidget())
+	C.gtk_widget_reparent(v.Widget, parent.ToNative())
 }
 // gtk_widget_intersect
 // gtk_widget_region_intersect
@@ -1230,7 +1230,7 @@ func (v *GtkWidget) GetParent() *GtkWidget {
 		C.gtk_widget_get_parent(v.Widget)}
 }
 func (v *GtkWidget) SetParent(parent WidgetLike) {
-	C.gtk_widget_set_parent(v.Widget, parent.ToGtkWidget())
+	C.gtk_widget_set_parent(v.Widget, parent.ToNative())
 }
 func (v *GtkWidget) GetParentWindow() *gdk.GdkWindow {
 	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)))
@@ -1369,7 +1369,7 @@ func (v *GtkWidget) IsComposited() bool {
 // gtk_widget_add_mnemonic_label
 // gtk_widget_remove_mnemonic_label
 func (v *GtkWidget) SetTooltipWindow(w WindowLike) {
-	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToGtkWidget()))
+	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToNative()))
 }
 func (v *GtkWidget) GetTooltipWindow() *GtkWindow {
 	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
@@ -1402,7 +1402,7 @@ func (v *GtkWidget) SetHasTooltip(setting bool) {
 // gtk_requisition_copy
 // gtk_requisition_free
 
-func ToGtkWidget(p unsafe.Pointer) *C.GtkWidget {
+func FromNative(p unsafe.Pointer) *C.GtkWidget {
 	return C.to_GtkWidget(p)
 }
 
@@ -1418,7 +1418,7 @@ type GtkContainer struct {
 }
 
 func (v *GtkContainer) Add(w WidgetLike) {
-	C.gtk_container_add(C.to_GtkContainer(v.Widget), w.ToGtkWidget())
+	C.gtk_container_add(C.to_GtkContainer(v.Widget), w.ToNative())
 }
 func (v *GtkContainer) SetBorderWidth(border_width uint) {
 	C.gtk_container_set_border_width(C.to_GtkContainer(v.Widget), C.guint(border_width))
@@ -1427,7 +1427,7 @@ func (v *GtkContainer) GetBorderWidth() uint {
 	return uint(C.gtk_container_get_border_width(C.to_GtkContainer(v.Widget)))
 }
 func (v *GtkContainer) Remove(w WidgetLike) {
-	C.gtk_container_remove(C.to_GtkContainer(v.Widget), w.ToGtkWidget())
+	C.gtk_container_remove(C.to_GtkContainer(v.Widget), w.ToNative())
 }
 // gtk_container_set_resize_mode
 // gtk_container_get_resize_mode
@@ -1490,7 +1490,7 @@ func (v *GtkWindow) SetTitle(title string) {
 	C.gtk_window_set_title(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkWindow) SetTransientFor(parent WindowLike) {
-	C.gtk_window_set_transient_for(C.to_GtkWindow(v.Widget), C.to_GtkWindow(parent.ToGtkWidget()))
+	C.gtk_window_set_transient_for(C.to_GtkWindow(v.Widget), C.to_GtkWindow(parent.ToNative()))
 }
 func (v *GtkWindow) GetResizable() bool {
 	return gboolean2bool(C.gtk_window_get_resizable(C.to_GtkWindow(v.Widget)))
@@ -1803,7 +1803,7 @@ func FileChooserDialog(title string, parent WindowLike, file_chooser_action int,
 	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_file_chooser_dialog_new(
 			C.to_gcharptr(ptitle),
-			parent.ToGtkWidget(),
+			parent.ToNative(),
 			C.int(file_chooser_action),
 			C.int(action),
 			C.to_gcharptr(pbutton))}}}}}}
@@ -1820,7 +1820,7 @@ func FileChooserDialog2(title string, parent WindowLike, file_chooser_action int
 	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_file_chooser_dialog_new2(
 			C.to_gcharptr(ptitle),
-			parent.ToGtkWidget(),
+			parent.ToNative(),
 			C.int(file_chooser_action),
 			C.int(action),
 			C.to_gcharptr(pbutton),
@@ -1870,7 +1870,7 @@ func MessageDialog(parent WindowLike, flag uint, t uint, button uint, message st
 	defer C.free_string(ptr)
 	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_message_dialog_new(
-			parent.ToGtkWidget(),
+			parent.ToNative(),
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(button),
@@ -2078,16 +2078,16 @@ type GtkBox struct {
 }
 
 func (v *GtkBox) PackStart(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_start(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding))
+	C.gtk_box_pack_start(C.to_GtkBox(v.Widget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding))
 }
 func (v *GtkBox) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_end(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding))
+	C.gtk_box_pack_end(C.to_GtkBox(v.Widget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding))
 }
 func (v *GtkBox) PackStartDefaults(child WidgetLike) {
-	C.gtk_box_pack_start_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget())
+	C.gtk_box_pack_start_defaults(C.to_GtkBox(v.Widget), child.ToNative())
 }
 func (v *GtkBox) PackEndDefaults(child WidgetLike) {
-	C.gtk_box_pack_end_defaults(C.to_GtkBox(v.Widget), child.ToGtkWidget())
+	C.gtk_box_pack_end_defaults(C.to_GtkBox(v.Widget), child.ToNative())
 }
 func (v *GtkBox) GetHomogeneous() bool {
 	return gboolean2bool(C.gtk_box_get_homogeneous(C.to_GtkBox(v.Widget)))
@@ -2102,20 +2102,20 @@ func (v *GtkBox) SetSpacing(spacing int) {
 	C.gtk_box_set_spacing(C.to_GtkBox(v.Widget), C.gint(spacing))
 }
 func (v *GtkBox) ReorderChild(child WidgetLike, position int) {
-	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToGtkWidget(), C.gint(position))
+	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToNative(), C.gint(position))
 }
 func (v *GtkBox) QueryChildPacking(child WidgetLike, expand *bool, fill *bool, padding *uint, pack_type *uint) {
 	var cexpand, cfill C.gboolean
 	var cpadding C.guint
 	var cpack_type C.GtkPackType
-	C.gtk_box_query_child_packing(C.to_GtkBox(v.Widget), child.ToGtkWidget(), &cexpand, &cfill, &cpadding, &cpack_type)
+	C.gtk_box_query_child_packing(C.to_GtkBox(v.Widget), child.ToNative(), &cexpand, &cfill, &cpadding, &cpack_type)
 	*expand = gboolean2bool(cexpand)
 	*fill = gboolean2bool(cfill)
 	*padding = uint(cpadding)
 	*pack_type = uint(cpack_type)
 }
 func (v *GtkBox) SetChildPacking(child WidgetLike, expand bool, fill bool, padding uint, pack_type uint) {
-	C.gtk_box_set_child_packing(C.to_GtkBox(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type))
+	C.gtk_box_set_child_packing(C.to_GtkBox(v.Widget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type))
 }
 
 //-----------------------------------------------------------------------
@@ -2474,7 +2474,7 @@ func (v *GtkAccelLabel) GetAccelWidth() uint {
 	return uint(C.gtk_accel_label_get_accel_width(C.to_GtkAccelLabel(v.Widget)))
 }
 func (v *GtkAccelLabel) SetAccelWidget(w WidgetLike) {
-	C.gtk_accel_label_set_accel_widget(C.to_GtkAccelLabel(v.Widget), w.ToGtkWidget())
+	C.gtk_accel_label_set_accel_widget(C.to_GtkAccelLabel(v.Widget), w.ToNative())
 }
 func (v *GtkAccelLabel) Refetch() bool {
 	return gboolean2bool(C.gtk_accel_label_refetch(C.to_GtkAccelLabel(v.Widget)))
@@ -3118,7 +3118,7 @@ func (v *GtkFrame) GetLabelWidget() LabelLike {
 		C.gtk_frame_get_label_widget(C.to_GtkFrame(v.Widget))}}
 }
 func (v *GtkFrame) SetLabelWidget(label_widget LabelLike) {
-	C.gtk_frame_set_label_widget(C.to_GtkFrame(v.Widget), label_widget.ToGtkWidget())
+	C.gtk_frame_set_label_widget(C.to_GtkFrame(v.Widget), label_widget.ToNative())
 }
 func (v *GtkFrame) GetLabelAlign() (xalign, yalign float) {
 	var xalign_, yalign_ C.gfloat
@@ -3253,7 +3253,7 @@ func (v *GtkScrolledWindow) SetShadowType(typ uint) {
 // gtk_scrolled_window_get_shadow_type
 // gtk_scrolled_window_add_with_viewport
 func (v *GtkScrolledWindow) AddWithViewPort(w WidgetLike) {
-	C.gtk_scrolled_window_add_with_viewport(C.to_GtkScrolledWindow(v.Widget), w.ToGtkWidget())
+	C.gtk_scrolled_window_add_with_viewport(C.to_GtkScrolledWindow(v.Widget), w.ToNative())
 }
 
 //-----------------------------------------------------------------------
@@ -3837,7 +3837,7 @@ func MenuItemWithMnemonic(label string) *GtkMenuItem {
 		C.gtk_menu_item_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}
 }
 func (v *GtkMenuItem) SetSubmenu(w WidgetLike) {
-	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToGtkWidget())
+	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToNative())
 }
 // TODO
 // void gtk_menu_item_set_submenu(GtkMenuItem *menu_item, GtkWidget *submenu);
@@ -3874,13 +3874,13 @@ func Menu() *GtkMenu {
 		C.gtk_menu_new()}}}
 }
 func (v *GtkMenu) Append(child WidgetLike) {
-	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
+	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
 func (v *GtkMenu) Prepend(child WidgetLike) {
-	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
+	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
 func (v *GtkMenu) Insert(child WidgetLike, position int) {
-	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position))
+	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToNative(), C.gint(position))
 }
 // TODO
 // void gtk_menu_popup (GtkMenu *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, GtkMenuPositionFunc func, gpointer data, guint button, guint32 activate_time);
@@ -3939,13 +3939,13 @@ func (v *GtkMenuBar) SetChildPackDirection(pack_dir uint) {
 	C.gtk_menu_bar_set_child_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir))
 }
 func (v *GtkMenuBar) Append(child WidgetLike) {
-	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
+	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
 func (v *GtkMenuBar) Prepend(child WidgetLike) {
-	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget())
+	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
 func (v *GtkMenuBar) Insert(child WidgetLike, position int) {
-	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToGtkWidget(), C.gint(position))
+	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToNative(), C.gint(position))
 }
 // FINISH
 
@@ -4588,22 +4588,22 @@ func Notebook() *GtkNotebook {
 		C.gtk_notebook_new()}}}
 }
 func (v *GtkNotebook) AppendPage(child WidgetLike, tab_label WidgetLike) int {
-	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget()))
+	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.Widget), child.ToNative(), tab_label.ToNative()))
 }
 func (v *GtkNotebook) AppendPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
-	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), menu_label.ToGtkWidget()))
+	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.Widget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
 }
 func (v *GtkNotebook) PrependPage(child WidgetLike, tab_label WidgetLike) int {
-	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget()))
+	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.Widget), child.ToNative(), tab_label.ToNative()))
 }
 func (v *GtkNotebook) PrependPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
-	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), menu_label.ToGtkWidget()))
+	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.Widget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
 }
 func (v *GtkNotebook) InsertPage(child WidgetLike, tab_label WidgetLike, position int) int {
-	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), C.gint(position)))
+	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.Widget), child.ToNative(), tab_label.ToNative(), C.gint(position)))
 }
 func (v *GtkNotebook) InsertPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike, position int) int {
-	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget(), menu_label.ToGtkWidget(), C.gint(position)))
+	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.Widget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative(), C.gint(position)))
 }
 func (v *GtkNotebook) RemovePage(child WidgetLike, page_num int) {
 	C.gtk_notebook_remove_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))
@@ -4632,7 +4632,7 @@ func (v *GtkNotebook) GetNPages() int {
 	return int(C.gtk_notebook_get_n_pages(C.to_GtkNotebook(v.Widget)))
 }
 func (v *GtkNotebook) PageNum(child WidgetLike) int {
-	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.Widget), child.ToGtkWidget()))
+	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.Widget), child.ToNative()))
 }
 func (v *GtkNotebook) GetPageNum(page_num int) {
 	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))
@@ -4687,59 +4687,59 @@ func (v *GtkNotebook) PopupDisable() {
 }
 func (v *GtkNotebook) GetTabLabel(child WidgetLike) *GtkWidget {
 	return &GtkWidget{
-		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())}
+		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.Widget), child.ToNative())}
 }
 func (v *GtkNotebook) SetTabLabel(child WidgetLike, tab_label WidgetLike) {
-	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), tab_label.ToGtkWidget())
+	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.Widget), child.ToNative(), tab_label.ToNative())
 }
 func (v *GtkNotebook) SetTabLabelText(child WidgetLike, name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), C.to_gcharptr(ptr))
+	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.Widget), child.ToNative(), C.to_gcharptr(ptr))
 }
 func (v *GtkNotebook) GetTabLabelText(child WidgetLike) string {
-	return C.GoString(C.to_charptr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())))
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.Widget), child.ToNative())))
 }
 func (v *GtkNotebook) GetMenuLabel(child WidgetLike) *GtkWidget {
 	return &GtkWidget{
-		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())}
+		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.Widget), child.ToNative())}
 }
 func (v *GtkNotebook) SetMenuLabel(child WidgetLike, menu_label WidgetLike) {
-	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), menu_label.ToGtkWidget())
+	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.Widget), child.ToNative(), menu_label.ToNative())
 }
 func (v *GtkNotebook) SetMenuLabelText(child WidgetLike, name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), C.to_gcharptr(ptr))
+	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.Widget), child.ToNative(), C.to_gcharptr(ptr))
 }
 func (v *GtkNotebook) GetMenuLabelText(child WidgetLike) string {
-	return C.GoString(C.to_charptr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.Widget), child.ToGtkWidget())))
+	return C.GoString(C.to_charptr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.Widget), child.ToNative())))
 }
 func (v *GtkNotebook) QueryTabLabelPacking(child WidgetLike, expand *bool, fill *bool, pack_type *uint) {
 	var cexpand, cfill C.gboolean
 	var cpack_type C.GtkPackType
-	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), &cexpand, &cfill, &cpack_type)
+	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.Widget), child.ToNative(), &cexpand, &cfill, &cpack_type)
 	*expand = gboolean2bool(cexpand)
 	*fill = gboolean2bool(cfill)
 	*pack_type = uint(cpack_type)
 }
 func (v *GtkNotebook) SetTabLabelPacking(child WidgetLike, expand bool, fill bool, pack_type uint) {
-	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type))
+	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.Widget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type))
 }
 func (v *GtkNotebook) ReorderChild(child WidgetLike, position int) {
-	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), C.gint(position))
+	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.Widget), child.ToNative(), C.gint(position))
 }
 func (v *GtkNotebook) GetTabReorderable(child WidgetLike) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget()))
+	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.Widget), child.ToNative()))
 }
 func (v *GtkNotebook) SetReorderable(child WidgetLike, reorderable bool) {
-	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), bool2gboolean(reorderable))
+	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.Widget), child.ToNative(), bool2gboolean(reorderable))
 }
 func (v *GtkNotebook) GetTabDetachable(child WidgetLike) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget()))
+	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.Widget), child.ToNative()))
 }
 func (v *GtkNotebook) SetDetachable(child WidgetLike, detachable bool) {
-	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.ToGtkWidget(), bool2gboolean(detachable))
+	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.Widget), child.ToNative(), bool2gboolean(detachable))
 }
 //-----------------------------------------------------------------------
 // GtkPaned
@@ -4756,16 +4756,16 @@ type GtkPaned struct {
 }
 
 func (v *GtkPaned) Add1(child WidgetLike) {
-	C.gtk_paned_add1(C.to_GtkPaned(v.Widget), child.ToGtkWidget())
+	C.gtk_paned_add1(C.to_GtkPaned(v.Widget), child.ToNative())
 }
 func (v *GtkPaned) Add2(child WidgetLike) {
-	C.gtk_paned_add2(C.to_GtkPaned(v.Widget), child.ToGtkWidget())
+	C.gtk_paned_add2(C.to_GtkPaned(v.Widget), child.ToNative())
 }
 func (v *GtkPaned) Pack1(child WidgetLike, resize bool, shrink bool) {
-	C.gtk_paned_pack1(C.to_GtkPaned(v.Widget), child.ToGtkWidget(), bool2gboolean(resize), bool2gboolean(shrink))
+	C.gtk_paned_pack1(C.to_GtkPaned(v.Widget), child.ToNative(), bool2gboolean(resize), bool2gboolean(shrink))
 }
 func (v *GtkPaned) Pack2(child WidgetLike, resize bool, shrink bool) {
-	C.gtk_paned_pack2(C.to_GtkPaned(v.Widget), child.ToGtkWidget(), bool2gboolean(resize), bool2gboolean(shrink))
+	C.gtk_paned_pack2(C.to_GtkPaned(v.Widget), child.ToNative(), bool2gboolean(resize), bool2gboolean(shrink))
 }
 func (v *GtkPaned) GetPosition() int {
 	return int(C.gtk_paned_get_position(C.to_GtkPaned(v.Widget)))
@@ -4830,10 +4830,10 @@ func (v *GtkTable) Resize(rows uint, columns uint) {
 	C.gtk_table_resize(C.to_GtkTable(v.Widget), C.guint(rows), C.guint(columns))
 }
 func (v *GtkTable) Attach(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint, xoptions uint, yoptions uint, xpadding uint, ypadding uint) {
-	C.gtk_table_attach(C.to_GtkTable(v.Widget), child.ToGtkWidget(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), C.guint(xpadding), C.guint(ypadding))
+	C.gtk_table_attach(C.to_GtkTable(v.Widget), child.ToNative(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), C.guint(xpadding), C.guint(ypadding))
 }
 func (v *GtkTable) AttachDefaults(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
-	C.gtk_table_attach_defaults(C.to_GtkTable(v.Widget), child.ToGtkWidget(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach))
+	C.gtk_table_attach_defaults(C.to_GtkTable(v.Widget), child.ToNative(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach))
 }
 func (v *GtkTable) SetRowSpacing(child WidgetLike, row uint, spacing uint) {
 	C.gtk_table_set_row_spacing(C.to_GtkTable(v.Widget), C.guint(row), C.guint(spacing))
@@ -4982,54 +4982,54 @@ func (v *GtkAssistant) GetNthPage(page_num int) *GtkWidget {
 		C.gtk_assistant_get_nth_page(C.to_GtkAssistant(v.Widget), C.gint(page_num))}
 }
 func (v *GtkAssistant) PrependPage(page WidgetLike) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToNative()))
 }
 func (v *GtkAssistant) AppendPage(page WidgetLike) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
+	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.Widget), page.ToNative()))
 }
 func (v *GtkAssistant) InsertPage(page WidgetLike, position int) int {
-	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.gint(position)))
+	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.ToNative(), C.gint(position)))
 }
 // void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
 func (v *GtkAssistant) SetPageType(page WidgetLike, t int) {
-	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.GtkAssistantPageType(t))
+	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.ToNative(), C.GtkAssistantPageType(t))
 }
 func (v *GtkAssistant) GetPageType(page WidgetLike) int {
-	return int(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
+	return int(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.Widget), page.ToNative()))
 }
 func (v *GtkAssistant) SetPageTitle(page WidgetLike, title string) {
 	ptr := C.CString(title)
 	defer C.free_string(ptr)
-	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), C.to_gcharptr(ptr))
+	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.Widget), page.ToNative(), C.to_gcharptr(ptr))
 }
 func (v *GtkAssistant) GetPageTitle(page WidgetLike) string {
-	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())))
+	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.Widget), page.ToNative())))
 }
 func (v *GtkAssistant) SetPageHeaderImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf)
+	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.Widget), page.ToNative(), pixbuf.Pixbuf)
 }
 func (v *GtkAssistant) GetPageHeaderImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
 	return &gdkpixbuf.GdkPixbuf{
-		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())}
+		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.Widget), page.ToNative())}
 }
 func (v *GtkAssistant) SetPageSideImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), pixbuf.Pixbuf)
+	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.Widget), page.ToNative(), pixbuf.Pixbuf)
 }
 func (v *GtkAssistant) GetPageSideImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
 	return &gdkpixbuf.GdkPixbuf{
-		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.Widget), page.ToGtkWidget())}
+		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.Widget), page.ToNative())}
 }
 func (v *GtkAssistant) SetPageComplete(page WidgetLike, complete bool) {
-	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget(), bool2gboolean(complete))
+	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.Widget), page.ToNative(), bool2gboolean(complete))
 }
 func (v *GtkAssistant) GetPageComplete(page WidgetLike) bool {
-	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.Widget), page.ToGtkWidget()))
+	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.Widget), page.ToNative()))
 }
 func (v *GtkAssistant) AddActionWidget(child WidgetLike) {
-	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget())
+	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.Widget), child.ToNative())
 }
 func (v *GtkAssistant) RemoveActionWidget(child WidgetLike) {
-	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.Widget), child.ToGtkWidget())
+	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.Widget), child.ToNative())
 }
 func (v *GtkAssistant) UpdateButtonsState() {
 	C.gtk_assistant_update_buttons_state(C.to_GtkAssistant(v.Widget))
@@ -5092,7 +5092,7 @@ func (v *GtkExpander) GetLabelWidget() LabelLike {
 		C.gtk_expander_get_label_widget(C.to_GtkExpander(v.Widget))}}
 }
 func (v *GtkExpander) SetLabelWidget(label_widget LabelLike) {
-	C.gtk_expander_set_label_widget(C.to_GtkExpander(v.Widget), label_widget.ToGtkWidget())
+	C.gtk_expander_set_label_widget(C.to_GtkExpander(v.Widget), label_widget.ToNative())
 }
 // FINISH
 
