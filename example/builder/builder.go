@@ -11,7 +11,7 @@ func main() {
 
 	gtk.Init(&os.Args);
 	builder := gtk.Builder()
-	builder.AddFromFile("hello.ui", nil)
+	builder.AddFromFile("hello.ui")
 	builder.ConnectSignals(nil);
 	obj := builder.GetObject("window1");
 

@@ -6,7 +6,6 @@
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuBar" id="menubar1">
             <property name="visible">True</property>
@@ -43,6 +42,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="has_tooltip">True</property>
+            <property name="tooltip_markup">&lt;b&gt;http://mattn.kaoriya.net/&lt;/b&gt;</property>
             <property name="image">image1</property>
             <property name="relief">none</property>
             <property name="uri">http://mattn.kaoriya.net/</property>
@@ -56,6 +56,6 @@
   </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
-	<property name="pixbuf">../../data/mattn-logo.png</property>
+    <property name="pixbuf">../../data/mattn-logo.png</property>
   </object>
 </interface>
