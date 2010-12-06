@@ -703,6 +703,7 @@ static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
 static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
+static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
 static GObject* to_GObject(void* o) { return (GObject*)o; }
 
 static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
@@ -3023,6 +3024,34 @@ type GtkBin struct {
 
 func (v *GtkBin) GetChild() *GtkWidget {
 	return &GtkWidget{C.gtk_bin_get_child(C.to_GtkBin(v.Widget))}
+}
+// FINISH
+
+//-----------------------------------------------------------------------
+// GtkAlignment
+//-----------------------------------------------------------------------
+type GtkAlignment struct {
+	GtkBin
+}
+
+func Alignment(xalign float, yalign float, xscale float, yscale float) *GtkAlignment {
+	return &GtkAlignment{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_alignment_new(C.gfloat(xalign), C.gfloat(yalign), C.gfloat(xscale), C.gfloat(yscale))}}}}
+}
+func (v *GtkAlignment) Set(xalign float, yalign float, xscale float, yscale float) {
+	C.gtk_alignment_set(C.to_GtkAlignment(v.Widget), C.gfloat(xalign), C.gfloat(yalign), C.gfloat(xscale), C.gfloat(yscale))
+}
+func (v *GtkAlignment) SetPadding(padding_top uint, padding_bottom uint, padding_left uint, padding_right uint) {
+	C.gtk_alignment_set_padding(C.to_GtkAlignment(v.Widget), C.guint(padding_top), C.guint(padding_bottom), C.guint(padding_left), C.guint(padding_right))
+}
+func (v *GtkAlignment) GetPadding() (padding_top uint, padding_bottom uint, padding_left uint, padding_right uint) {
+	var cpadding_top, cpadding_bottom, cpadding_left, cpadding_right C.guint
+	C.gtk_alignment_get_padding(C.to_GtkAlignment(v.Widget), &cpadding_top, &cpadding_bottom, &cpadding_left, &cpadding_right)
+	padding_top = uint(cpadding_top)
+	padding_bottom = uint(cpadding_bottom)
+	padding_left = uint(cpadding_left)
+	padding_right = uint(cpadding_right)
+	return
 }
 // FINISH
 
