@@ -6,11 +6,6 @@ WHATS:
 
   Go bindings for GTK 
 
-SCREENSHOT:
------------
-
-![Go GTK!](http://github.com/mattn/go-gtk/raw/gh-pages/static/images/screenshot.png "Go GTK!")
-
 INSTALL:
 --------
 
@@ -51,6 +46,7 @@ GOAL:
     GtkEntry: 10%
     GtkFileChooserButton: 0%
     GtkFileChooserDialog: 100%
+    GtkFixed: 100%
     GtkFontButton: 100%
     GtkFontSelectionDialog: 0%
     GtkFrame: 100%
@@ -69,7 +65,7 @@ GOAL:
     GtkPageSetupUnixDialog: 0%
     GtkPaned: 100%
     GtkPrintUnixDialog: 0%
-    GtkProgressBar: 0%
+    GtkProgressBar: 60%
     GtkRadioButton: 100%
     GtkRecentChooserDialog: 0%
     GtkScale: 90%

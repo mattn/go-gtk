@@ -704,6 +704,8 @@ static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA
 static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
+static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
+static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static GObject* to_GObject(void* o) { return (GObject*)o; }
 
 static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
@@ -1459,6 +1461,30 @@ func (v *GtkContainer) CheckResize() {
 // gtk_container_child_set_property
 // gtk_container_child_get_property
 // gtk_container_forall
+
+//-----------------------------------------------------------------------
+// GtkFixed
+//-----------------------------------------------------------------------
+type GtkFixed struct {
+	GtkContainer
+}
+
+func Fixed() *GtkFixed{
+	return &GtkFixed{GtkContainer{GtkWidget{C.gtk_fixed_new()}}}
+}
+func (v *GtkFixed) Put(w WidgetLike, x, y int) {
+	C.gtk_fixed_put(C.to_GtkFixed(v.Widget), w.ToNative(), C.gint(x), C.gint(y))
+}
+func (v *GtkFixed) Move(w WidgetLike, x, y int) {
+	C.gtk_fixed_move(C.to_GtkFixed(v.Widget), w.ToNative(), C.gint(x), C.gint(y))
+}
+func (v *GtkFixed) GetHasWindow() bool {
+	return gboolean2bool(C.gtk_fixed_get_has_window(C.to_GtkFixed(v.Widget)))
+}
+func (v *GtkFixed) SetHasWindow(has_window bool) {
+	C.gtk_fixed_set_has_window(C.to_GtkFixed(v.Widget), bool2gboolean(has_window))
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkWindow
@@ -2261,6 +2287,56 @@ func (v *GtkEntry) SetPosition(position int) {
 // gtk_entry_select_region
 func (v *GtkEntry) SetEditable(setting bool) {
 	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
+}
+
+//-----------------------------------------------------------------------
+// GtkProgressBar
+//-----------------------------------------------------------------------
+type GtkProgressBar struct {
+	GtkWidget
+}
+func ProgressBar() *GtkProgressBar {
+	return &GtkProgressBar{GtkWidget{C.gtk_progress_bar_new()}}
+}
+func (v *GtkProgressBar) Pulse() {
+	C.gtk_progress_bar_pulse(C.to_GtkProgressBar(v.Widget))
+}
+func (v *GtkProgressBar) GetFraction() float {
+	return float(C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget)))
+}
+func (v *GtkProgressBar) SetFraction(fraction float) {
+	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget),C.gdouble(fraction))
+}
+/* These are for the unstable development version, uncommented to work with stable
+func (v *GtkProgressBar) GetInverted() bool {
+	return gboolean2bool((C.gtk_progress_bar_get_inverted(C.to_GtkProgressBar(v.Widget)))
+}
+func (v *GtkProgressBar) SetInverted(fraction bool) {
+	C.gtk_progress_bar_set_inverted(C.to_GtkProgressBar(v.Widget), bool2gboolean(inverted))
+}
+func (v *GtkProgressBar) GetShowText() bool {
+	return gboolean2bool((C.gtk_progress_bar_get_show_text(C.to_GtkProgressBar(v.Widget)))
+}
+func (v *GtkProgressBar) SetShowText(show_text bool) {
+	C.gtk_progress_bar_set_show_text(C.to_GtkProgressBar(v.Widget), bool2gboolean(show_text))
+}*/
+func (v *GtkProgressBar) GetText() string{
+	return C.GoString(C.to_charptr(C.gtk_progress_bar_get_text(C.to_GtkProgressBar(v.Widget))))
+}
+func (v *GtkProgressBar) SetText(show_text string){
+	ptr := C.CString(show_text)
+	defer C.free_string(ptr)
+	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.Widget),C.to_gcharptr(ptr))
+}
+
+//gtk_progress_bar_set_ellipsize
+//gtk_progress_bar_get_ellipsize
+
+func (v *GtkProgressBar) GetPulseStep() float{
+	return float(C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget)))
+}
+func (v *GtkProgressBar) SetPulseStep(fraction float){
+	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.Widget),C.gdouble(fraction))
 }
 
 //-----------------------------------------------------------------------
