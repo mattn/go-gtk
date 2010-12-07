@@ -9,7 +9,7 @@ WHATS:
 SCREENSHOT:
 -----------
 
-![Go GTK!](https://github.com/mattn/go-gtk/blob/gh-pages/static/images/screenshot.png "Go GTK!")
+![Go GTK!](https://github.com/mattn/go-gtk/raw/gh-pages/static/images/screenshot.png "Go GTK!")
 
 INSTALL:
 --------
