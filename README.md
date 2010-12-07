@@ -6,6 +6,11 @@ WHATS:
 
   Go bindings for GTK 
 
+SCREENSHOT:
+-----------
+
+![Go GTK!](https://github.com/mattn/go-gtk/blob/gh-pages/static/images/screenshot.png "Go GTK!")
+
 INSTALL:
 --------
 
