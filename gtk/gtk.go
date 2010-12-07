@@ -5306,6 +5306,12 @@ func Main() {
 		pollEvents()
 	}
 }
+func MainIteration() bool {
+	return gboolean2bool(C.gtk_main_iteration())
+}
+func MainIterationDo(blocking bool) bool {
+	return gboolean2bool(C.gtk_main_iteration_do(bool2gboolean(blocking)))
+}
 func MainQuit() {
 	main_loop = false
 	if use_gtk_main {

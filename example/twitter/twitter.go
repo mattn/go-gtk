@@ -97,6 +97,7 @@ func main() {
 					buffer.Insert(&iter, " ")
 					buffer.InsertWithTag(&iter, name, tag)
 					buffer.Insert(&iter, ":"+text+"\n")
+					gtk.MainIteration()
 				}
 			}
 			button.SetSensitive(true)
