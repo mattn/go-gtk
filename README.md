@@ -31,6 +31,9 @@ AUTHORS:
 
   * Yasuhiro Matsumoto
   * David Roundy
+  * Mark Andrew Gerads
+  * Tobias Kortkamp
+  * mikhailt
 
 GOAL:
 -----
