@@ -1641,7 +1641,7 @@ func (v *GtkWindow) Move(x int, y int) {
 }
 func (v *GtkWindow) GetPosition(root_x *int, root_y *int) {
 	var croot_x, croot_y C.gint
-	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &croot_x, &croot_y)
+	C.gtk_window_get_position(C.to_GtkWindow(v.Widget), &croot_x, &croot_y)
 	*root_x = int(croot_x)
 	*root_y = int(croot_y)
 }
