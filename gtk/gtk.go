@@ -706,6 +706,7 @@ static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
 static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
 static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
+static GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
 static GObject* to_GObject(void* o) { return (GObject*)o; }
 
 static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
@@ -3966,6 +3967,53 @@ func (v *GtkMenuItem) SetUseUnderline(setting bool) {
 }
 // void gtk_menu_item_remove_submenu(GtkMenuItem *menu_item);
 // #define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
+
+
+//-----------------------------------------------------------------------
+// GtkMenuItem
+//-----------------------------------------------------------------------
+type GtkCheckMenuItem struct {
+	GtkMenuItem
+}
+
+func CheckMenuItem() *GtkCheckMenuItem {
+	return &GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_check_menu_item_new()}}}}}}
+}
+func CheckMenuItemWithLabel(label string) *GtkCheckMenuItem {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_check_menu_item_new_with_label(C.to_gcharptr(ptr))}}}}}}
+}
+func CheckMenuItemWithMnemonic(label string) *GtkCheckMenuItem {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_check_menu_item_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}}
+}
+func (v *GtkCheckMenuItem) GetActive() bool {
+	return gboolean2bool(C.gtk_check_menu_item_get_active(C.to_GtkCheckMenuItem(v.Widget)))
+}
+func (v *GtkCheckMenuItem) SetActive(setting bool) {
+	C.gtk_check_menu_item_set_active(C.to_GtkCheckMenuItem(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkCheckMenuItem) Toggled() {
+	C.gtk_check_menu_item_toggled(C.to_GtkCheckMenuItem(v.Widget))
+}
+func (v *GtkCheckMenuItem) GetInconsistent() bool {
+	return gboolean2bool(C.gtk_check_menu_item_get_inconsistent(C.to_GtkCheckMenuItem(v.Widget)))
+}
+func (v *GtkCheckMenuItem) SetInconsistent(setting bool) {
+	C.gtk_check_menu_item_set_inconsistent(C.to_GtkCheckMenuItem(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkCheckMenuItem) GetDrawAsRadio() bool {
+	return gboolean2bool(C.gtk_check_menu_item_get_draw_as_radio(C.to_GtkCheckMenuItem(v.Widget)))
+}
+func (v *GtkCheckMenuItem) SetDrawAsRadio(setting bool) {
+	C.gtk_check_menu_item_set_draw_as_radio(C.to_GtkCheckMenuItem(v.Widget), bool2gboolean(setting))
+}
+// FINISH
 
 //-----------------------------------------------------------------------
 // GtkMenu

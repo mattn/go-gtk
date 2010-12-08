@@ -45,6 +45,7 @@ GOAL:
     GtkBox: 100%
     GtkButton: 50%
     GtkCheckButton: 100%
+    GtkCheckMenuItem: 100%
     GtkColorButton: 0%
     GtkColorSelectionDialog: 0%
     GtkComboBox: 80%
