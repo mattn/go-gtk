@@ -29,26 +29,43 @@ func main() {
 	vbox.PackStart(menubar, false, false, 0)
 
 	//--------------------------------------------------------
+	// GtkVPaned
+	//--------------------------------------------------------
+	vpaned := gtk.VPaned()
+	vbox.Add(vpaned)
+
+	//--------------------------------------------------------
 	// GtkMenuItem
 	//--------------------------------------------------------
-	filemenu := gtk.MenuItemWithMnemonic("_File")
-	menubar.Append(filemenu)
-	filesubmenu := gtk.Menu()
-	filemenu.SetSubmenu(filesubmenu)
+	cascademenu := gtk.MenuItemWithMnemonic("_File")
+	menubar.Append(cascademenu)
+	submenu := gtk.Menu()
+	cascademenu.SetSubmenu(submenu)
 
-	exitmenuitem := gtk.MenuItemWithMnemonic("E_xit")
-	exitmenuitem.Connect("activate", func() {
+	menuitem := gtk.MenuItemWithMnemonic("E_xit")
+	menuitem.Connect("activate", func() {
 		gtk.MainQuit()
 	}, nil)
-	filesubmenu.Append(exitmenuitem)
+	submenu.Append(menuitem)
 
-	filemenu = gtk.MenuItemWithMnemonic("_Help")
-	menubar.Append(filemenu)
-	filesubmenu = gtk.Menu()
-	filemenu.SetSubmenu(filesubmenu)
+	cascademenu = gtk.MenuItemWithMnemonic("_View")
+	menubar.Append(cascademenu)
+	submenu = gtk.Menu()
+	cascademenu.SetSubmenu(submenu)
 
-	exitmenuitem = gtk.MenuItemWithMnemonic("_About")
-	exitmenuitem.Connect("activate", func() {
+	checkmenuitem := gtk.CheckMenuItemWithMnemonic("_Disable")
+	checkmenuitem.Connect("activate", func() {
+    	vpaned.SetSensitive(!checkmenuitem.GetActive())
+	}, nil)
+	submenu.Append(checkmenuitem)
+
+	cascademenu = gtk.MenuItemWithMnemonic("_Help")
+	menubar.Append(cascademenu)
+	submenu = gtk.Menu()
+	cascademenu.SetSubmenu(submenu)
+
+	menuitem = gtk.MenuItemWithMnemonic("_About")
+	menuitem.Connect("activate", func() {
 		dialog := gtk.AboutDialog()
 		dialog.SetName("Go-Gtk Demo!")
 		dialog.SetProgramName("demo")
@@ -64,13 +81,7 @@ func main() {
 		dialog.Run()
 		dialog.Destroy()
 	}, nil)
-	filesubmenu.Append(exitmenuitem)
-
-	//--------------------------------------------------------
-	// GtkVPaned
-	//--------------------------------------------------------
-	vpaned := gtk.VPaned()
-	vbox.Add(vpaned)
+	submenu.Append(menuitem)
 
 	//--------------------------------------------------------
 	// GtkFrame
