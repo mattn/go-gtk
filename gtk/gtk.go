@@ -3970,7 +3970,7 @@ func (v *GtkMenuItem) SetUseUnderline(setting bool) {
 
 
 //-----------------------------------------------------------------------
-// GtkMenuItem
+// GtkCheckMenuItem
 //-----------------------------------------------------------------------
 type GtkCheckMenuItem struct {
 	GtkMenuItem
