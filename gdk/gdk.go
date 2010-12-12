@@ -52,11 +52,11 @@ type Rectangle struct {
 }
 
 func Beep() {
-	C.gdk_beep();
+	C.gdk_beep()
 }
 
 func Flush() {
-	C.gdk_flush();
+	C.gdk_flush()
 }
 
 //-----------------------------------------------------------------------

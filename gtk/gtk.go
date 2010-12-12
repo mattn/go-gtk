@@ -3428,6 +3428,13 @@ func (v *GtkTextIter) ForwardSearch(str string, flags int, start *GtkTextIter, e
 		C.to_gcharptr(cstr), C.GtkTextSearchFlags(flags), &start.TextIter,
 		&end.TextIter, &limit.TextIter))
 }
+func (v *GtkTextIter) BackwardSearch(str string, flags int, start *GtkTextIter, end *GtkTextIter, limit *GtkTextIter) bool {
+	cstr := C.CString(str)
+	defer C.free_string(cstr)
+	return gboolean2bool(C.gtk_text_iter_backward_search(&v.TextIter,
+		C.to_gcharptr(cstr), C.GtkTextSearchFlags(flags), &start.TextIter,
+		&end.TextIter, &limit.TextIter))
+}
 func (v *GtkTextIter) ForwardChar() bool {
 	return gboolean2bool(C.gtk_text_iter_forward_char(&v.TextIter))
 }
