@@ -708,6 +708,7 @@ static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR
 static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
 static GObject* to_GObject(void* o) { return (GObject*)o; }
+static GtkMenu* to_GtkMenu(GtkWidget* w) { return GTK_MENU(w); }
 
 static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
 static void g_value_init_string(GValue* gv) { g_value_init(gv, G_TYPE_STRING); }
@@ -2187,7 +2188,9 @@ type GtkEntry struct {
 func Entry() *GtkEntry {
 	return &GtkEntry{GtkWidget{C.gtk_entry_new()}}
 }
-// gtk_entry_new_with_max_length
+func EntryWithMaxLength(i int) *GtkEntry {
+	return &GtkEntry{GtkWidget{C.gtk_entry_new_with_max_length(C.gint(i))}}
+}
 //func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
 //	return &GtkEntry{GtkWidget{
 //		C.gtk_entry_new_with_buffer(C.to_GtkTextbuffer.TextBuffer)}}
@@ -2231,13 +2234,27 @@ func (v *GtkEntry) SetHasFrame(setting bool) {
 // gtk_entry_set_inner_border
 // gtk_entry_set_overwrite_mode
 // gtk_entry_get_overwrite_mode
-// gtk_entry_set_max_length
-// gtk_entry_get_max_length
-// gtk_entry_get_text_length
-// gtk_entry_set_activates_default
-// gtk_entry_get_activates_default
-// gtk_entry_set_width_chars
-// gtk_entry_get_width_chars
+func (v *GtkEntry) GetMaxLength() int {
+	return int(C.gtk_entry_get_max_length(C.to_GtkEntry(v.Widget)))
+}
+func (v *GtkEntry) SetMaxLength(i int) {
+	C.gtk_entry_set_max_length(C.to_GtkEntry(v.Widget), C.gint(i))
+}
+func (v *GtkEntry) GetTextLength() int {
+	return int(C.gtk_entry_get_text_length(C.to_GtkEntry(v.Widget)))
+}
+func (v *GtkEntry) GetActivatesDefault() bool {
+	return gboolean2bool(C.gtk_entry_get_activates_default(C.to_GtkEntry(v.Widget)))
+}
+func (v *GtkEntry) SetActivatesDefault(setting bool) {
+	C.gtk_entry_set_activates_default(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkEntry) SetWidthChars(i int) {
+	C.gtk_entry_set_width_chars(C.to_GtkEntry(v.Widget), C.gint(i))
+}
+func (v *GtkEntry) GetWidthChars() int {
+	return int(C.gtk_entry_get_width_chars(C.to_GtkEntry(v.Widget)))
+}
 // gtk_entry_get_layout
 // gtk_entry_get_layout_offsets
 // gtk_entry_set_alignment
@@ -2285,7 +2302,9 @@ func (v *GtkEntry) PrependText(text string) {
 func (v *GtkEntry) SetPosition(position int) {
 	C.gtk_entry_set_position(C.to_GtkEntry(v.Widget), C.gint(position))
 }
-// gtk_entry_select_region
+func (v *GtkEntry) SelectRegion(start, end int) {
+	C.gtk_entry_select_region(C.to_GtkEntry(v.Widget), C.gint(start), C.gint(end))
+}
 func (v *GtkEntry) SetEditable(setting bool) {
 	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
@@ -2293,6 +2312,13 @@ func (v *GtkEntry) SetEditable(setting bool) {
 //-----------------------------------------------------------------------
 // GtkProgressBar
 //-----------------------------------------------------------------------
+const (
+	GTK_PROGRESS_LEFT_TO_RIGHT = iota
+	GTK_PROGRESS_RIGHT_TO_LEFT
+	GTK_PROGRESS_BOTTOM_TO_TOP
+	GTK_PROGRESS_TOP_TO_BOTTOM
+)
+
 type GtkProgressBar struct {
 	GtkWidget
 }
@@ -2309,19 +2335,6 @@ func (v *GtkProgressBar) GetFraction() float {
 func (v *GtkProgressBar) SetFraction(fraction float) {
 	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
 }
-/* These are for the unstable development version, uncommented to work with stable
-func (v *GtkProgressBar) GetInverted() bool {
-	return gboolean2bool((C.gtk_progress_bar_get_inverted(C.to_GtkProgressBar(v.Widget)))
-}
-func (v *GtkProgressBar) SetInverted(fraction bool) {
-	C.gtk_progress_bar_set_inverted(C.to_GtkProgressBar(v.Widget), bool2gboolean(inverted))
-}
-func (v *GtkProgressBar) GetShowText() bool {
-	return gboolean2bool((C.gtk_progress_bar_get_show_text(C.to_GtkProgressBar(v.Widget)))
-}
-func (v *GtkProgressBar) SetShowText(show_text bool) {
-	C.gtk_progress_bar_set_show_text(C.to_GtkProgressBar(v.Widget), bool2gboolean(show_text))
-}*/
 func (v *GtkProgressBar) GetText() string {
 	return C.GoString(C.to_charptr(C.gtk_progress_bar_get_text(C.to_GtkProgressBar(v.Widget))))
 }
@@ -2330,15 +2343,17 @@ func (v *GtkProgressBar) SetText(show_text string) {
 	defer C.free_string(ptr)
 	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.Widget), C.to_gcharptr(ptr))
 }
-
-//gtk_progress_bar_set_ellipsize
-//gtk_progress_bar_get_ellipsize
-
 func (v *GtkProgressBar) GetPulseStep() float {
 	return float(C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget)))
 }
 func (v *GtkProgressBar) SetPulseStep(fraction float) {
 	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
+}
+func (v *GtkProgressBar) GetOrientation() int {
+	return int(C.gtk_progress_bar_get_orientation(C.to_GtkProgressBar(v.Widget)))
+}
+func (v *GtkProgressBar) SetOrientation(i int) {
+	C.gtk_progress_bar_set_orientation(C.to_GtkProgressBar(v.Widget), C.GtkProgressBarOrientation(i))
 }
 
 //-----------------------------------------------------------------------
@@ -3953,16 +3968,36 @@ func MenuItemWithMnemonic(label string) *GtkMenuItem {
 func (v *GtkMenuItem) SetSubmenu(w WidgetLike) {
 	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToNative())
 }
+func (v *GtkMenuItem) GetSubmenu() *GtkWidget {
+	return &GtkWidget{C.gtk_menu_item_get_submenu(C.to_GtkMenuItem(v.Widget))}
+}
+func (v *GtkMenuItem) RemoveSubmenu() {
+	C.gtk_menu_item_remove_submenu(C.to_GtkMenuItem(v.Widget))
+}
+func (v *GtkMenuItem) Select() {
+	C.gtk_menu_item_select(C.to_GtkMenuItem(v.Widget))
+}
+func (v *GtkMenuItem) Deselect() {
+	C.gtk_menu_item_deselect(C.to_GtkMenuItem(v.Widget))
+}
+func (v *GtkMenuItem) Activate() {
+	C.gtk_menu_item_activate(C.to_GtkMenuItem(v.Widget))
+}
+func (v *GtkMenuItem) GetRightJustified() bool {
+	return gboolean2bool(C.gtk_menu_item_get_right_justified(C.to_GtkMenuItem(v.Widget)))
+}
+func (v *GtkMenuItem) SetRightJustified(b bool) {
+	C.gtk_menu_item_set_right_justified(C.to_GtkMenuItem(v.Widget), bool2gboolean(b))
+}
+func (v *GtkMenuItem) ToggleSizeRequest(i *int) {
+	gi := C.gint(*i)
+	C.gtk_menu_item_toggle_size_request(C.to_GtkMenuItem(v.Widget), &gi)
+	*i = int(gi)
+}
+func (v *GtkMenuItem) ToggleSizeAllocate(i int) {
+	C.gtk_menu_item_toggle_size_allocate(C.to_GtkMenuItem(v.Widget), C.gint(i))
+}
 // TODO
-// void gtk_menu_item_set_submenu(GtkMenuItem *menu_item, GtkWidget *submenu);
-// GtkWidget* gtk_menu_item_get_submenu(GtkMenuItem *menu_item);
-// void gtk_menu_item_select(GtkMenuItem *menu_item);
-// void gtk_menu_item_deselect(GtkMenuItem *menu_item);
-// void gtk_menu_item_activate(GtkMenuItem *menu_item);
-// void gtk_menu_item_toggle_size_request(GtkMenuItem *menu_item, gint *requisition);
-// void gtk_menu_item_toggle_size_allocate(GtkMenuItem *menu_item, gint allocation);
-// void gtk_menu_item_set_right_justified(GtkMenuItem *menu_item, gboolean right_justified);
-// gboolean gtk_menu_item_get_right_justified(GtkMenuItem *menu_item);
 // void gtk_menu_item_set_accel_path(GtkMenuItem *menu_item, const gchar *accel_path);
 // G_CONST_RETURN gchar* gtk_menu_item_get_accel_path(GtkMenuItem *menu_item);
 // void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
@@ -3973,7 +4008,6 @@ func (v *GtkMenuItem) GetUseUnderline() bool {
 func (v *GtkMenuItem) SetUseUnderline(setting bool) {
 	C.gtk_menu_item_set_use_underline(C.to_GtkMenuItem(v.Widget), bool2gboolean(setting))
 }
-// void gtk_menu_item_remove_submenu(GtkMenuItem *menu_item);
 // #define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
 
 
@@ -4045,19 +4079,33 @@ func (v *GtkMenu) Insert(child WidgetLike, position int) {
 }
 // TODO
 // void gtk_menu_popup (GtkMenu *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, GtkMenuPositionFunc func, gpointer data, guint button, guint32 activate_time);
-// void gtk_menu_reposition (GtkMenu *menu);
-// void gtk_menu_popdown (GtkMenu *menu);
-// GtkWidget* gtk_menu_get_active (GtkMenu *menu);
+func (v *GtkMenu) Reposition() {
+	C.gtk_menu_reposition(C.to_GtkMenu(v.Widget))
+}
+func (v *GtkMenu) Popdown() {
+	C.gtk_menu_popdown(C.to_GtkMenu(v.Widget))
+}
+func (v *GtkMenu) GetActive() *GtkWidget {
+	return &GtkWidget{C.gtk_menu_get_active(C.to_GtkMenu(v.Widget))}
+}
 // void gtk_menu_set_active (GtkMenu *menu, guint index_);
 // void gtk_menu_set_accel_group (GtkMenu *menu, GtkAccelGroup *accel_group);
 // GtkAccelGroup* gtk_menu_get_accel_group (GtkMenu *menu);
 // void gtk_menu_set_accel_path(GtkMenu *menu, const gchar *accel_path);
 // const gchar* gtk_menu_get_accel_path(GtkMenu *menu);
 // void gtk_menu_attach_to_widget (GtkMenu *menu, GtkWidget *attach_widget, GtkMenuDetachFunc detacher);
-// void gtk_menu_detach (GtkMenu *menu);
-// GtkWidget* gtk_menu_get_attach_widget (GtkMenu *menu);
-// void gtk_menu_set_tearoff_state(GtkMenu *menu, gboolean torn_off);
-// gboolean gtk_menu_get_tearoff_state(GtkMenu *menu);
+func (v *GtkMenu) Detach() {
+	C.gtk_menu_detach(C.to_GtkMenu(v.Widget))
+}
+func (v *GtkMenu) GetAttachWidget() *GtkWidget {
+	return &GtkWidget{C.gtk_menu_get_attach_widget(C.to_GtkMenu(v.Widget))}
+}
+func (v *GtkMenu) GetTearoffState() bool {
+	return gboolean2bool(C.gtk_menu_get_tearoff_state(C.to_GtkMenu(v.Widget)))
+}
+func (v *GtkMenu) SetTearoffState(b bool) {
+	C.gtk_menu_set_tearoff_state(C.to_GtkMenu(v.Widget), bool2gboolean(b))
+}
 // void gtk_menu_set_title(GtkMenu *menu, const gchar *title);
 // G_CONST_RETURN gchar *gtk_menu_get_title(GtkMenu *menu);
 // void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
@@ -4066,8 +4114,12 @@ func (v *GtkMenu) Insert(child WidgetLike, position int) {
 // void gtk_menu_set_monitor(GtkMenu *menu, gint monitor_num);
 // gint gtk_menu_get_monitor(GtkMenu *menu);
 // GList* gtk_menu_get_for_attach_widget(GtkWidget *widget);
-// void gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_toggle_size);
-// gboolean gtk_menu_get_reserve_toggle_size(GtkMenu *menu);
+func (v *GtkMenu) GetReserveToggleSize() bool {
+	return gboolean2bool(C.gtk_menu_get_reserve_toggle_size(C.to_GtkMenu(v.Widget)))
+}
+func (v *GtkMenu) SetReserveToggleSize(b bool) {
+	C.gtk_menu_set_reserve_toggle_size(C.to_GtkMenu(v.Widget), bool2gboolean(b))
+}
 
 //-----------------------------------------------------------------------
 // GtkMenuBar
@@ -4127,22 +4179,46 @@ func (v *GtkRange) GetValue() float {
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
 // void gtk_range_set_adjustment (GtkRange *range, GtkAdjustment *adjustment);
 // GtkAdjustment* gtk_range_get_adjustment (GtkRange *range);
-// void gtk_range_set_inverted (GtkRange *range, gboolean setting);
-// gboolean gtk_range_get_inverted (GtkRange *range);
-// void gtk_range_set_flippable (GtkRange *range, gboolean flippable);
-// gboolean gtk_range_get_flippable (GtkRange *range);
+func (v *GtkRange) GetInverted() bool {
+	return gboolean2bool(C.gtk_range_get_inverted(C.to_GtkRange(v.Widget)))
+}
+func (v *GtkRange) SetInverted(b bool) {
+	C.gtk_range_set_inverted(C.to_GtkRange(v.Widget), bool2gboolean(b))
+}
+func (v *GtkRange) GetFlippable() bool {
+	return gboolean2bool(C.gtk_range_get_flippable(C.to_GtkRange(v.Widget)))
+}
+func (v *GtkRange) SetFlippable(b bool) {
+	C.gtk_range_set_flippable(C.to_GtkRange(v.Widget), bool2gboolean(b))
+}
 // void gtk_range_set_lower_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
 // GtkSensitivityType gtk_range_get_lower_stepper_sensitivity (GtkRange *range);
 // void gtk_range_set_upper_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
 // GtkSensitivityType gtk_range_get_upper_stepper_sensitivity (GtkRange *range);
-// void gtk_range_set_increments (GtkRange *range, gdouble step, gdouble page);
-// void gtk_range_set_range (GtkRange *range, gdouble min, gdouble max);
-// void gtk_range_set_show_fill_level (GtkRange *range, gboolean show_fill_level);
-// gboolean gtk_range_get_show_fill_level (GtkRange *range);
-// void gtk_range_set_restrict_to_fill_level (GtkRange *range, gboolean restrict_to_fill_level);
-// gboolean gtk_range_get_restrict_to_fill_level (GtkRange *range);
-// void gtk_range_set_fill_level (GtkRange *range, gdouble fill_level);
-// gdouble gtk_range_get_fill_level (GtkRange *range);
+func (v *GtkRange) SetIncrements(step, page float) {
+	C.gtk_range_set_increments(C.to_GtkRange(v.Widget), C.gdouble(step), C.gdouble(page))
+}
+func (v *GtkRange) SetRange(min, max float) {
+	C.gtk_range_set_range(C.to_GtkRange(v.Widget), C.gdouble(min), C.gdouble(max))
+}
+func (v *GtkRange) GetShowFillLevel() bool {
+	return gboolean2bool(C.gtk_range_get_show_fill_level(C.to_GtkRange(v.Widget)))
+}
+func (v *GtkRange) SetShowFillLevel(b bool) {
+	C.gtk_range_set_show_fill_level(C.to_GtkRange(v.Widget), bool2gboolean(b))
+}
+func (v *GtkRange) GetRestrictToFillLevel() bool {
+	return gboolean2bool(C.gtk_range_get_restrict_to_fill_level(C.to_GtkRange(v.Widget)))
+}
+func (v *GtkRange) SetRestrictToFillLevel(b bool) {
+	C.gtk_range_set_restrict_to_fill_level(C.to_GtkRange(v.Widget), bool2gboolean(b))
+}
+func (v *GtkRange) SetFillLevel(value float) {
+	C.gtk_range_set_fill_level(C.to_GtkRange(v.Widget), C.gdouble(value))
+}
+func (v *GtkRange) GetFillLevel() float {
+	return float(C.gtk_range_get_fill_level(C.to_GtkRange(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
 // GtkScale
@@ -4644,7 +4720,11 @@ func (v *GtkListStore) Clear() {
 func (v *GtkListStore) IterIsValid(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_list_store_iter_is_valid(v.ListStore, &iter.TreeIter))
 }
-//void gtk_list_store_reorder (GtkListStore *store, gint *new_order);
+func (v *GtkListStore) Reorder(i *int) {
+	gi := C.gint(*i)
+	C.gtk_list_store_reorder(v.ListStore, &gi)
+	*i = int(gi)
+}
 func (v *GtkListStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
 	C.gtk_list_store_swap(v.ListStore, &a.TreeIter, &b.TreeIter)
 }
@@ -4726,7 +4806,11 @@ func (v *GtkTreeStore) Clear() {
 func (v *GtkTreeStore) IterIsValid(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_tree_store_iter_is_valid(v.TreeStore, &iter.TreeIter))
 }
-// void gtk_tree_store_reorder (GtkTreeStore *tree_store, GtkTreeIter *parent, gint *new_order);
+func (v *GtkTreeStore) Reorder(iter *GtkTreeIter, i *int) {
+	gi := C.gint(*i)
+	C.gtk_tree_store_reorder(v.TreeStore, &iter.TreeIter, &gi)
+	*i = int(gi)
+}
 func (v *GtkTreeStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
 	C.gtk_tree_store_swap(v.TreeStore, &a.TreeIter, &b.TreeIter)
 }
