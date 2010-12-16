@@ -1,44 +1,47 @@
 package main
 
 import (
-  "os";
-  "gtk";
-  "strconv";
+	"os"
+	"gtk"
+	"strconv"
 )
 
 func main() {
-	gtk.Init(&os.Args);
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
-	window.SetTitle("GTK Notebook");
+	gtk.Init(&os.Args)
+	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window.SetTitle("GTK Notebook")
 	window.Connect("destroy", func() {
-		gtk.MainQuit();
-	}, nil);
+		gtk.MainQuit()
+	},
+		nil)
 
-	notebook := gtk.Notebook();
+	notebook := gtk.Notebook()
 	for n := 1; n <= 10; n++ {
-		page := gtk.Frame("demo" + strconv.Itoa(n));
-		notebook.AppendPage(page, gtk.Label("demo" + strconv.Itoa(n)));
+		page := gtk.Frame("demo" + strconv.Itoa(n))
+		notebook.AppendPage(page, gtk.Label("demo"+strconv.Itoa(n)))
 
-		vbox := gtk.HBox(false, 1);
+		vbox := gtk.HBox(false, 1)
 
-		prev := gtk.ButtonWithLabel("go perv");
+		prev := gtk.ButtonWithLabel("go perv")
 		prev.Clicked(func() {
-			notebook.PrevPage();
-		}, nil);
-		vbox.Add(prev);
+			notebook.PrevPage()
+		},
+			nil)
+		vbox.Add(prev)
 
-		next := gtk.ButtonWithLabel("go next");
+		next := gtk.ButtonWithLabel("go next")
 		next.Clicked(func() {
-			notebook.NextPage();
-		}, nil);
-		vbox.Add(next);
+			notebook.NextPage()
+		},
+			nil)
+		vbox.Add(next)
 
-		page.Add(vbox);
+		page.Add(vbox)
 	}
 
-	window.Add(notebook);
-	window.SetSizeRequest(400, 200);
-	window.ShowAll();
+	window.Add(notebook)
+	window.SetSizeRequest(400, 200)
+	window.ShowAll()
 
-	gtk.Main();
+	gtk.Main()
 }

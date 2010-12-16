@@ -1,24 +1,25 @@
 package main
 
 import (
-  "os";
-  "gtk";
+	"os"
+	"gtk"
 )
 
 func main() {
-	gtk.Init(&os.Args);
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL);
-	window.SetTitle("SourceView");
+	gtk.Init(&os.Args)
+	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window.SetTitle("SourceView")
 	window.Connect("destroy", func() {
-		gtk.MainQuit();
-	}, nil);
+		gtk.MainQuit()
+	},
+		nil)
 
 	swin := gtk.ScrolledWindow(nil, nil)
 	swin.SetPolicy(gtk.GTK_POLICY_AUTOMATIC, gtk.GTK_POLICY_AUTOMATIC)
 	swin.SetShadowType(gtk.GTK_SHADOW_IN)
 	sourcebuffer := gtk.SourceBuffer()
 	sourcebuffer.SetLanguage(gtk.SourceLanguageManagerGetDefault().GetLanguage("cpp"))
-	sourceview := gtk.SourceViewWithBuffer(sourcebuffer);
+	sourceview := gtk.SourceViewWithBuffer(sourcebuffer)
 
 	var start gtk.GtkTextIter
 	sourcebuffer.GetStartIter(&start)
@@ -55,9 +56,9 @@ int main(void) {
 
 	swin.Add(sourceview)
 
-	window.Add(swin);
-	window.SetSizeRequest(400, 300);
-	window.ShowAll();
+	window.Add(swin)
+	window.SetSizeRequest(400, 300)
+	window.ShowAll()
 
-	gtk.Main();
+	gtk.Main()
 }

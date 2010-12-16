@@ -45,7 +45,8 @@ func main() {
 	menuitem := gtk.MenuItemWithMnemonic("E_xit")
 	menuitem.Connect("activate", func() {
 		gtk.MainQuit()
-	}, nil)
+	},
+		nil)
 	submenu.Append(menuitem)
 
 	cascademenu = gtk.MenuItemWithMnemonic("_View")
@@ -55,8 +56,9 @@ func main() {
 
 	checkmenuitem := gtk.CheckMenuItemWithMnemonic("_Disable")
 	checkmenuitem.Connect("activate", func() {
-    	vpaned.SetSensitive(!checkmenuitem.GetActive())
-	}, nil)
+		vpaned.SetSensitive(!checkmenuitem.GetActive())
+	},
+		nil)
 	submenu.Append(checkmenuitem)
 
 	cascademenu = gtk.MenuItemWithMnemonic("_Help")
@@ -80,7 +82,8 @@ func main() {
 		dialog.SetWrapLicense(true)
 		dialog.Run()
 		dialog.Destroy()
-	}, nil)
+	},
+		nil)
 	submenu.Append(menuitem)
 
 	//--------------------------------------------------------
@@ -120,7 +123,8 @@ func main() {
 	scale := gtk.HScaleWithRange(0, 100, 1)
 	scale.Connect("value-changed", func() {
 		print("scale: ", int(scale.GetValue()), "\n")
-	}, nil)
+	},
+		nil)
 	framebox2.Add(scale)
 
 	//--------------------------------------------------------
@@ -155,12 +159,15 @@ func main() {
 			filechooserdialog.Response(func() {
 				println(filechooserdialog.GetFilename())
 				filechooserdialog.Destroy()
-			}, nil)
+			},
+				nil)
 			filechooserdialog.Run()
-		}, nil)
+		},
+			nil)
 		messagedialog.Run()
 		messagedialog.Destroy()
-	}, nil)
+	},
+		nil)
 	buttons.Add(button)
 
 	//--------------------------------------------------------
@@ -172,7 +179,8 @@ func main() {
 		print("fontname: ", fontbutton.GetFontName(), "\n")
 		print("use_size: ", fontbutton.GetUseSize(), "\n")
 		print("show_size: ", fontbutton.GetShowSize(), "\n")
-	}, nil)
+	},
+		nil)
 	buttons.Add(fontbutton)
 	framebox2.PackStart(buttons, false, false, 0)
 
@@ -188,7 +196,8 @@ func main() {
 		} else {
 			togglebutton.SetLabel("ToggleButton OFF!")
 		}
-	}, nil)
+	},
+		nil)
 	buttons.Add(togglebutton)
 
 	//--------------------------------------------------------
@@ -201,7 +210,8 @@ func main() {
 		} else {
 			checkbutton.SetLabel("CheckButton UNCHECKED!")
 		}
-	}, nil)
+	},
+		nil)
 	buttons.Add(checkbutton)
 
 	//--------------------------------------------------------
@@ -228,7 +238,8 @@ func main() {
 	comboboxentry.AppendText("Elephant")
 	comboboxentry.Connect("changed", func() {
 		print("value: ", comboboxentry.GetActiveText(), "\n")
-	}, nil)
+	},
+		nil)
 	combos.Add(comboboxentry)
 
 	//--------------------------------------------------------
@@ -241,7 +252,8 @@ func main() {
 	combobox.SetActive(1)
 	combobox.Connect("changed", func() {
 		print("value: ", combobox.GetActiveText(), "\n")
-	}, nil)
+	},
+		nil)
 	combos.Add(combobox)
 
 	framebox2.PackStart(combos, false, false, 0)
@@ -269,7 +281,8 @@ func main() {
 
 	buffer.Connect("changed", func() {
 		println("changed")
-	}, nil)
+	},
+		nil)
 
 	//--------------------------------------------------------
 	// GtkStatusbar

@@ -5,7 +5,7 @@ import "glib"
 import "fmt"
 
 func main() {
-	gtk.SetLocale()	
+	gtk.SetLocale()
 
 	bs := ([]byte)("こんにちわ世界")
 

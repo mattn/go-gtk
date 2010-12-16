@@ -1470,7 +1470,7 @@ type GtkFixed struct {
 	GtkContainer
 }
 
-func Fixed() *GtkFixed{
+func Fixed() *GtkFixed {
 	return &GtkFixed{GtkContainer{GtkWidget{C.gtk_fixed_new()}}}
 }
 func (v *GtkFixed) Put(w WidgetLike, x, y int) {
@@ -2296,6 +2296,7 @@ func (v *GtkEntry) SetEditable(setting bool) {
 type GtkProgressBar struct {
 	GtkWidget
 }
+
 func ProgressBar() *GtkProgressBar {
 	return &GtkProgressBar{GtkWidget{C.gtk_progress_bar_new()}}
 }
@@ -2306,7 +2307,7 @@ func (v *GtkProgressBar) GetFraction() float {
 	return float(C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget)))
 }
 func (v *GtkProgressBar) SetFraction(fraction float) {
-	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget),C.gdouble(fraction))
+	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
 }
 /* These are for the unstable development version, uncommented to work with stable
 func (v *GtkProgressBar) GetInverted() bool {
@@ -2321,23 +2322,23 @@ func (v *GtkProgressBar) GetShowText() bool {
 func (v *GtkProgressBar) SetShowText(show_text bool) {
 	C.gtk_progress_bar_set_show_text(C.to_GtkProgressBar(v.Widget), bool2gboolean(show_text))
 }*/
-func (v *GtkProgressBar) GetText() string{
+func (v *GtkProgressBar) GetText() string {
 	return C.GoString(C.to_charptr(C.gtk_progress_bar_get_text(C.to_GtkProgressBar(v.Widget))))
 }
-func (v *GtkProgressBar) SetText(show_text string){
+func (v *GtkProgressBar) SetText(show_text string) {
 	ptr := C.CString(show_text)
 	defer C.free_string(ptr)
-	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.Widget),C.to_gcharptr(ptr))
+	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.Widget), C.to_gcharptr(ptr))
 }
 
 //gtk_progress_bar_set_ellipsize
 //gtk_progress_bar_get_ellipsize
 
-func (v *GtkProgressBar) GetPulseStep() float{
+func (v *GtkProgressBar) GetPulseStep() float {
 	return float(C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget)))
 }
-func (v *GtkProgressBar) SetPulseStep(fraction float){
-	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.Widget),C.gdouble(fraction))
+func (v *GtkProgressBar) SetPulseStep(fraction float) {
+	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
 }
 
 //-----------------------------------------------------------------------
