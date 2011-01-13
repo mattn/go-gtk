@@ -985,7 +985,7 @@ func GtkStockLookup(stock_id string, item *GtkStockItem) bool {
 	return gboolean2bool(C.gtk_stock_lookup(C.to_gcharptr(ptr), item.StockItem))
 }
 func GtkStockListIDs() *glib.SList {
-	return glib.FromSList(unsafe.Pointer(C.gtk_stock_list_ids()))
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_stock_list_ids()))
 }
 //-----------------------------------------------------------------------
 // GtkAccelGroup
@@ -2757,7 +2757,7 @@ func RadioButtonWithMnemonicFromWidget(w *GtkRadioButton, label string) *GtkRadi
 		C.gtk_radio_button_new_with_mnemonic_from_widget(C.to_GtkRadioButton(w.Widget), C.to_gcharptr(ptr))}}}}}}}
 }
 func (v *GtkRadioButton) GetGroup() *glib.SList {
-	return glib.FromSList(unsafe.Pointer(C.gtk_radio_button_get_group(C.to_GtkRadioButton(v.Widget))))
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_button_get_group(C.to_GtkRadioButton(v.Widget))))
 }
 func (v *GtkRadioButton) SetGroup(group *glib.SList) {
 	if group != nil {
@@ -3503,7 +3503,7 @@ func (v *GtkTextIter) GetVisibleText(end *GtkTextIter) string {
 	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_text(&v.TextIter, &end.TextIter)))
 }
 func (v *GtkTextIter) GetMarks() *glib.SList {
-	return glib.FromSList(unsafe.Pointer(C.gtk_text_iter_get_marks(&v.TextIter)))
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_text_iter_get_marks(&v.TextIter)))
 }
 // TODO
 // gtk_text_iter_get_pixbuf
@@ -5156,7 +5156,7 @@ func (v *GtkBuilder) GetObject(name string) *glib.GObject {
 		unsafe.Pointer(C.gtk_builder_get_object(v.Builder, C.to_gcharptr(ptr)))}
 }
 func (v *GtkBuilder) GetObjects() *glib.SList {
-	return glib.FromSList(unsafe.Pointer(C.gtk_builder_get_objects(v.Builder)))
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_builder_get_objects(v.Builder)))
 }
 func (v *GtkBuilder) ConnectSignals(user_data interface{}) {
 	C.gtk_builder_connect_signals(v.Builder, nil)
