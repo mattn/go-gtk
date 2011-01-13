@@ -32,10 +32,54 @@ static gchar* _g_locale_to_utf8(void* opsysstring, int len, int* bytes_read, int
 static gchar* _g_locale_from_utf8(char* utf8string, int len, int* bytes_read, int* bytes_written, GError** error) {
 	return g_locale_from_utf8((const gchar*)utf8string, (gssize)len, (gsize*)bytes_read, (gsize*)bytes_written, error);
 }
+static void _g_object_set(gpointer object, const gchar *property_name, GValue* value) {
+	g_object_set(object, property_name, value, NULL);
+}
+//static void _g_object_get(gpointer object, const gchar *property_name, void* value) {
+//	g_object_get(object, property_name, value, NULL);
+//}
+
+static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
+static void g_value_init_string(GValue* gv) { g_value_init(gv, G_TYPE_STRING); }
+
+static GValue* init_gvalue_string_type() {
+  GValue* gv = g_new0(GValue, 1);
+  g_value_init(gv, G_TYPE_STRING);
+  return gv;
+}
+static GValue* init_gvalue_string(gchar* val) {
+  GValue* gv = init_gvalue_string_type();
+  g_value_set_string(gv, val);
+  return gv;
+}
+
+static GValue* init_gvalue_int_type() {
+  GValue* gv = g_new0(GValue, 1);
+  g_value_init(gv, G_TYPE_INT);
+  return gv;
+}
+static GValue* init_gvalue_int(gint val) {
+  GValue* gv = init_gvalue_int_type();
+  g_value_set_int(gv, val);
+  return gv;
+}
+
+static GValue* init_gvalue_uint(guint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UINT); g_value_set_uint(gv, val); return gv; }
+static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
+static GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return gv; }
+static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return gv; }
+//static GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return gv; }
+
 */
 import "C"
 import "unsafe"
 
+func bool2gboolean(b bool) C.gboolean {
+	if b {
+		return C.gboolean(1)
+	}
+	return C.gboolean(0)
+}
 func gboolean2bool(b C.gboolean) bool {
 	if b != 0 {
 		return true
@@ -272,7 +316,7 @@ type GObject struct {
 	Object unsafe.Pointer
 }
 
-func ObjectFromUnsafe(object unsafe.Pointer) *GObject {
+func ObjectFromNative(object unsafe.Pointer) *GObject {
 	//	return &GObject {
 	//		C.to_GObject(object) }
 	return &GObject{
@@ -285,9 +329,18 @@ func (v *GObject) Ref() {
 func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
 }
-func (v *GObject) Set() {
-	C.g_object_unref(C.gpointer(v.Object))
+func (v *GObject) Set(name string, value unsafe.Pointer) {
+	gv := GValueFromNative(value)
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), gv)
 }
+func (v *GObject) SetProperty(name string, val *GValue) {
+	str := C.CString(name)
+	defer C.free_string(str)
+	C.g_object_set_property(C.to_GObject(v.Object), C.to_gcharptr(str), &val.Value)
+}
+
 
 func Utf8Validate(str []byte, len int, bar **byte) bool {
 	return gboolean2bool(C._g_utf8_validate(unsafe.Pointer(&str[0]),
@@ -335,3 +388,62 @@ func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_writte
 	}
 	return
 }
+
+//-----------------------------------------------------------------------
+// GValue
+//-----------------------------------------------------------------------
+func GValueFromNative(val interface{}) *C.GValue {
+	var gv *C.GValue
+	switch val.(type) {
+	case bool:
+		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)))
+		break
+	case byte:
+		gv = C.init_gvalue_byte(C.guchar(val.(byte)))
+		break
+	case int:
+		gv = C.init_gvalue_int(C.gint(val.(int)))
+		break
+	case uint:
+		gv = C.init_gvalue_uint(C.guint(val.(uint)))
+		break
+	case float:
+		gv = C.init_gvalue_double(C.gdouble(val.(float)))
+		break
+	case string:
+		{
+			pval := C.CString(val.(string))
+			defer C.free_string(pval)
+			gv = C.init_gvalue_string(C.to_gcharptr(pval))
+		}
+		break
+	default:
+		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&val)));
+		break
+	}
+	return gv
+}
+
+type GValue struct {
+	Value C.GValue
+}
+
+const (
+	G_TYPE_INT    = 0
+	G_TYPE_STRING = 1
+)
+
+func (v *GValue) Init(t int) {
+	if t == G_TYPE_INT {
+		C.g_value_init_int(&v.Value)
+	} else if t == G_TYPE_STRING {
+		C.g_value_init_string(&v.Value)
+	}
+}
+
+func (v *GValue) GetString() string {
+	cstr := C.g_value_get_string(&v.Value)
+	defer C.free_string(C.to_charptr(cstr))
+	return C.GoString(C.to_charptr(cstr))
+}
+

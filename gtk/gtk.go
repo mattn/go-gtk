@@ -655,6 +655,8 @@ static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 
 static inline void free_string(char* s) { free(s); }
 
+static GValue* to_GValueptr(void* s) { return (GValue*)s; }
+
 static GtkSourceBuffer* to_GtkSourceBuffer(void* p) { return GTK_SOURCE_BUFFER(p); }
 static GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
 static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
@@ -707,39 +709,7 @@ static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
 static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
 static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
-static GObject* to_GObject(void* o) { return (GObject*)o; }
 static GtkMenu* to_GtkMenu(GtkWidget* w) { return GTK_MENU(w); }
-
-static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
-static void g_value_init_string(GValue* gv) { g_value_init(gv, G_TYPE_STRING); }
-
-static GValue* init_gvalue_string_type() {
-  GValue* gv = g_new0(GValue, 1);
-  g_value_init(gv, G_TYPE_STRING);
-  return gv;
-}
-static GValue* init_gvalue_string(gchar* val) {
-  GValue* gv = init_gvalue_string_type();
-  g_value_set_string(gv, val);
-  return gv;
-}
-
-static GValue* init_gvalue_int_type() {
-  GValue* gv = g_new0(GValue, 1);
-  g_value_init(gv, G_TYPE_INT);
-  return gv;
-}
-static GValue* init_gvalue_int(gint val) {
-  GValue* gv = init_gvalue_int_type();
-  g_value_set_int(gv, val);
-  return gv;
-}
-
-static GValue* init_gvalue_uint(guint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UINT); g_value_set_uint(gv, val); return gv; }
-static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
-static GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return gv; }
-static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return gv; }
-//static GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return gv; }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -782,75 +752,11 @@ func panic_if_version_older(major int, minor int, micro int, message string) {
 		panic(message)
 	}
 }
-func native2gvalue(val interface{}) *C.GValue {
-	var gv *C.GValue
-	switch val.(type) {
-	case bool:
-		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)))
-		break
-	case byte:
-		gv = C.init_gvalue_byte(C.guchar(val.(byte)))
-		break
-	case int:
-		gv = C.init_gvalue_int(C.gint(val.(int)))
-		break
-	case uint:
-		gv = C.init_gvalue_uint(C.guint(val.(uint)))
-		break
-	case float:
-		gv = C.init_gvalue_double(C.gdouble(val.(float)))
-		break
-	case string:
-		{
-			pval := C.CString(val.(string))
-			defer C.free_string(pval)
-			gv = C.init_gvalue_string(C.to_gcharptr(pval))
-		}
-		break
-	default:
-		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&val)));
-		break
-	}
-	return gv
-}
-
-//-----------------------------------------------------------------------
-// GValue
-//-----------------------------------------------------------------------
-type GValue struct {
-	Value C.GValue
-}
-
-const (
-	G_TYPE_INT    = 0
-	G_TYPE_STRING = 1
-)
-
-func (v *GValue) Init(t int) {
-	if t == G_TYPE_INT {
-		C.g_value_init_int(&v.Value)
-	} else if t == G_TYPE_STRING {
-		C.g_value_init_string(&v.Value)
-	}
-}
-
-func (v *GValue) GetString() string {
-	cstr := C.g_value_get_string(&v.Value)
-	defer C.free_string(C.to_charptr(cstr))
-	return C.GoString(C.to_charptr(cstr))
-}
-
 //-----------------------------------------------------------------------
 // GtkObject
 //-----------------------------------------------------------------------
 type GtkObject struct {
 	glib.GObject
-}
-
-func (v *GtkObject) SetProperty(name string, val *GValue) {
-	str := C.CString(name)
-	defer C.free_string(str)
-	C.g_object_set_property(C.to_GObject(v.Object), C.to_gcharptr(str), &val.Value)
 }
 
 //-----------------------------------------------------------------------
@@ -2988,8 +2894,8 @@ func (v *GtkTreeModel) IterNthChild(iter *GtkTreeIter, parent *GtkTreeIter, n in
 func (v *GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_tree_model_iter_parent(v.TreeModel, &iter.TreeIter, &child.TreeIter))
 }
-func (v *GtkTreeModel) GetValue(iter *GtkTreeIter, col int, val *GValue) {
-	C.gtk_tree_model_get_value(v.TreeModel, &iter.TreeIter, C.gint(col), &val.Value)
+func (v *GtkTreeModel) GetValue(iter *GtkTreeIter, col int, val *glib.GValue) {
+	C.gtk_tree_model_get_value(v.TreeModel, &iter.TreeIter, C.gint(col), C.to_GValueptr(unsafe.Pointer(&val.Value)))
 }
 // TODO
 // gtk_tree_model_ref_node
@@ -4680,9 +4586,9 @@ func (v *GtkTreeModel) ToListStore() *GtkListStore {
 //GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
 //void gtk_list_store_set_column_types (GtkListStore *list_store, gint n_columns, GType *types);
 func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
-	gv := native2gvalue(a)
+	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), gv)
+		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
 		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()))
 	}
@@ -4755,9 +4661,9 @@ func (v *GtkTreeStore) ToTreeModel() *GtkTreeModel {
 // GtkTreeStore *gtk_tree_store_newv (gint n_columns, GType *types);
 // void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types); void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
 func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
-	gv := native2gvalue(a)
+	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), gv)
+		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
 		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()))
 	}
