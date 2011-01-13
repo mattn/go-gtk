@@ -160,7 +160,7 @@ type SList struct {
 	GSList *C.GSList
 }
 
-func FromSList(sl unsafe.Pointer) *SList {
+func SListFromNative(sl unsafe.Pointer) *SList {
 	return &SList{
 		C.to_slist(sl)}
 }
@@ -256,7 +256,7 @@ func (v *Error) Message() string {
 	return C.GoString(C.to_charptr(v.GError.message))
 }
 
-func FromError(err unsafe.Pointer) *Error {
+func ErrorFromNative(err unsafe.Pointer) *Error {
 	return &Error{
 		C.to_error(err)}
 }
@@ -285,6 +285,9 @@ func (v *GObject) Ref() {
 func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
 }
+func (v *GObject) Set() {
+	C.g_object_unref(C.gpointer(v.Object))
+}
 
 func Utf8Validate(str []byte, len int, bar **byte) bool {
 	return gboolean2bool(C._g_utf8_validate(unsafe.Pointer(&str[0]),
@@ -304,7 +307,7 @@ func LocaleToUtf8(opsysstring []byte) (ret string, bytes_read int, bytes_written
 	bytes_read = int(cbytes_read)
 	bytes_written = int(cbytes_written)
 	if unsafe.Pointer(gerror) != nil {
-		error = FromError(unsafe.Pointer(gerror))
+		error = ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
 		error = nil
 	}
@@ -326,7 +329,7 @@ func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_writte
 	bytes_read = int(cbytes_read)
 	bytes_written = int(cbytes_written)
 	if unsafe.Pointer(gerror) != nil {
-		error = FromError(unsafe.Pointer(gerror))
+		error = ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
 		error = nil
 	}
