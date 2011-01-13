@@ -329,7 +329,7 @@ func (v *GObject) Ref() {
 func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
 }
-func (v *GObject) Set(name string, value unsafe.Pointer) {
+func (v *GObject) Set(name string, value interface{}) {
 	gv := GValueFromNative(value)
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
