@@ -32,8 +32,8 @@ static gchar* _g_locale_to_utf8(void* opsysstring, int len, int* bytes_read, int
 static gchar* _g_locale_from_utf8(char* utf8string, int len, int* bytes_read, int* bytes_written, GError** error) {
 	return g_locale_from_utf8((const gchar*)utf8string, (gssize)len, (gsize*)bytes_read, (gsize*)bytes_written, error);
 }
-static void _g_object_set(gpointer object, const gchar *property_name, GValue* value) {
-	g_object_set(object, property_name, value, NULL);
+static void _g_object_set(gpointer object, const gchar *property_name, void* value) {
+	g_object_set(object, property_name, *(guint**)value, NULL);
 }
 //static void _g_object_get(gpointer object, const gchar *property_name, void* value) {
 //	g_object_get(object, property_name, value, NULL);
@@ -73,6 +73,7 @@ static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); 
 */
 import "C"
 import "unsafe"
+import "reflect"
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -330,10 +331,35 @@ func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
 }
 func (v *GObject) Set(name string, value interface{}) {
-	gv := GValueFromNative(value)
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), gv)
+	switch value.(type) {
+	case bool:
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(bool2gboolean(value.(bool))).Addr()))
+		break
+	case byte:
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gchar(value.(byte))).Addr()))
+		break
+	case int:
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gint(value.(int))).Addr()))
+		break
+	case uint:
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.guint(value.(uint))).Addr()))
+		break
+	case float:
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gfloat(value.(float))).Addr()))
+		break
+	case string:
+		{
+			pval := C.CString(value.(string))
+			defer C.free_string(pval)
+			C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(pval).Addr()))
+		}
+		break
+	default:
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(value).Addr()))
+		break
+	}
 }
 func (v *GObject) SetProperty(name string, val *GValue) {
 	str := C.CString(name)
@@ -422,6 +448,9 @@ func GValueFromNative(val interface{}) *C.GValue {
 		break
 	}
 	return gv
+}
+func ValueFromNative(val interface{}) *GValue {
+	return &GValue{*GValueFromNative(val)}
 }
 
 type GValue struct {
