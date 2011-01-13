@@ -41,7 +41,7 @@ func PixbufFromFile(path string) (pixbuf *GdkPixbuf, err **glib.Error) {
 	defer C.free_string(ptr)
 	pixbuf = &GdkPixbuf{C.gdk_pixbuf_new_from_file(ptr, &error)}
 	if err != nil && error != nil {
-		*err = glib.FromError(unsafe.Pointer(error))
+		*err = glib.ErrorFromNative(unsafe.Pointer(error))
 	}
 	return
 }

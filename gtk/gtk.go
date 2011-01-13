@@ -5129,7 +5129,7 @@ func (v *GtkBuilder) AddFromFile(filename string) (ret uint, error *glib.Error) 
 	defer C.free_string(ptr)
 	ret = uint(C.gtk_builder_add_from_file(v.Builder, C.to_gcharptr(ptr), &gerror))
 	if gerror != nil {
-		error = glib.FromError(unsafe.Pointer(gerror))
+		error = glib.ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
 		error = nil
 	}
@@ -5141,7 +5141,7 @@ func (v *GtkBuilder) AddFromString(buffer string) (ret uint, error *glib.Error) 
 	defer C.free_string(ptr)
 	ret = uint(C.gtk_builder_add_from_string(v.Builder, C.to_gcharptr(ptr), C.gsize(C.strlen(ptr)), &gerror))
 	if gerror != nil {
-		error = glib.FromError(unsafe.Pointer(gerror))
+		error = glib.ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
 		error = nil
 	}
