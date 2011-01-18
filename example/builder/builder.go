@@ -3,12 +3,9 @@ package main
 import (
 	"os"
 	"gtk"
-	"callback"
 )
 
 func main() {
-	callback.Init()
-
 	gtk.Init(&os.Args)
 	builder := gtk.Builder()
 	builder.AddFromFile("hello.ui")
