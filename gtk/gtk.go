@@ -1442,7 +1442,16 @@ func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
 	C._gtk_window_add_accel_group(v.Widget, group.AccelGroup)
 }
 // gtk_window_remove_accel_group
-// gtk_window_set_position
+func (v *GtkWindow) SetPosition(position int) {
+	C.gtk_window_set_position(C.to_GtkWindow(v.Widget), C.GtkWindowPosition(position))
+}
+const(
+  GTK_WIN_POS_NONE = iota
+  GTK_WIN_POS_CENTER
+  GTK_WIN_POS_MOUSE
+  GTK_WIN_POS_CENTER_ALWAYS
+  GTK_WIN_POS_CENTER_ON_PARENT
+)
 // gtk_window_activate_focus
 // gtk_window_set_focus
 // gtk_window_get_focus
