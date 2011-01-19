@@ -476,3 +476,7 @@ func (v *GValue) GetString() string {
 	return C.GoString(C.to_charptr(cstr))
 }
 
+func (v *GValue) GetInt() int {
+	return int(C.g_value_get_int(&v.Value))
+}
+
