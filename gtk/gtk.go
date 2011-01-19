@@ -4354,7 +4354,14 @@ func (v *GtkTreeViewColumn) SetSizing(s int) {
 //GtkTreeViewColumnSizing gtk_tree_view_column_get_sizing (GtkTreeViewColumn *tree_column);
 //gint gtk_tree_view_column_get_width (GtkTreeViewColumn *tree_column);
 //gint gtk_tree_view_column_get_fixed_width (GtkTreeViewColumn *tree_column);
+
+
 //void gtk_tree_view_column_set_fixed_width (GtkTreeViewColumn *tree_column, gint fixed_width);
+func (v *GtkTreeViewColumn) SetFixedWidth(w int) {
+	C.gtk_tree_view_column_set_fixed_width(v.TreeViewColumn, C.gint(w))
+}
+
+
 //void gtk_tree_view_column_set_min_width (GtkTreeViewColumn *tree_column, gint min_width);
 //gint gtk_tree_view_column_get_min_width (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_max_width (GtkTreeViewColumn *tree_column, gint max_width);
@@ -4393,6 +4400,42 @@ func (v *GtkTreeViewColumn) GetTitle() string {
 //void gtk_tree_view_column_queue_resize (GtkTreeViewColumn *tree_column);
 //GtkWidget *gtk_tree_view_column_get_tree_view (GtkTreeViewColumn *tree_column);
 
+
+//-----------------------------------------------------------------------
+// GtkTreeSelection
+//-----------------------------------------------------------------------
+type GtkTreeSelection struct {
+	TreeSelection *C.GtkTreeSelection
+}
+
+const (
+	SELECTION_NONE     = iota
+	SELECTION_SINGLE
+	SELECTION_BROWSE
+	SELECTION_MULTIPLE
+	SELECTION_EXTENDED = SELECTION_MULTIPLE
+)
+
+func (v *GtkTreeSelection) Connect(s string, f func()) {
+	callback_contexts.Push(&CallbackContext{f, reflect.NewValue(nil)})
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	C._gtk_signal_connect(unsafe.Pointer(v.TreeSelection), C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
+}
+
+func (v *GtkTreeSelection) GetSelected(i *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_selection_get_selected(v.TreeSelection, nil, &i.TreeIter))
+}
+
+func (v *GtkTreeSelection) SetMode(m int) {
+	C.gtk_tree_selection_set_mode(v.TreeSelection, C.GtkSelectionMode(m))
+}
+
+func (v *GtkTreeSelection) CountSelectedRows() int {
+	return int(C.gtk_tree_selection_count_selected_rows(v.TreeSelection))
+}
+
+
 //-----------------------------------------------------------------------
 // GtkTreeView
 //-----------------------------------------------------------------------
@@ -4405,13 +4448,19 @@ func TreeView() *GtkTreeView {
 		C.gtk_tree_view_new()}}}
 }
 func (v *GtkTreeView) SetModel(model *GtkTreeModel) {
-	C.gtk_tree_view_set_model(C.to_GtkTreeView(v.Widget), model.TreeModel)
+	var tm *C.GtkTreeModel
+	if (model != nil ) {
+		tm = model.TreeModel
+	}
+	C.gtk_tree_view_set_model(C.to_GtkTreeView(v.Widget), tm)
 }
 //GtkWidget *gtk_tree_view_new (void);
 //GtkWidget *gtk_tree_view_new_with_model (GtkTreeModel *model);
 //GtkTreeModel *gtk_tree_view_get_model (GtkTreeView *tree_view);
 //void gtk_tree_view_set_model (GtkTreeView *tree_view, GtkTreeModel *model);
-//GtkTreeSelection *gtk_tree_view_get_selection (GtkTreeView *tree_view);
+func (v *GtkTreeView) GetSelection() *GtkTreeSelection {
+	return &GtkTreeSelection{C.gtk_tree_view_get_selection(C.to_GtkTreeView(v.Widget))}
+}
 //GtkAdjustment *gtk_tree_view_get_hadjustment (GtkTreeView *tree_view);
 //void gtk_tree_view_set_hadjustment (GtkTreeView *tree_view, GtkAdjustment *adjustment);
 //GtkAdjustment *gtk_tree_view_get_vadjustment (GtkTreeView *tree_view);

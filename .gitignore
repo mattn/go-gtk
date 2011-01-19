@@ -1,5 +1,6 @@
 *~
 _obj
 *.cgo?.*
+_cgo_*
 *.[oa568]
 main
