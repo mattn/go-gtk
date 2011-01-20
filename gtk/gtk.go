@@ -2244,10 +2244,10 @@ func ProgressBar() *GtkProgressBar {
 func (v *GtkProgressBar) Pulse() {
 	C.gtk_progress_bar_pulse(C.to_GtkProgressBar(v.Widget))
 }
-func (v *GtkProgressBar) GetFraction() float {
-	return float(C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget)))
+func (v *GtkProgressBar) GetFraction() float64 {
+	return float64(C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget)))
 }
-func (v *GtkProgressBar) SetFraction(fraction float) {
+func (v *GtkProgressBar) SetFraction(fraction float64) {
 	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
 }
 func (v *GtkProgressBar) GetText() string {
@@ -2258,10 +2258,10 @@ func (v *GtkProgressBar) SetText(show_text string) {
 	defer C.free_string(ptr)
 	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkProgressBar) GetPulseStep() float {
-	return float(C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget)))
+func (v *GtkProgressBar) GetPulseStep() float64 {
+	return float64(C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget)))
 }
-func (v *GtkProgressBar) SetPulseStep(fraction float) {
+func (v *GtkProgressBar) SetPulseStep(fraction float64) {
 	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
 }
 func (v *GtkProgressBar) GetOrientation() int {
@@ -3042,11 +3042,11 @@ type GtkAlignment struct {
 	GtkBin
 }
 
-func Alignment(xalign float, yalign float, xscale float, yscale float) *GtkAlignment {
+func Alignment(xalign float64, yalign float64, xscale float64, yscale float64) *GtkAlignment {
 	return &GtkAlignment{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_alignment_new(C.gfloat(xalign), C.gfloat(yalign), C.gfloat(xscale), C.gfloat(yscale))}}}}
 }
-func (v *GtkAlignment) Set(xalign float, yalign float, xscale float, yscale float) {
+func (v *GtkAlignment) Set(xalign float64, yalign float64, xscale float64, yscale float64) {
 	C.gtk_alignment_set(C.to_GtkAlignment(v.Widget), C.gfloat(xalign), C.gfloat(yalign), C.gfloat(xscale), C.gfloat(yscale))
 }
 func (v *GtkAlignment) SetPadding(padding_top uint, padding_bottom uint, padding_left uint, padding_right uint) {
@@ -3157,12 +3157,12 @@ func (v *GtkFrame) GetLabelWidget() LabelLike {
 func (v *GtkFrame) SetLabelWidget(label_widget LabelLike) {
 	C.gtk_frame_set_label_widget(C.to_GtkFrame(v.Widget), label_widget.ToNative())
 }
-func (v *GtkFrame) GetLabelAlign() (xalign, yalign float) {
+func (v *GtkFrame) GetLabelAlign() (xalign, yalign float64) {
 	var xalign_, yalign_ C.gfloat
 	C.gtk_frame_get_label_align(C.to_GtkFrame(v.Widget), &xalign_, &yalign_)
-	return float(xalign_), float(yalign_)
+	return float64(xalign_), float64(yalign_)
 }
-func (v *GtkFrame) SetLabelAlign(xalign, yalign float) {
+func (v *GtkFrame) SetLabelAlign(xalign, yalign float64) {
 	C.gtk_frame_set_label_align(C.to_GtkFrame(v.Widget), C.gfloat(xalign), C.gfloat(yalign))
 }
 func (v *GtkFrame) GetShadowType() int {
@@ -3741,11 +3741,11 @@ func (v *GtkTextView) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_view_get_buffer(v.Widget)}
 }
-func (v *GtkTextView) ScrollToIter(iter *GtkTextIter, wm float, ua bool, xa float, ya float) bool {
+func (v *GtkTextView) ScrollToIter(iter *GtkTextIter, wm float64, ua bool, xa float64, ya float64) bool {
 	return gboolean2bool(C.gtk_text_view_scroll_to_iter(C.to_GtkTextView(v.Widget),
 		&iter.TextIter, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya)))
 }
-func (v *GtkTextView) ScrollToMark(mark *GtkTextMark, wm float, ua bool, xa float, ya float) {
+func (v *GtkTextView) ScrollToMark(mark *GtkTextMark, wm float64, ua bool, xa float64, ya float64) {
 	C.gtk_text_view_scroll_to_mark(C.to_GtkTextView(v.Widget),
 		mark.TextMark, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya))
 }
@@ -4084,11 +4084,11 @@ type GtkRange struct {
 	GtkWidget
 }
 
-func (v *GtkRange) SetValue(value float) {
+func (v *GtkRange) SetValue(value float64) {
 	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
-func (v *GtkRange) GetValue() float {
-	return float(C.gtk_range_get_value(C.to_GtkRange(v.Widget)))
+func (v *GtkRange) GetValue() float64 {
+	return float64(C.gtk_range_get_value(C.to_GtkRange(v.Widget)))
 }
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
@@ -4110,10 +4110,10 @@ func (v *GtkRange) SetFlippable(b bool) {
 // GtkSensitivityType gtk_range_get_lower_stepper_sensitivity (GtkRange *range);
 // void gtk_range_set_upper_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
 // GtkSensitivityType gtk_range_get_upper_stepper_sensitivity (GtkRange *range);
-func (v *GtkRange) SetIncrements(step, page float) {
+func (v *GtkRange) SetIncrements(step, page float64) {
 	C.gtk_range_set_increments(C.to_GtkRange(v.Widget), C.gdouble(step), C.gdouble(page))
 }
-func (v *GtkRange) SetRange(min, max float) {
+func (v *GtkRange) SetRange(min, max float64) {
 	C.gtk_range_set_range(C.to_GtkRange(v.Widget), C.gdouble(min), C.gdouble(max))
 }
 func (v *GtkRange) GetShowFillLevel() bool {
@@ -4128,11 +4128,11 @@ func (v *GtkRange) GetRestrictToFillLevel() bool {
 func (v *GtkRange) SetRestrictToFillLevel(b bool) {
 	C.gtk_range_set_restrict_to_fill_level(C.to_GtkRange(v.Widget), bool2gboolean(b))
 }
-func (v *GtkRange) SetFillLevel(value float) {
+func (v *GtkRange) SetFillLevel(value float64) {
 	C.gtk_range_set_fill_level(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
-func (v *GtkRange) GetFillLevel() float {
-	return float(C.gtk_range_get_fill_level(C.to_GtkRange(v.Widget)))
+func (v *GtkRange) GetFillLevel() float64 {
+	return float64(C.gtk_range_get_fill_level(C.to_GtkRange(v.Widget)))
 }
 
 //-----------------------------------------------------------------------
@@ -4174,7 +4174,7 @@ func (v *GtkScale) GetLayoutOffsets(x *int, y *int) {
 	*x = int(xx)
 	*y = int(yy)
 }
-func (v *GtkScale) AddMark(value float, position uint, markup string) {
+func (v *GtkScale) AddMark(value float64, position uint, markup string) {
 	ptr := C.CString(markup)
 	defer C.free_string(ptr)
 	C.gtk_scale_add_mark(C.to_GtkScale(v.Widget), C.gdouble(value), C.GtkPositionType(position), C.to_gcharptr(ptr))
@@ -4189,7 +4189,7 @@ func HScale(adjustment *GtkAdjustment) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
 		C.gtk_hscale_new(adjustment.Adjustment)}}}
 }
-func HScaleWithRange(min float, max float, step float) *GtkScale {
+func HScaleWithRange(min float64, max float64, step float64) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
 		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
 }
@@ -4202,7 +4202,7 @@ func VScale(adjustment *GtkAdjustment) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
 		C.gtk_vscale_new(adjustment.Adjustment)}}}
 }
-func VScaleWithRange(min float, max float, step float) *GtkScale {
+func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
 		C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
 }
@@ -4500,7 +4500,7 @@ func (v *GtkTreeView) GetColumn(n int) *GtkTreeViewColumn {
 //GtkTreeViewColumn *gtk_tree_view_get_expander_column (GtkTreeView *tree_view);
 //void gtk_tree_view_set_column_drag_function (GtkTreeView *tree_view, GtkTreeViewColumnDropFunc func, gpointer user_data, GDestroyNotify destroy);
 //void gtk_tree_view_scroll_to_point (GtkTreeView *tree_view, gint tree_x, gint tree_y);
-func (v *GtkTreeView) ScrollToCell(path *GtkTreePath, col *GtkTreeViewColumn, use bool, ra float, ca float) {
+func (v *GtkTreeView) ScrollToCell(path *GtkTreePath, col *GtkTreeViewColumn, use bool, ra float64, ca float64) {
 	var pcol *C.GtkTreeViewColumn
 	if nil == col {
 		pcol = nil

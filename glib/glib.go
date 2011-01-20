@@ -357,8 +357,8 @@ func (v *GObject) Set(name string, value interface{}) {
 	case uint:
 		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.guint(value.(uint))).Addr()))
 		break
-	case float:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gfloat(value.(float))).Addr()))
+	case float64:
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gfloat(value.(float64))).Addr()))
 		break
 	case string:
 		{
@@ -455,8 +455,8 @@ func GValueFromNative(value interface{}) *C.GValue {
 	case uint:
 		gv = C.init_gvalue_uint(C.guint(value.(uint)))
 		break
-	case float:
-		gv = C.init_gvalue_double(C.gdouble(value.(float)))
+	case float64:
+		gv = C.init_gvalue_double(C.gdouble(value.(float64)))
 		break
 	case string:
 		{
