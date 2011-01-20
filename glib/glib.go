@@ -334,11 +334,14 @@ func (v *GObject) Set(name string, value interface{}) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 
-	if _, ok := value.(ObjectLike); ok {
-		value = value.(ObjectLike).GetInternalValue()
+	if _, ok := value.(WrappedObject); ok {
+		value = value.(WrappedObject).GetInternalValue()
+	}
+	if _, ok := value.(GObject); ok {
+		value = value.(GObject).Object
 	}
 	if _, ok := value.(GValue); ok {
-		value = value.(GValue)
+		value = value.(GValue).Value
 	}
 
 	switch value.(type) {
@@ -429,11 +432,14 @@ func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_writte
 func GValueFromNative(value interface{}) *C.GValue {
 	var gv *C.GValue
 
-	if _, ok := value.(ObjectLike); ok {
-		value = value.(ObjectLike).GetInternalValue()
+	if _, ok := value.(WrappedObject); ok {
+		value = value.(WrappedObject).GetInternalValue()
+	}
+	if _, ok := value.(GObject); ok {
+		value = value.(GObject).Object
 	}
 	if _, ok := value.(GValue); ok {
-		value = value.(GValue)
+		value = value.(GValue).Value
 	}
 
 	switch value.(type) {
@@ -496,3 +502,9 @@ func (v *GValue) GetInt() int {
 	return int(C.g_value_get_int(&v.Value))
 }
 
+//-----------------------------------------------------------------------
+// WrappedObject
+//-----------------------------------------------------------------------
+type WrappedObject interface {
+	GetInternalValue() unsafe.Pointer
+}
