@@ -312,7 +312,6 @@ func ErrorFromNative(err unsafe.Pointer) *Error {
 type ObjectLike interface {
 	Ref()
 	Unref()
-	GetInternalValue() unsafe.Pointer
 }
 type GObject struct {
 	Object unsafe.Pointer
@@ -325,14 +324,11 @@ func ObjectFromNative(object unsafe.Pointer) *GObject {
 		object}
 }
 
-func (v GObject) Ref() {
+func (v *GObject) Ref() {
 	C.g_object_ref(C.gpointer(v.Object))
 }
-func (v GObject) Unref() {
+func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
-}
-func (v GObject) GetInternalValue() unsafe.Pointer {
-	return v.Object
 }
 func (v *GObject) Set(name string, value interface{}) {
 	ptr := C.CString(name)
