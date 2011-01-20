@@ -312,6 +312,7 @@ func ErrorFromNative(err unsafe.Pointer) *Error {
 type ObjectLike interface {
 	Ref()
 	Unref()
+	GetInternalValue() unsafe.Pointer
 }
 type GObject struct {
 	Object unsafe.Pointer
@@ -324,15 +325,26 @@ func ObjectFromNative(object unsafe.Pointer) *GObject {
 		object}
 }
 
-func (v *GObject) Ref() {
+func (v GObject) Ref() {
 	C.g_object_ref(C.gpointer(v.Object))
 }
-func (v *GObject) Unref() {
+func (v GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
+}
+func (v GObject) GetInternalValue() unsafe.Pointer {
+	return v.Object
 }
 func (v *GObject) Set(name string, value interface{}) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
+
+	if _, ok := value.(ObjectLike); ok {
+		value = value.(ObjectLike).GetInternalValue()
+	}
+	if _, ok := value.(GValue); ok {
+		value = value.(GValue)
+	}
+
 	switch value.(type) {
 	case bool:
 		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(bool2gboolean(value.(bool))).Addr()))
@@ -418,33 +430,41 @@ func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_writte
 //-----------------------------------------------------------------------
 // GValue
 //-----------------------------------------------------------------------
-func GValueFromNative(val interface{}) *C.GValue {
+func GValueFromNative(value interface{}) *C.GValue {
 	var gv *C.GValue
-	switch val.(type) {
+
+	if _, ok := value.(ObjectLike); ok {
+		value = value.(ObjectLike).GetInternalValue()
+	}
+	if _, ok := value.(GValue); ok {
+		value = value.(GValue)
+	}
+
+	switch value.(type) {
 	case bool:
-		gv = C.init_gvalue_bool(bool2gboolean(val.(bool)))
+		gv = C.init_gvalue_bool(bool2gboolean(value.(bool)))
 		break
 	case byte:
-		gv = C.init_gvalue_byte(C.guchar(val.(byte)))
+		gv = C.init_gvalue_byte(C.guchar(value.(byte)))
 		break
 	case int:
-		gv = C.init_gvalue_int(C.gint(val.(int)))
+		gv = C.init_gvalue_int(C.gint(value.(int)))
 		break
 	case uint:
-		gv = C.init_gvalue_uint(C.guint(val.(uint)))
+		gv = C.init_gvalue_uint(C.guint(value.(uint)))
 		break
 	case float:
-		gv = C.init_gvalue_double(C.gdouble(val.(float)))
+		gv = C.init_gvalue_double(C.gdouble(value.(float)))
 		break
 	case string:
 		{
-			pval := C.CString(val.(string))
+			pval := C.CString(value.(string))
 			defer C.free_string(pval)
 			gv = C.init_gvalue_string(C.to_gcharptr(pval))
 		}
 		break
 	default:
-		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&val)));
+		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&value)));
 		break
 	}
 	return gv
