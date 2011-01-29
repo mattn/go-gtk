@@ -33,7 +33,7 @@ AUTHORS:
   * David Roundy
   * Mark Andrew Gerads
   * Tobias Kortkamp
-  * mikhailt
+  * Mikhail Trushnikov
 
 GOAL:
 -----
