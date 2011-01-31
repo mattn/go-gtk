@@ -58,7 +58,7 @@ GOAL:
     GtkFileChooserDialog: 100%
     GtkFixed: 100%
     GtkFontButton: 100%
-    GtkFontSelectionDialog: 0%
+    GtkFontSelectionDialog: 50%
     GtkFrame: 100%
     GtkHBox: 100%
     GtkHButtonBox: 0%
