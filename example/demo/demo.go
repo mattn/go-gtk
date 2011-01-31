@@ -2,15 +2,13 @@ package main
 
 import (
 	"os"
-	"gdk"
 	"gtk"
 	"gdkpixbuf"
 	"path"
 )
 
 func main() {
-	gdk.ThreadsInit()
-	gdk.ThreadsEnter()
+	var menuitem *gtk.GtkMenuItem
 	gtk.Init(nil)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Go!")
@@ -38,58 +36,6 @@ func main() {
 	vbox.Add(vpaned)
 
 	//--------------------------------------------------------
-	// GtkMenuItem
-	//--------------------------------------------------------
-	cascademenu := gtk.MenuItemWithMnemonic("_File")
-	menubar.Append(cascademenu)
-	submenu := gtk.Menu()
-	cascademenu.SetSubmenu(submenu)
-
-	menuitem := gtk.MenuItemWithMnemonic("E_xit")
-	menuitem.Connect("activate", func() {
-		gtk.MainQuit()
-	},
-		nil)
-	submenu.Append(menuitem)
-
-	cascademenu = gtk.MenuItemWithMnemonic("_View")
-	menubar.Append(cascademenu)
-	submenu = gtk.Menu()
-	cascademenu.SetSubmenu(submenu)
-
-	checkmenuitem := gtk.CheckMenuItemWithMnemonic("_Disable")
-	checkmenuitem.Connect("activate", func() {
-		vpaned.SetSensitive(!checkmenuitem.GetActive())
-	},
-		nil)
-	submenu.Append(checkmenuitem)
-
-	cascademenu = gtk.MenuItemWithMnemonic("_Help")
-	menubar.Append(cascademenu)
-	submenu = gtk.Menu()
-	cascademenu.SetSubmenu(submenu)
-
-	menuitem = gtk.MenuItemWithMnemonic("_About")
-	menuitem.Connect("activate", func() {
-		dialog := gtk.AboutDialog()
-		dialog.SetName("Go-Gtk Demo!")
-		dialog.SetProgramName("demo")
-		dialog.SetAuthors([]string{
-			"Yasuhiro Matsumoto <mattn.jp@gmail.com>",
-			"David Roundy <roundyd@physics.oregonstate.edu>"})
-		dir, _ := path.Split(os.Args[0])
-		imagefile := path.Join(dir, "../../data/mattn-logo.png")
-		pixbuf, _ := gdkpixbuf.PixbufFromFile(imagefile)
-		dialog.SetLogo(pixbuf)
-		dialog.SetLicense("The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.")
-		dialog.SetWrapLicense(true)
-		dialog.Run()
-		dialog.Destroy()
-	},
-		nil)
-	submenu.Append(menuitem)
-
-	//--------------------------------------------------------
 	// GtkFrame
 	//--------------------------------------------------------
 	frame1 := gtk.Frame("Demo")
@@ -113,6 +59,9 @@ func main() {
 	label.ModifyFontEasy("DejaVu Serif 15")
 	framebox1.PackStart(label, false, true, 0)
 
+	//--------------------------------------------------------
+	// GtkEntry
+	//--------------------------------------------------------
 	entry := gtk.Entry()
 	entry.SetText("Hello world")
 	framebox1.Add(entry)
@@ -286,6 +235,76 @@ func main() {
 		println("changed")
 	},
 		nil)
+
+	//--------------------------------------------------------
+	// GtkMenuItem
+	//--------------------------------------------------------
+	cascademenu := gtk.MenuItemWithMnemonic("_File")
+	menubar.Append(cascademenu)
+	submenu := gtk.Menu()
+	cascademenu.SetSubmenu(submenu)
+
+	menuitem = gtk.MenuItemWithMnemonic("E_xit")
+	menuitem.Connect("activate", func() {
+		gtk.MainQuit()
+	},
+		nil)
+	submenu.Append(menuitem)
+
+	cascademenu = gtk.MenuItemWithMnemonic("_View")
+	menubar.Append(cascademenu)
+	submenu = gtk.Menu()
+	cascademenu.SetSubmenu(submenu)
+
+	checkmenuitem := gtk.CheckMenuItemWithMnemonic("_Disable")
+	checkmenuitem.Connect("activate", func() {
+		vpaned.SetSensitive(!checkmenuitem.GetActive())
+	},
+		nil)
+	submenu.Append(checkmenuitem)
+
+	menuitem = gtk.MenuItemWithMnemonic("_Font")
+	menuitem.Connect("activate", func() {
+		fsd := gtk.FontSelectionDialog("Font")
+		fsd.SetFontName(fontbutton.GetFontName())
+		fsd.Response(func() {
+			println(fsd.GetFontName())
+			fontbutton.SetFontName(fsd.GetFontName())
+			fsd.Destroy()
+		}, nil)
+		fsd.SetTransientFor(window)
+		fsd.Run()
+	},
+		nil)
+	submenu.Append(menuitem)
+
+	cascademenu = gtk.MenuItemWithMnemonic("_Help")
+	menubar.Append(cascademenu)
+	submenu = gtk.Menu()
+	cascademenu.SetSubmenu(submenu)
+
+	menuitem = gtk.MenuItemWithMnemonic("_About")
+	menuitem.Connect("activate", func() {
+		dialog := gtk.AboutDialog()
+		dialog.SetName("Go-Gtk Demo!")
+		dialog.SetProgramName("demo")
+		dialog.SetAuthors([]string{
+			"Yasuhiro Matsumoto <mattn.jp@gmail.com>",
+			"David Roundy <roundyd@physics.oregonstate.edu>",
+			"Mark Andrew Gerads",
+			"Tobias Kortkamp",
+			"Mikhail Trushnikov"})
+		dir, _ := path.Split(os.Args[0])
+		imagefile := path.Join(dir, "../../data/mattn-logo.png")
+		pixbuf, _ := gdkpixbuf.PixbufFromFile(imagefile)
+		dialog.SetLogo(pixbuf)
+		dialog.SetLicense("The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.")
+		dialog.SetWrapLicense(true)
+		dialog.Run()
+		dialog.Destroy()
+	},
+		nil)
+	submenu.Append(menuitem)
 
 	//--------------------------------------------------------
 	// GtkStatusbar

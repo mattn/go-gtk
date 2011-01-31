@@ -687,6 +687,7 @@ static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
 static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
 static GtkContainer* to_GtkContainer(GtkWidget* w) { return GTK_CONTAINER(w); }
 static GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER(w); }
+static GtkFontSelectionDialog* to_GtkFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
 static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
 static GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
 static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
@@ -1754,6 +1755,30 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // gboolean gtk_file_chooser_add_shortcut_folder_uri(GtkFileChooser* chooser, const char* uri, GError* *error);
 // gboolean gtk_file_chooser_remove_shortcut_folder_uri(GtkFileChooser* chooser, const char* uri, GError* *error);
 // GSList* gtk_file_chooser_list_shortcut_folder_uris(GtkFileChooser* chooser);
+
+//-----------------------------------------------------------------------
+// GtkFontSelectionDialog
+//-----------------------------------------------------------------------
+type GtkFontSelectionDialog struct {
+	GtkDialog
+}
+
+func FontSelectionDialog(title string) *GtkFontSelectionDialog {
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	return &GtkFontSelectionDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_font_selection_dialog_new(C.to_gcharptr(ptitle))}}}}}}
+}
+
+func (v *GtkFontSelectionDialog) SetFontName(font string) {
+	pfont := C.CString(font)
+	defer C.free_string(pfont)
+	C.gtk_font_selection_dialog_set_font_name(C.to_GtkFontSelectionDialog(v.Widget), C.to_gcharptr(pfont))
+}
+
+func (v *GtkFontSelectionDialog) GetFontName() string {
+	return C.GoString(C.to_charptr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.Widget))))
+}
 
 //-----------------------------------------------------------------------
 // GtkFileChooserDialog
