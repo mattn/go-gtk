@@ -9,6 +9,11 @@ all:
 	echo "cd `pwd`" >> builder &&\
 	echo "LD_PRELOAD=./pkg/$(GOOS)_$(GOARCH)/callback.so ./pkg/$(GOOS)_$(GOARCH)/builder" >> builder &&\
 	chmod +x builder
+	echo "@echo off" > builder.bat &&\
+	echo "cd $(shell pwd)" >> builder.bat &&\
+	echo "setlocal" >> builder.bat &&\
+	echo "set PATH=./pkg/$(GOOS)_$(GOARCH)/;$(PATH)" >> builder.bat &&\
+	echo ".\\pkg\\$(GOOS)_$(GOARCH)\\builder" >> builder.bat
 
 clean:
 	$(MAKE) -f Make.cgo clean

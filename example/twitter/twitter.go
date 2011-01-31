@@ -110,5 +110,6 @@ func main() {
 	window.Add(vbox)
 	window.SetSizeRequest(800, 500)
 	window.ShowAll()
+			gdk.ThreadsEnter()
 	gtk.Main()
 }

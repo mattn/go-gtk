@@ -2,12 +2,15 @@ package main
 
 import (
 	"os"
+	"gdk"
 	"gtk"
 	"gdkpixbuf"
 	"path"
 )
 
 func main() {
+	gdk.ThreadsInit()
+	gdk.ThreadsEnter()
 	gtk.Init(nil)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Go!")
@@ -162,10 +165,10 @@ func main() {
 			},
 				nil)
 			filechooserdialog.Run()
+			messagedialog.Destroy()
 		},
 			nil)
 		messagedialog.Run()
-		messagedialog.Destroy()
 	},
 		nil)
 	buttons.Add(button)

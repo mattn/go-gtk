@@ -8,6 +8,6 @@ LD=${O}l -Lpkg/$(GOOS)_$(GOARCH)
 
 include $(GOROOT)/src/Make.cmd
 
-installlocal: builder
+installlocal: $(TARG)
 	mkdir -p pkg/$(GOOS)_$(GOARCH)
-	mv builder pkg/$(GOOS)_$(GOARCH)/.
+	mv $(TARG) pkg/$(GOOS)_$(GOARCH)/.
