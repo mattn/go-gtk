@@ -291,7 +291,10 @@ func main() {
 		dialog.SetProgramName("demo")
 		dialog.SetAuthors([]string{
 			"Yasuhiro Matsumoto <mattn.jp@gmail.com>",
-			"David Roundy <roundyd@physics.oregonstate.edu>"})
+			"David Roundy <roundyd@physics.oregonstate.edu>",
+			"Mark Andrew Gerads",
+			"Tobias Kortkamp",
+			"Mikhail Trushnikov"})
 		dir, _ := path.Split(os.Args[0])
 		imagefile := path.Join(dir, "../../data/mattn-logo.png")
 		pixbuf, _ := gdkpixbuf.PixbufFromFile(imagefile)
