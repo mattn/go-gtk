@@ -22,7 +22,7 @@ package gtk
 #define Q_SIZE 256
 
 typedef struct {
-	char name[256];
+	char *name;
 	int func_no;
 	void* target;
 	uintptr_t** args;
@@ -33,11 +33,8 @@ typedef struct {
 	int in_queue;
 } callback_info;
 
-//static callback_info* current_callback_info = NULL;
-
 static callback_info* event_queue[Q_SIZE];
 // One global mutex for event handling synchronization.
-static pthread_mutex_t event_mu = PTHREAD_MUTEX_INITIALIZER;
 static int q_front = 0;
 static int q_back = 0;
 static int q_next(int cur) {
@@ -47,6 +44,33 @@ static int q_next(int cur) {
 		return 0;
 	}
 }
+#ifdef _WIN32
+#include <windows.h>
+static CRITICAL_SECTION cs;
+static void q_init() {
+	InitializeCriticalSection(&cs);
+	q_front = 0;
+	q_back = 0;
+}
+static void q_lock() {
+	EnterCriticalSection(&cs);
+}
+static void q_unlock() {
+	LeaveCriticalSection(&cs);
+}
+#else
+static pthread_mutex_t event_mu = PTHREAD_MUTEX_INITIALIZER;
+static void q_init() {
+	q_front = 0;
+	q_back = 0;
+}
+static void q_lock() {
+	pthread_mutex_lock(&event_mu);
+}
+static void q_unlock() {
+	pthread_mutex_unlock(&event_mu);
+}
+#endif
 
 // Note that queue methods aren't thread safe. The only reason they are used
 // w/o lock is that all the methods which use queue use their own global lock.
@@ -67,7 +91,7 @@ static void q_push(callback_info* info) {
 	event_queue[q_back] = info;
 	if (q_full()) {
 		// In this case we lose oldest event in the queue.
-		printf("Go-gkt bindings error: event queue overwhelmed, event lost\n");
+		puts("Go-gkt bindings error: event queue overwhelmed, event lost");
 		q_front = q_next(q_front);
 	}
 	q_back = q_next(q_back);
@@ -80,20 +104,20 @@ static void callback_info_free_args(callback_info* cbi) {
 	free(cbi->args);
 }
 static int callback_info_get_current(callback_info* cbi) {
-	pthread_mutex_lock(&event_mu);
+	q_lock();
 	if (!q_empty()) {
 		callback_info* cur_info = q_pop();
 		memcpy(cbi, cur_info, sizeof(callback_info));
 		cur_info->in_queue = 0;
-		pthread_mutex_unlock(&event_mu); // Why there is no defer in C :(?
+		q_unlock();
 		return 1;
 	}
-	pthread_mutex_unlock(&event_mu);
+	q_unlock();
 	return 0;
 }
 
 static void _callback(void *data, ...) {
-	pthread_mutex_lock(&event_mu);
+	q_lock();
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
 
@@ -114,7 +138,7 @@ static void _callback(void *data, ...) {
 		q_push(cbi);
 		cbi->in_queue = 1;
 	}
-	pthread_mutex_unlock(&event_mu);
+	q_unlock();
 }
 
 static void _gtk_init(void* argc, void* argv) {
@@ -132,7 +156,7 @@ static long _gtk_signal_connect(void* obj, gchar* name, int func_no) {
 	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(obj));
 	g_signal_query(signal_id, &query);
 	cbi = g_slice_new0(callback_info);
-	strcpy(cbi->name, name);
+	cbi->name = g_strdup(name);
 	cbi->in_queue = 0;
 	cbi->func_no = func_no;
 	cbi->args = NULL;
@@ -5400,6 +5424,7 @@ func Init(args *[]string) {
 		C._gtk_init(nil, nil)
 	}
 	callback_contexts = new(vector.Vector)
+	C.q_init()
 }
 
 func Main() {
