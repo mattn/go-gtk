@@ -443,6 +443,7 @@ func WindowFromUnsafe(window unsafe.Pointer) *GdkWindow {
 	return &GdkWindow{
 		C.to_GdkWindow(window)}
 }
+
 func (v *GdkWindow) GetPointer(x *int, y *int, mask *uint) *GdkWindow {
 	var cx, cy C.gint
 	var mt C.GdkModifierType
@@ -453,10 +454,12 @@ func (v *GdkWindow) GetPointer(x *int, y *int, mask *uint) *GdkWindow {
 	*mask = uint(mt)
 	return ret
 }
+
 func (v *GdkWindow) GetDrawable() *GdkDrawable {
 	return &GdkDrawable{
 		(*C.GdkDrawable)(v.Window)}
 }
+
 func (v *GdkWindow) Invalidate(rect *Rectangle, invalidate_children bool) {
 	if rect != nil {
 		var _rect C.GdkRectangle
@@ -468,6 +471,14 @@ func (v *GdkWindow) Invalidate(rect *Rectangle, invalidate_children bool) {
 	} else {
 		C.gdk_window_invalidate_rect(v.Window, nil, bool2gboolean(invalidate_children))
 	}
+}
+
+func (v *GdkWindow) Show() {
+	C.gdk_window_show(v.Window)
+}
+
+func (v *GdkWindow) Raise() {
+	C.gdk_window_raise(v.Window)
 }
 
 //-----------------------------------------------------------------------
