@@ -1542,7 +1542,9 @@ func (v *GtkWindow) SetDefault(w *GtkWidget) {
 // gtk_window_get_mnemonic_modifier
 // gtk_window_activate_key
 // gtk_window_propagate_key_event
-// gtk_window_present
+func (v *GtkWindow) Present() {
+	C.gtk_window_present(C.to_GtkWindow(v.Widget))
+}
 // gtk_window_present_with_time
 // gtk_window_iconify
 // gtk_window_deiconify
