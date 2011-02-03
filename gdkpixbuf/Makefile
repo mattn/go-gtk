@@ -9,7 +9,3 @@ CGO_LDFLAGS = `pkg-config --libs gdk-pixbuf-2.0`
 GC:=$(GC) -I ../glib/_obj
 
 include $(GOROOT)/src/Make.pkg
-
-%: install %.go
-	$(GC) $*.go
-	$(LD) -o $@ $*.$O

@@ -11,7 +11,3 @@ CGO_DEPS=
 GC:=$(GC) -I ../glib/_obj -I ../gdk/_obj -I ../gdkpixbuf/_obj
 
 include $(GOROOT)/src/Make.pkg
-
-%: install %.go
-	$(GC) $*.go
-	$(LD) -o $@ $*.$O
