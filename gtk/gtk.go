@@ -5006,10 +5006,10 @@ func (v *GtkNotebook) SetDetachable(child WidgetLike, detachable bool) {
 //-----------------------------------------------------------------------
 type PanedLike interface {
 	ContainerLike
-	Add1(child WidgetLike, expand bool, fill bool, padding uint)
-	Add2(child WidgetLike, expand bool, fill bool, padding uint)
-	Pack1(child WidgetLike, expand bool, fill bool, padding uint)
-	Pack2(child WidgetLike, expand bool, fill bool, padding uint)
+	Add1(child WidgetLike)
+	Add2(child WidgetLike)
+	Pack1(child WidgetLike, expand bool, fill bool)
+	Pack2(child WidgetLike, expand bool, fill bool)
 }
 type GtkPaned struct {
 	GtkContainer
