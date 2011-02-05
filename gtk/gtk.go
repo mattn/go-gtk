@@ -4589,8 +4589,12 @@ func (v *GtkTreeView) SetCursor(path *GtkTreePath, col *GtkTreeViewColumn, se bo
 //void gtk_tree_view_get_cursor (GtkTreeView *tree_view, GtkTreePath **path, GtkTreeViewColumn **focus_column);
 func (v *GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewColumn) {
 	*path = &GtkTreePath{nil}
-	*focus_column = &GtkTreeViewColumn{nil}
-	C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, &(*focus_column).TreeViewColumn)
+	if nil != focus_column {
+		*focus_column = &GtkTreeViewColumn{nil}
+		C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, &(*focus_column).TreeViewColumn)
+	} else {
+		C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, nil)
+	}
 }
 //GdkWindow *gtk_tree_view_get_bin_window (GtkTreeView *tree_view);
 //gboolean gtk_tree_view_get_path_at_pos (GtkTreeView *tree_view, gint x, gint y, GtkTreePath **path, GtkTreeViewColumn **column, gint *cell_x, gint *cell_y);
