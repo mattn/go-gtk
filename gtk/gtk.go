@@ -918,6 +918,37 @@ func GtkStockLookup(stock_id string, item *GtkStockItem) bool {
 func GtkStockListIDs() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_stock_list_ids()))
 }
+
+//-----------------------------------------------------------------------
+// GtkSettings
+//-----------------------------------------------------------------------
+type GtkSettings struct {
+	Settings *C.GtkSettings
+}
+
+func (s *GtkSettings) SetStringProperty(name string, v_string string, origin string) {
+	ptrn := C.CString(name)
+	defer C.free_string(ptrn)
+	ptrv := C.CString(v_string)
+	defer C.free_string(ptrv)
+	prts := C.CString(origin)
+	defer C.free_string(prts)
+	C.gtk_settings_set_string_property(s.Settings, C.to_gcharptr(ptrn), C.to_gcharptr(ptrv), C.to_gcharptr(prts))
+}
+func (s *GtkSettings) SetLongProperty(name string, v_long int32, origin string) {
+	ptrn := C.CString(name)
+	defer C.free_string(ptrn)
+	prts := C.CString(origin)
+	defer C.free_string(prts)
+	C.gtk_settings_set_long_property(s.Settings, C.to_gcharptr(ptrn), C.glong(v_long), C.to_gcharptr(prts))
+}
+func (s *GtkSettings) SetDoubleProperty(name string, v_double float64, origin string) {
+	ptrn := C.CString(name)
+	defer C.free_string(ptrn)
+	prts := C.CString(origin)
+	defer C.free_string(prts)
+	C.gtk_settings_set_double_property(s.Settings, C.to_gcharptr(ptrn), C.gdouble(v_double), C.to_gcharptr(prts))
+}
 //-----------------------------------------------------------------------
 // GtkAccelGroup
 //-----------------------------------------------------------------------
@@ -1233,7 +1264,9 @@ func (v *GtkWidget) AddEvents(events int) {
 // gtk_widget_has_screen
 // gtk_widget_get_display
 // gtk_widget_get_root_window
-// gtk_widget_get_settings
+func (v *GtkWidget) GetSettings() *GtkSettings {
+	return &GtkSettings{C.gtk_widget_get_settings(v.Widget)}
+}
 // gtk_widget_get_clipboard
 // gtk_widget_get_snapshot
 // gtk_widget_get_accessible
