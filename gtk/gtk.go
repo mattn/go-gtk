@@ -188,7 +188,7 @@ static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flag
 			message, NULL);
 }
 
-static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
+static GtkWidget* _gtk_file_chooser_dialog_new1(const gchar* title,
 		GtkWidget* parent, int file_chooser_action, int action, const gchar* button) {
 	return gtk_file_chooser_dialog_new(
 			title,
@@ -210,6 +210,22 @@ static GtkWidget* _gtk_file_chooser_dialog_new2(const gchar* title,
 			action,
 			button2,
 			action2,
+			NULL);
+}
+
+static GtkWidget* _gtk_file_chooser_dialog_new3(const gchar* title,
+		GtkWidget* parent, int file_chooser_action, int action, const gchar* button,
+		int action2, const gchar* button2, int action3, const gchar* button3) {
+	return gtk_file_chooser_dialog_new(
+			title,
+			GTK_WINDOW(parent),
+			file_chooser_action,
+			button,
+			action,
+			button2,
+			action2,
+			button3,
+			action3,
 			NULL);
 }
 
@@ -1823,38 +1839,72 @@ type GtkFileChooserDialog struct {
 	//GtkFileChooser;
 }
 
-func FileChooserDialog(title string, parent WindowLike, file_chooser_action int, button string, action int) *GtkFileChooserDialog {
-	ptitle := C.CString(title)
-	defer C.free_string(ptitle)
-	pbutton := C.CString(button)
-	defer C.free_string(pbutton)
-	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C._gtk_file_chooser_dialog_new(
-			C.to_gcharptr(ptitle),
-			parent.ToNative(),
-			C.int(file_chooser_action),
-			C.int(action),
-			C.to_gcharptr(pbutton))}}}}}}
-}
-// two buttons
+// button_name and button_action for the second and third button can be passed as ... parameters
+// variadic arguments must be even, one button_name and one button_action for each button
+// known bug: dialogs with more than 3 buttons are not supported
 // TODO(mikhailt): Find out how to bind variable parameter list methods.
-func FileChooserDialog2(title string, parent WindowLike, file_chooser_action int, button string, action int, button2 string, action2 int) *GtkFileChooserDialog {
+// updated(fedesog): partial solution using a single variadic function on go side
+func FileChooserDialog(title string, parent WindowLike, file_chooser_action int, button1 string, action1 int, buttons ...interface{}) *GtkFileChooserDialog {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
-	pbutton := C.CString(button)
-	defer C.free_string(pbutton)
-	pbutton2 := C.CString(button2)
-	defer C.free_string(pbutton2)
-	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C._gtk_file_chooser_dialog_new2(
+	if len(buttons) == 0 { // 1 button
+		pbutton1 := C.CString(button1)
+		defer C.free_string(pbutton1)
+		return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+			C._gtk_file_chooser_dialog_new1(
 			C.to_gcharptr(ptitle),
 			parent.ToNative(),
 			C.int(file_chooser_action),
-			C.int(action),
-			C.to_gcharptr(pbutton),
-			C.int(action2),
-			C.to_gcharptr(pbutton2))}}}}}}
+			C.int(action1),
+			C.to_gcharptr(pbutton1))}}}}}}
+	} else if len(buttons) == 2 { // 2 buttons
+		button2, ok := buttons[0].(string)
+		if !ok {button2 = ""} //!strings are converted to ""
+		action2, ok := buttons[1].(int)
+		if !ok {action2 = GTK_RESPONSE_NONE} //!int are converted to GTK_RESPONSE_NONE
+		pbutton1 := C.CString(button1)
+		defer C.free_string(pbutton1)
+		pbutton2 := C.CString(button2)
+		defer C.free_string(pbutton2)
+		return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+			C._gtk_file_chooser_dialog_new2(
+				C.to_gcharptr(ptitle),
+				parent.ToNative(),
+				C.int(file_chooser_action),
+				C.int(action1),
+				C.to_gcharptr(pbutton1),
+				C.int(action2),
+				C.to_gcharptr(pbutton2))}}}}}}
+	} else if len(buttons) == 4 { // 3 buttons
+		button2, ok := buttons[0].(string)
+		if !ok {button2 = ""}
+		action2, ok := buttons[1].(int)
+		if !ok {action2 = GTK_RESPONSE_NONE}
+		button3, ok := buttons[2].(string)
+		if !ok {button3 = ""}
+		action3, ok := buttons[3].(int)
+		if !ok {action3 = GTK_RESPONSE_NONE}
+		pbutton1 := C.CString(button1)
+		defer C.free_string(pbutton1)
+		pbutton2 := C.CString(button2)
+		defer C.free_string(pbutton2)
+		pbutton3 := C.CString(button3)
+		defer C.free_string(pbutton3)
+		return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+			C._gtk_file_chooser_dialog_new3(
+				C.to_gcharptr(ptitle),
+				parent.ToNative(),
+				C.int(file_chooser_action),
+				C.int(action1),
+				C.to_gcharptr(pbutton1),
+				C.int(action2),
+				C.to_gcharptr(pbutton2),
+				C.int(action3),
+				C.to_gcharptr(pbutton3))}}}}}}
+	}
+	panic("error: (go-gtk) gtk.FileChooserDialog, wrong number of variadic arguments")
 }
+
 func (v *GtkFileChooserDialog) GetFilename() string {
 	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
 }
