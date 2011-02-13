@@ -1847,25 +1847,24 @@ type GtkFileChooserDialog struct {
 func FileChooserDialog(title string, parent WindowLike, file_chooser_action int, button1 string, action1 int, buttons ...interface{}) *GtkFileChooserDialog {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
-	if len(buttons) == 0 { // 1 button
-		pbutton1 := C.CString(button1)
-		defer C.free_string(pbutton1)
+	pbutton1 := C.CString(button1)
+	defer C.free_string(pbutton1)
+	if len(buttons) == 0 { //1 button
 		return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 			C._gtk_file_chooser_dialog_new1(
-			C.to_gcharptr(ptitle),
-			parent.ToNative(),
-			C.int(file_chooser_action),
-			C.int(action1),
-			C.to_gcharptr(pbutton1))}}}}}}
-	} else if len(buttons) == 2 { // 2 buttons
-		button2, ok := buttons[0].(string)
-		if !ok {button2 = ""} //!strings are converted to ""
-		action2, ok := buttons[1].(int)
-		if !ok {action2 = GTK_RESPONSE_NONE} //!int are converted to GTK_RESPONSE_NONE
-		pbutton1 := C.CString(button1)
-		defer C.free_string(pbutton1)
-		pbutton2 := C.CString(button2)
-		defer C.free_string(pbutton2)
+				C.to_gcharptr(ptitle),
+				parent.ToNative(),
+				C.int(file_chooser_action),
+				C.int(action1),
+				C.to_gcharptr(pbutton1))}}}}}}
+	}
+	button2, ok := buttons[0].(string)
+	if !ok {button2 = ""} //!strings are converted to ""
+	action2, ok := buttons[1].(int)
+	if !ok {action2 = GTK_RESPONSE_NONE} //!int are converted to GTK_RESPONSE_NONE
+	pbutton2 := C.CString(button2)
+	defer C.free_string(pbutton2)
+	if len(buttons) == 2 { // 2 buttons
 		return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 			C._gtk_file_chooser_dialog_new2(
 				C.to_gcharptr(ptitle),
@@ -1875,21 +1874,14 @@ func FileChooserDialog(title string, parent WindowLike, file_chooser_action int,
 				C.to_gcharptr(pbutton1),
 				C.int(action2),
 				C.to_gcharptr(pbutton2))}}}}}}
-	} else if len(buttons) == 4 { // 3 buttons
-		button2, ok := buttons[0].(string)
-		if !ok {button2 = ""}
-		action2, ok := buttons[1].(int)
-		if !ok {action2 = GTK_RESPONSE_NONE}
-		button3, ok := buttons[2].(string)
-		if !ok {button3 = ""}
-		action3, ok := buttons[3].(int)
-		if !ok {action3 = GTK_RESPONSE_NONE}
-		pbutton1 := C.CString(button1)
-		defer C.free_string(pbutton1)
-		pbutton2 := C.CString(button2)
-		defer C.free_string(pbutton2)
-		pbutton3 := C.CString(button3)
-		defer C.free_string(pbutton3)
+	}
+	button3, ok := buttons[2].(string)
+	if !ok {button3 = ""}
+	action3, ok := buttons[3].(int)
+	if !ok {action3 = GTK_RESPONSE_NONE}
+	pbutton3 := C.CString(button3)
+	defer C.free_string(pbutton3)
+	if len(buttons) == 4 { // 3 buttons
 		return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 			C._gtk_file_chooser_dialog_new3(
 				C.to_gcharptr(ptitle),
