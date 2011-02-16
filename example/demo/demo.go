@@ -12,8 +12,8 @@ func main() {
 	gtk.Init(nil)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Go!")
-	window.Connect("destroy", func(w *gtk.GtkWidget, user_data string) {
-		println("got destroy!", user_data)
+	window.Connect("destroy", func(ctx *gtk.CallbackContext) {
+		println("got destroy!", ctx.Data().(string))
 		gtk.MainQuit()
 	},
 		"foo")
@@ -74,9 +74,9 @@ func main() {
 	//--------------------------------------------------------
 	scale := gtk.HScaleWithRange(0, 100, 1)
 	scale.Connect("value-changed", func() {
-		print("scale: ", int(scale.GetValue()), "\n")
-	},
-		nil)
+		print("scale: ", scale.GetValue(), "\n")
+		print("scale: ", int(scale.GetValue()*100), "\n")
+	})
 	framebox2.Add(scale)
 
 	//--------------------------------------------------------
@@ -111,15 +111,12 @@ func main() {
 			filechooserdialog.Response(func() {
 				println(filechooserdialog.GetFilename())
 				filechooserdialog.Destroy()
-			},
-				nil)
+			})
 			filechooserdialog.Run()
 			messagedialog.Destroy()
-		},
-			nil)
+		})
 		messagedialog.Run()
-	},
-		nil)
+	})
 	buttons.Add(button)
 
 	//--------------------------------------------------------
@@ -131,8 +128,7 @@ func main() {
 		print("fontname: ", fontbutton.GetFontName(), "\n")
 		print("use_size: ", fontbutton.GetUseSize(), "\n")
 		print("show_size: ", fontbutton.GetShowSize(), "\n")
-	},
-		nil)
+	})
 	buttons.Add(fontbutton)
 	framebox2.PackStart(buttons, false, false, 0)
 
@@ -148,8 +144,7 @@ func main() {
 		} else {
 			togglebutton.SetLabel("ToggleButton OFF!")
 		}
-	},
-		nil)
+	})
 	buttons.Add(togglebutton)
 
 	//--------------------------------------------------------
@@ -162,8 +157,7 @@ func main() {
 		} else {
 			checkbutton.SetLabel("CheckButton UNCHECKED!")
 		}
-	},
-		nil)
+	})
 	buttons.Add(checkbutton)
 
 	//--------------------------------------------------------
@@ -190,8 +184,7 @@ func main() {
 	comboboxentry.AppendText("Elephant")
 	comboboxentry.Connect("changed", func() {
 		print("value: ", comboboxentry.GetActiveText(), "\n")
-	},
-		nil)
+	})
 	combos.Add(comboboxentry)
 
 	//--------------------------------------------------------
@@ -204,8 +197,7 @@ func main() {
 	combobox.SetActive(1)
 	combobox.Connect("changed", func() {
 		print("value: ", combobox.GetActiveText(), "\n")
-	},
-		nil)
+	})
 	combos.Add(combobox)
 
 	framebox2.PackStart(combos, false, false, 0)
@@ -233,8 +225,7 @@ func main() {
 
 	buffer.Connect("changed", func() {
 		println("changed")
-	},
-		nil)
+	})
 
 	//--------------------------------------------------------
 	// GtkMenuItem
@@ -247,8 +238,7 @@ func main() {
 	menuitem = gtk.MenuItemWithMnemonic("E_xit")
 	menuitem.Connect("activate", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 	submenu.Append(menuitem)
 
 	cascademenu = gtk.MenuItemWithMnemonic("_View")
@@ -259,8 +249,7 @@ func main() {
 	checkmenuitem := gtk.CheckMenuItemWithMnemonic("_Disable")
 	checkmenuitem.Connect("activate", func() {
 		vpaned.SetSensitive(!checkmenuitem.GetActive())
-	},
-		nil)
+	})
 	submenu.Append(checkmenuitem)
 
 	menuitem = gtk.MenuItemWithMnemonic("_Font")
@@ -271,11 +260,10 @@ func main() {
 			println(fsd.GetFontName())
 			fontbutton.SetFontName(fsd.GetFontName())
 			fsd.Destroy()
-		}, nil)
+		})
 		fsd.SetTransientFor(window)
 		fsd.Run()
-	},
-		nil)
+	})
 	submenu.Append(menuitem)
 
 	cascademenu = gtk.MenuItemWithMnemonic("_Help")
@@ -302,8 +290,7 @@ func main() {
 		dialog.SetWrapLicense(true)
 		dialog.Run()
 		dialog.Destroy()
-	},
-		nil)
+	})
 	submenu.Append(menuitem)
 
 	//--------------------------------------------------------

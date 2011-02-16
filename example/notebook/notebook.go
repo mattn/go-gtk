@@ -12,8 +12,7 @@ func main() {
 	window.SetTitle("GTK Notebook")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	notebook := gtk.Notebook()
 	for n := 1; n <= 10; n++ {
@@ -25,15 +24,13 @@ func main() {
 		prev := gtk.ButtonWithLabel("go perv")
 		prev.Clicked(func() {
 			notebook.PrevPage()
-		},
-			nil)
+		})
 		vbox.Add(prev)
 
 		next := gtk.ButtonWithLabel("go next")
 		next.Clicked(func() {
 			notebook.NextPage()
-		},
-			nil)
+		})
 		vbox.Add(next)
 
 		page.Add(vbox)

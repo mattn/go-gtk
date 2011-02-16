@@ -11,8 +11,7 @@ func main() {
 	window.SetTitle("We love Expander")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	vbox := gtk.VBox(true, 0)
 	vbox.SetBorderWidth(5)
