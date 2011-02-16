@@ -17,8 +17,7 @@ func main() {
 	window.SetTitle("GTK DrawingArea")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	vbox := gtk.VBox(true, 0)
 	vbox.SetBorderWidth(5)
@@ -44,8 +43,7 @@ func main() {
 		pixmap.GetDrawable().DrawRectangle(gc, true, 0, 0, -1, -1)
 		gc.SetRgbFgColor(gdk.Color("black"))
 		gc.SetRgbBgColor(gdk.Color("white"))
-	},
-		nil)
+	})
 
 	drawingarea.Connect("motion-notify-event", func() {
 		if gdkwin == nil {
@@ -57,15 +55,13 @@ func main() {
 			drawingarea.GetWindow().Invalidate(nil, false)
 		}
 		p1 = p2
-	},
-		nil)
+	})
 
 	drawingarea.Connect("expose-event", func() {
 		if pixmap != nil {
 			drawingarea.GetWindow().GetDrawable().DrawDrawable(gc, pixmap.GetDrawable(), 0, 0, 0, 0, -1, -1)
 		}
-	},
-		nil)
+	})
 
 	drawingarea.SetEvents(gdk.GDK_POINTER_MOTION_MASK | gdk.GDK_POINTER_MOTION_HINT_MASK | gdk.GDK_BUTTON_PRESS_MASK)
 	vbox.Add(drawingarea)

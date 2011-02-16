@@ -11,8 +11,7 @@ func main() {
 	window.SetTitle("Alignment")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	notebook := gtk.Notebook()
 	window.Add(notebook)
@@ -34,12 +33,10 @@ func main() {
 
 	button.Connect("clicked", func() {
 		progress.SetFraction(0.1 + 0.9*progress.GetFraction()) //easter egg
-	},
-		nil)
+	})
 	button2.Connect("clicked", func() {
 		progress.Pulse()
-	},
-		nil)
+	})
 
 	window.ShowAll()
 	window.SetSizeRequest(200, 200)

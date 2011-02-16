@@ -13,8 +13,7 @@ func main() {
 	window.SetTitle("GTK Stock Icons")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	swin := gtk.ScrolledWindow(nil, nil)
 
@@ -33,8 +32,7 @@ func main() {
 		store.Append(&iter)
 		store.Set(&iter, id, (n == 1), gtk.Image().RenderIcon(id, gtk.GTK_ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf)
 		n = 1 - n
-	},
-		0)
+	})
 
 	window.Add(swin)
 	window.SetSizeRequest(400, 200)

@@ -14,8 +14,7 @@ func main() {
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	vbox := gtk.VBox(false, 1)
 
