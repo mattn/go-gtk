@@ -13,8 +13,7 @@ func main() {
 	window.SetTitle("GTK Folder View")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	swin := gtk.ScrolledWindow(nil, nil)
 
@@ -50,11 +49,9 @@ func main() {
 		dialog.SetTitle("TreePath")
 		dialog.Response(func() {
 			dialog.Destroy()
-		},
-			nil)
+		})
 		dialog.Run()
-	},
-		nil)
+	})
 
 	window.Add(swin)
 	window.SetSizeRequest(400, 200)

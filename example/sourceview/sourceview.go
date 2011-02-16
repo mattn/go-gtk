@@ -11,8 +11,7 @@ func main() {
 	window.SetTitle("SourceView")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	swin := gtk.ScrolledWindow(nil, nil)
 	swin.SetPolicy(gtk.GTK_POLICY_AUTOMATIC, gtk.GTK_POLICY_AUTOMATIC)

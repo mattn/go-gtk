@@ -149,7 +149,7 @@ static void free_callback_info(gpointer data, GClosure *closure) {
 	g_slice_free(callback_info, data);
 }
 
-static long _gtk_signal_connect(void* obj, gchar* name, int func_no) {
+static callback_info* _gtk_signal_connect(void* obj, gchar* name, int func_no) {
 	static int index = 0;
 	GSignalQuery query;
 	callback_info* cbi;
@@ -164,7 +164,8 @@ static long _gtk_signal_connect(void* obj, gchar* name, int func_no) {
 	cbi->args_no = query.n_params;
 	cbi->index = index;
 	index++;
-	return g_signal_connect_data((gpointer)obj, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	g_signal_connect_data((gpointer)obj, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	return cbi;
 }
 
 static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
@@ -970,7 +971,7 @@ type WidgetLike interface {
 	ShowAll()
 	ShowNow()
 	Destroy()
-	Connect(s string, f CallbackFunc, data interface{})
+	Connect(s string, f CallbackFunc, data... interface{})
 	GetTopLevel() *GtkWidget
 	GetTopLevelAsWindow() *GtkWindow
 	HideOnDelete()
@@ -1005,11 +1006,16 @@ func (v *GtkWidget) ShowNow() {
 func (v *GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
-func (v *GtkWidget) Connect(s string, f CallbackFunc, data interface{}) {
-	callback_contexts.Push(&CallbackContext{f, reflect.NewValue(data)})
+func (v *GtkWidget) Connect(s string, f CallbackFunc, datas... interface{}) {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	ctx := &CallbackContext{f, nil, reflect.NewValue(v), reflect.NewValue(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	C._gtk_signal_connect(unsafe.Pointer(v.Widget), C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
+	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.Widget), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
+	callback_contexts.Push(ctx)
 }
 func (v *GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget{
@@ -1657,7 +1663,7 @@ const (
 type DialogLike interface {
 	WidgetLike
 	Run() int
-	Response(CallbackFunc)
+	Response(CallbackFunc, ... interface{})
 }
 type GtkDialog struct {
 	GtkWindow
@@ -1673,8 +1679,8 @@ func (v *GtkDialog) GetVBox() *GtkVBox {
 func (v *GtkDialog) Run() int {
 	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
 }
-func (v *GtkDialog) Response(response CallbackFunc, data interface{}) {
-	v.Connect("response", response, data)
+func (v *GtkDialog) Response(response CallbackFunc, datas... interface{}) {
+	v.Connect("response", response, datas...)
 }
 func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
 	ptr := C.CString(button_text)
@@ -2581,15 +2587,15 @@ func (v *GtkAccelLabel) Refetch() bool {
 type ButtonLike interface { // Buttons are LabelLike Widgets!
 	LabelLike
 	// the following should be just Clickable; ...
-	Clicked(CallbackFunc, interface{}) // this is a very simple interface...
+	Clicked(CallbackFunc, ... interface{}) // this is a very simple interface...
 }
 type Clickable interface {
 	WidgetLike
-	Clicked(CallbackFunc, interface{}) // this is a very simple interface...
+	Clicked(CallbackFunc, ... interface{}) // this is a very simple interface...
 }
 
-func (v *GtkButton) Clicked(onclick CallbackFunc, data interface{}) {
-	v.Connect("clicked", onclick, data)
+func (v *GtkButton) Clicked(onclick CallbackFunc, datas... interface{}) {
+	v.Connect("clicked", onclick, datas...)
 }
 
 type GtkButton struct {
@@ -3600,11 +3606,16 @@ func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_buffer_new(tagtable.TextTagTable)}
 }
-func (v *GtkTextBuffer) Connect(s string, f CallbackFunc, data interface{}) {
-	callback_contexts.Push(&CallbackContext{f, reflect.NewValue(data)})
+func (v *GtkTextBuffer) Connect(s string, f CallbackFunc, datas... interface{}) {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	ctx := &CallbackContext{f, nil, reflect.NewValue(v), reflect.NewValue(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	C._gtk_signal_connect(unsafe.Pointer(v.TextBuffer), C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
+	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.TextBuffer), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
+	callback_contexts.Push(ctx)
 }
 func (v *GtkTextBuffer) GetLineCount() int {
 	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer))
@@ -4509,11 +4520,16 @@ const (
 	SELECTION_EXTENDED = SELECTION_MULTIPLE
 )
 
-func (v *GtkTreeSelection) Connect(s string, f func()) {
-	callback_contexts.Push(&CallbackContext{f, reflect.NewValue(nil)})
+func (v *GtkTreeSelection) Connect(s string, f CallbackFunc, datas... interface{}) {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	ctx := &CallbackContext{f, nil, reflect.NewValue(v), reflect.NewValue(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	C._gtk_signal_connect(unsafe.Pointer(v.TreeSelection), C.to_gcharptr(ptr), C.int(callback_contexts.Len())-1)
+	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.TreeSelection), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
+	callback_contexts.Push(ctx)
 }
 
 func (v *GtkTreeSelection) GetSelected(i *GtkTreeIter) bool {
@@ -5421,7 +5437,21 @@ var use_gtk_main bool = false
 type CallbackFunc interface{}
 type CallbackContext struct {
 	f    CallbackFunc
+	cbi unsafe.Pointer
+	target reflect.Value
 	data reflect.Value
+}
+
+func (c *CallbackContext) Target() interface{} {
+	return c.target.Interface()
+}
+
+func (c *CallbackContext) Data() interface{} {
+	return c.data.Interface()
+}
+
+func (c *CallbackContext) Args(n int) interface{} {
+	return C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n))
 }
 
 var callback_contexts *vector.Vector
@@ -5438,6 +5468,11 @@ func pollEvents() {
 			rf := reflect.NewValue(context.f).(*reflect.FuncValue)
 			t := rf.Type().(*reflect.FuncType)
 			fargs := make([]reflect.Value, t.NumIn())
+			if len(fargs) > 0 {
+				fargs[0] = reflect.NewValue(context)
+			}
+			/*
+			fargs := make([]reflect.Value, t.NumIn())
 			for i := 0; i < len(fargs); i++ {
 				if i == 0 {
 					if t.In(0).String() == "*gtk.GtkWidget" {
@@ -5447,7 +5482,7 @@ func pollEvents() {
 						fargs[i] = reflect.NewValue(&GtkTextBuffer{(unsafe.Pointer)(cbi.target)})
 					}
 				} else if i == len(fargs)-1 {
-					fargs[i] = context.data
+					fargs[i] = context.Data
 				} else {
 					if i-1 < int(cbi.args_no) {
 						fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)))
@@ -5456,6 +5491,7 @@ func pollEvents() {
 					}
 				}
 			}
+			*/
 			rf.Call(fargs)
 			cbi.fire = C.int(1)
 			C.callback_info_free_args(&cbi)

@@ -5,7 +5,6 @@ import (
 	"gdk"
 	"gdkpixbuf"
 	"http"
-	"net"
 	"json"
 	"bytes"
 	"io"
@@ -13,26 +12,8 @@ import (
 	"strings"
 )
 
-func HttpGet(url string) (*http.Response, os.Error) {
-	var r *http.Response
-	var err os.Error
-	if proxy := os.Getenv("HTTP_PROXY"); len(proxy) > 0 {
-		proxy_url, _ := http.ParseURL(proxy)
-		tcp, _ := net.Dial("tcp", "", proxy_url.Host)
-		conn := http.NewClientConn(tcp, nil)
-		var req http.Request
-		req.URL, _ = http.ParseURL(url)
-		req.Method = "GET"
-		err = conn.Write(&req)
-		r, err = conn.Read()
-	} else {
-		r, _, err = http.Get(url)
-	}
-	return r, err
-}
-
 func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
-	if r, err := HttpGet(url); err == nil {
+	if r, _, err := http.Get(url); err == nil {
 		t := r.GetHeader("Content-Type")
 		b := make([]byte, r.ContentLength)
 		io.ReadFull(r.Body, b)
@@ -57,8 +38,7 @@ func main() {
 	window.SetTitle("Twitter!")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	vbox := gtk.VBox(false, 1)
 
@@ -79,7 +59,7 @@ func main() {
 		button.SetSensitive(false)
 		go func() {
 			gdk.ThreadsEnter()
-			r, err := HttpGet("http://twitter.com/statuses/public_timeline.json")
+			r, _, err := http.Get("http://twitter.com/statuses/public_timeline.json")
 			if err == nil {
 				b := make([]byte, r.ContentLength)
 				io.ReadFull(r.Body, b)
@@ -103,8 +83,7 @@ func main() {
 			button.SetSensitive(true)
 			gdk.ThreadsLeave()
 		}()
-	},
-		nil)
+	})
 	vbox.PackEnd(button, false, false, 0)
 
 	window.Add(vbox)

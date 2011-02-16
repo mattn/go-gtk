@@ -16,8 +16,7 @@ func main() {
 	window.Show()
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
-	},
-		nil)
+	})
 
 	gtk.Main()
 }
