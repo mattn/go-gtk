@@ -752,6 +752,8 @@ static void _gtk_tree_iter_assign(void* iter, void* to) {
 static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
   return GTK_DIALOG(w)->vbox;
 }
+
+static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 */
 import "C"
 import "glib"
@@ -1737,11 +1739,10 @@ type GtkFileChooserWidget struct {
 func (v *GtkFileChooserWidget) GetFilename() string {
 	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
 }
+
 // TODO
 // void gtk_file_chooser_set_action(GtkFileChooser* chooser, GtkFileChooserAction action);
 // GtkFileChooserAction gtk_file_chooser_get_action(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_local_only(GtkFileChooser* chooser, gboolean local_only);
-// gboolean gtk_file_chooser_get_local_only(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_select_multiple(GtkFileChooser* chooser, gboolean select_multiple);
 // gboolean gtk_file_chooser_get_select_multiple(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_show_hidden(GtkFileChooser* chooser, gboolean show_hidden);
@@ -1785,11 +1786,15 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // GFile* gtk_file_chooser_get_preview_file(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_extra_widget(GtkFileChooser* chooser, GtkWidget* extra_widget);
 // GtkWidget* gtk_file_chooser_get_extra_widget(GtkFileChooser* chooser);
+
+
 // void gtk_file_chooser_add_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
 // void gtk_file_chooser_remove_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
 // GSList* gtk_file_chooser_list_filters(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
 // GtkFileFilter* gtk_file_chooser_get_filter(GtkFileChooser* chooser);
+
+
 // gboolean gtk_file_chooser_add_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // gboolean gtk_file_chooser_remove_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // GSList* gtk_file_chooser_list_shortcut_folders(GtkFileChooser* chooser);
@@ -1861,6 +1866,8 @@ func FileChooserDialog2(title string, parent WindowLike, file_chooser_action int
 			C.int(action2),
 			C.to_gcharptr(pbutton2))}}}}}}
 }
+
+//GtkFileChooserDialog must implement all GtkFileChooser functions unless there is a way (?) to tell that the GtkFileChooserDialog returned by FileChooserDialog() implements GtkFileChooser
 func (v *GtkFileChooserDialog) GetFilename() string {
 	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
 }
@@ -1873,7 +1880,69 @@ func (v *GtkFileChooserDialog) SetCurrentFolder(f string) bool {
 	return gboolean2bool(C.gtk_file_chooser_set_current_folder(
 		C.to_GtkFileChooser(v.Widget), C.to_gcharptr(cf)))
 }
-// FINISH
+func (v *GtkFileChooserDialog) AddFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_add_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
+}
+func (v *GtkFileChooserDialog) RemoveFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_remove_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
+}
+func (v *GtkFileChooserDialog) SetFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_set_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
+}
+func (v *GtkFileChooserDialog) GetFilter() *GtkFileFilter {
+	return &GtkFileFilter{C.gtk_file_chooser_get_filter(C.to_GtkFileChooser(v.Widget))}
+}
+func (v *GtkFileChooserDialog) ListFilters() []*GtkFileFilter {
+	c_list := C.gtk_file_chooser_list_filters(C.to_GtkFileChooser(v.Widget))
+	defer C.g_slist_free(c_list)
+	n := int(C.g_slist_length(c_list))
+	ret := make([]*GtkFileFilter, n)
+	for i := 0; i < n; i++ {
+		ret[i] = &GtkFileFilter{C.to_GtkFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
+	}
+	return ret
+}
+func (v *GtkFileChooserDialog) GetLocalOnly() bool {
+	return gboolean2bool(C.gtk_file_chooser_get_local_only(C.to_GtkFileChooser(v.Widget)))
+}
+func (v *GtkFileChooserDialog) SetLocalOnly(b bool) {
+	C.gtk_file_chooser_set_local_only(C.to_GtkFileChooser(v.Widget), bool2gboolean(b))
+}
+
+//-----------------------------------------------------------------------
+// GtkFileFilter
+//-----------------------------------------------------------------------
+type GtkFileFilter struct {
+	FileFilter *C.GtkFileFilter
+}
+
+func FileFilter() *GtkFileFilter {
+	return &GtkFileFilter{C.gtk_file_filter_new()}
+}
+
+func (v *GtkFileFilter) SetName(name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_file_filter_set_name(v.FileFilter, C.to_gcharptr(ptr))
+}
+
+func (v *GtkFileFilter) GetName() string {
+	return C.GoString(C.to_charptr(C.gtk_file_filter_get_name(v.FileFilter)))
+}
+
+func (v *GtkFileFilter) AddMimeType(mimetype string) {
+	ptr := C.CString(mimetype)
+	defer C.free_string(ptr)
+	C.gtk_file_filter_add_mime_type(v.FileFilter, C.to_gcharptr(ptr))
+}
+
+func (v *GtkFileFilter) AddPattern(pattern string) {
+	ptr := C.CString(pattern)
+	defer C.free_string(ptr)
+	C.gtk_file_filter_add_pattern(v.FileFilter, C.to_gcharptr(ptr))
+}
+//void gtk_file_filter_add_pixbuf_formats (GtkFileFilter *filter);
+//void gtk_file_filter_add_custom (GtkFileFilter *filter, GtkFileFilterFlags needed, GtkFileFilterFunc func, gpointer data, GDestroyNotify notify);
 
 //-----------------------------------------------------------------------
 // GtkMessageDialog
