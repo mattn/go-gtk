@@ -200,20 +200,6 @@ static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
 			NULL);
 }
 
-static GtkWidget* _gtk_file_chooser_dialog_new2(const gchar* title,
-		GtkWidget* parent, int file_chooser_action, int action, const gchar* button,
-		int action2, const gchar* button2) {
-	return gtk_file_chooser_dialog_new(
-			title,
-			GTK_WINDOW(parent),
-			file_chooser_action,
-			button,
-			action,
-			button2,
-			action2,
-			NULL);
-}
-
 static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, GtkTreeIter* iter, void* path) {
 	return gtk_tree_model_get_iter(tree_model, iter, (GtkTreePath*)path);
 }
@@ -1834,37 +1820,27 @@ type GtkFileChooserDialog struct {
 	//GtkFileChooser;
 }
 
-func FileChooserDialog(title string, parent WindowLike, file_chooser_action int, button string, action int) *GtkFileChooserDialog {
+//The number of arguments bound to the final variadic parameter must be even: couples of string-int (button text - button action)
+func FileChooserDialog(title string, parent WindowLike, file_chooser_action int, button_text string, button_action int, buttons ...interface{}) *GtkFileChooserDialog {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
-	pbutton := C.CString(button)
+	pbutton := C.CString(button_text)
 	defer C.free_string(pbutton)
-	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+	ret := &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_file_chooser_dialog_new(
 			C.to_gcharptr(ptitle),
 			parent.ToNative(),
 			C.int(file_chooser_action),
-			C.int(action),
+			C.int(button_action),
 			C.to_gcharptr(pbutton))}}}}}}
-}
-// two buttons
-// TODO(mikhailt): Find out how to bind variable parameter list methods.
-func FileChooserDialog2(title string, parent WindowLike, file_chooser_action int, button string, action int, button2 string, action2 int) *GtkFileChooserDialog {
-	ptitle := C.CString(title)
-	defer C.free_string(ptitle)
-	pbutton := C.CString(button)
-	defer C.free_string(pbutton)
-	pbutton2 := C.CString(button2)
-	defer C.free_string(pbutton2)
-	return &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C._gtk_file_chooser_dialog_new2(
-			C.to_gcharptr(ptitle),
-			parent.ToNative(),
-			C.int(file_chooser_action),
-			C.int(action),
-			C.to_gcharptr(pbutton),
-			C.int(action2),
-			C.to_gcharptr(pbutton2))}}}}}}
+	for i := 0; i < len(buttons)/2; i++ {
+		b_text, ok := buttons[2*i].(string)
+		if !ok {panic("error calling gtk.FileChooserDialog, button text must be a string")}
+		b_action, ok := buttons[2*i+1].(int)
+		if !ok {panic("error calling gtk.FileChooserDialog, button action must be an int")}
+		ret.AddButton(b_text, b_action)
+	}
+	return ret
 }
 
 //GtkFileChooserDialog must implement all GtkFileChooser functions unless there is a way (?) to tell that the GtkFileChooserDialog returned by FileChooserDialog() implements GtkFileChooser
