@@ -14,7 +14,7 @@ import (
 
 func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
 	if r, _, err := http.Get(url); err == nil {
-		t := r.GetHeader("Content-Type")
+		t := r.Header.Get("Content-Type")
 		b := make([]byte, r.ContentLength)
 		io.ReadFull(r.Body, b)
 		var loader *gdkpixbuf.GdkPixbufLoader
