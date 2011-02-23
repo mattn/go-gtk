@@ -501,9 +501,7 @@ func (v *GValue) Init(t int) {
 }
 
 func (v *GValue) GetString() string {
-	cstr := C.g_value_get_string(&v.Value)
-	defer C.free_string(C.to_charptr(cstr))
-	return C.GoString(C.to_charptr(cstr))
+	return C.GoString(C.to_charptr(C.g_value_get_string(&v.Value)))
 }
 
 func (v *GValue) GetInt() int {
