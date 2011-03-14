@@ -4663,10 +4663,18 @@ func (v *GtkTreeView) CollapseAll() {
 	C.gtk_tree_view_collapse_all(C.to_GtkTreeView(v.Widget))
 }
 //void gtk_tree_view_expand_to_path (GtkTreeView *tree_view, GtkTreePath *path);
-//gboolean gtk_tree_view_expand_row (GtkTreeView *tree_view, GtkTreePath *path, gboolean open_all);
-//gboolean gtk_tree_view_collapse_row (GtkTreeView *tree_view, GtkTreePath *path);
+
+func (v *GtkTreeView) ExpandRow(path *GtkTreePath, openall bool) bool {
+	return gboolean2bool(C.gtk_tree_view_expand_row(C.to_GtkTreeView(v.Widget), path.TreePath, bool2gboolean(openall)))
+}
+func (v *GtkTreeView) CollapseRow(path *GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_view_collapse_row(C.to_GtkTreeView(v.Widget), path.TreePath))
+}
 //void gtk_tree_view_map_expanded_rows (GtkTreeView *tree_view, GtkTreeViewMappingFunc func, gpointer data);
-//gboolean gtk_tree_view_row_expanded (GtkTreeView *tree_view, GtkTreePath *path);
+
+func (v *GtkTreeView) RowExpanded(path *GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_view_row_expanded(C.to_GtkTreeView(v.Widget), path.TreePath))
+}
 //void gtk_tree_view_set_reorderable (GtkTreeView *tree_view, gboolean reorderable);
 //gboolean gtk_tree_view_get_reorderable (GtkTreeView *tree_view);
 func (v *GtkTreeView) SetCursor(path *GtkTreePath, col *GtkTreeViewColumn, se bool) {
