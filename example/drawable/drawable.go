@@ -4,11 +4,26 @@ import (
 	"os"
 	"gtk"
 	"gdk"
+	"unsafe"
 )
 
 type point struct {
 	x int
 	y int
+}
+
+type GdkEventKey struct {
+  t int
+  w unsafe.Pointer
+  send_event int8
+  time uint32
+  state uint
+  keyval uint
+  length int
+  s *uint8
+  hardware_keycode uint16
+  group uint8
+  is_modifier uint
 }
 
 func main() {
@@ -31,6 +46,18 @@ func main() {
 	p1.x = -1
 	p1.y = -1
 
+	window.Connect("key-press-event", func(ctx *gtk.CallbackContext) {
+		//println(ctx.Args(0))
+		//println(ctx.Args(1))
+		//var kev *GdkEventKey
+		arg := ctx.Args(0)
+		kev := *(**GdkEventKey)(unsafe.Pointer(&arg))
+		//kev = *(**GdkEventKey)(unsafe.Pointer(&arg))
+		//kev = *(**GdkEventKey)(unsafe.Pointer(uintptr(&arg)))
+		//kev = *(**GdkEventKey)(unsafe.Pointer(uintptr(&arg)))
+		println(kev.keyval)
+		//kev = (*GdkEventKey)(unsafe.Pointer(uintptr(ctx.Args(1))))
+	})
 	drawingarea.Connect("configure-event", func() {
 		if pixmap != nil {
 			pixmap.Unref()

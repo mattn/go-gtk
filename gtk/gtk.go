@@ -25,7 +25,7 @@ typedef struct {
 	char *name;
 	int func_no;
 	void* target;
-	uintptr_t** args;
+	uintptr_t* args;
 	int args_no;
 	int index;
 	GSignalQuery query;
@@ -97,7 +97,7 @@ static void q_push(callback_info* info) {
 	q_back = q_next(q_back);
 }
 
-static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
+static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
 static void callback_info_free_args(callback_info* cbi) {
@@ -128,10 +128,10 @@ static void _callback(void *data, ...) {
 		// We just put newer args in it and free old.
 		free(cbi->args);
 	}
-	cbi->args = (uintptr_t**)malloc(sizeof(uintptr_t*)*cbi->args_no);
+	cbi->args = (uintptr_t*)malloc(sizeof(uintptr_t)*cbi->args_no);
 	va_start(ap, data);
 	for (i = 0; i < cbi->args_no; i++) {
-		cbi->args[i] = va_arg(ap, void*);
+		cbi->args[i] = va_arg(ap, uintptr_t);
 	}
 	va_end(ap);
 	if (0 == cbi->in_queue) {
@@ -5495,8 +5495,8 @@ func (c *CallbackContext) Data() interface{} {
 	return c.data.Interface()
 }
 
-func (c *CallbackContext) Args(n int) interface{} {
-	return C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n))
+func (c *CallbackContext) Args(n int) uintptr {
+	return uintptr(C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n)))
 }
 
 var callback_contexts *vector.Vector
