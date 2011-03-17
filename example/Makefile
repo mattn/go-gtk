@@ -10,6 +10,7 @@ all:
 	cd drawable && gomake
 	cd builder && gomake
 	cd sourceview && gomake
+	cd event && gomake
 
 clean:
 	cd demo && gomake clean
@@ -18,3 +19,9 @@ clean:
 	cd treeview && gomake clean
 	cd notebook && gomake clean
 	cd thread && gomake clean
+	cd table && gomake clean
+	cd expander && gomake clean
+	cd drawable && gomake clean
+	cd builder && gomake clean
+	cd sourceview && gomake clean
+	cd event && gomake clean
