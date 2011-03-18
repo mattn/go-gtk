@@ -608,3 +608,129 @@ const (
 	GDK_ISO_Enter    = 0xfe34
 	GDK_bar          = 0x07c
 )
+
+type EventAny struct {
+  Type int
+  Window unsafe.Pointer
+  SendEvent int8
+}
+
+type EventKey struct {
+  Type int
+  Window unsafe.Pointer
+  SendEvent int8
+  Time uint32
+  State uint
+  Keyval uint
+  Length int
+  String *uint8
+  HardwareKeycode uint16
+  Group uint8
+  IsModifier uint
+}
+
+type EventButton struct {
+  Type int
+  Window unsafe.Pointer
+  SendEvent int8
+  Time uint32
+  X float64
+  Y float64
+  Axes *float64
+  State uint
+  Button uint16
+  Device uintptr
+  XRoot float64
+  YRoot float64
+}
+
+type EventScroll struct {
+  Type int
+  Window unsafe.Pointer
+  SendEvent int8
+  Time uint32
+  X float64
+  Y float64
+  Axes *float64
+  State uint
+  Direction int
+  Device uintptr
+  XRoot float64
+  YRoot float64
+}
+
+type EventMotion struct {
+  Type int
+  Window unsafe.Pointer
+  SendEvent int8
+  Time uint32
+  X float64
+  Y float64
+  Axes *float64
+  State uint
+  IsHint uint16
+  Device uintptr
+  XRoot float64
+  YRoot float64
+}
+
+type EventExpose struct {
+  Type int
+  Window unsafe.Pointer
+  SendEvent int8
+  Area Rectangle
+  Region uintptr
+  Count int
+}
+
+type EventVisibility struct {
+  Type int
+  Window unsafe.Pointer
+  SendEvent int8
+  State int
+}
+
+type EventCrossing struct {
+  // TODO
+}
+
+type EventFocus struct {
+  // TODO
+}
+
+type EventConfigure struct {
+  // TODO
+}
+
+type EventProperty struct {
+  // TODO
+}
+
+type EventProximity struct {
+  // TODO
+}
+
+type EventClient struct {
+  // TODO
+}
+
+type EventNoExpose struct {
+  // TODO
+}
+
+type EventWindowState struct {
+  // TODO
+}
+
+type EventSetting struct {
+  // TODO
+}
+
+type EventOwnerChange struct {
+  // TODO
+}
+
+type EventGrabBroken struct {
+  // TODO
+}
+
