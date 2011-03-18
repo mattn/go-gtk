@@ -610,127 +610,126 @@ const (
 )
 
 type EventAny struct {
-  Type int
-  Window unsafe.Pointer
-  SendEvent int8
+	Type      int
+	Window    unsafe.Pointer
+	SendEvent int8
 }
 
 type EventKey struct {
-  Type int
-  Window unsafe.Pointer
-  SendEvent int8
-  Time uint32
-  State uint
-  Keyval uint
-  Length int
-  String *uint8
-  HardwareKeycode uint16
-  Group uint8
-  IsModifier uint
+	Type            int
+	Window          unsafe.Pointer
+	SendEvent       int8
+	Time            uint32
+	State           uint
+	Keyval          uint
+	Length          int
+	String          *uint8
+	HardwareKeycode uint16
+	Group           uint8
+	IsModifier      uint
 }
 
 type EventButton struct {
-  Type int
-  Window unsafe.Pointer
-  SendEvent int8
-  Time uint32
-  X float64
-  Y float64
-  Axes *float64
-  State uint
-  Button uint16
-  Device uintptr
-  XRoot float64
-  YRoot float64
+	Type      int
+	Window    unsafe.Pointer
+	SendEvent int8
+	Time      uint32
+	X         float64
+	Y         float64
+	Axes      *float64
+	State     uint
+	Button    uint16
+	Device    uintptr
+	XRoot     float64
+	YRoot     float64
 }
 
 type EventScroll struct {
-  Type int
-  Window unsafe.Pointer
-  SendEvent int8
-  Time uint32
-  X float64
-  Y float64
-  Axes *float64
-  State uint
-  Direction int
-  Device uintptr
-  XRoot float64
-  YRoot float64
+	Type      int
+	Window    unsafe.Pointer
+	SendEvent int8
+	Time      uint32
+	X         float64
+	Y         float64
+	Axes      *float64
+	State     uint
+	Direction int
+	Device    uintptr
+	XRoot     float64
+	YRoot     float64
 }
 
 type EventMotion struct {
-  Type int
-  Window unsafe.Pointer
-  SendEvent int8
-  Time uint32
-  X float64
-  Y float64
-  Axes *float64
-  State uint
-  IsHint uint16
-  Device uintptr
-  XRoot float64
-  YRoot float64
+	Type      int
+	Window    unsafe.Pointer
+	SendEvent int8
+	Time      uint32
+	X         float64
+	Y         float64
+	Axes      *float64
+	State     uint
+	IsHint    uint16
+	Device    uintptr
+	XRoot     float64
+	YRoot     float64
 }
 
 type EventExpose struct {
-  Type int
-  Window unsafe.Pointer
-  SendEvent int8
-  Area Rectangle
-  Region uintptr
-  Count int
+	Type      int
+	Window    unsafe.Pointer
+	SendEvent int8
+	Area      Rectangle
+	Region    uintptr
+	Count     int
 }
 
 type EventVisibility struct {
-  Type int
-  Window unsafe.Pointer
-  SendEvent int8
-  State int
+	Type      int
+	Window    unsafe.Pointer
+	SendEvent int8
+	State     int
 }
 
 type EventCrossing struct {
-  // TODO
+	// TODO
 }
 
 type EventFocus struct {
-  // TODO
+	// TODO
 }
 
 type EventConfigure struct {
-  // TODO
+	// TODO
 }
 
 type EventProperty struct {
-  // TODO
+	// TODO
 }
 
 type EventProximity struct {
-  // TODO
+	// TODO
 }
 
 type EventClient struct {
-  // TODO
+	// TODO
 }
 
 type EventNoExpose struct {
-  // TODO
+	// TODO
 }
 
 type EventWindowState struct {
-  // TODO
+	// TODO
 }
 
 type EventSetting struct {
-  // TODO
+	// TODO
 }
 
 type EventOwnerChange struct {
-  // TODO
+	// TODO
 }
 
 type EventGrabBroken struct {
-  // TODO
+	// TODO
 }
-
