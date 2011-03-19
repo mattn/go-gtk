@@ -570,6 +570,10 @@ static GtkWidget* _gtk_text_view_new_with_buffer(void* buffer) {
 	return gtk_text_view_new_with_buffer(GTK_TEXT_BUFFER(buffer));
 }
 
+static void _gtk_widget_hide_on_delete(GtkWidget* w) {
+	g_signal_connect(GTK_WIDGET(w), "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
 static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
 	gtk_text_view_set_buffer(GTK_TEXT_VIEW(textview), GTK_TEXT_BUFFER(buffer));
 }
@@ -1014,7 +1018,7 @@ func (v *GtkWidget) GetTopLevelAsWindow() *GtkWindow {
 		C.gtk_widget_get_toplevel(v.Widget)}}}}
 }
 func (v *GtkWidget) HideOnDelete() {
-	C.gtk_widget_hide_on_delete(v.Widget)
+	C._gtk_widget_hide_on_delete(v.Widget)
 }
 // TODO
 // gtk_widget_destroyed
