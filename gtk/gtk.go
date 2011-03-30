@@ -4232,8 +4232,13 @@ func (v *GtkRange) GetValue() float64 {
 }
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
-// void gtk_range_set_adjustment (GtkRange *range, GtkAdjustment *adjustment);
-// GtkAdjustment* gtk_range_get_adjustment (GtkRange *range);
+func (v *GtkRange) SetAdjustment(adjustment *GtkAdjustment) {
+	C.gtk_range_set_adjustment(C.to_GtkRange(v.Widget), adjustment.Adjustment)
+}
+func (v *GtkRange) GetAdjustment() *GtkAdjustment {
+	return &GtkAdjustment{
+		C.gtk_range_get_adjustment(C.to_GtkRange(v.Widget))}
+}
 func (v *GtkRange) GetInverted() bool {
 	return gboolean2bool(C.gtk_range_get_inverted(C.to_GtkRange(v.Widget)))
 }
@@ -4500,22 +4505,33 @@ const (
 func (v *GtkTreeViewColumn) SetSizing(s int) {
 	C.gtk_tree_view_column_set_sizing(v.TreeViewColumn, C.GtkTreeViewColumnSizing(s))
 }
-//GtkTreeViewColumnSizing gtk_tree_view_column_get_sizing (GtkTreeViewColumn *tree_column);
-//gint gtk_tree_view_column_get_width (GtkTreeViewColumn *tree_column);
-//gint gtk_tree_view_column_get_fixed_width (GtkTreeViewColumn *tree_column);
-
-
-//void gtk_tree_view_column_set_fixed_width (GtkTreeViewColumn *tree_column, gint fixed_width);
+func (v *GtkTreeViewColumn) GetSizing() int {
+	return int(C.gtk_tree_view_column_get_sizing(v.TreeViewColumn))
+}
+func (v *GtkTreeViewColumn) GetWidth() int {
+	return int(C.gtk_tree_view_column_get_width(v.TreeViewColumn))
+}
+func (v *GtkTreeViewColumn) GetFixedWidth() int {
+	return int(C.gtk_tree_view_column_get_fixed_width(v.TreeViewColumn))
+}
 func (v *GtkTreeViewColumn) SetFixedWidth(w int) {
 	C.gtk_tree_view_column_set_fixed_width(v.TreeViewColumn, C.gint(w))
 }
-
-
-//void gtk_tree_view_column_set_min_width (GtkTreeViewColumn *tree_column, gint min_width);
-//gint gtk_tree_view_column_get_min_width (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_set_max_width (GtkTreeViewColumn *tree_column, gint max_width);
-//gint gtk_tree_view_column_get_max_width (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_clicked (GtkTreeViewColumn *tree_column);
+func (v *GtkTreeViewColumn) GetMinWidth() int {
+	return int(C.gtk_tree_view_column_get_min_width(v.TreeViewColumn))
+}
+func (v *GtkTreeViewColumn) SetMinWidth(w int) {
+	C.gtk_tree_view_column_set_min_width(v.TreeViewColumn, C.gint(w))
+}
+func (v *GtkTreeViewColumn) GetMaxWidth() int {
+	return int(C.gtk_tree_view_column_get_max_width(v.TreeViewColumn))
+}
+func (v *GtkTreeViewColumn) SetMaxWidth(w int) {
+	C.gtk_tree_view_column_set_max_width(v.TreeViewColumn, C.gint(w))
+}
+func (v *GtkTreeViewColumn) Clicked() {
+	C.gtk_tree_view_column_clicked(v.TreeViewColumn)
+}
 func (v *GtkTreeViewColumn) SetTitle(title string) {
 	ptr := C.CString(title)
 	defer C.free_string(ptr)
