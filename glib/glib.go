@@ -164,7 +164,7 @@ func (v GList) Reverse() *GList {
 func (v GList) Concat(link GList) *GList {
 	return &GList{C.g_list_concat(v.GList, link.GList)}
 }
-func (v GList) ForEach(callback func(interface{}, interface{}), user_datas... interface{}) {
+func (v GList) ForEach(callback func(interface{}, interface{}), user_datas ...interface{}) {
 	var user_data interface{}
 	if len(user_datas) > 0 {
 		user_data = user_datas[0]
@@ -280,7 +280,7 @@ func (v SList) Last() *SList {
 func (v SList) Length() uint {
 	return uint(C.g_slist_length(v.GSList))
 }
-func (v SList) ForEach(callback func(interface{}, interface{}), user_datas... interface{}) {
+func (v SList) ForEach(callback func(interface{}, interface{}), user_datas ...interface{}) {
 	var user_data interface{}
 	if len(user_datas) > 0 {
 		user_data = user_datas[0]

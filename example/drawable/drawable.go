@@ -4,6 +4,7 @@ import (
 	"os"
 	"gtk"
 	"gdk"
+	"unsafe"
 )
 
 type point struct {
@@ -24,7 +25,6 @@ func main() {
 	drawingarea := gtk.DrawingArea()
 
 	var p1, p2 point
-	var mt uint
 	var gdkwin *gdk.GdkWindow
 	var pixmap *gdk.GdkPixmap
 	var gc *gdk.GdkGC
@@ -45,11 +45,18 @@ func main() {
 		gc.SetRgbBgColor(gdk.Color("white"))
 	})
 
-	drawingarea.Connect("motion-notify-event", func() {
+	drawingarea.Connect("motion-notify-event", func(ctx *gtk.CallbackContext) {
 		if gdkwin == nil {
 			gdkwin = drawingarea.GetWindow()
 		}
-		gdkwin.GetPointer(&p2.x, &p2.y, &mt)
+		arg := ctx.Args(0)
+		mev := *(**gdk.EventMotion)(unsafe.Pointer(&arg))
+		var mt uint
+		if mev.IsHint != 0 {
+			gdkwin.GetPointer(&p2.x, &p2.y, &mt)
+		} else {
+			p2.x, p2.y = int(mev.X), int(mev.Y)
+		}
 		if p1.x != -1 && p2.x != -1 && (mt&gdk.GDK_BUTTON_PRESS_MASK) != 0 {
 			pixmap.GetDrawable().DrawLine(gc, p1.x, p1.y, p2.x, p2.y)
 			drawingarea.GetWindow().Invalidate(nil, false)

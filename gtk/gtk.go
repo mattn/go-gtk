@@ -25,7 +25,7 @@ typedef struct {
 	char *name;
 	int func_no;
 	void* target;
-	uintptr_t** args;
+	uintptr_t* args;
 	int args_no;
 	int index;
 	GSignalQuery query;
@@ -97,7 +97,7 @@ static void q_push(callback_info* info) {
 	q_back = q_next(q_back);
 }
 
-static uintptr_t* callback_info_get_arg(callback_info* cbi, int idx) {
+static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
 static void callback_info_free_args(callback_info* cbi) {
@@ -128,10 +128,10 @@ static void _callback(void *data, ...) {
 		// We just put newer args in it and free old.
 		free(cbi->args);
 	}
-	cbi->args = (uintptr_t**)malloc(sizeof(uintptr_t*)*cbi->args_no);
+	cbi->args = (uintptr_t*)malloc(sizeof(uintptr_t)*cbi->args_no);
 	va_start(ap, data);
 	for (i = 0; i < cbi->args_no; i++) {
-		cbi->args[i] = va_arg(ap, void*);
+		cbi->args[i] = va_arg(ap, uintptr_t);
 	}
 	va_end(ap);
 	if (0 == cbi->in_queue) {
@@ -570,6 +570,10 @@ static GtkWidget* _gtk_text_view_new_with_buffer(void* buffer) {
 	return gtk_text_view_new_with_buffer(GTK_TEXT_BUFFER(buffer));
 }
 
+static void _gtk_widget_hide_on_delete(GtkWidget* w) {
+	g_signal_connect(GTK_WIDGET(w), "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
 static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
 	gtk_text_view_set_buffer(GTK_TEXT_VIEW(textview), GTK_TEXT_BUFFER(buffer));
 }
@@ -959,7 +963,7 @@ type WidgetLike interface {
 	ShowAll()
 	ShowNow()
 	Destroy()
-	Connect(s string, f CallbackFunc, data... interface{})
+	Connect(s string, f CallbackFunc, data ...interface{})
 	GetTopLevel() *GtkWidget
 	GetTopLevelAsWindow() *GtkWindow
 	HideOnDelete()
@@ -994,7 +998,7 @@ func (v *GtkWidget) ShowNow() {
 func (v *GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
-func (v *GtkWidget) Connect(s string, f CallbackFunc, datas... interface{}) {
+func (v *GtkWidget) Connect(s string, f CallbackFunc, datas ...interface{}) {
 	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
@@ -1014,7 +1018,7 @@ func (v *GtkWidget) GetTopLevelAsWindow() *GtkWindow {
 		C.gtk_widget_get_toplevel(v.Widget)}}}}
 }
 func (v *GtkWidget) HideOnDelete() {
-	C.gtk_widget_hide_on_delete(v.Widget)
+	C._gtk_widget_hide_on_delete(v.Widget)
 }
 // TODO
 // gtk_widget_destroyed
@@ -1497,12 +1501,13 @@ func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
 func (v *GtkWindow) SetPosition(position int) {
 	C.gtk_window_set_position(C.to_GtkWindow(v.Widget), C.GtkWindowPosition(position))
 }
-const(
-  GTK_WIN_POS_NONE = iota
-  GTK_WIN_POS_CENTER
-  GTK_WIN_POS_MOUSE
-  GTK_WIN_POS_CENTER_ALWAYS
-  GTK_WIN_POS_CENTER_ON_PARENT
+
+const (
+	GTK_WIN_POS_NONE = iota
+	GTK_WIN_POS_CENTER
+	GTK_WIN_POS_MOUSE
+	GTK_WIN_POS_CENTER_ALWAYS
+	GTK_WIN_POS_CENTER_ON_PARENT
 )
 // gtk_window_activate_focus
 // gtk_window_set_focus
@@ -1651,7 +1656,7 @@ const (
 type DialogLike interface {
 	WidgetLike
 	Run() int
-	Response(CallbackFunc, ... interface{})
+	Response(CallbackFunc, ...interface{})
 }
 type GtkDialog struct {
 	GtkWindow
@@ -1667,7 +1672,7 @@ func (v *GtkDialog) GetVBox() *GtkVBox {
 func (v *GtkDialog) Run() int {
 	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
 }
-func (v *GtkDialog) Response(response CallbackFunc, datas... interface{}) {
+func (v *GtkDialog) Response(response CallbackFunc, datas ...interface{}) {
 	v.Connect("response", response, datas...)
 }
 func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
@@ -1835,9 +1840,13 @@ func FileChooserDialog(title string, parent WindowLike, file_chooser_action int,
 			C.to_gcharptr(pbutton))}}}}}}
 	for i := 0; i < len(buttons)/2; i++ {
 		b_text, ok := buttons[2*i].(string)
-		if !ok {panic("error calling gtk.FileChooserDialog, button text must be a string")}
+		if !ok {
+			panic("error calling gtk.FileChooserDialog, button text must be a string")
+		}
 		b_action, ok := buttons[2*i+1].(int)
-		if !ok {panic("error calling gtk.FileChooserDialog, button action must be an int")}
+		if !ok {
+			panic("error calling gtk.FileChooserDialog, button action must be an int")
+		}
 		ret.AddButton(b_text, b_action)
 	}
 	return ret
@@ -2632,14 +2641,14 @@ func (v *GtkAccelLabel) Refetch() bool {
 type ButtonLike interface { // Buttons are LabelLike Widgets!
 	LabelLike
 	// the following should be just Clickable; ...
-	Clicked(CallbackFunc, ... interface{}) // this is a very simple interface...
+	Clicked(CallbackFunc, ...interface{}) // this is a very simple interface...
 }
 type Clickable interface {
 	WidgetLike
-	Clicked(CallbackFunc, ... interface{}) // this is a very simple interface...
+	Clicked(CallbackFunc, ...interface{}) // this is a very simple interface...
 }
 
-func (v *GtkButton) Clicked(onclick CallbackFunc, datas... interface{}) {
+func (v *GtkButton) Clicked(onclick CallbackFunc, datas ...interface{}) {
 	v.Connect("clicked", onclick, datas...)
 }
 
@@ -3651,7 +3660,7 @@ func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_buffer_new(tagtable.TextTagTable)}
 }
-func (v *GtkTextBuffer) Connect(s string, f CallbackFunc, datas... interface{}) {
+func (v *GtkTextBuffer) Connect(s string, f CallbackFunc, datas ...interface{}) {
 	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
@@ -4574,14 +4583,14 @@ type GtkTreeSelection struct {
 }
 
 const (
-	SELECTION_NONE     = iota
+	SELECTION_NONE = iota
 	SELECTION_SINGLE
 	SELECTION_BROWSE
 	SELECTION_MULTIPLE
 	SELECTION_EXTENDED = SELECTION_MULTIPLE
 )
 
-func (v *GtkTreeSelection) Connect(s string, f CallbackFunc, datas... interface{}) {
+func (v *GtkTreeSelection) Connect(s string, f CallbackFunc, datas ...interface{}) {
 	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
@@ -4619,7 +4628,7 @@ func TreeView() *GtkTreeView {
 }
 func (v *GtkTreeView) SetModel(model *GtkTreeModel) {
 	var tm *C.GtkTreeModel
-	if (model != nil ) {
+	if model != nil {
 		tm = model.TreeModel
 	}
 	C.gtk_tree_view_set_model(C.to_GtkTreeView(v.Widget), tm)
@@ -4679,10 +4688,18 @@ func (v *GtkTreeView) CollapseAll() {
 	C.gtk_tree_view_collapse_all(C.to_GtkTreeView(v.Widget))
 }
 //void gtk_tree_view_expand_to_path (GtkTreeView *tree_view, GtkTreePath *path);
-//gboolean gtk_tree_view_expand_row (GtkTreeView *tree_view, GtkTreePath *path, gboolean open_all);
-//gboolean gtk_tree_view_collapse_row (GtkTreeView *tree_view, GtkTreePath *path);
+
+func (v *GtkTreeView) ExpandRow(path *GtkTreePath, openall bool) bool {
+	return gboolean2bool(C.gtk_tree_view_expand_row(C.to_GtkTreeView(v.Widget), path.TreePath, bool2gboolean(openall)))
+}
+func (v *GtkTreeView) CollapseRow(path *GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_view_collapse_row(C.to_GtkTreeView(v.Widget), path.TreePath))
+}
 //void gtk_tree_view_map_expanded_rows (GtkTreeView *tree_view, GtkTreeViewMappingFunc func, gpointer data);
-//gboolean gtk_tree_view_row_expanded (GtkTreeView *tree_view, GtkTreePath *path);
+
+func (v *GtkTreeView) RowExpanded(path *GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_view_row_expanded(C.to_GtkTreeView(v.Widget), path.TreePath))
+}
 //void gtk_tree_view_set_reorderable (GtkTreeView *tree_view, gboolean reorderable);
 //gboolean gtk_tree_view_get_reorderable (GtkTreeView *tree_view);
 func (v *GtkTreeView) SetCursor(path *GtkTreePath, col *GtkTreeViewColumn, se bool) {
@@ -5497,10 +5514,10 @@ var use_gtk_main bool = false
 // instead just use func () { ... using data } to pass the data in.
 type CallbackFunc interface{}
 type CallbackContext struct {
-	f    CallbackFunc
-	cbi unsafe.Pointer
+	f      CallbackFunc
+	cbi    unsafe.Pointer
 	target reflect.Value
-	data reflect.Value
+	data   reflect.Value
 }
 
 func (c *CallbackContext) Target() interface{} {
@@ -5511,8 +5528,8 @@ func (c *CallbackContext) Data() interface{} {
 	return c.data.Interface()
 }
 
-func (c *CallbackContext) Args(n int) interface{} {
-	return C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n))
+func (c *CallbackContext) Args(n int) uintptr {
+	return uintptr(C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n)))
 }
 
 var callback_contexts *vector.Vector
@@ -5533,25 +5550,25 @@ func pollEvents() {
 				fargs[0] = reflect.NewValue(context)
 			}
 			/*
-			fargs := make([]reflect.Value, t.NumIn())
-			for i := 0; i < len(fargs); i++ {
-				if i == 0 {
-					if t.In(0).String() == "*gtk.GtkWidget" {
-						fargs[i] = reflect.NewValue(&GtkWidget{(*C.GtkWidget)(cbi.target)})
-					}
-					if t.In(0).String() == "*gtk.TextBuffer" {
-						fargs[i] = reflect.NewValue(&GtkTextBuffer{(unsafe.Pointer)(cbi.target)})
-					}
-				} else if i == len(fargs)-1 {
-					fargs[i] = context.Data
-				} else {
-					if i-1 < int(cbi.args_no) {
-						fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)))
+				fargs := make([]reflect.Value, t.NumIn())
+				for i := 0; i < len(fargs); i++ {
+					if i == 0 {
+						if t.In(0).String() == "*gtk.GtkWidget" {
+							fargs[i] = reflect.NewValue(&GtkWidget{(*C.GtkWidget)(cbi.target)})
+						}
+						if t.In(0).String() == "*gtk.TextBuffer" {
+							fargs[i] = reflect.NewValue(&GtkTextBuffer{(unsafe.Pointer)(cbi.target)})
+						}
+					} else if i == len(fargs)-1 {
+						fargs[i] = context.Data
 					} else {
-						fargs[i] = reflect.NewValue(nil)
+						if i-1 < int(cbi.args_no) {
+							fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)))
+						} else {
+							fargs[i] = reflect.NewValue(nil)
+						}
 					}
 				}
-			}
 			*/
 			rf.Call(fargs)
 			cbi.fire = C.int(1)
