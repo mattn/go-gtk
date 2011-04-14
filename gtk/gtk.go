@@ -4602,18 +4602,68 @@ func (v *GtkTreeSelection) Connect(s string, f CallbackFunc, datas ...interface{
 	callback_contexts.Push(ctx)
 }
 
+func (v *GtkTreeSelection) SetMode(m int) {
+	C.gtk_tree_selection_set_mode(v.TreeSelection, C.GtkSelectionMode(m))
+}
+
+func (v *GtkTreeSelection) GetMode() int {
+	return int(C.gtk_tree_selection_get_mode(v.TreeSelection))
+}
+
+//gtk_tree_selection_set_select_function (GtkTreeSelection *selection, GtkTreeSelectionFunc func, gpointer data, GDestroyNotify destroy);
+//gtk_tree_selection_get_select_function (GtkTreeSelection *selection);
+//gtk_tree_selection_get_tree_view (GtkTreeSelection *selection);
+
 func (v *GtkTreeSelection) GetSelected(i *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_tree_selection_get_selected(v.TreeSelection, nil, &i.TreeIter))
 }
 
-func (v *GtkTreeSelection) SetMode(m int) {
-	C.gtk_tree_selection_set_mode(v.TreeSelection, C.GtkSelectionMode(m))
-}
+//gtk_tree_selection_selected_foreach (GtkTreeSelection *selection, GtkTreeSelectionForeachFunc func, gpointer data);
+//gtk_tree_selection_get_selected_rows (GtkTreeSelection *selection, GtkTreeModel **model);
 
 func (v *GtkTreeSelection) CountSelectedRows() int {
 	return int(C.gtk_tree_selection_count_selected_rows(v.TreeSelection))
 }
 
+func (v *GtkTreeSelection) SelectPath(path *GtkTreePath) {
+	C.gtk_tree_selection_select_path(v.TreeSelection, path.TreePath)
+}
+
+func (v *GtkTreeSelection) UnselectPath(path *GtkTreePath) {
+	C.gtk_tree_selection_unselect_path(v.TreeSelection, path.TreePath)
+}
+
+func (v *GtkTreeSelection) PathIsSelected(path *GtkTreePath) bool {
+	return gboolean2bool(C.gtk_tree_selection_path_is_selected(v.TreeSelection, path.TreePath))
+}
+
+func (v *GtkTreeSelection) SelectIter(iter *GtkTreeIter) {
+	C.gtk_tree_selection_select_iter(v.TreeSelection, &iter.TreeIter)
+}
+
+func (v *GtkTreeSelection) UnselectIter(iter *GtkTreeIter) {
+	C.gtk_tree_selection_unselect_iter(v.TreeSelection, &iter.TreeIter)
+}
+
+func (v *GtkTreeSelection) IterIsSelected(iter *GtkTreeIter) bool {
+	return gboolean2bool(C.gtk_tree_selection_iter_is_selected(v.TreeSelection, &iter.TreeIter))
+}
+
+func (v *GtkTreeSelection) SelectAll() {
+	C.gtk_tree_selection_select_all(v.TreeSelection)
+}
+
+func (v *GtkTreeSelection) UnselectAll() {
+	C.gtk_tree_selection_unselect_all(v.TreeSelection)
+}
+
+func (v *GtkTreeSelection) SelectRange(start_path *GtkTreePath, end_path *GtkTreePath) {
+	C.gtk_tree_selection_select_range(v.TreeSelection, start_path.TreePath, end_path.TreePath)
+}
+
+func (v *GtkTreeSelection) UnselectRange(start_path *GtkTreePath, end_path *GtkTreePath) {
+	C.gtk_tree_selection_unselect_range(v.TreeSelection, start_path.TreePath, end_path.TreePath)
+}
 
 //-----------------------------------------------------------------------
 // GtkTreeView
