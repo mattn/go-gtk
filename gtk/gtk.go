@@ -4830,7 +4830,7 @@ func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	if gv != nil {
 		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
-		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()))
+		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).UnsafeAddr()))
 	}
 }
 func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
@@ -4905,7 +4905,7 @@ func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	if gv != nil {
 		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
-		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).Addr()))
+		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).UnsafeAddr()))
 	}
 }
 func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
@@ -5543,8 +5543,8 @@ func pollEvents() {
 		var cbi C.callback_info
 		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
 			context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
-			rf := reflect.NewValue(context.f).(*reflect.FuncValue)
-			t := rf.Type().(*reflect.FuncType)
+			rf := reflect.NewValue(context.f)
+			t := rf.Type()
 			fargs := make([]reflect.Value, t.NumIn())
 			if len(fargs) > 0 {
 				fargs[0] = reflect.NewValue(context)

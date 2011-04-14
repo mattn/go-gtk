@@ -354,29 +354,29 @@ func (v *GObject) Set(name string, value interface{}) {
 
 	switch value.(type) {
 	case bool:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(bool2gboolean(value.(bool))).Addr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(bool2gboolean(value.(bool))).UnsafeAddr()))
 		break
 	case byte:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gchar(value.(byte))).Addr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gchar(value.(byte))).UnsafeAddr()))
 		break
 	case int:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gint(value.(int))).Addr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gint(value.(int))).UnsafeAddr()))
 		break
 	case uint:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.guint(value.(uint))).Addr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.guint(value.(uint))).UnsafeAddr()))
 		break
 	case float64:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gfloat(value.(float64))).Addr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gfloat(value.(float64))).UnsafeAddr()))
 		break
 	case string:
 		{
 			pval := C.CString(value.(string))
 			defer C.free_string(pval)
-			C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(pval).Addr()))
+			C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(pval).UnsafeAddr()))
 		}
 		break
 	default:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(value).Addr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(value).UnsafeAddr()))
 		break
 	}
 }
