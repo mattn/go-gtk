@@ -51,13 +51,13 @@ func main() {
 		}
 		arg := ctx.Args(0)
 		mev := *(**gdk.EventMotion)(unsafe.Pointer(&arg))
-		var mt uint
+		var mt gdk.GdkModifierType
 		if mev.IsHint != 0 {
 			gdkwin.GetPointer(&p2.x, &p2.y, &mt)
 		} else {
 			p2.x, p2.y = int(mev.X), int(mev.Y)
 		}
-		if p1.x != -1 && p2.x != -1 && (mt&gdk.GDK_BUTTON_PRESS_MASK) != 0 {
+		if p1.x != -1 && p2.x != -1 && (gdk.GdkEventMask(mt)&gdk.GDK_BUTTON_PRESS_MASK) != 0 {
 			pixmap.GetDrawable().DrawLine(gc, p1.x, p1.y, p2.x, p2.y)
 			drawingarea.GetWindow().Invalidate(nil, false)
 		}
@@ -70,7 +70,7 @@ func main() {
 		}
 	})
 
-	drawingarea.SetEvents(gdk.GDK_POINTER_MOTION_MASK | gdk.GDK_POINTER_MOTION_HINT_MASK | gdk.GDK_BUTTON_PRESS_MASK)
+	drawingarea.SetEvents(int(gdk.GDK_POINTER_MOTION_MASK | gdk.GDK_POINTER_MOTION_HINT_MASK | gdk.GDK_BUTTON_PRESS_MASK))
 	vbox.Add(drawingarea)
 
 	window.Add(vbox)

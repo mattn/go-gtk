@@ -26,7 +26,7 @@ func main() {
 		println("motion-notify-event:", int(mev.X), int(mev.Y))
 	})
 
-	window.SetEvents(gdk.GDK_POINTER_MOTION_MASK | gdk.GDK_POINTER_MOTION_HINT_MASK | gdk.GDK_BUTTON_PRESS_MASK)
+	window.SetEvents(int(gdk.GDK_POINTER_MOTION_MASK | gdk.GDK_POINTER_MOTION_HINT_MASK | gdk.GDK_BUTTON_PRESS_MASK))
 	window.SetSizeRequest(400, 400)
 	window.ShowAll()
 

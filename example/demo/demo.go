@@ -108,7 +108,7 @@ func main() {
 				button.GetTopLevelAsWindow(),
 				gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
 				gtk.GTK_STOCK_OK,
-				gtk.GTK_RESPONSE_ACCEPT)
+				int(gtk.GTK_RESPONSE_ACCEPT))
 			filter := gtk.FileFilter()
 			filter.AddPattern("*.go")
 			filechooserdialog.AddFilter(filter)

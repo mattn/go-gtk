@@ -17,7 +17,7 @@ func main() {
 
 	swin := gtk.ScrolledWindow(nil, nil)
 
-	store := gtk.ListStore(gtk.TYPE_STRING, gtk.TYPE_BOOL, gdkpixbuf.GetGdkPixbufType())
+	store := gtk.ListStore(glib.G_TYPE_STRING, glib.G_TYPE_BOOL, gdkpixbuf.GetGdkPixbufType())
 	treeview := gtk.TreeView()
 	swin.Add(treeview)
 
