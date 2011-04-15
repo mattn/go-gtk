@@ -8,27 +8,31 @@ import (
 	"json"
 	"bytes"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 )
 
 func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
-	if r, _, err := http.Get(url); err == nil {
-		t := r.Header.Get("Content-Type")
-		b := make([]byte, r.ContentLength)
-		io.ReadFull(r.Body, b)
-		var loader *gdkpixbuf.GdkPixbufLoader
-		if strings.Index(t, "jpeg") >= 0 {
-			loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/jpeg")
-		} else {
-			loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/png")
-		}
-		loader.SetSize(24, 24)
-		loader.Write(b)
-		loader.Close()
-		return loader.GetPixbuf()
+	r, _, err := http.Get(url)
+	if err != nil {
+		return nil
 	}
-	return nil
+	t := r.Header.Get("Content-Type")
+	b := make([]byte, r.ContentLength)
+	if _, err = io.ReadFull(r.Body, b); err != nil {
+		return nil
+	}
+	var loader *gdkpixbuf.GdkPixbufLoader
+	if strings.Index(t, "jpeg") >= 0 {
+		loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/jpeg")
+	} else {
+		loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/png")
+	}
+	loader.SetSize(24, 24)
+	loader.Write(b)
+	loader.Close()
+	return loader.GetPixbuf()
 }
 
 func main() {
@@ -59,10 +63,20 @@ func main() {
 		button.SetSensitive(false)
 		go func() {
 			gdk.ThreadsEnter()
+			defer gdk.ThreadsLeave()
 			r, _, err := http.Get("http://twitter.com/statuses/public_timeline.json")
 			if err == nil {
-				b := make([]byte, r.ContentLength)
-				io.ReadFull(r.Body, b)
+				var b []byte
+				if r.ContentLength == -1 {
+					b, err = ioutil.ReadAll(r.Body)
+				} else {
+					b = make([]byte, r.ContentLength)
+					_, err = io.ReadFull(r.Body, b)
+				}
+				if err != nil {
+					println(err.String())
+					return
+				}
 				var j interface{}
 				json.NewDecoder(bytes.NewBuffer(b)).Decode(&j)
 				arr := j.([]interface{})
@@ -81,7 +95,6 @@ func main() {
 				}
 			}
 			button.SetSensitive(true)
-			gdk.ThreadsLeave()
 		}()
 	})
 	vbox.PackEnd(button, false, false, 0)
