@@ -11,6 +11,7 @@ func main() {
 	var menuitem *gtk.GtkMenuItem
 	gtk.Init(nil)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window.SetPosition(gtk.GTK_WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
 	window.Connect("destroy", func(ctx *gtk.CallbackContext) {
 		println("got destroy!", ctx.Data().(string))

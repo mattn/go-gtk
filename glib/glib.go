@@ -488,8 +488,22 @@ type GValue struct {
 }
 
 const (
-	G_TYPE_INT    = 0
-	G_TYPE_STRING = 1
+	G_TYPE_CHAR    = 3 << 2
+	G_TYPE_UCHAR   = 4 << 2
+	G_TYPE_BOOL    = 5 << 2
+	G_TYPE_INT     = 6 << 2
+	G_TYPE_UINT    = 7 << 2
+	G_TYPE_LONG    = 8 << 2
+	G_TYPE_ULONG   = 9 << 2
+	G_TYPE_INT64   = 10 << 2
+	G_TYPE_UINT64  = 11 << 2
+	G_TYPE_ENUM    = 12 << 2
+	G_TYPE_FLAGS   = 13 << 2
+	G_TYPE_FLOAT   = 14 << 2
+	G_TYPE_DOUBLE  = 15 << 2
+	G_TYPE_STRING  = 16 << 2
+	G_TYPE_POINTER = 17 << 2
+	G_TYPE_BOXED   = 18 << 2
 )
 
 func (v *GValue) Init(t int) {
