@@ -81,87 +81,89 @@ func ThreadsLeave() {
 //-----------------------------------------------------------------------
 // GdkCursor
 //-----------------------------------------------------------------------
+type GdkCursorType int
+
 const (
-	GDK_X_CURSOR            = 0
-	GDK_ARROW               = 2
-	GDK_BASED_ARROW_DOWN    = 4
-	GDK_BASED_ARROW_UP      = 6
-	GDK_BOAT                = 8
-	GDK_BOGOSITY            = 10
-	GDK_BOTTOM_LEFT_CORNER  = 12
-	GDK_BOTTOM_RIGHT_CORNER = 14
-	GDK_BOTTOM_SIDE         = 16
-	GDK_BOTTOM_TEE          = 18
-	GDK_BOX_SPIRAL          = 20
-	GDK_CENTER_PTR          = 22
-	GDK_CIRCLE              = 24
-	GDK_CLOCK               = 26
-	GDK_COFFEE_MUG          = 28
-	GDK_CROSS               = 30
-	GDK_CROSS_REVERSE       = 32
-	GDK_CROSSHAIR           = 34
-	GDK_DIAMOND_CROSS       = 36
-	GDK_DOT                 = 38
-	GDK_DOTBOX              = 40
-	GDK_DOUBLE_ARROW        = 42
-	GDK_DRAFT_LARGE         = 44
-	GDK_DRAFT_SMALL         = 46
-	GDK_DRAPED_BOX          = 48
-	GDK_EXCHANGE            = 50
-	GDK_FLEUR               = 52
-	GDK_GOBBLER             = 54
-	GDK_GUMBY               = 56
-	GDK_HAND1               = 58
-	GDK_HAND2               = 60
-	GDK_HEART               = 62
-	GDK_ICON                = 64
-	GDK_IRON_CROSS          = 66
-	GDK_LEFT_PTR            = 68
-	GDK_LEFT_SIDE           = 70
-	GDK_LEFT_TEE            = 72
-	GDK_LEFTBUTTON          = 74
-	GDK_LL_ANGLE            = 76
-	GDK_LR_ANGLE            = 78
-	GDK_MAN                 = 80
-	GDK_MIDDLEBUTTON        = 82
-	GDK_MOUSE               = 84
-	GDK_PENCIL              = 86
-	GDK_PIRATE              = 88
-	GDK_PLUS                = 90
-	GDK_QUESTION_ARROW      = 92
-	GDK_RIGHT_PTR           = 94
-	GDK_RIGHT_SIDE          = 96
-	GDK_RIGHT_TEE           = 98
-	GDK_RIGHTBUTTON         = 100
-	GDK_RTL_LOGO            = 102
-	GDK_SAILBOAT            = 104
-	GDK_SB_DOWN_ARROW       = 106
-	GDK_SB_H_DOUBLE_ARROW   = 108
-	GDK_SB_LEFT_ARROW       = 110
-	GDK_SB_RIGHT_ARROW      = 112
-	GDK_SB_UP_ARROW         = 114
-	GDK_SB_V_DOUBLE_ARROW   = 116
-	GDK_SHUTTLE             = 118
-	GDK_SIZING              = 120
-	GDK_SPIDER              = 122
-	GDK_SPRAYCAN            = 124
-	GDK_STAR                = 126
-	GDK_TARGET              = 128
-	GDK_TCROSS              = 130
-	GDK_TOP_LEFT_ARROW      = 132
-	GDK_TOP_LEFT_CORNER     = 134
-	GDK_TOP_RIGHT_CORNER    = 136
-	GDK_TOP_SIDE            = 138
-	GDK_TOP_TEE             = 140
-	GDK_TREK                = 142
-	GDK_UL_ANGLE            = 144
-	GDK_UMBRELLA            = 146
-	GDK_UR_ANGLE            = 148
-	GDK_WATCH               = 150
-	GDK_XTERM               = 152
-	GDK_LAST_CURSOR
-	GDK_BLANK_CURSOR     = -2
-	GDK_CURSOR_IS_PIXMAP = -1
+	GDK_X_CURSOR            GdkCursorType = 0
+	GDK_ARROW               GdkCursorType = 2
+	GDK_BASED_ARROW_DOWN    GdkCursorType = 4
+	GDK_BASED_ARROW_UP      GdkCursorType = 6
+	GDK_BOAT                GdkCursorType = 8
+	GDK_BOGOSITY            GdkCursorType = 10
+	GDK_BOTTOM_LEFT_CORNER  GdkCursorType = 12
+	GDK_BOTTOM_RIGHT_CORNER GdkCursorType = 14
+	GDK_BOTTOM_SIDE         GdkCursorType = 16
+	GDK_BOTTOM_TEE          GdkCursorType = 18
+	GDK_BOX_SPIRAL          GdkCursorType = 20
+	GDK_CENTER_PTR          GdkCursorType = 22
+	GDK_CIRCLE              GdkCursorType = 24
+	GDK_CLOCK               GdkCursorType = 26
+	GDK_COFFEE_MUG          GdkCursorType = 28
+	GDK_CROSS               GdkCursorType = 30
+	GDK_CROSS_REVERSE       GdkCursorType = 32
+	GDK_CROSSHAIR           GdkCursorType = 34
+	GDK_DIAMOND_CROSS       GdkCursorType = 36
+	GDK_DOT                 GdkCursorType = 38
+	GDK_DOTBOX              GdkCursorType = 40
+	GDK_DOUBLE_ARROW        GdkCursorType = 42
+	GDK_DRAFT_LARGE         GdkCursorType = 44
+	GDK_DRAFT_SMALL         GdkCursorType = 46
+	GDK_DRAPED_BOX          GdkCursorType = 48
+	GDK_EXCHANGE            GdkCursorType = 50
+	GDK_FLEUR               GdkCursorType = 52
+	GDK_GOBBLER             GdkCursorType = 54
+	GDK_GUMBY               GdkCursorType = 56
+	GDK_HAND1               GdkCursorType = 58
+	GDK_HAND2               GdkCursorType = 60
+	GDK_HEART               GdkCursorType = 62
+	GDK_ICON                GdkCursorType = 64
+	GDK_IRON_CROSS          GdkCursorType = 66
+	GDK_LEFT_PTR            GdkCursorType = 68
+	GDK_LEFT_SIDE           GdkCursorType = 70
+	GDK_LEFT_TEE            GdkCursorType = 72
+	GDK_LEFTBUTTON          GdkCursorType = 74
+	GDK_LL_ANGLE            GdkCursorType = 76
+	GDK_LR_ANGLE            GdkCursorType = 78
+	GDK_MAN                 GdkCursorType = 80
+	GDK_MIDDLEBUTTON        GdkCursorType = 82
+	GDK_MOUSE               GdkCursorType = 84
+	GDK_PENCIL              GdkCursorType = 86
+	GDK_PIRATE              GdkCursorType = 88
+	GDK_PLUS                GdkCursorType = 90
+	GDK_QUESTION_ARROW      GdkCursorType = 92
+	GDK_RIGHT_PTR           GdkCursorType = 94
+	GDK_RIGHT_SIDE          GdkCursorType = 96
+	GDK_RIGHT_TEE           GdkCursorType = 98
+	GDK_RIGHTBUTTON         GdkCursorType = 100
+	GDK_RTL_LOGO            GdkCursorType = 102
+	GDK_SAILBOAT            GdkCursorType = 104
+	GDK_SB_DOWN_ARROW       GdkCursorType = 106
+	GDK_SB_H_DOUBLE_ARROW   GdkCursorType = 108
+	GDK_SB_LEFT_ARROW       GdkCursorType = 110
+	GDK_SB_RIGHT_ARROW      GdkCursorType = 112
+	GDK_SB_UP_ARROW         GdkCursorType = 114
+	GDK_SB_V_DOUBLE_ARROW   GdkCursorType = 116
+	GDK_SHUTTLE             GdkCursorType = 118
+	GDK_SIZING              GdkCursorType = 120
+	GDK_SPIDER              GdkCursorType = 122
+	GDK_SPRAYCAN            GdkCursorType = 124
+	GDK_STAR                GdkCursorType = 126
+	GDK_TARGET              GdkCursorType = 128
+	GDK_TCROSS              GdkCursorType = 130
+	GDK_TOP_LEFT_ARROW      GdkCursorType = 132
+	GDK_TOP_LEFT_CORNER     GdkCursorType = 134
+	GDK_TOP_RIGHT_CORNER    GdkCursorType = 136
+	GDK_TOP_SIDE            GdkCursorType = 138
+	GDK_TOP_TEE             GdkCursorType = 140
+	GDK_TREK                GdkCursorType = 142
+	GDK_UL_ANGLE            GdkCursorType = 144
+	GDK_UMBRELLA            GdkCursorType = 146
+	GDK_UR_ANGLE            GdkCursorType = 148
+	GDK_WATCH               GdkCursorType = 150
+	GDK_XTERM               GdkCursorType = 152
+	GDK_LAST_CURSOR         GdkCursorType = 153
+	GDK_BLANK_CURSOR        GdkCursorType = -2
+	GDK_CURSOR_IS_PIXMAP    GdkCursorType = -1
 )
 
 var (
@@ -172,7 +174,7 @@ type GdkCursor struct {
 	Cursor *C.GdkCursor
 }
 
-func Cursor(cursor_type int) *GdkCursor {
+func Cursor(cursor_type GdkCursorType) *GdkCursor {
 	return &GdkCursor{
 		C.gdk_cursor_new(C.GdkCursorType(cursor_type))}
 }
@@ -341,98 +343,105 @@ func (v *GdkDrawable) DrawDrawable(gc *GdkGC, src *GdkDrawable, xsrc int, ysrc i
 //-----------------------------------------------------------------------
 // GdkWindow
 //-----------------------------------------------------------------------
+type GdkModifierType int
+
 const (
-	GDK_SHIFT_MASK   = 1 << 0
-	GDK_LOCK_MASK    = 1 << 1
-	GDK_CONTROL_MASK = 1 << 2
-	GDK_MOD1_MASK    = 1 << 3
-	GDK_MOD2_MASK    = 1 << 4
-	GDK_MOD3_MASK    = 1 << 5
-	GDK_MOD4_MASK    = 1 << 6
-	GDK_MOD5_MASK    = 1 << 7
-	GDK_BUTTON1_MASK = 1 << 8
-	GDK_BUTTON2_MASK = 1 << 9
-	GDK_BUTTON3_MASK = 1 << 10
-	GDK_BUTTON4_MASK = 1 << 11
-	GDK_BUTTON5_MASK = 1 << 12
+	GDK_SHIFT_MASK   GdkModifierType = 1 << 0
+	GDK_LOCK_MASK    GdkModifierType = 1 << 1
+	GDK_CONTROL_MASK GdkModifierType = 1 << 2
+	GDK_MOD1_MASK    GdkModifierType = 1 << 3
+	GDK_MOD2_MASK    GdkModifierType = 1 << 4
+	GDK_MOD3_MASK    GdkModifierType = 1 << 5
+	GDK_MOD4_MASK    GdkModifierType = 1 << 6
+	GDK_MOD5_MASK    GdkModifierType = 1 << 7
+	GDK_BUTTON1_MASK GdkModifierType = 1 << 8
+	GDK_BUTTON2_MASK GdkModifierType = 1 << 9
+	GDK_BUTTON3_MASK GdkModifierType = 1 << 10
+	GDK_BUTTON4_MASK GdkModifierType = 1 << 11
+	GDK_BUTTON5_MASK GdkModifierType = 1 << 12
 
 	/* The next few modifiers are used by XKB, so we skip to the end.
 	 * Bits 15 - 25 are currently unused. Bit 29 is used internally.
 	 */
 
-	GDK_SUPER_MASK = 1 << 26
-	GDK_HYPER_MASK = 1 << 27
-	GDK_META_MASK  = 1 << 28
+	GDK_SUPER_MASK GdkModifierType = 1 << 26
+	GDK_HYPER_MASK GdkModifierType = 1 << 27
+	GDK_META_MASK  GdkModifierType = 1 << 28
 
-	GDK_RELEASE_MASK = 1 << 30
+	GDK_RELEASE_MASK GdkModifierType = 1 << 30
 
-	GDK_MODIFIER_MASK = 0x5c001fff
-)
-const (
-	GDK_NOTHING           = -1
-	GDK_DELETE            = 0
-	GDK_DESTROY           = 1
-	GDK_EXPOSE            = 2
-	GDK_MOTION_NOTIFY     = 3
-	GDK_BUTTON_PRESS      = 4
-	GDK_2BUTTON_PRESS     = 5
-	GDK_3BUTTON_PRESS     = 6
-	GDK_BUTTON_RELEASE    = 7
-	GDK_KEY_PRESS         = 8
-	GDK_KEY_RELEASE       = 9
-	GDK_ENTER_NOTIFY      = 10
-	GDK_LEAVE_NOTIFY      = 11
-	GDK_FOCUS_CHANGE      = 12
-	GDK_CONFIGURE         = 13
-	GDK_MAP               = 14
-	GDK_UNMAP             = 15
-	GDK_PROPERTY_NOTIFY   = 16
-	GDK_SELECTION_CLEAR   = 17
-	GDK_SELECTION_REQUEST = 18
-	GDK_SELECTION_NOTIFY  = 19
-	GDK_PROXIMITY_IN      = 20
-	GDK_PROXIMITY_OUT     = 21
-	GDK_DRAG_ENTER        = 22
-	GDK_DRAG_LEAVE        = 23
-	GDK_DRAG_MOTION       = 24
-	GDK_DRAG_STATUS       = 25
-	GDK_DROP_START        = 26
-	GDK_DROP_FINISHED     = 27
-	GDK_CLIENT_EVENT      = 28
-	GDK_VISIBILITY_NOTIFY = 29
-	GDK_NO_EXPOSE         = 30
-	GDK_SCROLL            = 31
-	GDK_WINDOW_STATE      = 32
-	GDK_SETTING           = 33
-	GDK_OWNER_CHANGE      = 34
-	GDK_GRAB_BROKEN       = 35
-	GDK_DAMAGE            = 36
-	GDK_EVENT_LAST        = 37 /* helper variable for decls */
+	GDK_MODIFIER_MASK GdkModifierType = 0x5c001fff
 )
 
+type GdkEventType int
+
 const (
-	GDK_EXPOSURE_MASK            = 1 << 1
-	GDK_POINTER_MOTION_MASK      = 1 << 2
-	GDK_POINTER_MOTION_HINT_MASK = 1 << 3
-	GDK_BUTTON_MOTION_MASK       = 1 << 4
-	GDK_BUTTON1_MOTION_MASK      = 1 << 5
-	GDK_BUTTON2_MOTION_MASK      = 1 << 6
-	GDK_BUTTON3_MOTION_MASK      = 1 << 7
-	GDK_BUTTON_PRESS_MASK        = 1 << 8
-	GDK_BUTTON_RELEASE_MASK      = 1 << 9
-	GDK_KEY_PRESS_MASK           = 1 << 10
-	GDK_KEY_RELEASE_MASK         = 1 << 11
-	GDK_ENTER_NOTIFY_MASK        = 1 << 12
-	GDK_LEAVE_NOTIFY_MASK        = 1 << 13
-	GDK_FOCUS_CHANGE_MASK        = 1 << 14
-	GDK_STRUCTURE_MASK           = 1 << 15
-	GDK_PROPERTY_CHANGE_MASK     = 1 << 16
-	GDK_VISIBILITY_NOTIFY_MASK   = 1 << 17
-	GDK_PROXIMITY_IN_MASK        = 1 << 18
-	GDK_PROXIMITY_OUT_MASK       = 1 << 19
-	GDK_SUBSTRUCTURE_MASK        = 1 << 20
-	GDK_SCROLL_MASK              = 1 << 21
-	GDK_ALL_EVENTS_MASK          = 0x3FFFFE
+	GDK_NOTHING           GdkEventType = -1
+	GDK_DELETE            GdkEventType = 0
+	GDK_DESTROY           GdkEventType = 1
+	GDK_EXPOSE            GdkEventType = 2
+	GDK_MOTION_NOTIFY     GdkEventType = 3
+	GDK_BUTTON_PRESS      GdkEventType = 4
+	GDK_2BUTTON_PRESS     GdkEventType = 5
+	GDK_3BUTTON_PRESS     GdkEventType = 6
+	GDK_BUTTON_RELEASE    GdkEventType = 7
+	GDK_KEY_PRESS         GdkEventType = 8
+	GDK_KEY_RELEASE       GdkEventType = 9
+	GDK_ENTER_NOTIFY      GdkEventType = 10
+	GDK_LEAVE_NOTIFY      GdkEventType = 11
+	GDK_FOCUS_CHANGE      GdkEventType = 12
+	GDK_CONFIGURE         GdkEventType = 13
+	GDK_MAP               GdkEventType = 14
+	GDK_UNMAP             GdkEventType = 15
+	GDK_PROPERTY_NOTIFY   GdkEventType = 16
+	GDK_SELECTION_CLEAR   GdkEventType = 17
+	GDK_SELECTION_REQUEST GdkEventType = 18
+	GDK_SELECTION_NOTIFY  GdkEventType = 19
+	GDK_PROXIMITY_IN      GdkEventType = 20
+	GDK_PROXIMITY_OUT     GdkEventType = 21
+	GDK_DRAG_ENTER        GdkEventType = 22
+	GDK_DRAG_LEAVE        GdkEventType = 23
+	GDK_DRAG_MOTION       GdkEventType = 24
+	GDK_DRAG_STATUS       GdkEventType = 25
+	GDK_DROP_START        GdkEventType = 26
+	GDK_DROP_FINISHED     GdkEventType = 27
+	GDK_CLIENT_EVENT      GdkEventType = 28
+	GDK_VISIBILITY_NOTIFY GdkEventType = 29
+	GDK_NO_EXPOSE         GdkEventType = 30
+	GDK_SCROLL            GdkEventType = 31
+	GDK_WINDOW_STATE      GdkEventType = 32
+	GDK_SETTING           GdkEventType = 33
+	GDK_OWNER_CHANGE      GdkEventType = 34
+	GDK_GRAB_BROKEN       GdkEventType = 35
+	GDK_DAMAGE            GdkEventType = 36
+	GDK_EVENT_LAST        GdkEventType = 37 /* helper variable for decls */
+)
+
+type GdkEventMask int
+
+const (
+	GDK_EXPOSURE_MASK            GdkEventMask = 1 << 1
+	GDK_POINTER_MOTION_MASK      GdkEventMask = 1 << 2
+	GDK_POINTER_MOTION_HINT_MASK GdkEventMask = 1 << 3
+	GDK_BUTTON_MOTION_MASK       GdkEventMask = 1 << 4
+	GDK_BUTTON1_MOTION_MASK      GdkEventMask = 1 << 5
+	GDK_BUTTON2_MOTION_MASK      GdkEventMask = 1 << 6
+	GDK_BUTTON3_MOTION_MASK      GdkEventMask = 1 << 7
+	GDK_BUTTON_PRESS_MASK        GdkEventMask = 1 << 8
+	GDK_BUTTON_RELEASE_MASK      GdkEventMask = 1 << 9
+	GDK_KEY_PRESS_MASK           GdkEventMask = 1 << 10
+	GDK_KEY_RELEASE_MASK         GdkEventMask = 1 << 11
+	GDK_ENTER_NOTIFY_MASK        GdkEventMask = 1 << 12
+	GDK_LEAVE_NOTIFY_MASK        GdkEventMask = 1 << 13
+	GDK_FOCUS_CHANGE_MASK        GdkEventMask = 1 << 14
+	GDK_STRUCTURE_MASK           GdkEventMask = 1 << 15
+	GDK_PROPERTY_CHANGE_MASK     GdkEventMask = 1 << 16
+	GDK_VISIBILITY_NOTIFY_MASK   GdkEventMask = 1 << 17
+	GDK_PROXIMITY_IN_MASK        GdkEventMask = 1 << 18
+	GDK_PROXIMITY_OUT_MASK       GdkEventMask = 1 << 19
+	GDK_SUBSTRUCTURE_MASK        GdkEventMask = 1 << 20
+	GDK_SCROLL_MASK              GdkEventMask = 1 << 21
+	GDK_ALL_EVENTS_MASK          GdkEventMask = 0x3FFFFE
 )
 
 type GdkWindow struct {
@@ -444,14 +453,14 @@ func WindowFromUnsafe(window unsafe.Pointer) *GdkWindow {
 		C.to_GdkWindow(window)}
 }
 
-func (v *GdkWindow) GetPointer(x *int, y *int, mask *uint) *GdkWindow {
+func (v *GdkWindow) GetPointer(x *int, y *int, mask *GdkModifierType) *GdkWindow {
 	var cx, cy C.gint
 	var mt C.GdkModifierType
 	ret := &GdkWindow{
 		C.gdk_window_get_pointer(v.Window, &cx, &cy, &mt)}
 	*x = int(cx)
 	*y = int(cy)
-	*mask = uint(mt)
+	*mask = GdkModifierType(mt)
 	return ret
 }
 
