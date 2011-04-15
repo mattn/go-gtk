@@ -1297,7 +1297,7 @@ func (v *GtkWidget) ModifyFontEasy(desc string) {
 // gtk_widget_get_pango_context
 // gtk_widget_create_pango_layout
 // gtk_widget_render_icon
-func (v *GtkWidget) RenderIcon(stock_id string, size uint, detail string) *gdkpixbuf.GdkPixbuf {
+func (v *GtkWidget) RenderIcon(stock_id string, size GtkIconSize, detail string) *gdkpixbuf.GdkPixbuf {
 	pstock_id := C.CString(stock_id)
 	defer C.free_string(pstock_id)
 	pdetail := C.CString(detail)
