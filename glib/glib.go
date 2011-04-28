@@ -354,29 +354,29 @@ func (v *GObject) Set(name string, value interface{}) {
 
 	switch value.(type) {
 	case bool:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(bool2gboolean(value.(bool))).UnsafeAddr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(bool2gboolean(value.(bool))).UnsafeAddr()))
 		break
 	case byte:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gchar(value.(byte))).UnsafeAddr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gchar(value.(byte))).UnsafeAddr()))
 		break
 	case int:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gint(value.(int))).UnsafeAddr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gint(value.(int))).UnsafeAddr()))
 		break
 	case uint:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.guint(value.(uint))).UnsafeAddr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.guint(value.(uint))).UnsafeAddr()))
 		break
 	case float64:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gfloat(value.(float64))).UnsafeAddr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gfloat(value.(float64))).UnsafeAddr()))
 		break
 	case string:
 		{
 			pval := C.CString(value.(string))
 			defer C.free_string(pval)
-			C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(pval).UnsafeAddr()))
+			C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(pval).UnsafeAddr()))
 		}
 		break
 	default:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(value).UnsafeAddr()))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(value).UnsafeAddr()))
 		break
 	}
 }
