@@ -1004,7 +1004,7 @@ func (v *GtkWidget) Connect(s string, f CallbackFunc, datas ...interface{}) {
 	if len(datas) > 0 {
 		data = datas[0]
 	}
-	ctx := &CallbackContext{f, nil, reflect.NewValue(v), reflect.NewValue(data)}
+	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
 	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.Widget), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
@@ -3756,7 +3756,7 @@ func (v *GtkTextBuffer) Connect(s string, f CallbackFunc, datas ...interface{}) 
 	if len(datas) > 0 {
 		data = datas[0]
 	}
-	ctx := &CallbackContext{f, nil, reflect.NewValue(v), reflect.NewValue(data)}
+	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
 	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.TextBuffer), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
@@ -4699,7 +4699,7 @@ func (v *GtkTreeSelection) Connect(s string, f CallbackFunc, datas ...interface{
 	if len(datas) > 0 {
 		data = datas[0]
 	}
-	ctx := &CallbackContext{f, nil, reflect.NewValue(v), reflect.NewValue(data)}
+	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
 	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.TreeSelection), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
@@ -4984,7 +4984,7 @@ func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	if gv != nil {
 		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
-		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).UnsafeAddr()))
+		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.ValueOf(a).UnsafeAddr()))
 	}
 }
 func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
@@ -5059,7 +5059,7 @@ func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	if gv != nil {
 		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
-		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.NewValue(a).UnsafeAddr()))
+		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.ValueOf(a).UnsafeAddr()))
 	}
 }
 func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
@@ -5701,29 +5701,29 @@ func pollEvents() {
 		var cbi C.callback_info
 		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
 			context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
-			rf := reflect.NewValue(context.f)
+			rf := reflect.ValueOf(context.f)
 			t := rf.Type()
 			fargs := make([]reflect.Value, t.NumIn())
 			if len(fargs) > 0 {
-				fargs[0] = reflect.NewValue(context)
+				fargs[0] = reflect.ValueOf(context)
 			}
 			/*
 				fargs := make([]reflect.Value, t.NumIn())
 				for i := 0; i < len(fargs); i++ {
 					if i == 0 {
 						if t.In(0).String() == "*gtk.GtkWidget" {
-							fargs[i] = reflect.NewValue(&GtkWidget{(*C.GtkWidget)(cbi.target)})
+							fargs[i] = reflect.ValueOf(&GtkWidget{(*C.GtkWidget)(cbi.target)})
 						}
 						if t.In(0).String() == "*gtk.TextBuffer" {
-							fargs[i] = reflect.NewValue(&GtkTextBuffer{(unsafe.Pointer)(cbi.target)})
+							fargs[i] = reflect.ValueOf(&GtkTextBuffer{(unsafe.Pointer)(cbi.target)})
 						}
 					} else if i == len(fargs)-1 {
 						fargs[i] = context.Data
 					} else {
 						if i-1 < int(cbi.args_no) {
-							fargs[i] = reflect.NewValue(C.callback_info_get_arg(&cbi, C.int(i)))
+							fargs[i] = reflect.ValueOf(C.callback_info_get_arg(&cbi, C.int(i)))
 						} else {
-							fargs[i] = reflect.NewValue(nil)
+							fargs[i] = reflect.ValueOf(nil)
 						}
 					}
 				}

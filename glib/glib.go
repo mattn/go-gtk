@@ -73,7 +73,7 @@ static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); 
 */
 import "C"
 import "unsafe"
-import "reflect"
+//import "reflect"
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -338,6 +338,7 @@ func (v *GObject) Ref() {
 func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
 }
+
 func (v *GObject) Set(name string, value interface{}) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
@@ -354,30 +355,30 @@ func (v *GObject) Set(name string, value interface{}) {
 
 	switch value.(type) {
 	case bool:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(bool2gboolean(value.(bool))).UnsafeAddr()))
-		break
+		bval := bool2gboolean(value.(bool))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&bval))
 	case byte:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gchar(value.(byte))).UnsafeAddr()))
-		break
+		bval := C.gchar(value.(byte))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&bval))
+		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gchar(value.(byte))).UnsafeAddr()))
 	case int:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gint(value.(int))).UnsafeAddr()))
-		break
+		ival := C.int(value.(int))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&ival))
 	case uint:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.guint(value.(uint))).UnsafeAddr()))
-		break
+		uval := C.guint(value.(uint))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&uval))
+		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.guint(value.(uint))).UnsafeAddr()))
 	case float64:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(C.gfloat(value.(float64))).UnsafeAddr()))
-		break
+		fval := C.gfloat(value.(float64))
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&fval))
+		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gfloat(value.(float64))).UnsafeAddr()))
 	case string:
-		{
-			pval := C.CString(value.(string))
-			defer C.free_string(pval)
-			C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(pval).UnsafeAddr()))
-		}
-		break
+		pval := C.CString(value.(string))
+		defer C.free_string(pval)
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&pval))
 	default:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.NewValue(value).UnsafeAddr()))
-		break
+		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&value))
+		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(value).UnsafeAddr()))
 	}
 }
 func (v *GObject) SetProperty(name string, val *GValue) {
