@@ -475,7 +475,7 @@ func GValueFromNative(value interface{}) *C.GValue {
 		}
 		break
 	default:
-		//gv = C.init_gvalue_pointer(ointer(unsafe.Pointer(&value)));
+		//gv = C.init_gvalue_pointer(C.gpointer(unsafe.Pointer(&value)));
 		break
 	}
 	return gv

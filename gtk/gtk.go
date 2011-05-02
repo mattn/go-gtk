@@ -618,11 +618,19 @@ static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attributes(gchar* title
 }
 
 static void _gtk_list_store_set_ptr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_list_store_set(list_store, iter, column, *(guint**)data, -1);
+	gtk_list_store_set(list_store, iter, column, data, -1);
+}
+
+static void _gtk_list_store_set_addr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_list_store_set(list_store, iter, column, *(gpointer*)data, -1);
 }
 
 static void _gtk_tree_store_set_ptr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_tree_store_set(tree_store, iter, column, *(guint**)data, -1);
+	gtk_tree_store_set(tree_store, iter, column, data, -1);
+}
+
+static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_tree_store_set(tree_store, iter, column, *(gpointer*)data, -1);
 }
 
 static void _gtk_widget_add_accelerator(GtkWidget* w, gchar* s, void* g,
@@ -4984,7 +4992,16 @@ func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	if gv != nil {
 		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
-		C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.ValueOf(a).UnsafeAddr()))
+		if pv, ok := a.(*[0]uint8); ok {
+			C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(pv))
+		} else {
+			av := reflect.ValueOf(a)
+			if av.CanAddr() {
+				C._gtk_list_store_set_addr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(av.UnsafeAddr()))
+			} else {
+				C._gtk_list_store_set_addr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(&a))
+			}
+		}
 	}
 }
 func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
@@ -5059,7 +5076,16 @@ func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	if gv != nil {
 		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
-		C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(reflect.ValueOf(a).UnsafeAddr()))
+		if pv, ok := a.(*[0]uint8); ok {
+			C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(pv))
+		} else {
+			av := reflect.ValueOf(a)
+			if av.CanAddr() {
+				C._gtk_tree_store_set_addr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(av.UnsafeAddr()))
+			} else {
+				C._gtk_tree_store_set_addr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(&a))
+			}
+		}
 	}
 }
 func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
