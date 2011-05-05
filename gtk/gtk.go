@@ -3847,10 +3847,10 @@ func (v *GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_h
 func (v *GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
 	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf)
 }
-func (v *GtkTextBuffer) CreateMark(mark_name string, where *GtkTextIter, left_gravity bool) {
+func (v *GtkTextBuffer) CreateMark(mark_name string, where *GtkTextIter, left_gravity bool) *GtkTextMark {
 	ptr := C.CString(mark_name)
 	defer C.free_string(ptr)
-	C._gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter, bool2gboolean(left_gravity))
+	return &GtkTextMark{C._gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter, bool2gboolean(left_gravity))}
 }
 func (v *GtkTextBuffer) MoveMark(mark *GtkTextMark, where *GtkTextIter) {
 	C._gtk_text_buffer_move_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
