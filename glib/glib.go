@@ -32,8 +32,11 @@ static gchar* _g_locale_to_utf8(void* opsysstring, int len, int* bytes_read, int
 static gchar* _g_locale_from_utf8(char* utf8string, int len, int* bytes_read, int* bytes_written, GError** error) {
 	return g_locale_from_utf8((const gchar*)utf8string, (gssize)len, (gsize*)bytes_read, (gsize*)bytes_written, error);
 }
-static void _g_object_set(gpointer object, const gchar *property_name, void* value) {
-	g_object_set(object, property_name, *(guint**)value, NULL);
+static void _g_object_set_ptr(gpointer object, const gchar *property_name, void* value) {
+	g_object_set(object, property_name, value, NULL);
+}
+static void _g_object_set_addr(gpointer object, const gchar *property_name, void* value) {
+	g_object_set(object, property_name, *(gpointer**)value, NULL);
 }
 //static void _g_object_get(gpointer object, const gchar *property_name, void* value) {
 //	g_object_get(object, property_name, value, NULL);
@@ -73,7 +76,7 @@ static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); 
 */
 import "C"
 import "unsafe"
-//import "reflect"
+import "reflect"
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -356,29 +359,37 @@ func (v *GObject) Set(name string, value interface{}) {
 	switch value.(type) {
 	case bool:
 		bval := bool2gboolean(value.(bool))
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&bval))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&bval))
 	case byte:
 		bval := C.gchar(value.(byte))
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&bval))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&bval))
 		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gchar(value.(byte))).UnsafeAddr()))
 	case int:
 		ival := C.int(value.(int))
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&ival))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&ival))
 	case uint:
 		uval := C.guint(value.(uint))
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&uval))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&uval))
 		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.guint(value.(uint))).UnsafeAddr()))
 	case float64:
 		fval := C.gfloat(value.(float64))
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&fval))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&fval))
 		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gfloat(value.(float64))).UnsafeAddr()))
 	case string:
 		pval := C.CString(value.(string))
 		defer C.free_string(pval)
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&pval))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&pval))
 	default:
-		C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&value))
-		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(value).UnsafeAddr()))
+		if pv, ok := value.(*[0]uint8); ok {
+			C._g_object_set_ptr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(pv))
+		} else {
+			av := reflect.ValueOf(value)
+			if av.CanAddr() {
+				C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(value).UnsafeAddr()))
+			} else {
+				C._g_object_set_ptr(C.gpointer(v.Object), C.to_gcharptr(ptr), value.(unsafe.Pointer))
+			}
+		}
 	}
 }
 func (v *GObject) SetProperty(name string, val *GValue) {
