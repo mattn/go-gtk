@@ -2305,10 +2305,10 @@ func (v *GtkEntry) GetVisibility() bool {
 func (v *GtkEntry) SetVisibility(setting bool) {
 	C.gtk_entry_set_visibility(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
-func (v *GtkEntry) GetInvisibleChar() int {
-	return int(C.gtk_entry_get_invisible_char(C.to_GtkEntry(v.Widget)))
+func (v *GtkEntry) GetInvisibleChar() uint8 {
+	return uint8(C.gtk_entry_get_invisible_char(C.to_GtkEntry(v.Widget)))
 }
-func (v *GtkEntry) SetInvisibleChar(ch int) {
+func (v *GtkEntry) SetInvisibleChar(ch uint8) {
 	C.gtk_entry_set_invisible_char(C.to_GtkEntry(v.Widget), C.gunichar(ch))
 }
 func (v *GtkEntry) UnsetInvisibleChar() {
