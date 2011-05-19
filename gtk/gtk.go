@@ -5966,3 +5966,46 @@ func (v *GtkSourceLanguageManager) SetSearchPath(path string) {
 	defer C.free_string(cpath)
 	C._gtk_source_language_manager_set_search_path(v.LanguageManager, C.to_gcharptr(cpath))
 }
+
+//-----------------------------------------------------------------------
+// GtkSizeGroup
+//-----------------------------------------------------------------------
+type GtkSizeGroupMode int
+
+const (
+  GTK_SIZE_GROUP_NONE GtkSizeGroupMode = 0
+  GTK_SIZE_GROUP_HORIZONTAL GtkSizeGroupMode = 1
+  GTK_SIZE_GROUP_VERTICAL GtkSizeGroupMode = 2
+  GTK_SIZE_GROUP_BOTH GtkSizeGroupMode = 3
+)
+
+type GtkSizeGroup struct {
+	SizeGroup *C.GtkSizeGroup
+}
+
+func SizeGroup(mode GtkSizeGroupMode) *GtkSizeGroup {
+	return &GtkSizeGroup{
+		C.gtk_size_group_new(C.GtkSizeGroupMode(mode))}
+}
+func (v *GtkSizeGroup) SetMode(mode GtkSizeGroupMode) {
+	C.gtk_size_group_set_mode(v.SizeGroup, C.GtkSizeGroupMode(mode))
+}
+func (v *GtkSizeGroup) GetMode() GtkSizeGroupMode {
+	return GtkSizeGroupMode(C.gtk_size_group_get_mode(v.SizeGroup))
+}
+func (v *GtkSizeGroup) SetIgnoreHidden(ignore_hidden bool) {
+	C.gtk_size_group_set_ignore_hidden(v.SizeGroup, bool2gboolean(ignore_hidden))
+}
+func (v *GtkSizeGroup) GetIgnoreHidden() bool {
+	return gboolean2bool(C.gtk_size_group_get_ignore_hidden(v.SizeGroup))
+}
+func (v *GtkSizeGroup) Add(w WidgetLike) {
+	C.gtk_size_group_add_widget(v.SizeGroup, w.ToNative())
+}
+func (v *GtkSizeGroup) Remove(w WidgetLike) {
+	C.gtk_size_group_remove_widget(v.SizeGroup, w.ToNative())
+}
+func (v *GtkSizeGroup) GetWidgets() *glib.SList {
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_size_group_get_widgets(v.SizeGroup)))
+}
+// FINISH

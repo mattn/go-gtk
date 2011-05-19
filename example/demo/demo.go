@@ -74,8 +74,8 @@ func main() {
 	// GtkScale
 	//--------------------------------------------------------
 	scale := gtk.HScaleWithRange(0, 100, 1)
-	scale.Connect("value-changed", func() {
-		print("scale: ", scale.GetValue(), "\n")
+	scale.Connect("value-changed", func(ctx *gtk.CallbackContext) {
+		print("scale: ", float32(scale.GetValue()), "\n")
 		print("scale: ", int(scale.GetValue()*100), "\n")
 	})
 	framebox2.Add(scale)
