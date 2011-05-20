@@ -14,7 +14,7 @@ import (
 )
 
 func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
-	r, _, err := http.Get(url)
+	r, err := http.Get(url)
 	if err != nil {
 		return nil
 	}
@@ -64,7 +64,7 @@ func main() {
 		go func() {
 			gdk.ThreadsEnter()
 			defer gdk.ThreadsLeave()
-			r, _, err := http.Get("http://twitter.com/statuses/public_timeline.json")
+			r, err := http.Get("http://twitter.com/statuses/public_timeline.json")
 			if err == nil {
 				var b []byte
 				if r.ContentLength == -1 {
