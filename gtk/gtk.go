@@ -116,7 +116,7 @@ static int callback_info_get_current(callback_info* cbi) {
 	return 0;
 }
 
-static void _callback(void *data, ...) {
+static gboolean _callback(void *data, ...) {
 	q_lock();
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
@@ -139,6 +139,7 @@ static void _callback(void *data, ...) {
 		cbi->in_queue = 1;
 	}
 	q_unlock();
+	return TRUE;
 }
 
 static void _gtk_init(void* argc, void* argv) {
