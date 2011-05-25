@@ -20,6 +20,8 @@ package pango
 
 //static void free_string(char* s) { free(s); }
 */
+// #cgo CFLAGS: `pkg-config --cflags pango`
+// #cgo LDFLAGS: -lpthread `pkg-config --libs pango`
 import "C"
 
 func bool2gboolean(b bool) C.gboolean {
