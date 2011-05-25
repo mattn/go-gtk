@@ -27,10 +27,12 @@ clean:
 fmt_all:
 	gofmt ./gdk/gdk.go  > ./gdk/gdk.go.fmt
 	gofmt ./gtk/gtk.go > ./gtk/gtk.go.fmt
+	gofmt ./gdkpixbuf/gdkpixbuf.go > ./gdkpixbuf/gdkpixbuf.go.fmt
 	gofmt ./glib/glib.go > ./glib/glib.go.fmt
 	gofmt ./pango/pango.go > ./pango/pango.go.fmt
 	mv ./gtk/gtk.go.fmt ./gtk/gtk.go
 	mv ./gdk/gdk.go.fmt ./gdk/gdk.go
+	mv ./gdkpixbuf/gdkpixbuf.go.fmt ./gdkpixbuf/gdkpixbuf.go
 	mv ./glib/glib.go.fmt ./glib/glib.go
 	mv ./pango/pango.go.fmt ./pango/pango.go
 
