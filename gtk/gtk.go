@@ -4700,7 +4700,7 @@ const (
 	GTK_SELECTION_SINGLE   GtkSelectionMode = 1
 	GTK_SELECTION_BROWSE   GtkSelectionMode = 2
 	GTK_SELECTION_MULTIPLE GtkSelectionMode = 3
-	GTK_SELECTION_EXTENDED = GTK_SELECTION_MULTIPLE
+	GTK_SELECTION_EXTENDED                  = GTK_SELECTION_MULTIPLE
 )
 
 func (v *GtkTreeSelection) Connect(s string, f CallbackFunc, datas ...interface{}) {
@@ -5974,10 +5974,10 @@ func (v *GtkSourceLanguageManager) SetSearchPath(path string) {
 type GtkSizeGroupMode int
 
 const (
-  GTK_SIZE_GROUP_NONE GtkSizeGroupMode = 0
-  GTK_SIZE_GROUP_HORIZONTAL GtkSizeGroupMode = 1
-  GTK_SIZE_GROUP_VERTICAL GtkSizeGroupMode = 2
-  GTK_SIZE_GROUP_BOTH GtkSizeGroupMode = 3
+	GTK_SIZE_GROUP_NONE       GtkSizeGroupMode = 0
+	GTK_SIZE_GROUP_HORIZONTAL GtkSizeGroupMode = 1
+	GTK_SIZE_GROUP_VERTICAL   GtkSizeGroupMode = 2
+	GTK_SIZE_GROUP_BOTH       GtkSizeGroupMode = 3
 )
 
 type GtkSizeGroup struct {
