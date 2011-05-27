@@ -754,6 +754,7 @@ static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
 
 static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 */
+// #cgo pkg-config: gtk+-2.0 gtksourceview-2.0
 import "C"
 import "glib"
 import "gdk"
