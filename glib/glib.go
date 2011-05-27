@@ -72,8 +72,8 @@ static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1);
 static GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return gv; }
 static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return gv; }
 //static GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return gv; }
-
 */
+// #cgo pkg-config: glib-2.0 gobject-2.0
 import "C"
 import "unsafe"
 import "reflect"

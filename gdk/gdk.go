@@ -21,6 +21,7 @@ static void _g_thread_init(GThreadFunctions *vtable) {
 #endif
 }
 */
+// #cgo pkg-config: gdk-2.0 gthread-2.0
 import "C"
 import "unsafe"
 
