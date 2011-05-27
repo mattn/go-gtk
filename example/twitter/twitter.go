@@ -37,6 +37,7 @@ func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
 
 func main() {
 	gdk.ThreadsInit()
+	gdk.ThreadsEnter()
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("Twitter!")
@@ -60,10 +61,10 @@ func main() {
 	button := gtk.ButtonWithLabel("Update Timeline")
 	button.SetTooltipMarkup("update <b>public timeline</b>")
 	button.Clicked(func() {
-		button.SetSensitive(false)
 		go func() {
 			gdk.ThreadsEnter()
-			defer gdk.ThreadsLeave()
+			button.SetSensitive(false)
+			gdk.ThreadsLeave()
 			r, err := http.Get("http://twitter.com/statuses/public_timeline.json")
 			if err == nil {
 				var b []byte
@@ -84,6 +85,7 @@ func main() {
 					data := arr[i].(map[string]interface{})
 					icon := data["user"].(map[string]interface{})["profile_image_url"].(string)
 					var iter gtk.GtkTextIter
+					gdk.ThreadsEnter()
 					buffer.GetStartIter(&iter)
 					buffer.InsertPixbuf(&iter, url2pixbuf(icon))
 					name := data["user"].(map[string]interface{})["screen_name"].(string)
@@ -91,10 +93,12 @@ func main() {
 					buffer.Insert(&iter, " ")
 					buffer.InsertWithTag(&iter, name, tag)
 					buffer.Insert(&iter, ":"+text+"\n")
-					gtk.MainIteration()
+					gdk.ThreadsLeave()
 				}
 			}
+			gdk.ThreadsEnter()
 			button.SetSensitive(true)
+			gdk.ThreadsLeave()
 		}()
 	})
 	vbox.PackEnd(button, false, false, 0)
@@ -102,6 +106,6 @@ func main() {
 	window.Add(vbox)
 	window.SetSizeRequest(800, 500)
 	window.ShowAll()
-	gdk.ThreadsEnter()
 	gtk.Main()
+	gdk.ThreadsLeave()
 }

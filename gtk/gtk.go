@@ -27,119 +27,30 @@ typedef struct {
 	void* target;
 	uintptr_t* args;
 	int args_no;
-	int index;
-	GSignalQuery query;
-	int fire;
-	int in_queue;
+	gboolean ret;
 } callback_info;
-
-static callback_info* event_queue[Q_SIZE];
-// One global mutex for event handling synchronization.
-static int q_front = 0;
-static int q_back = 0;
-static int q_next(int cur) {
-	if (cur < (Q_SIZE - 1)) {
-		return cur + 1;
-	} else {
-		return 0;
-	}
-}
-#ifdef _WIN32
-#include <windows.h>
-static CRITICAL_SECTION cs;
-static void q_init() {
-	InitializeCriticalSection(&cs);
-	q_front = 0;
-	q_back = 0;
-}
-static void q_lock() {
-	EnterCriticalSection(&cs);
-}
-static void q_unlock() {
-	LeaveCriticalSection(&cs);
-}
-#else
-static pthread_mutex_t event_mu = PTHREAD_MUTEX_INITIALIZER;
-static void q_init() {
-	q_front = 0;
-	q_back = 0;
-}
-static void q_lock() {
-	pthread_mutex_lock(&event_mu);
-}
-static void q_unlock() {
-	pthread_mutex_unlock(&event_mu);
-}
-#endif
-
-// Note that queue methods aren't thread safe. The only reason they are used
-// w/o lock is that all the methods which use queue use their own global lock.
-static int q_empty() {
-	return (q_front == q_back);
-}
-static int q_full() {
-	int res = (q_next(q_back) == q_front);
-	return res;
-}
-static callback_info* q_pop() {
-	callback_info* res = event_queue[q_front];
-	event_queue[q_front] = NULL;
-	q_front = q_next(q_front);
-	return res;
-}
-static void q_push(callback_info* info) {
-	event_queue[q_back] = info;
-	if (q_full()) {
-		// In this case we lose oldest event in the queue.
-		puts("Go-gkt bindings error: event queue overwhelmed, event lost");
-		q_front = q_next(q_front);
-	}
-	q_back = q_next(q_back);
-}
 
 static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
-static void callback_info_free_args(callback_info* cbi) {
-	free(cbi->args);
-}
-static int callback_info_get_current(callback_info* cbi) {
-	q_lock();
-	if (!q_empty()) {
-		callback_info* cur_info = q_pop();
-		memcpy(cbi, cur_info, sizeof(callback_info));
-		cur_info->in_queue = 0;
-		q_unlock();
-		return 1;
-	}
-	q_unlock();
-	return 0;
-}
-
+extern void _go_gtk_callback(callback_info* cbi);
 static gboolean _callback(void *data, ...) {
-	q_lock();
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
 
 	int i;
-	cbi->fire = 0;
-	if (1 == cbi->in_queue) {
-		// In case event is already in the queue there is no need to push it again.
-		// We just put newer args in it and free old.
-		free(cbi->args);
-	}
 	cbi->args = (uintptr_t*)malloc(sizeof(uintptr_t)*cbi->args_no);
 	va_start(ap, data);
 	for (i = 0; i < cbi->args_no; i++) {
 		cbi->args[i] = va_arg(ap, uintptr_t);
 	}
 	va_end(ap);
-	if (0 == cbi->in_queue) {
-		q_push(cbi);
-		cbi->in_queue = 1;
-	}
-	q_unlock();
-	return TRUE;
+
+	_go_gtk_callback(cbi);
+
+	free(cbi->args);
+
+	return cbi->ret;
 }
 
 static void _gtk_init(void* argc, void* argv) {
@@ -151,20 +62,16 @@ static void free_callback_info(gpointer data, GClosure *closure) {
 }
 
 static callback_info* _gtk_signal_connect(void* obj, gchar* name, int func_no) {
-	static int index = 0;
 	GSignalQuery query;
 	callback_info* cbi;
 	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(obj));
 	g_signal_query(signal_id, &query);
 	cbi = g_slice_new0(callback_info);
 	cbi->name = g_strdup(name);
-	cbi->in_queue = 0;
 	cbi->func_no = func_no;
 	cbi->args = NULL;
 	cbi->target = obj;
 	cbi->args_no = query.n_params;
-	cbi->index = index;
-	index++;
 	g_signal_connect_data((gpointer)obj, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 	return cbi;
 }
@@ -5692,8 +5599,6 @@ func EventBox() *GtkEventBox {
 //-----------------------------------------------------------------------
 // Events
 //-----------------------------------------------------------------------
-var use_gtk_main bool = false
-
 // the go-gtk Callback is simpler than the one in C, because we have
 // full closures, so there is never a need to pass additional data via
 // a void * pointer.  Where you might have wanted to do that, you can
@@ -5721,45 +5626,20 @@ func (c *CallbackContext) Args(n int) uintptr {
 var callback_contexts *vector.Vector
 var main_loop bool = true
 
-func pollEvents() {
-	for main_loop {
-		if use_gtk_main == false {
-			C.gtk_main_iteration_do(C.gboolean(1))
-		}
-		var cbi C.callback_info
-		if C.callback_info_get_current(&cbi) != C.int(0) && cbi.fire == C.int(0) {
-			context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
-			rf := reflect.ValueOf(context.f)
-			t := rf.Type()
-			fargs := make([]reflect.Value, t.NumIn())
-			if len(fargs) > 0 {
-				fargs[0] = reflect.ValueOf(context)
-			}
-			/*
-				fargs := make([]reflect.Value, t.NumIn())
-				for i := 0; i < len(fargs); i++ {
-					if i == 0 {
-						if t.In(0).String() == "*gtk.GtkWidget" {
-							fargs[i] = reflect.ValueOf(&GtkWidget{(*C.GtkWidget)(cbi.target)})
-						}
-						if t.In(0).String() == "*gtk.TextBuffer" {
-							fargs[i] = reflect.ValueOf(&GtkTextBuffer{(unsafe.Pointer)(cbi.target)})
-						}
-					} else if i == len(fargs)-1 {
-						fargs[i] = context.Data
-					} else {
-						if i-1 < int(cbi.args_no) {
-							fargs[i] = reflect.ValueOf(C.callback_info_get_arg(&cbi, C.int(i)))
-						} else {
-							fargs[i] = reflect.ValueOf(nil)
-						}
-					}
-				}
-			*/
-			rf.Call(fargs)
-			cbi.fire = C.int(1)
-			C.callback_info_free_args(&cbi)
-		}
+//export _go_gtk_callback
+func callback(pcbi unsafe.Pointer) {
+	cbi := (*C.callback_info)(pcbi)
+	context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
+	rf := reflect.ValueOf(context.f)
+	t := rf.Type()
+	fargs := make([]reflect.Value, t.NumIn())
+	if len(fargs) > 0 {
+		fargs[0] = reflect.ValueOf(context)
+	}
+	ret := rf.Call(fargs)
+	if len(ret) > 0 {
+		bret, _ := ret[0].Interface().(bool)
+		cbi.ret = bool2gboolean(bret)
 	}
 }
 
@@ -5768,7 +5648,6 @@ func SetLocale() {
 }
 
 func Init(args *[]string) {
-	//runtime.GOMAXPROCS(10);
 	if args != nil {
 		var argc C.int = C.int(len(*args))
 		cargs := make([]*C.char, argc)
@@ -5788,16 +5667,10 @@ func Init(args *[]string) {
 		C._gtk_init(nil, nil)
 	}
 	callback_contexts = new(vector.Vector)
-	C.q_init()
 }
 
 func Main() {
-	if use_gtk_main {
-		go pollEvents()
-		C.gtk_main()
-	} else {
-		pollEvents()
-	}
+	C.gtk_main()
 }
 func MainIteration() bool {
 	return gboolean2bool(C.gtk_main_iteration())
@@ -5806,10 +5679,7 @@ func MainIterationDo(blocking bool) bool {
 	return gboolean2bool(C.gtk_main_iteration_do(bool2gboolean(blocking)))
 }
 func MainQuit() {
-	main_loop = false
-	if use_gtk_main {
-		C.gtk_main_quit()
-	}
+	C.gtk_main_quit()
 }
 
 //-----------------------------------------------------------------------
