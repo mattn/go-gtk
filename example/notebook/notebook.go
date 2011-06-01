@@ -21,7 +21,7 @@ func main() {
 
 		vbox := gtk.HBox(false, 1)
 
-		prev := gtk.ButtonWithLabel("go perv")
+		prev := gtk.ButtonWithLabel("go prev")
 		prev.Clicked(func() {
 			notebook.PrevPage()
 		})
