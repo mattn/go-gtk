@@ -2,8 +2,8 @@ package main
 
 import (
 	"os"
-	"gtk"
-	"gdkpixbuf"
+	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gdkpixbuf"
 	"path"
 )
 

@@ -2,9 +2,9 @@ package main
 
 import (
 	"os"
-	"glib"
-	"gtk"
-	"gdkpixbuf"
+	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gdkpixbuf"
 )
 
 func main() {

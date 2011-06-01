@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	"gtk"
+	"github.com/mattn/go-gtk/gtk"
 )
 
 func main() {

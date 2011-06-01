@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gtk"
-	"gdk"
-	"gdkpixbuf"
+	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/gdkpixbuf"
 	"http"
 	"json"
 	"bytes"

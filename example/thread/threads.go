@@ -1,7 +1,7 @@
 package main
 
-import "gdk"
-import "gtk"
+import "github.com/mattn/go-gtk/gdk"
+import "github.com/mattn/go-gtk/gtk"
 import "strconv"
 import "syscall"
 import "runtime"
