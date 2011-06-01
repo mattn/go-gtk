@@ -1,7 +1,7 @@
 package callback
 
 import "C"
-import "gtk"
+import "github.com/mattn/go-gtk/gtk"
 
 //export on_imagemenuitem1_activate
 func on_imagemenuitem1_activate() {
