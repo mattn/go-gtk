@@ -37,7 +37,6 @@ func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
 
 func main() {
 	gdk.ThreadsInit()
-	gdk.ThreadsEnter()
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("Twitter!")
@@ -88,17 +87,18 @@ func main() {
 					gdk.ThreadsEnter()
 					buffer.GetStartIter(&iter)
 					buffer.InsertPixbuf(&iter, url2pixbuf(icon))
+					gdk.ThreadsLeave()
 					name := data["user"].(map[string]interface{})["screen_name"].(string)
 					text := data["text"].(string)
+					gdk.ThreadsEnter()
 					buffer.Insert(&iter, " ")
 					buffer.InsertWithTag(&iter, name, tag)
 					buffer.Insert(&iter, ":"+text+"\n")
+					gtk.MainIterationDo(false)
 					gdk.ThreadsLeave()
 				}
 			}
-			gdk.ThreadsEnter()
 			button.SetSensitive(true)
-			gdk.ThreadsLeave()
 		}()
 	})
 	vbox.PackEnd(button, false, false, 0)
@@ -106,6 +106,7 @@ func main() {
 	window.Add(vbox)
 	window.SetSizeRequest(800, 500)
 	window.ShowAll()
+	gdk.ThreadsEnter()
 	gtk.Main()
 	gdk.ThreadsLeave()
 }
