@@ -1,8 +1,12 @@
 package glib
 
 /*
+#ifndef uintptr
+#define uintptr unsigned int*
+#endif
 #include <glib.h>
 #include <glib-object.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 static GSList* to_slist(void* sl) {
@@ -72,11 +76,69 @@ static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1);
 static GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return gv; }
 static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return gv; }
 //static GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return gv; }
+
+typedef struct {
+	char *name;
+	int func_no;
+	void* target;
+	uintptr_t* args;
+	int args_no;
+	gboolean ret;
+} callback_info;
+
+static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
+	return cbi->args[idx];
+}
+extern void _go_glib_callback(callback_info* cbi);
+static gboolean _callback(void *data, ...) {
+	va_list ap;
+	callback_info *cbi = (callback_info*) data;
+
+	int i;
+	cbi->args = (uintptr_t*)malloc(sizeof(uintptr_t)*cbi->args_no);
+	va_start(ap, data);
+	for (i = 0; i < cbi->args_no; i++) {
+		cbi->args[i] = va_arg(ap, uintptr_t);
+	}
+	va_end(ap);
+
+	_go_glib_callback(cbi);
+
+	free(cbi->args);
+
+	return cbi->ret;
+}
+
+static void free_callback_info(gpointer data, GClosure *closure) {
+	g_slice_free(callback_info, data);
+}
+
+static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
+	GSignalQuery query;
+	callback_info* cbi;
+	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(obj));
+	g_signal_query(signal_id, &query);
+	cbi = g_slice_new0(callback_info);
+	cbi->name = g_strdup(name);
+	cbi->func_no = func_no;
+	cbi->args = NULL;
+	cbi->target = obj;
+	cbi->args_no = query.n_params;
+	g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	return cbi;
+}
 */
 // #cgo pkg-config: glib-2.0 gobject-2.0
 import "C"
 import "unsafe"
 import "reflect"
+import "container/vector"
+
+var callback_contexts *vector.Vector
+
+func init() {
+	callback_contexts = new(vector.Vector)
+}
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -323,7 +385,7 @@ func ErrorFromNative(err unsafe.Pointer) *Error {
 type ObjectLike interface {
 	Ref()
 	Unref()
-	Connect(s string, f CallbackFunc, data ...interface{})
+	Connect(s string, f interface{}, data ...interface{})
 }
 type GObject struct {
 	Object unsafe.Pointer
@@ -540,4 +602,59 @@ func (v *GValue) GetInt() int {
 //-----------------------------------------------------------------------
 type WrappedObject interface {
 	GetInternalValue() unsafe.Pointer
+}
+
+//-----------------------------------------------------------------------
+// Events
+//-----------------------------------------------------------------------
+// the go-gtk Callback is simpler than the one in C, because we have
+// full closures, so there is never a need to pass additional data via
+// a void * pointer.  Where you might have wanted to do that, you can
+// instead just use func () { ... using data } to pass the data in.
+type CallbackContext struct {
+	f      interface{}
+	cbi    unsafe.Pointer
+	target reflect.Value
+	data   reflect.Value
+}
+
+func (c *CallbackContext) Target() interface{} {
+	return c.target.Interface()
+}
+
+func (c *CallbackContext) Data() interface{} {
+	return c.data.Interface()
+}
+
+func (c *CallbackContext) Args(n int) uintptr {
+	return uintptr(C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n)))
+}
+
+//export _go_glib_callback
+func callback(pcbi unsafe.Pointer) {
+	cbi := (*C.callback_info)(pcbi)
+	context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
+	rf := reflect.ValueOf(context.f)
+	t := rf.Type()
+	fargs := make([]reflect.Value, t.NumIn())
+	if len(fargs) > 0 {
+		fargs[0] = reflect.ValueOf(context)
+	}
+	ret := rf.Call(fargs)
+	if len(ret) > 0 {
+		bret, _ := ret[0].Interface().(bool)
+		cbi.ret = bool2gboolean(bret)
+	}
+}
+
+func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
+	callback_contexts.Push(ctx)
 }

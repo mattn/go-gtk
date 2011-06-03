@@ -2,10 +2,13 @@ package main
 
 import (
 	"os"
+	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gtk"
 )
 
 func main() {
+	gdk.ThreadsInit()
+	gdk.ThreadsEnter()
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("SourceView")
@@ -16,8 +19,7 @@ func main() {
 	swin := gtk.ScrolledWindow(nil, nil)
 	swin.SetPolicy(gtk.GTK_POLICY_AUTOMATIC, gtk.GTK_POLICY_AUTOMATIC)
 	swin.SetShadowType(gtk.GTK_SHADOW_IN)
-	sourcebuffer := gtk.SourceBuffer()
-	sourcebuffer.SetLanguage(gtk.SourceLanguageManagerGetDefault().GetLanguage("cpp"))
+	sourcebuffer := gtk.SourceBufferWithLanguage(gtk.SourceLanguageManagerGetDefault().GetLanguage("cpp"))
 	sourceview := gtk.SourceViewWithBuffer(sourcebuffer)
 
 	var start gtk.GtkTextIter
