@@ -18,9 +18,6 @@ package gtk
 #include <stdio.h>
 #include <pthread.h>
 
-// The problem can occur if somebody makes more than Q_SIZE - 1 signal connects
-#define Q_SIZE 256
-
 typedef struct {
 	char *name;
 	int func_no;
@@ -414,31 +411,12 @@ static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interac
 	return gtk_text_buffer_delete_selection(GTK_TEXT_BUFFER(buffer), interactive, default_editable);
 }
 
-static void _gtk_source_buffer_set_language(void* buf, void* lan) {
-	gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buf), GTK_SOURCE_LANGUAGE(lan));
-}
-
-static void* _gtk_source_language_manager_get_default() {
-	return gtk_source_language_manager_get_default();
-}
-
-static void* _gtk_source_language_manager_get_language(void* lang_man, gchar* id) {
-	return gtk_source_language_manager_get_language(GTK_SOURCE_LANGUAGE_MANAGER(lang_man), id);
-}
-
 static GtkWidget* _gtk_source_view_new_with_buffer(void* buf) {
 	return gtk_source_view_new_with_buffer(GTK_SOURCE_BUFFER(buf));
 }
 
 static void* _gtk_source_buffer_new() {
 	return gtk_source_buffer_new(NULL);
-}
-
-static void _gtk_source_language_manager_set_search_path(void* man, gchar* str) {
-	gchar* arr[2];
-	arr[0] = str;
-	arr[1] = NULL;
-	gtk_source_language_manager_set_search_path(GTK_SOURCE_LANGUAGE_MANAGER(man), arr);
 }
 
 // static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
@@ -5693,7 +5671,7 @@ func SourceBuffer() *GtkSourceBuffer {
 	return &GtkSourceBuffer{GtkTextBuffer{C._gtk_source_buffer_new()}}
 }
 func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
-	C._gtk_source_buffer_set_language(v.TextBuffer, lang.SourceLanguage)
+	C.gtk_source_buffer_set_language((*C.GtkSourceBuffer)(v.TextBuffer), lang.SourceLanguage)
 }
 func (v *GtkSourceBuffer) BeginNotUndoableAction() {
 	C.gtk_source_buffer_begin_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
@@ -5814,29 +5792,35 @@ func (v *GtkSourceView) GetSmartHomeEnd() GtkSourceSmartHomeEndType {
 // GtkSourceLanguage
 //-----------------------------------------------------------------------
 type GtkSourceLanguage struct {
-	SourceLanguage unsafe.Pointer
+	SourceLanguage *C.GtkSourceLanguage
 }
 
 //-----------------------------------------------------------------------
 // GtkSourceLanguageManager
 //-----------------------------------------------------------------------
 type GtkSourceLanguageManager struct {
-	LanguageManager unsafe.Pointer
+	SourceLanguageManager *C.GtkSourceLanguageManager
 }
 
 func SourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
-	return &GtkSourceLanguageManager{C._gtk_source_language_manager_get_default()}
+	return &GtkSourceLanguageManager{C.gtk_source_language_manager_get_default()}
 }
 func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
 	cid := C.CString(id)
 	defer C.free_string(cid)
-	return &GtkSourceLanguage{C._gtk_source_language_manager_get_language(v.LanguageManager,
+	return &GtkSourceLanguage{C.gtk_source_language_manager_get_language(v.SourceLanguageManager,
 		C.to_gcharptr(cid))}
 }
-func (v *GtkSourceLanguageManager) SetSearchPath(path string) {
-	cpath := C.CString(path)
-	defer C.free_string(cpath)
-	C._gtk_source_language_manager_set_search_path(v.LanguageManager, C.to_gcharptr(cpath))
+func (v *GtkSourceLanguageManager) SetSearchPath(paths []string) {
+	cpaths := C.make_strings(C.int(len(paths) + 1))
+	for i, path := range paths {
+		ptr := C.CString(path)
+		defer C.free_string(ptr)
+		C.set_string(cpaths, C.int(i), C.to_gcharptr(ptr))
+	}
+	C.set_string(cpaths, C.int(len(paths)), nil)
+	C.gtk_source_language_manager_set_search_path(v.SourceLanguageManager, cpaths)
+	C.destroy_strings(cpaths)
 }
 
 //-----------------------------------------------------------------------
@@ -5881,3 +5865,94 @@ func (v *GtkSizeGroup) GetWidgets() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_size_group_get_widgets(v.SizeGroup)))
 }
 // FINISH
+
+//-----------------------------------------------------------------------
+// GtkStatusIcon
+//-----------------------------------------------------------------------
+type GtkStatusIcon struct {
+	glib.GObject
+}
+
+func StatusIcon() *GtkStatusIcon {
+	return &GtkStatusIcon{glib.GObject{
+		unsafe.Pointer(C.gtk_status_icon_new())}}
+}
+func StatusIconFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) *GtkStatusIcon {
+	return &GtkStatusIcon{glib.GObject{
+		unsafe.Pointer(C.gtk_status_icon_new_from_pixbuf(pixbuf.Pixbuf))}}
+}
+func StatusIconFromFile(filename string) *GtkStatusIcon {
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	return &GtkStatusIcon{glib.GObject{
+		unsafe.Pointer(C.gtk_status_icon_new_from_file(C.to_gcharptr(ptr)))}}
+}
+func StatusIconFromStock(stock_id string) *GtkStatusIcon {
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	return &GtkStatusIcon{glib.GObject{
+		unsafe.Pointer(C.gtk_status_icon_new_from_stock(C.to_gcharptr(ptr)))}}
+}
+func StatusIconFromIconName(icon_name string) *GtkStatusIcon {
+	ptr := C.CString(icon_name)
+	defer C.free_string(ptr)
+	return &GtkStatusIcon{glib.GObject{
+		unsafe.Pointer(C.gtk_status_icon_new_from_icon_name(C.to_gcharptr(ptr)))}}
+}
+//GtkStatusIcon *gtk_status_icon_new_from_gicon(GIcon *icon);
+
+func (v *GtkStatusIcon) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_status_icon_set_from_pixbuf((*C.GtkStatusIcon)(v.Object), pixbuf.Pixbuf)
+}
+func (v *GtkStatusIcon) SetFromFile(filename string) {
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	C.gtk_status_icon_set_from_file((*C.GtkStatusIcon)(v.Object), C.to_gcharptr(ptr))
+}
+func (v *GtkStatusIcon) SetFromStock(stock_id string) {
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	C.gtk_status_icon_set_from_stock((*C.GtkStatusIcon)(v.Object), C.to_gcharptr(ptr))
+}
+func (v *GtkStatusIcon) SetFromIconName(icon_name string) {
+	ptr := C.CString(icon_name)
+	defer C.free_string(ptr)
+	C.gtk_status_icon_set_from_icon_name((*C.GtkStatusIcon)(v.Object), C.to_gcharptr(ptr))
+}
+//void gtk_status_icon_set_from_gicon (GtkStatusIcon *status_icon, GIcon *icon);
+//GtkImageType gtk_status_icon_get_storage_type (GtkStatusIcon *status_icon);
+
+func (v *GtkStatusIcon) GetPixbuf() *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_status_icon_get_pixbuf((*C.GtkStatusIcon)(v.Object))}
+}
+func (v *GtkStatusIcon) GetStock() string {
+	return C.GoString(C.to_charptr(C.gtk_status_icon_get_stock((*C.GtkStatusIcon)(v.Object))))
+}
+func (v *GtkStatusIcon) GetIconName() string {
+	return C.GoString(C.to_charptr(C.gtk_status_icon_get_icon_name((*C.GtkStatusIcon)(v.Object))))
+}
+//GIcon *gtk_status_icon_get_gicon (GtkStatusIcon *status_icon);
+
+//gint gtk_status_icon_get_size (GtkStatusIcon *status_icon);
+//void gtk_status_icon_set_screen (GtkStatusIcon *status_icon, GdkScreen *screen);
+//GdkScreen *gtk_status_icon_get_screen (GtkStatusIcon *status_icon);
+//void gtk_status_icon_set_tooltip (GtkStatusIcon *status_icon, const gchar *tooltip_text);
+//void gtk_status_icon_set_has_tooltip (GtkStatusIcon *status_icon, gboolean has_tooltip);
+//void gtk_status_icon_set_tooltip_text (GtkStatusIcon *status_icon, const gchar *text);
+//void gtk_status_icon_set_tooltip_markup (GtkStatusIcon *status_icon, const gchar *markup);
+//void gtk_status_icon_set_title (GtkStatusIcon *status_icon, const gchar *title);
+//gchar *gtk_status_icon_get_title (GtkStatusIcon *status_icon);
+//void gtk_status_icon_set_name (GtkStatusIcon *status_icon, const gchar *name);
+//void gtk_status_icon_set_visible (GtkStatusIcon *status_icon, gboolean visible);
+//gboolean gtk_status_icon_get_visible (GtkStatusIcon *status_icon);
+//void gtk_status_icon_set_blinking (GtkStatusIcon *status_icon, gboolean blinking);
+//gboolean gtk_status_icon_get_blinking (GtkStatusIcon *status_icon);
+//gboolean gtk_status_icon_is_embedded (GtkStatusIcon *status_icon);
+//void gtk_status_icon_position_menu (GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data);
+//gboolean gtk_status_icon_get_geometry (GtkStatusIcon *status_icon, GdkScreen **screen, GdkRectangle *area, GtkOrientation *orientation);
+//gboolean gtk_status_icon_get_has_tooltip (GtkStatusIcon *status_icon);
+//gchar *gtk_status_icon_get_tooltip_text (GtkStatusIcon *status_icon);
+//gchar *gtk_status_icon_get_tooltip_markup (GtkStatusIcon *status_icon);
+
+//guint32 gtk_status_icon_get_x11_window_id (GtkStatusIcon *status_icon);
