@@ -323,6 +323,7 @@ func ErrorFromNative(err unsafe.Pointer) *Error {
 type ObjectLike interface {
 	Ref()
 	Unref()
+	Connect(s string, f CallbackFunc, data ...interface{})
 }
 type GObject struct {
 	Object unsafe.Pointer
