@@ -3,7 +3,9 @@ include $(GOROOT)/src/Make.inc
 TARG=callback
 CGOFILES=callback.go
 CFLAGS:=$(CFLAGS) -I$(GOROOT)/pkg/$(GOOS)_$(GOARCH)
+ifneq ($(GOOS),darwin)
 CGO_LDFLAGS:=-Wl,-R `pwd`
+endif
 
 include $(GOROOT)/src/Make.pkg
 
