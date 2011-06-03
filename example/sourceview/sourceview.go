@@ -2,13 +2,10 @@ package main
 
 import (
 	"os"
-	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gtk"
 )
 
 func main() {
-	gdk.ThreadsInit()
-	gdk.ThreadsEnter()
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("SourceView")
