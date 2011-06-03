@@ -5602,7 +5602,6 @@ func (c *CallbackContext) Args(n int) uintptr {
 }
 
 var callback_contexts *vector.Vector
-var main_loop bool = true
 
 //export _go_gtk_callback
 func callback(pcbi unsafe.Pointer) {
