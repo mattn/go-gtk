@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
 	"github.com/mattn/go-gtk/gdk"
 	"unsafe"
@@ -45,7 +46,7 @@ func main() {
 		gc.SetRgbBgColor(gdk.Color("white"))
 	})
 
-	drawingarea.Connect("motion-notify-event", func(ctx *gtk.CallbackContext) {
+	drawingarea.Connect("motion-notify-event", func(ctx *glib.CallbackContext) {
 		if gdkwin == nil {
 			gdkwin = drawingarea.GetWindow()
 		}

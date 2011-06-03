@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
 	"github.com/mattn/go-gtk/gdkpixbuf"
 	"path"
@@ -13,7 +14,7 @@ func main() {
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetPosition(gtk.GTK_WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
-	window.Connect("destroy", func(ctx *gtk.CallbackContext) {
+	window.Connect("destroy", func(ctx *glib.CallbackContext) {
 		println("got destroy!", ctx.Data().(string))
 		gtk.MainQuit()
 	},
@@ -74,7 +75,7 @@ func main() {
 	// GtkScale
 	//--------------------------------------------------------
 	scale := gtk.HScaleWithRange(0, 100, 1)
-	scale.Connect("value-changed", func(ctx *gtk.CallbackContext) {
+	scale.Connect("value-changed", func() {
 		print("scale: ", float32(scale.GetValue()), "\n")
 		print("scale: ", int(scale.GetValue()*100), "\n")
 	})

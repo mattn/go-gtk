@@ -18,59 +18,8 @@ package gtk
 #include <stdio.h>
 #include <pthread.h>
 
-typedef struct {
-	char *name;
-	int func_no;
-	void* target;
-	uintptr_t* args;
-	int args_no;
-	gboolean ret;
-} callback_info;
-
-static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
-	return cbi->args[idx];
-}
-extern void _go_gtk_callback(callback_info* cbi);
-static gboolean _callback(void *data, ...) {
-	va_list ap;
-	callback_info *cbi = (callback_info*) data;
-
-	int i;
-	cbi->args = (uintptr_t*)malloc(sizeof(uintptr_t)*cbi->args_no);
-	va_start(ap, data);
-	for (i = 0; i < cbi->args_no; i++) {
-		cbi->args[i] = va_arg(ap, uintptr_t);
-	}
-	va_end(ap);
-
-	_go_gtk_callback(cbi);
-
-	free(cbi->args);
-
-	return cbi->ret;
-}
-
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
-}
-
-static void free_callback_info(gpointer data, GClosure *closure) {
-	g_slice_free(callback_info, data);
-}
-
-static callback_info* _gtk_signal_connect(void* obj, gchar* name, int func_no) {
-	GSignalQuery query;
-	callback_info* cbi;
-	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(obj));
-	g_signal_query(signal_id, &query);
-	cbi = g_slice_new0(callback_info);
-	cbi->name = g_strdup(name);
-	cbi->func_no = func_no;
-	cbi->args = NULL;
-	cbi->target = obj;
-	cbi->args_no = query.n_params;
-	g_signal_connect_data((gpointer)obj, name, GTK_SIGNAL_FUNC(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
-	return cbi;
 }
 
 static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
@@ -415,10 +364,6 @@ static GtkWidget* _gtk_source_view_new_with_buffer(void* buf) {
 	return gtk_source_view_new_with_buffer(GTK_SOURCE_BUFFER(buf));
 }
 
-static void* _gtk_source_buffer_new() {
-	return gtk_source_buffer_new(NULL);
-}
-
 // static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
 // static void gtk_text_buffer_copy_clipboard(void* buffer, GtkClipboard* clipboard);
 // static void gtk_text_buffer_cut_clipboard(void* buffer, GtkClipboard* clipboard, gboolean default_editable);
@@ -556,6 +501,8 @@ static inline void set_string(gchar** strings, int n, gchar* str) {
 	strings[n] = str;
 }
 
+static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
+
 static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
 
 static inline char* to_charptr(const gchar* s) { return (char*)s; }
@@ -566,7 +513,6 @@ static inline void free_string(char* s) { free(s); }
 
 static GValue* to_GValueptr(void* s) { return (GValue*)s; }
 
-static GtkSourceBuffer* to_GtkSourceBuffer(void* p) { return GTK_SOURCE_BUFFER(p); }
 static GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
 static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
 static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
@@ -859,7 +805,7 @@ type WidgetLike interface {
 	ShowAll()
 	ShowNow()
 	Destroy()
-	Connect(s string, f CallbackFunc, data ...interface{})
+	Connect(s string, f interface{}, data ...interface{})
 	GetTopLevel() *GtkWidget
 	GetTopLevelAsWindow() *GtkWindow
 	HideOnDelete()
@@ -894,16 +840,8 @@ func (v *GtkWidget) ShowNow() {
 func (v *GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
-func (v *GtkWidget) Connect(s string, f CallbackFunc, datas ...interface{}) {
-	var data interface{}
-	if len(datas) > 0 {
-		data = datas[0]
-	}
-	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
-	ptr := C.CString(s)
-	defer C.free_string(ptr)
-	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.Widget), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
-	callback_contexts.Push(ctx)
+func (v *GtkWidget) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Connect(s, f, datas ...)
 }
 func (v *GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget{
@@ -1565,7 +1503,7 @@ const (
 type DialogLike interface {
 	WidgetLike
 	Run() int
-	Response(CallbackFunc, ...interface{})
+	Response(interface{}, ...interface{})
 }
 type GtkDialog struct {
 	GtkWindow
@@ -1581,7 +1519,7 @@ func (v *GtkDialog) GetVBox() *GtkVBox {
 func (v *GtkDialog) Run() int {
 	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
 }
-func (v *GtkDialog) Response(response CallbackFunc, datas ...interface{}) {
+func (v *GtkDialog) Response(response interface{}, datas ...interface{}) {
 	v.Connect("response", response, datas...)
 }
 func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
@@ -2598,14 +2536,14 @@ func (v *GtkAccelLabel) Refetch() bool {
 type ButtonLike interface { // Buttons are LabelLike Widgets!
 	LabelLike
 	// the following should be just Clickable; ...
-	Clicked(CallbackFunc, ...interface{}) // this is a very simple interface...
+	Clicked(interface{}, ...interface{}) // this is a very simple interface...
 }
 type Clickable interface {
 	WidgetLike
-	Clicked(CallbackFunc, ...interface{}) // this is a very simple interface...
+	Clicked(interface{}, ...interface{}) // this is a very simple interface...
 }
 
-func (v *GtkButton) Clicked(onclick CallbackFunc, datas ...interface{}) {
+func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) {
 	v.Connect("clicked", onclick, datas...)
 }
 
@@ -3646,16 +3584,8 @@ func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_buffer_new(tagtable.TextTagTable)}
 }
-func (v *GtkTextBuffer) Connect(s string, f CallbackFunc, datas ...interface{}) {
-	var data interface{}
-	if len(datas) > 0 {
-		data = datas[0]
-	}
-	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
-	ptr := C.CString(s)
-	defer C.free_string(ptr)
-	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.TextBuffer), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
-	callback_contexts.Push(ctx)
+func (v *GtkTextBuffer) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(v.TextBuffer))).Connect(s, f, datas ...)
 }
 func (v *GtkTextBuffer) GetLineCount() int {
 	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer))
@@ -4589,16 +4519,8 @@ const (
 	GTK_SELECTION_EXTENDED                  = GTK_SELECTION_MULTIPLE
 )
 
-func (v *GtkTreeSelection) Connect(s string, f CallbackFunc, datas ...interface{}) {
-	var data interface{}
-	if len(datas) > 0 {
-		data = datas[0]
-	}
-	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
-	ptr := C.CString(s)
-	defer C.free_string(ptr)
-	ctx.cbi = unsafe.Pointer(C._gtk_signal_connect(unsafe.Pointer(v.TreeSelection), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
-	callback_contexts.Push(ctx)
+func (v *GtkTreeSelection) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(v.TreeSelection)).Connect(s, f, datas ...)
 }
 
 func (v *GtkTreeSelection) SetMode(m GtkSelectionMode) {
@@ -5574,52 +5496,6 @@ func EventBox() *GtkEventBox {
 // gboolean gtk_event_box_get_above_child (GtkEventBox *event_box);
 // void gtk_event_box_set_above_child (GtkEventBox *event_box, gboolean above_child);
 
-//-----------------------------------------------------------------------
-// Events
-//-----------------------------------------------------------------------
-// the go-gtk Callback is simpler than the one in C, because we have
-// full closures, so there is never a need to pass additional data via
-// a void * pointer.  Where you might have wanted to do that, you can
-// instead just use func () { ... using data } to pass the data in.
-type CallbackFunc interface{}
-type CallbackContext struct {
-	f      CallbackFunc
-	cbi    unsafe.Pointer
-	target reflect.Value
-	data   reflect.Value
-}
-
-func (c *CallbackContext) Target() interface{} {
-	return c.target.Interface()
-}
-
-func (c *CallbackContext) Data() interface{} {
-	return c.data.Interface()
-}
-
-func (c *CallbackContext) Args(n int) uintptr {
-	return uintptr(C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n)))
-}
-
-var callback_contexts *vector.Vector
-
-//export _go_gtk_callback
-func callback(pcbi unsafe.Pointer) {
-	cbi := (*C.callback_info)(pcbi)
-	context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
-	rf := reflect.ValueOf(context.f)
-	t := rf.Type()
-	fargs := make([]reflect.Value, t.NumIn())
-	if len(fargs) > 0 {
-		fargs[0] = reflect.ValueOf(context)
-	}
-	ret := rf.Call(fargs)
-	if len(ret) > 0 {
-		bret, _ := ret[0].Interface().(bool)
-		cbi.ret = bool2gboolean(bret)
-	}
-}
-
 func SetLocale() {
 	C.gtk_set_locale()
 }
@@ -5643,7 +5519,6 @@ func Init(args *[]string) {
 	} else {
 		C._gtk_init(nil, nil)
 	}
-	callback_contexts = new(vector.Vector)
 }
 
 func Main() {
@@ -5663,20 +5538,26 @@ func MainQuit() {
 // GtkSourceBuffer
 //-----------------------------------------------------------------------
 type GtkSourceBuffer struct {
+	SourceBuffer *C.GtkSourceBuffer
 	GtkTextBuffer
 }
 
 func SourceBuffer() *GtkSourceBuffer {
-	return &GtkSourceBuffer{GtkTextBuffer{C._gtk_source_buffer_new()}}
+	v := C.gtk_source_buffer_new(nil)
+	return &GtkSourceBuffer{v, GtkTextBuffer{unsafe.Pointer(v)}}
+}
+func SourceBufferWithLanguage(lang *GtkSourceLanguage) *GtkSourceBuffer {
+	v := C.gtk_source_buffer_new_with_language(lang.SourceLanguage)
+	return &GtkSourceBuffer{v, GtkTextBuffer{unsafe.Pointer(v)}}
 }
 func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
-	C.gtk_source_buffer_set_language((*C.GtkSourceBuffer)(v.TextBuffer), lang.SourceLanguage)
+	C.gtk_source_buffer_set_language(v.SourceBuffer, lang.SourceLanguage)
 }
 func (v *GtkSourceBuffer) BeginNotUndoableAction() {
-	C.gtk_source_buffer_begin_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
+	C.gtk_source_buffer_begin_not_undoable_action(v.SourceBuffer)
 }
 func (v *GtkSourceBuffer) EndNotUndoableAction() {
-	C.gtk_source_buffer_end_not_undoable_action(C.to_GtkSourceBuffer(v.TextBuffer))
+	C.gtk_source_buffer_end_not_undoable_action(v.SourceBuffer)
 }
 
 //-----------------------------------------------------------------------
@@ -5798,7 +5679,7 @@ type GtkSourceLanguage struct {
 // GtkSourceLanguageManager
 //-----------------------------------------------------------------------
 type GtkSourceLanguageManager struct {
-	SourceLanguageManager *C.GtkSourceLanguageManager
+	LanguageManager *C.GtkSourceLanguageManager
 }
 
 func SourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
@@ -5807,7 +5688,7 @@ func SourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
 func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
 	cid := C.CString(id)
 	defer C.free_string(cid)
-	return &GtkSourceLanguage{C.gtk_source_language_manager_get_language(v.SourceLanguageManager,
+	return &GtkSourceLanguage{C.gtk_source_language_manager_get_language(v.LanguageManager,
 		C.to_gcharptr(cid))}
 }
 func (v *GtkSourceLanguageManager) SetSearchPath(paths []string) {
@@ -5818,7 +5699,7 @@ func (v *GtkSourceLanguageManager) SetSearchPath(paths []string) {
 		C.set_string(cpaths, C.int(i), C.to_gcharptr(ptr))
 	}
 	C.set_string(cpaths, C.int(len(paths)), nil)
-	C.gtk_source_language_manager_set_search_path(v.SourceLanguageManager, cpaths)
+	C.gtk_source_language_manager_set_search_path(v.LanguageManager, cpaths)
 	C.destroy_strings(cpaths)
 }
 
@@ -5869,67 +5750,67 @@ func (v *GtkSizeGroup) GetWidgets() *glib.SList {
 // GtkStatusIcon
 //-----------------------------------------------------------------------
 type GtkStatusIcon struct {
-	glib.GObject
+	StatusIcon *C.GtkStatusIcon
 }
 
 func StatusIcon() *GtkStatusIcon {
-	return &GtkStatusIcon{glib.GObject{
-		unsafe.Pointer(C.gtk_status_icon_new())}}
+	return &GtkStatusIcon{
+		C.gtk_status_icon_new()}
 }
 func StatusIconFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) *GtkStatusIcon {
-	return &GtkStatusIcon{glib.GObject{
-		unsafe.Pointer(C.gtk_status_icon_new_from_pixbuf(pixbuf.Pixbuf))}}
+	return &GtkStatusIcon{
+		C.gtk_status_icon_new_from_pixbuf(pixbuf.Pixbuf)}
 }
 func StatusIconFromFile(filename string) *GtkStatusIcon {
 	ptr := C.CString(filename)
 	defer C.free_string(ptr)
-	return &GtkStatusIcon{glib.GObject{
-		unsafe.Pointer(C.gtk_status_icon_new_from_file(C.to_gcharptr(ptr)))}}
+	return &GtkStatusIcon{
+		C.gtk_status_icon_new_from_file(C.to_gcharptr(ptr))}
 }
 func StatusIconFromStock(stock_id string) *GtkStatusIcon {
 	ptr := C.CString(stock_id)
 	defer C.free_string(ptr)
-	return &GtkStatusIcon{glib.GObject{
-		unsafe.Pointer(C.gtk_status_icon_new_from_stock(C.to_gcharptr(ptr)))}}
+	return &GtkStatusIcon{
+		C.gtk_status_icon_new_from_stock(C.to_gcharptr(ptr))}
 }
 func StatusIconFromIconName(icon_name string) *GtkStatusIcon {
 	ptr := C.CString(icon_name)
 	defer C.free_string(ptr)
-	return &GtkStatusIcon{glib.GObject{
-		unsafe.Pointer(C.gtk_status_icon_new_from_icon_name(C.to_gcharptr(ptr)))}}
+	return &GtkStatusIcon{
+		C.gtk_status_icon_new_from_icon_name(C.to_gcharptr(ptr))}
 }
 //GtkStatusIcon *gtk_status_icon_new_from_gicon(GIcon *icon);
 
 func (v *GtkStatusIcon) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_status_icon_set_from_pixbuf((*C.GtkStatusIcon)(v.Object), pixbuf.Pixbuf)
+	C.gtk_status_icon_set_from_pixbuf(v.StatusIcon, pixbuf.Pixbuf)
 }
 func (v *GtkStatusIcon) SetFromFile(filename string) {
 	ptr := C.CString(filename)
 	defer C.free_string(ptr)
-	C.gtk_status_icon_set_from_file((*C.GtkStatusIcon)(v.Object), C.to_gcharptr(ptr))
+	C.gtk_status_icon_set_from_file(v.StatusIcon, C.to_gcharptr(ptr))
 }
 func (v *GtkStatusIcon) SetFromStock(stock_id string) {
 	ptr := C.CString(stock_id)
 	defer C.free_string(ptr)
-	C.gtk_status_icon_set_from_stock((*C.GtkStatusIcon)(v.Object), C.to_gcharptr(ptr))
+	C.gtk_status_icon_set_from_stock(v.StatusIcon, C.to_gcharptr(ptr))
 }
 func (v *GtkStatusIcon) SetFromIconName(icon_name string) {
 	ptr := C.CString(icon_name)
 	defer C.free_string(ptr)
-	C.gtk_status_icon_set_from_icon_name((*C.GtkStatusIcon)(v.Object), C.to_gcharptr(ptr))
+	C.gtk_status_icon_set_from_icon_name(v.StatusIcon, C.to_gcharptr(ptr))
 }
 //void gtk_status_icon_set_from_gicon (GtkStatusIcon *status_icon, GIcon *icon);
 //GtkImageType gtk_status_icon_get_storage_type (GtkStatusIcon *status_icon);
 
 func (v *GtkStatusIcon) GetPixbuf() *gdkpixbuf.GdkPixbuf {
 	return &gdkpixbuf.GdkPixbuf{
-		C.gtk_status_icon_get_pixbuf((*C.GtkStatusIcon)(v.Object))}
+		C.gtk_status_icon_get_pixbuf(v.StatusIcon)}
 }
 func (v *GtkStatusIcon) GetStock() string {
-	return C.GoString(C.to_charptr(C.gtk_status_icon_get_stock((*C.GtkStatusIcon)(v.Object))))
+	return C.GoString(C.to_charptr(C.gtk_status_icon_get_stock(v.StatusIcon)))
 }
 func (v *GtkStatusIcon) GetIconName() string {
-	return C.GoString(C.to_charptr(C.gtk_status_icon_get_icon_name((*C.GtkStatusIcon)(v.Object))))
+	return C.GoString(C.to_charptr(C.gtk_status_icon_get_icon_name(v.StatusIcon)))
 }
 //GIcon *gtk_status_icon_get_gicon (GtkStatusIcon *status_icon);
 
