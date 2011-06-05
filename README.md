@@ -17,9 +17,12 @@ INSTALL:
   To experiment with go-gtk, you can just compile and run the example
   program:
 
-    make install
-    make example
+    goinstall github.com/mattn/go-gtk/gtk
+    gomake install
+    gomake example
     ./example/demo/demo
+
+  Don't forget, that you need the GTK-Development-Packages.
 
 LICENSE:
 --------
