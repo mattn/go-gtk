@@ -30,8 +30,14 @@
 				<h2 class="maintitle">Install</h2>
 				<p>To experiment with go-gtk, you can just compile and run the example program:</p>
 <pre class="code">
-# make example
-# ./example/main
+# git clone https://github.com/mattn/go-gtk
+# cd go-gtk
+# make install &amp;&amp; make example
+# ./example/demo/demo
+</pre>
+or
+<pre class="code">
+# goinstall github.com/mattn/go-gtk/gtk
 </pre>
 			</article>
 		</div>
@@ -55,7 +61,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;window.Connect(<span class="Constant">&quot;destroy&quot;</span>, <span class="Type">func</span>()&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println(<span class="Constant">&quot;got destroy!&quot;</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.MainQuit()<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}, nil)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkVBox</span><br />
@@ -97,10 +103,10 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry.GetText())<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Response(<span class="Type">func</span>()&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println(<span class="Constant">&quot;Dialog OK!&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, nil)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Run()<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Destroy()<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}, nil)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(button)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
@@ -112,7 +118,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;fontname: &quot;</span>, fontbutton.GetFontName(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;use_size: &quot;</span>, fontbutton.GetUseSize(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;show_size: &quot;</span>, fontbutton.GetShowSize(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}, nil)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(fontbutton)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(buttons)<br />
 <br />
@@ -128,7 +134,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span class="Statement">else</span>&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.SetLabel(<span class="Constant">&quot;ToggleButton OFF!&quot;</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}, nil)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(togglebutton)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
@@ -141,7 +147,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span class="Statement">else</span>&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.SetLabel(<span class="Constant">&quot;CheckButton UNCHECKED!&quot;</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}, nil)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(checkbutton)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(buttons)<br />
 <br />
@@ -150,7 +156,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;comboboxentry := gtk.ComboBoxEntryNewText()<br />
 &nbsp;&nbsp;&nbsp;&nbsp;comboboxentry.Connect(<span class="Constant">&quot;changed&quot;</span>, <span class="Type">func</span>()&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//comboboxentry...</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;}, nil)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;combos.Add(comboboxentry)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(combos)<br />
 <br />
@@ -254,7 +260,7 @@
 							<li>GtkRecentChooserDialog: 0%</li>
 							<li>GtkScale: 90%</li>
 							<li>GtkScrolledWindow: 50%</li>
-							<li>GtkSeparator: 0%</li>
+							<li>GtkSeparator: 100%</li>
 							<li>GtkSpinButton: 0%</li>
 							<li>GtkStatusbar: 100%</li>
 							<li>GtkTable: 100%</li>
