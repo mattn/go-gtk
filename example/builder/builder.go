@@ -14,9 +14,7 @@ func main() {
 
 	window := gtk.WidgetFromObject(obj)
 	window.Show()
-	window.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
+	window.Connect("destroy", gtk.MainQuit)
 
 	gtk.Main()
 }

@@ -12,9 +12,7 @@ func main() {
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Folder View")
-	window.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
+	window.Connect("destroy", gtk.MainQuit)
 
 	swin := gtk.ScrolledWindow(nil, nil)
 
