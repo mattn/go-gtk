@@ -48,7 +48,7 @@ func main() {
 	framebox2 := gtk.VBox(false, 1)
 	frame2.Add(framebox2)
 
-	vpaned.Add1(frame1)
+	vpaned.Pack1(frame1, false, false)
 	vpaned.Add2(frame2)
 
 	//--------------------------------------------------------
@@ -180,6 +180,12 @@ func main() {
 	framebox2.PackStart(buttons, false, false, 0)
 
 	//--------------------------------------------------------
+	// GtkVSeparator
+	//--------------------------------------------------------
+	vsep := gtk.VSeparator()
+	framebox2.PackStart(vsep, false, false, 0)
+
+	//--------------------------------------------------------
 	// GtkComboBoxEntry
 	//--------------------------------------------------------
 	combos := gtk.HBox(false, 1)
@@ -206,12 +212,6 @@ func main() {
 	combos.Add(combobox)
 
 	framebox2.PackStart(combos, false, false, 0)
-
-	//--------------------------------------------------------
-	// GtkVSeparator
-	//--------------------------------------------------------
-	vsep := gtk.VSeparator()
-	framebox2.PackStart(vsep, false, false, 0)
 
 	//--------------------------------------------------------
 	// GtkTextView
