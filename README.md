@@ -17,10 +17,15 @@ INSTALL:
   To experiment with go-gtk, you can just compile and run the example
   program:
 
-    goinstall github.com/mattn/go-gtk/gtk
+    git clone  https://github.com/mattn/go-gtk
+    cd go-gtk
     gomake install
     gomake example
     ./example/demo/demo
+
+	Or
+
+    goinstall github.com/mattn/go-gtk/gtk
 
   Don't forget, that you need the GTK-Development-Packages.
 
@@ -83,7 +88,7 @@ GOAL:
     GtkRecentChooserDialog: 0%
     GtkScale: 90%
     GtkScrolledWindow: 50%
-    GtkSeparator: 0%
+    GtkSeparator: 100%
     GtkSpinButton: 0%
     GtkStatusbar: 100%
     GtkTable: 100%
