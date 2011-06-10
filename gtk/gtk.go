@@ -3217,33 +3217,35 @@ func (v *GtkFrame) SetShadowType(shadow_type GtkShadowType) {
 // FINISH
 
 //-----------------------------------------------------------------------
-// GTKHSeparator
+// GtkSeparator
 //-----------------------------------------------------------------------
+type GtkSeparator struct {
+	GtkWidget
+}
 
-//TODO
-//Does not work ... 
-/*
+//-----------------------------------------------------------------------
+// GtkHSeparator
+//-----------------------------------------------------------------------
 type GtkHSeparator struct {
-	HSeparator *C.GtkHSeparator
+	GtkSeparator
 }
-*/
 
-//GtkWidget* gtk_hseparator_new      (void);
-
-/*
 func HSeparator() *GtkHSeparator {
-    return &GtkHSeparator { C.gtk_hseparator_new() }
+	return &GtkHSeparator{GtkSeparator{GtkWidget{
+		C.gtk_hseparator_new()}}}
 }
-*/
-// FINISH
 
 //-----------------------------------------------------------------------
-// GTKVSeparator
+// GtkVSeparator
 //-----------------------------------------------------------------------
+type GtkVSeparator struct {
+	GtkSeparator
+}
 
-//TODO
-//GtkWidget* gtk_vseparator_new      (void);
-
+func VSeparator() *GtkVSeparator {
+	return &GtkVSeparator{GtkSeparator{GtkWidget{
+		C.gtk_vseparator_new()}}}
+}
 // FINISH
 
 //-----------------------------------------------------------------------

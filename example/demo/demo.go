@@ -208,6 +208,12 @@ func main() {
 	framebox2.PackStart(combos, false, false, 0)
 
 	//--------------------------------------------------------
+	// GtkVSeparator
+	//--------------------------------------------------------
+	vsep := gtk.VSeparator()
+	framebox2.PackStart(vsep, false, false, 0)
+
+	//--------------------------------------------------------
 	// GtkTextView
 	//--------------------------------------------------------
 	swin := gtk.ScrolledWindow(nil, nil)
