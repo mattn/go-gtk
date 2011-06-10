@@ -17,8 +17,7 @@ func main() {
 	window.Connect("destroy", func(ctx *glib.CallbackContext) {
 		println("got destroy!", ctx.Data().(string))
 		gtk.MainQuit()
-	},
-		"foo")
+	}, "foo")
 
 	//--------------------------------------------------------
 	// GtkVBox
