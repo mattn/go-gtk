@@ -12,9 +12,7 @@ func main() {
 	gdk.ThreadsEnter()
 	gtk.Init(nil)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
-	window.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
+	window.Connect("destroy", gtk.MainQuit)
 
 	vbox := gtk.VBox(false, 1)
 
