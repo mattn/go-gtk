@@ -23,7 +23,7 @@ INSTALL:
     gomake example
     ./example/demo/demo
 
-	Or
+  Or
 
     goinstall github.com/mattn/go-gtk/gtk
 
