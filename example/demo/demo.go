@@ -48,7 +48,7 @@ func main() {
 	frame2.Add(framebox2)
 
 	vpaned.Pack1(frame1, false, false)
-	vpaned.Add2(frame2)
+	vpaned.Pack2(frame2, false, false)
 
 	//--------------------------------------------------------
 	// GtkImage
