@@ -841,7 +841,7 @@ func (v *GtkWidget) Destroy() {
 	C.gtk_widget_destroy(v.Widget)
 }
 func (v *GtkWidget) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Connect(s, f, datas ...)
+	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Connect(s, f, datas...)
 }
 func (v *GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget{
@@ -2310,10 +2310,15 @@ func ImageFromStock(stock_id string, size GtkIconSize) *GtkImage {
 	return &GtkImage{GtkWidget{
 		C.gtk_image_new_from_stock(C.to_gcharptr(ptr), C.GtkIconSize(size))}}
 }
+
+func ImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *GtkImage {
+	return &GtkImage{GtkWidget{
+		C.gtk_image_new_from_pixbuf(pixbuf.Pixbuf)}}
+}
+
 // TODO
 // gtk_image_new_from_pixmap
 // gtk_image_new_from_image
-// gtk_image_new_from_pixbuf
 // gtk_image_new_from_icon_set
 // gtk_image_new_from_animation
 // gtk_image_new_from_icon_name
@@ -3615,7 +3620,7 @@ func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 		C._gtk_text_buffer_new(tagtable.TextTagTable)}
 }
 func (v *GtkTextBuffer) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(v.TextBuffer))).Connect(s, f, datas ...)
+	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(v.TextBuffer))).Connect(s, f, datas...)
 }
 func (v *GtkTextBuffer) GetLineCount() int {
 	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer))
@@ -4550,7 +4555,7 @@ const (
 )
 
 func (v *GtkTreeSelection) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(v.TreeSelection)).Connect(s, f, datas ...)
+	glib.ObjectFromNative(unsafe.Pointer(v.TreeSelection)).Connect(s, f, datas...)
 }
 
 func (v *GtkTreeSelection) SetMode(m GtkSelectionMode) {
@@ -5866,3 +5871,4 @@ func (v *GtkStatusIcon) GetIconName() string {
 //gchar *gtk_status_icon_get_tooltip_markup (GtkStatusIcon *status_icon);
 
 //guint32 gtk_status_icon_get_x11_window_id (GtkStatusIcon *status_icon);
+
