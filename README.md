@@ -71,7 +71,7 @@ GOAL:
     GtkHBox: 100%
     GtkHButtonBox: 0%
     GtkIconView: 0%
-    GtkImage: 10%
+    GtkImage: 30%
     GtkItem: 100%
     GtkLabel: 10%
     GtkLinkButton: 90%

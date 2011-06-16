@@ -2316,6 +2316,31 @@ func ImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *GtkImage {
 		C.gtk_image_new_from_pixbuf(pixbuf.Pixbuf)}}
 }
 
+func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget))}
+}
+
+func (v *GtkImage) Clear() {
+	C.gtk_image_clear(C.to_GtkImage(v.Widget))
+}
+
+func (v *GtkImage) SetFromFile(filename string) {
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	C.gtk_image_set_from_file(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr))
+}
+
+func (v *GtkImage) SetFromStock(stock_id string, size GtkIconSize) {
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	C.gtk_image_set_from_stock(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr), C.GtkIconSize(size))
+}
+
+func (v *GtkImage) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_image_set_from_pixbuf(C.to_GtkImage(v.Widget), pixbuf.Pixbuf)
+}
+
 // TODO
 // gtk_image_new_from_pixmap
 // gtk_image_new_from_image
@@ -2323,12 +2348,8 @@ func ImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *GtkImage {
 // gtk_image_new_from_animation
 // gtk_image_new_from_icon_name
 // gtk_image_new_from_gicon
-// gtk_image_clear
 // gtk_image_set_from_pixmap
 // gtk_image_set_from_image
-// gtk_image_set_from_file
-// gtk_image_set_from_pixbuf
-// gtk_image_set_from_stock
 // gtk_image_set_from_icon_set
 // gtk_image_set_from_animation
 // gtk_image_set_from_icon_name
@@ -2337,10 +2358,6 @@ func ImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *GtkImage {
 // gtk_image_get_storage_type
 // gtk_image_get_pixmap
 // gtk_image_get_image
-func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf{
-		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget))}
-}
 // gtk_image_get_stock
 // gtk_image_get_icon_set
 // gtk_image_get_animation
@@ -5873,4 +5890,3 @@ func (v *GtkStatusIcon) GetIconName() string {
 //gchar *gtk_status_icon_get_tooltip_markup (GtkStatusIcon *status_icon);
 
 //guint32 gtk_status_icon_get_x11_window_id (GtkStatusIcon *status_icon);
-
