@@ -17,8 +17,7 @@ func main() {
 	window.Connect("destroy", func(ctx *glib.CallbackContext) {
 		println("got destroy!", ctx.Data().(string))
 		gtk.MainQuit()
-	},
-		"foo")
+	}, "foo")
 
 	//--------------------------------------------------------
 	// GtkVBox
@@ -48,8 +47,8 @@ func main() {
 	framebox2 := gtk.VBox(false, 1)
 	frame2.Add(framebox2)
 
-	vpaned.Add1(frame1)
-	vpaned.Add2(frame2)
+	vpaned.Pack1(frame1, false, false)
+	vpaned.Pack2(frame2, false, false)
 
 	//--------------------------------------------------------
 	// GtkImage
@@ -178,6 +177,12 @@ func main() {
 	radiofirst.SetActive(true)
 
 	framebox2.PackStart(buttons, false, false, 0)
+
+	//--------------------------------------------------------
+	// GtkVSeparator
+	//--------------------------------------------------------
+	vsep := gtk.VSeparator()
+	framebox2.PackStart(vsep, false, false, 0)
 
 	//--------------------------------------------------------
 	// GtkComboBoxEntry

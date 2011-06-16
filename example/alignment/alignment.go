@@ -9,9 +9,7 @@ func main() {
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("Alignment")
-	window.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
+	window.Connect("destroy", gtk.MainQuit)
 
 	notebook := gtk.Notebook()
 	window.Add(notebook)

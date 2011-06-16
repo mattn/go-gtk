@@ -10,9 +10,7 @@ func main() {
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Notebook")
-	window.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
+	window.Connect("destroy", gtk.MainQuit)
 
 	notebook := gtk.Notebook()
 	for n := 1; n <= 10; n++ {

@@ -12,9 +12,7 @@ func main() {
 	gtk.Init(&os.Args)
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Events")
-	window.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
+	window.Connect("destroy", gtk.MainQuit)
 
 	window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
