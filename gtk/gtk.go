@@ -2246,7 +2246,8 @@ func (v *GtkProgressBar) Pulse() {
 	C.gtk_progress_bar_pulse(C.to_GtkProgressBar(v.Widget))
 }
 func (v *GtkProgressBar) GetFraction() float64 {
-	return float64(C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget)))
+	r := C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget))
+	return float64(r)
 }
 func (v *GtkProgressBar) SetFraction(fraction float64) {
 	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
@@ -2260,7 +2261,8 @@ func (v *GtkProgressBar) SetText(show_text string) {
 	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkProgressBar) GetPulseStep() float64 {
-	return float64(C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget)))
+	r := C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget))
+	return float64(r)
 }
 func (v *GtkProgressBar) SetPulseStep(fraction float64) {
 	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
@@ -2478,7 +2480,8 @@ func (v *GtkLabel) SetSelectable(setting bool) {
 	C.gtk_label_set_selectable(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkLabel) GetAngle() float64 {
-	return float64(C.gtk_label_get_angle(C.to_GtkLabel(v.Widget)))
+	r := C.gtk_label_get_angle(C.to_GtkLabel(v.Widget))
+	return float64(r)
 }
 func (v *GtkLabel) SetAngle(angle float64) {
 	C.gtk_label_set_angle(C.to_GtkLabel(v.Widget), C.gdouble(angle))
@@ -3282,14 +3285,16 @@ func Adjustment(value float64, lower float64, upper float64, step_increment floa
 		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))}
 }
 func (v *GtkAdjustment) GetValue() float64 {
-	return float64(C.gtk_adjustment_get_value(v.Adjustment))
+	r := C.gtk_adjustment_get_value(v.Adjustment)
+	return float64(r)
 }
 func (v *GtkAdjustment) SetValue(value float64) {
 	C.gtk_adjustment_set_value(v.Adjustment, C.gdouble(value))
 }
 func (v *GtkAdjustment) GetLower() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_lower() is not provided on your GTK")
-	return float64(C._gtk_adjustment_get_lower(v.Adjustment))
+	r := C._gtk_adjustment_get_lower(v.Adjustment)
+	return float64(r)
 }
 func (v *GtkAdjustment) SetLower(lower float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_lower() is not provided on your GTK")
@@ -3297,7 +3302,8 @@ func (v *GtkAdjustment) SetLower(lower float64) {
 }
 func (v *GtkAdjustment) GetUpper() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_upper() is not provided on your GTK")
-	return float64(C._gtk_adjustment_get_upper(v.Adjustment))
+	r := C._gtk_adjustment_get_upper(v.Adjustment)
+	return float64(r)
 }
 func (v *GtkAdjustment) SetUpper(upper float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_upper() is not provided on your GTK")
@@ -3305,7 +3311,8 @@ func (v *GtkAdjustment) SetUpper(upper float64) {
 }
 func (v *GtkAdjustment) GetStepIncrement() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_step_increment() is not provided on your GTK")
-	return float64(C._gtk_adjustment_get_step_increment(v.Adjustment))
+	r := C._gtk_adjustment_get_step_increment(v.Adjustment)
+	return float64(r)
 }
 func (v *GtkAdjustment) SetStepIncrement(step_increment float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_step_increment() is not provided on your GTK")
@@ -3313,7 +3320,8 @@ func (v *GtkAdjustment) SetStepIncrement(step_increment float64) {
 }
 func (v *GtkAdjustment) GetPageIncrement() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_increment() is not provided on your GTK")
-	return float64(C._gtk_adjustment_get_page_increment(v.Adjustment))
+	r := C._gtk_adjustment_get_page_increment(v.Adjustment)
+	return float64(r)
 }
 func (v *GtkAdjustment) SetPageIncrement(page_increment float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_increment() is not provided on your GTK")
@@ -3321,7 +3329,8 @@ func (v *GtkAdjustment) SetPageIncrement(page_increment float64) {
 }
 func (v *GtkAdjustment) GetPageSize() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_size() is not provided on your GTK")
-	return float64(C._gtk_adjustment_get_page_size(v.Adjustment))
+	r := C._gtk_adjustment_get_page_size(v.Adjustment)
+	return float64(r)
 }
 func (v *GtkAdjustment) SetPageSize(page_size float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_size() is not provided on your GTK")
@@ -4213,7 +4222,8 @@ func (v *GtkRange) SetValue(value float64) {
 	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
 func (v *GtkRange) GetValue() float64 {
-	return float64(C.gtk_range_get_value(C.to_GtkRange(v.Widget)))
+	r := C.gtk_range_get_value(C.to_GtkRange(v.Widget))
+	return float64(r)
 }
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
@@ -4262,7 +4272,8 @@ func (v *GtkRange) SetFillLevel(value float64) {
 	C.gtk_range_set_fill_level(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
 func (v *GtkRange) GetFillLevel() float64 {
-	return float64(C.gtk_range_get_fill_level(C.to_GtkRange(v.Widget)))
+	r := C.gtk_range_get_fill_level(C.to_GtkRange(v.Widget))
+	return float64(r)
 }
 
 //-----------------------------------------------------------------------

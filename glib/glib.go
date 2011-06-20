@@ -434,9 +434,13 @@ func (v *GObject) Set(name string, value interface{}) {
 		uval := C.guint(value.(uint))
 		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&uval))
 		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.guint(value.(uint))).UnsafeAddr()))
+	case float32:
+		f32val := C.gfloat(value.(float32))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&f32val))
+		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gfloat(value.(float64))).UnsafeAddr()))
 	case float64:
-		fval := C.gfloat(value.(float64))
-		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&fval))
+		f64val := C.gfloat(value.(float64))
+		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&f64val))
 		//C._g_object_set(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(C.gfloat(value.(float64))).UnsafeAddr()))
 	case string:
 		pval := C.CString(value.(string))
@@ -537,6 +541,9 @@ func GValueFromNative(value interface{}) *C.GValue {
 		break
 	case uint:
 		gv = C.init_gvalue_uint(C.guint(value.(uint)))
+		break
+	case float32:
+		gv = C.init_gvalue_double(C.gdouble(value.(float32)))
 		break
 	case float64:
 		gv = C.init_gvalue_double(C.gdouble(value.(float64)))
