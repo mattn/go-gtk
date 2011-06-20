@@ -75,8 +75,7 @@ func main() {
 	//--------------------------------------------------------
 	scale := gtk.HScaleWithRange(0, 100, 1)
 	scale.Connect("value-changed", func() {
-		print("scale: ", float32(scale.GetValue()), "\n")
-		print("scale: ", int(scale.GetValue()*100), "\n")
+		println("scale:", int(scale.GetValue()))
 	})
 	framebox2.Add(scale)
 
@@ -90,7 +89,7 @@ func main() {
 	//--------------------------------------------------------
 	button := gtk.ButtonWithLabel("Button with label")
 	button.Clicked(func() {
-		print("button clicked: ", button.GetLabel(), "\n")
+		println("button clicked:", button.GetLabel())
 		messagedialog := gtk.MessageDialog(
 			button.GetTopLevelAsWindow(),
 			gtk.GTK_DIALOG_MODAL,
@@ -128,10 +127,10 @@ func main() {
 	//--------------------------------------------------------
 	fontbutton := gtk.FontButton()
 	fontbutton.Connect("font-set", func() {
-		print("title: ", fontbutton.GetTitle(), "\n")
-		print("fontname: ", fontbutton.GetFontName(), "\n")
-		print("use_size: ", fontbutton.GetUseSize(), "\n")
-		print("show_size: ", fontbutton.GetShowSize(), "\n")
+		println("title:", fontbutton.GetTitle())
+		println("fontname:", fontbutton.GetFontName())
+		println("use_size:", fontbutton.GetUseSize())
+		println("show_size:", fontbutton.GetShowSize())
 	})
 	buttons.Add(fontbutton)
 	framebox2.PackStart(buttons, false, false, 0)
@@ -193,7 +192,7 @@ func main() {
 	comboboxentry.AppendText("Tiger")
 	comboboxentry.AppendText("Elephant")
 	comboboxentry.Connect("changed", func() {
-		print("value: ", comboboxentry.GetActiveText(), "\n")
+		println("value:", comboboxentry.GetActiveText())
 	})
 	combos.Add(comboboxentry)
 
@@ -206,7 +205,7 @@ func main() {
 	combobox.AppendText("Apple")
 	combobox.SetActive(1)
 	combobox.Connect("changed", func() {
-		print("value: ", combobox.GetActiveText(), "\n")
+		println("value:", combobox.GetActiveText())
 	})
 	combos.Add(combobox)
 

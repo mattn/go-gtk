@@ -473,6 +473,10 @@ static void _gtk_window_add_accel_group(GtkWidget* w, void* ag) {
 	gtk_window_add_accel_group(GTK_WINDOW(w), GTK_ACCEL_GROUP(ag));
 }
 
+static void _gtk_range_get_value(GtkRange* range, gdouble* value) {
+	*value = gtk_range_get_value(range);
+}
+
 static inline GType* make_gtypes(int count) {
 	return g_new0(GType, count);
 }
@@ -4222,7 +4226,8 @@ func (v *GtkRange) SetValue(value float64) {
 	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
 func (v *GtkRange) GetValue() float64 {
-	r := C.gtk_range_get_value(C.to_GtkRange(v.Widget))
+	var r C.gdouble
+	C._gtk_range_get_value(C.to_GtkRange(v.Widget), &r)
 	return float64(r)
 }
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
