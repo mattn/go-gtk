@@ -1209,8 +1209,8 @@ func (v *GtkWidget) SetHasTooltip(setting bool) {
 // gtk_requisition_copy
 // gtk_requisition_free
 
-func FromNative(p unsafe.Pointer) *C.GtkWidget {
-	return C.to_GtkWidget(p)
+func WidgetFromNative(p unsafe.Pointer) *GtkWidget {
+	return &GtkWidget{C.to_GtkWidget(p)}
 }
 
 //-----------------------------------------------------------------------
