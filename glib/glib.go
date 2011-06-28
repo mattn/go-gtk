@@ -9,6 +9,9 @@ package glib
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+static GList* to_list(void* l) {
+	return (GList*)l;
+}
 static GSList* to_slist(void* sl) {
 	return (GSList*)sl;
 }
@@ -164,6 +167,10 @@ type List struct {
 	GList *C.GList
 }
 
+func ListFromNative(l unsafe.Pointer) *List {
+	return &List{
+		C.to_list(l)}
+}
 func (v List) Data() interface{} {
 	return v.GList.data
 }
