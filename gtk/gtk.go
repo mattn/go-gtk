@@ -1243,7 +1243,9 @@ func (v *GtkContainer) CheckResize() {
 }
 // gtk_container_foreach
 // gtk_container_foreach_full
-// gtk_container_get_children
+func (v *GtkContainer) GetChildren() *glib.List {
+	return glib.ListFromNative(unsafe.Pointer(C.gtk_container_get_children(C.to_GtkContainer(v.Widget))))
+}
 // gtk_container_propagate_expose
 // gtk_container_set_focus_chain
 // gtk_container_unset_focus_chain
