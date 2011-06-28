@@ -158,59 +158,59 @@ func GPtrToString(p interface{}) string {
 }
 
 //-----------------------------------------------------------------------
-// GList
+// List
 //-----------------------------------------------------------------------
-type GList struct {
+type List struct {
 	GList *C.GList
 }
 
-func (v GList) Data() interface{} {
+func (v List) Data() interface{} {
 	return v.GList.data
 }
-func (v GList) Append(data unsafe.Pointer) *GList {
-	return &GList{C.g_list_append(v.GList, C.gpointer(data))}
+func (v List) Append(data unsafe.Pointer) *List {
+	return &List{C.g_list_append(v.GList, C.gpointer(data))}
 }
-func (v GList) Prepend(data unsafe.Pointer) *GList {
-	return &GList{C.g_list_prepend(v.GList, C.gpointer(data))}
+func (v List) Prepend(data unsafe.Pointer) *List {
+	return &List{C.g_list_prepend(v.GList, C.gpointer(data))}
 }
-func (v GList) Insert(data unsafe.Pointer, pos int) *GList {
-	return &GList{C.g_list_insert(v.GList, C.gpointer(data), C.gint(pos))}
+func (v List) Insert(data unsafe.Pointer, pos int) *List {
+	return &List{C.g_list_insert(v.GList, C.gpointer(data), C.gint(pos))}
 }
-func (v GList) InsertBefore(sib GList, data unsafe.Pointer) *GList {
-	return &GList{C.g_list_insert_before(v.GList, sib.GList, C.gpointer(data))}
+func (v List) InsertBefore(sib List, data unsafe.Pointer) *List {
+	return &List{C.g_list_insert_before(v.GList, sib.GList, C.gpointer(data))}
 }
 //GList*              g_list_insert_sorted                (GList *list,
 //                                                         gpointer data,
 //                                                         GCompareFunc func);
-func (v GList) Remove(data unsafe.Pointer) *GList {
-	return &GList{C.g_list_remove(v.GList, C.gconstpointer(data))}
+func (v List) Remove(data unsafe.Pointer) *List {
+	return &List{C.g_list_remove(v.GList, C.gconstpointer(data))}
 }
-func (v GList) RemoveLink(link GList) *GList {
-	return &GList{C.g_list_remove_link(v.GList, link.GList)}
+func (v List) RemoveLink(link List) *List {
+	return &List{C.g_list_remove_link(v.GList, link.GList)}
 }
-func (v GList) DeleteLink(link GList) *GList {
-	return &GList{C.g_list_delete_link(v.GList, link.GList)}
+func (v List) DeleteLink(link List) *List {
+	return &List{C.g_list_delete_link(v.GList, link.GList)}
 }
-func (v GList) RemoveAll(data unsafe.Pointer) *GList {
-	return &GList{C.g_list_remove_all(v.GList, C.gconstpointer(data))}
+func (v List) RemoveAll(data unsafe.Pointer) *List {
+	return &List{C.g_list_remove_all(v.GList, C.gconstpointer(data))}
 }
-func (v GList) Free() {
+func (v List) Free() {
 	C.g_list_free(v.GList)
 }
-func GListAlloc() *GList {
-	return &GList{C.g_list_alloc()}
+func GListAlloc() *List {
+	return &List{C.g_list_alloc()}
 }
-func (v GList) Free1() {
+func (v List) Free1() {
 	C.g_list_free_1(v.GList)
 }
-func (v GList) Length() uint {
+func (v List) Length() uint {
 	return uint(C.g_list_length(v.GList))
 }
-func (v GList) Copy() *GList {
-	return &GList{C.g_list_copy(v.GList)}
+func (v List) Copy() *List {
+	return &List{C.g_list_copy(v.GList)}
 }
-func (v GList) Reverse() *GList {
-	return &GList{C.g_list_reverse(v.GList)}
+func (v List) Reverse() *List {
+	return &List{C.g_list_reverse(v.GList)}
 }
 //GList*              g_list_sort                         (GList *list,
 //                                                         GCompareFunc compare_func);
@@ -226,10 +226,10 @@ func (v GList) Reverse() *GList {
 //gint                (*GCompareDataFunc)                 (gconstpointer a,
 //                                                         gconstpointer b,
 //                                                         gpointer user_data);
-func (v GList) Concat(link GList) *GList {
-	return &GList{C.g_list_concat(v.GList, link.GList)}
+func (v List) Concat(link List) *List {
+	return &List{C.g_list_concat(v.GList, link.GList)}
 }
-func (v GList) ForEach(callback func(interface{}, interface{}), user_datas ...interface{}) {
+func (v List) ForEach(callback func(interface{}, interface{}), user_datas ...interface{}) {
 	var user_data interface{}
 	if len(user_datas) > 0 {
 		user_data = user_datas[0]
@@ -239,31 +239,31 @@ func (v GList) ForEach(callback func(interface{}, interface{}), user_datas ...in
 		callback(l.NthData(n), user_data)
 	}
 }
-func (v GList) First() *GList {
-	return &GList{C.g_list_first(v.GList)}
+func (v List) First() *List {
+	return &List{C.g_list_first(v.GList)}
 }
-func (v GList) Last() *GList {
-	return &GList{C.g_list_last(v.GList)}
+func (v List) Last() *List {
+	return &List{C.g_list_last(v.GList)}
 }
-func (v GList) Nth(n uint) *GList {
-	return &GList{C.g_list_nth(v.GList, C.guint(n))}
+func (v List) Nth(n uint) *List {
+	return &List{C.g_list_nth(v.GList, C.guint(n))}
 }
-func (v GList) NthData(n uint) interface{} {
+func (v List) NthData(n uint) interface{} {
 	return C.g_list_nth_data(v.GList, C.guint(n))
 }
-func (v GList) NthPrev(n uint) *GList {
-	return &GList{C.g_list_nth_prev(v.GList, C.guint(n))}
+func (v List) NthPrev(n uint) *List {
+	return &List{C.g_list_nth_prev(v.GList, C.guint(n))}
 }
-func (v GList) Find(data unsafe.Pointer) *GList {
-	return &GList{C.g_list_find(v.GList, C.gconstpointer(data))}
+func (v List) Find(data unsafe.Pointer) *List {
+	return &List{C.g_list_find(v.GList, C.gconstpointer(data))}
 }
 //GList*              g_list_find_custom                  (GList *list,
 //                                                         gconstpointer data,
 //                                                         GCompareFunc func);
-func (v GList) Position(link GList) int {
+func (v List) Position(link List) int {
 	return int(C.g_list_position(v.GList, link.GList))
 }
-func (v GList) Index(data unsafe.Pointer) int {
+func (v List) Index(data unsafe.Pointer) int {
 	return int(C.g_list_index(v.GList, C.gconstpointer(data)))
 }
 
