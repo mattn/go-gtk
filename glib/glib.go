@@ -645,7 +645,7 @@ func (c *CallbackContext) Args(n int) uintptr {
 }
 
 //export _go_glib_callback
-func callback(pcbi unsafe.Pointer) {
+func _go_glib_callback(pcbi unsafe.Pointer) {
 	cbi := (*C.callback_info)(pcbi)
 	context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
 	rf := reflect.ValueOf(context.f)
