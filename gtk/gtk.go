@@ -895,15 +895,19 @@ func (v *GtkWidget) GetTopLevelAsWindow() *GtkWindow {
 func (v *GtkWidget) HideOnDelete() {
 	C._gtk_widget_hide_on_delete(v.Widget)
 }
+
 // TODO
 // gtk_widget_destroyed
+
 func (v *GtkWidget) Ref() {
 	C.gtk_widget_ref(v.Widget)
 }
 func (v *GtkWidget) Unref() {
 	C.gtk_widget_unref(v.Widget)
 }
+
 // gtk_widget_set
+
 func (v *GtkWidget) Unparent() {
 	C.gtk_widget_unparent(v.Widget)
 }
@@ -928,11 +932,15 @@ func (v *GtkWidget) Unrealize() {
 func (v *GtkWidget) QueueDraw() {
 	C.gtk_widget_queue_draw(v.Widget)
 }
+
 // gtk_widget_queue_draw_area
+
 func (v *GtkWidget) QueueClear() {
 	C.gtk_widget_queue_clear(v.Widget)
 }
+
 // gtk_widget_queue_clear_area
+
 func (v *GtkWidget) QueueResize() {
 	C.gtk_widget_queue_resize(v.Widget)
 }
@@ -959,26 +967,34 @@ func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint
 	C._gtk_widget_add_accelerator(v.Widget, C.to_gcharptr(csignal),
 		group.AccelGroup, C.guint(key), C.int(mods), C.int(flags))
 }
+
 // gtk_widget_remove_accelerator
 // gtk_widget_set_accel_path
 // gtk_widget_list_accel_closures
+
 func (v *GtkWidget) CanActivateAccel(signal_id uint) bool {
 	return gboolean2bool(C.gtk_widget_can_activate_accel(v.Widget, C.guint(signal_id)))
 }
 func (v *GtkWidget) MnemonicActivate(group_cycling bool) bool {
 	return gboolean2bool(C.gtk_widget_mnemonic_activate(v.Widget, bool2gboolean(group_cycling)))
 }
+
 // gtk_widget_event
 // gtk_widget_send_expose
+
 func (v *GtkWidget) Activate() {
 	C.gtk_widget_activate(v.Widget)
 }
+
 // gtk_widget_set_scroll_adjustments
+
 func (v *GtkWidget) Reparent(parent WidgetLike) {
 	C.gtk_widget_reparent(v.Widget, parent.ToNative())
 }
+
 // gtk_widget_intersect
 // gtk_widget_region_intersect
+
 func (v *GtkWidget) GetCanFocus() bool {
 	return gboolean2bool(C.gtk_widget_get_can_focus(v.Widget))
 }
@@ -1023,8 +1039,24 @@ func (v *GtkWindow) SetName(name string) {
 	defer C.free_string(ptr)
 	C.gtk_widget_set_name(v.Widget, C.to_gcharptr(ptr))
 }
-// gtk_widget_set_state
-// gtk_widget_get_state
+
+// GtkStateType
+type GtkStateType int
+
+const (
+  GTK_STATE_NORMAL GtkStateType = 0
+  GTK_STATE_ACTIVE GtkStateType = 1
+  GTK_STATE_PRELIGHT GtkStateType = 2
+  GTK_STATE_SELECTED GtkStateType = 3
+  GTK_STATE_INSENSITIVE GtkStateType = 4
+)
+
+func (v *GtkWidget) GetState() GtkStateType {
+	return GtkStateType(C.gtk_widget_get_state(v.Widget))
+}
+func (v *GtkWidget) SetState(state GtkStateType) {
+	C.gtk_widget_set_state(v.Widget, C.GtkStateType(state))
+}
 func (v *GtkWidget) GetSensitive() bool {
 	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget))
 }
@@ -1108,9 +1140,11 @@ func (v *GtkWidget) SetAllocation(allocation *GtkAllocation) {
 	_allocation.height = C.gint(allocation.Height)
 	C.gtk_widget_set_allocation(v.Widget, &_allocation)
 }
+
 // gtk_widget_child_focus
 // gtk_widget_keynav_failed
 // gtk_widget_error_bell
+
 func (v *GtkWidget) SetSizeRequest(width int, height int) {
 	C.gtk_widget_set_size_request(v.Widget, C.gint(width), C.gint(height))
 }
@@ -1123,13 +1157,16 @@ func (v *GtkWidget) GetSizeRequest(width *int, height *int) {
 func (v *GtkWidget) SetUSize(width int, height int) {
 	C.gtk_widget_set_usize(v.Widget, C.gint(width), C.gint(height))
 }
+
 // gtk_widget_set_uposition
+
 func (v *GtkWidget) SetEvents(events int) {
 	C.gtk_widget_set_events(v.Widget, C.gint(events))
 }
 func (v *GtkWidget) AddEvents(events int) {
 	C.gtk_widget_add_events(v.Widget, C.gint(events))
 }
+
 // gtk_widget_set_extension_events
 // gtk_widget_get_extension_events
 // gtk_widget_get_ancestor
@@ -1139,9 +1176,11 @@ func (v *GtkWidget) AddEvents(events int) {
 // gtk_widget_has_screen
 // gtk_widget_get_display
 // gtk_widget_get_root_window
+
 func (v *GtkWidget) GetSettings() *GtkSettings {
 	return &GtkSettings{C.gtk_widget_get_settings(v.Widget)}
 }
+
 // gtk_widget_get_clipboard
 // gtk_widget_get_snapshot
 // gtk_widget_get_accessible
@@ -1162,15 +1201,18 @@ func (v *GtkWidget) GetSettings() *GtkSettings {
 // gtk_widget_modify_base
 // gtk_widget_modify_cursor
 // gtk_widget_modify_font
+
 func (v *GtkWidget) ModifyFontEasy(desc string) {
 	pdesc := C.CString(desc)
 	defer C.free_string(pdesc)
 	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc))
 }
+
 // gtk_widget_create_pango_context
 // gtk_widget_get_pango_context
 // gtk_widget_create_pango_layout
 // gtk_widget_render_icon
+
 func (v *GtkWidget) RenderIcon(stock_id string, size GtkIconSize, detail string) *gdkpixbuf.GdkPixbuf {
 	pstock_id := C.CString(stock_id)
 	defer C.free_string(pstock_id)
@@ -1179,6 +1221,7 @@ func (v *GtkWidget) RenderIcon(stock_id string, size GtkIconSize, detail string)
 	return &gdkpixbuf.GdkPixbuf{
 		C.gtk_widget_render_icon(v.Widget, C.to_gcharptr(pstock_id), C.GtkIconSize(size), C.to_gcharptr(pdetail))}
 }
+
 // gtk_widget_set_composite_name
 // gtk_widget_get_composite_name
 // gtk_widget_reset_rc_styles
@@ -1201,9 +1244,11 @@ func (v *GtkWidget) RenderIcon(stock_id string, size GtkIconSize, detail string)
 // gtk_widget_get_direction
 // gtk_widget_set_default_direction
 // gtk_widget_get_default_direction
+
 func (v *GtkWidget) IsComposited() bool {
 	return gboolean2bool(C.gtk_widget_is_composited(v.Widget))
 }
+
 // gtk_widget_shape_combine_mask
 // gtk_widget_input_shape_combine_mask
 // gtk_widget_reset_shapes
@@ -1212,6 +1257,7 @@ func (v *GtkWidget) IsComposited() bool {
 // gtk_widget_list_mnemonic_labels
 // gtk_widget_add_mnemonic_label
 // gtk_widget_remove_mnemonic_label
+
 func (v *GtkWidget) SetTooltipWindow(w WindowLike) {
 	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToNative()))
 }
@@ -1219,7 +1265,9 @@ func (v *GtkWidget) GetTooltipWindow() *GtkWindow {
 	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C.to_GtkWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.Widget)))}}}}
 }
+
 // gtk_widget_trigger_tooltip_query
+
 func (v *GtkWidget) GetTooltipText() string {
 	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_text(v.Widget)))
 }
@@ -1242,6 +1290,7 @@ func (v *GtkWidget) GetHasTooltip() bool {
 func (v *GtkWidget) SetHasTooltip(setting bool) {
 	C.gtk_widget_set_has_tooltip(v.Widget, bool2gboolean(setting))
 }
+
 // gtk_requisition_get_type
 // gtk_requisition_copy
 // gtk_requisition_free
@@ -1273,16 +1322,21 @@ func (v *GtkContainer) GetBorderWidth() uint {
 func (v *GtkContainer) Remove(w WidgetLike) {
 	C.gtk_container_remove(C.to_GtkContainer(v.Widget), w.ToNative())
 }
+
 // gtk_container_set_resize_mode
 // gtk_container_get_resize_mode
+
 func (v *GtkContainer) CheckResize() {
 	C.gtk_container_check_resize(C.to_GtkContainer(v.Widget))
 }
+
 // gtk_container_foreach
 // gtk_container_foreach_full
+
 func (v *GtkContainer) GetChildren() *glib.List {
 	return glib.ListFromNative(unsafe.Pointer(C.gtk_container_get_children(C.to_GtkContainer(v.Widget))))
 }
+
 // gtk_container_propagate_expose
 // gtk_container_set_focus_chain
 // gtk_container_unset_focus_chain
@@ -1370,11 +1424,13 @@ func (v *GtkWindow) GetResizable() bool {
 func (v *GtkWindow) SetResizable(resizable bool) {
 	C.gtk_window_set_resizable(C.to_GtkWindow(v.Widget), bool2gboolean(resizable))
 }
+
 // TODO
 // gtk_window_set_wmclass
 // gtk_window_set_role
 // gtk_window_set_startup_id
 // gtk_window_get_role
+
 func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
 	C._gtk_window_add_accel_group(v.Widget, group.AccelGroup)
 }
@@ -1390,6 +1446,7 @@ const (
 )
 
 // gtk_window_remove_accel_group
+
 func (v *GtkWindow) SetPosition(position GtkWindowPosition) {
 	C.gtk_window_set_position(C.to_GtkWindow(v.Widget), C.GtkWindowPosition(position))
 }
@@ -1397,9 +1454,11 @@ func (v *GtkWindow) SetPosition(position GtkWindowPosition) {
 // gtk_window_activate_focus
 // gtk_window_set_focus
 // gtk_window_get_focus
+
 func (v *GtkWindow) SetDefault(w *GtkWidget) {
 	C.gtk_window_set_default(C.to_GtkWindow(v.Widget), w.Widget)
 }
+
 // gtk_window_get_default_widget
 // gtk_window_activate_default
 // gtk_window_set_transient_for
@@ -1459,17 +1518,21 @@ func (v *GtkWindow) SetDefault(w *GtkWidget) {
 // gtk_window_get_mnemonic_modifier
 // gtk_window_activate_key
 // gtk_window_propagate_key_event
+
 func (v *GtkWindow) Present() {
 	C.gtk_window_present(C.to_GtkWindow(v.Widget))
 }
+
 // gtk_window_present_with_time
 // gtk_window_iconify
 // gtk_window_deiconify
 // gtk_window_stick
 // gtk_window_unstick
+
 func (v *GtkWindow) Maximize() {
 	C.gtk_window_maximize(C.to_GtkWindow(v.Widget))
 }
+
 // gtk_window_unmaximize
 // gtk_window_fullscreen
 // gtk_window_unfullscreen
@@ -1478,6 +1541,7 @@ func (v *GtkWindow) Maximize() {
 // gtk_window_begin_resize_drag
 // gtk_window_begin_move_drag
 // gtk_window_set_policy
+
 func (v *GtkWindow) SetDefaultSize(width int, height int) {
 	C.gtk_window_set_default_size(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
 }
@@ -1505,6 +1569,7 @@ func (v *GtkWindow) GetPosition(root_x *int, root_y *int) {
 	*root_x = int(croot_x)
 	*root_y = int(croot_y)
 }
+
 // gtk_window_parse_geometry
 // gtk_window_get_group
 // gtk_window_reshow_with_initial_size
@@ -1571,11 +1636,13 @@ func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
 	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_dialog_add_button(C.to_GtkDialog(v.Widget), C.to_gcharptr(ptr), C.gint(response_id))}}}}
 }
+
 // TODO
 // gtk_dialog_new_with_buttons
 // gtk_dialog_add_action_widget
 // gtk_dialog_add_buttons
 // gtk_dialog_set_response_sensitive
+
 func (v *GtkDialog) SetDefaultResponse(id int) {
 	C.gtk_dialog_set_default_response(C.to_GtkDialog(v.Widget), C.gint(id))
 }
@@ -1586,10 +1653,10 @@ func (v *GtkDialog) GetWidgetForResponse(id int) *GtkWidget {
 func (v *GtkDialog) GetResponseForWidget(w *GtkWidget) int {
 	return int(C._gtk_dialog_get_response_for_widget(C.to_GtkDialog(v.Widget), w.Widget))
 }
-// gtk_dialog_set_has_separator
 func (v *GtkDialog) SetHasSeparator(f bool) {
 	C.gtk_dialog_set_has_separator(C.to_GtkDialog(v.Widget), bool2gboolean(f))
 }
+
 // gtk_dialog_get_has_separator
 // gtk_alternative_dialog_button_order
 // gtk_dialog_set_alternative_button_order
@@ -1818,6 +1885,7 @@ func (v *GtkFileFilter) AddPattern(pattern string) {
 	defer C.free_string(ptr)
 	C.gtk_file_filter_add_pattern(v.FileFilter, C.to_gcharptr(ptr))
 }
+
 //void gtk_file_filter_add_pixbuf_formats (GtkFileFilter *filter);
 //void gtk_file_filter_add_custom (GtkFileFilter *filter, GtkFileFilterFlags needed, GtkFileFilterFunc func, gpointer data, GDestroyNotify notify);
 
@@ -1860,6 +1928,7 @@ func MessageDialog(parent WindowLike, flag GtkDialogFlags, t GtkMessageType, but
 			C.GtkButtonsType(buttons),
 			C.to_gcharptr(ptr))}}}}}}
 }
+
 // TODO
 // gtk_message_dialog_new_with_markup
 // gtk_message_dialog_set_image
@@ -2148,10 +2217,12 @@ func Entry() *GtkEntry {
 func EntryWithMaxLength(i int) *GtkEntry {
 	return &GtkEntry{GtkWidget{C.gtk_entry_new_with_max_length(C.gint(i))}}
 }
+
 //func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
 //	return &GtkEntry{GtkWidget{
 //		C.gtk_entry_new_with_buffer(C.to_GtkTextbuffer.TextBuffer)}}
 //}
+
 func (v *GtkEntry) GetText() string {
 	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
 }
@@ -2160,6 +2231,7 @@ func (v *GtkEntry) SetText(text string) {
 	defer C.free_string(ptr)
 	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
 }
+
 //func (v *GtkEntry) GetBuffer() *GtkTextBuffer {
 //	return &GtkTextBuffer{
 //		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
@@ -2167,6 +2239,7 @@ func (v *GtkEntry) SetText(text string) {
 //func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) {
 //	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), C.to_GtkTextBuffer(buffer.TextBuffer))
 //}
+
 func (v *GtkEntry) GetVisibility() bool {
 	return gboolean2bool(C.gtk_entry_get_visibility(C.to_GtkEntry(v.Widget)))
 }
@@ -2188,9 +2261,11 @@ func (v *GtkEntry) GetHasFrame() bool {
 func (v *GtkEntry) SetHasFrame(setting bool) {
 	C.gtk_entry_set_has_frame(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
+
 // gtk_entry_set_inner_border
 // gtk_entry_set_overwrite_mode
 // gtk_entry_get_overwrite_mode
+
 func (v *GtkEntry) GetMaxLength() int {
 	return int(C.gtk_entry_get_max_length(C.to_GtkEntry(v.Widget)))
 }
@@ -2212,6 +2287,7 @@ func (v *GtkEntry) SetWidthChars(i int) {
 func (v *GtkEntry) GetWidthChars() int {
 	return int(C.gtk_entry_get_width_chars(C.to_GtkEntry(v.Widget)))
 }
+
 // gtk_entry_get_layout
 // gtk_entry_get_layout_offsets
 // gtk_entry_set_alignment
@@ -2246,6 +2322,7 @@ func (v *GtkEntry) GetWidthChars() int {
 // gtk_entry_get_icon_tooltip_markup
 // gtk_entry_set_icon_drag_source
 // gtk_entry_get_current_icon_drag_source
+
 func (v *GtkEntry) AppendText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
@@ -2553,6 +2630,7 @@ func (v *GtkLabel) GetTrackVisitedLinks() bool {
 func (v *GtkLabel) SetTrackVisitedLinks(track_links bool) {
 	C.gtk_label_set_track_visited_links(C.to_GtkLabel(v.Widget), bool2gboolean(track_links))
 }
+
 // TODO
 // gtk_label_set_attributes
 // gtk_label_get_attributes
@@ -2595,6 +2673,7 @@ func (v *GtkAccelLabel) SetAccelWidget(w WidgetLike) {
 func (v *GtkAccelLabel) Refetch() bool {
 	return gboolean2bool(C.gtk_accel_label_refetch(C.to_GtkAccelLabel(v.Widget)))
 }
+
 // TODO
 // gtk_accel_label_set_accel_closure
 
@@ -2637,17 +2716,20 @@ func (v *GtkButton) SetLabel(label string) {
 	defer C.free_string(ptr)
 	C.gtk_button_set_label(C.to_GtkButton(v.Widget), C.to_gcharptr(ptr))
 }
+
 // TODO
 // gtk_button_new_from_stock
 // gtk_button_new_with_mnemonic
 // gtk_button_set_relief
 // gtk_button_get_relief
+
 func (v *GtkButton) GetUseUnderline() bool {
 	return gboolean2bool(C.gtk_button_get_use_underline(C.to_GtkButton(v.Widget)))
 }
 func (v *GtkButton) SetUseUnderline(setting bool) {
 	C.gtk_button_set_use_underline(C.to_GtkButton(v.Widget), bool2gboolean(setting))
 }
+
 // gtk_button_set_use_stock
 // gtk_button_get_use_stock
 // gtk_button_set_focus_on_click
@@ -2870,6 +2952,7 @@ func (v *GtkLinkButton) SetUri(uri string) {
 //func (v GtkLinkButton) SetUriHook(f func(button *GtkLinkButton, link string, user_data unsafe.Pointer), ) {
 // GtkLinkButtonUriFunc gtk_link_button_set_uri_hook (GtkLinkButtonUriFunc func, gpointer data, GDestroyNotify destroy);
 //}
+
 func (v *GtkLinkButton) GetVisited() bool {
 	return gboolean2bool(C.gtk_link_button_get_visited(C.to_GtkLinkButton(v.Widget)))
 }
@@ -2938,6 +3021,7 @@ func (v *GtkTreePath) IsAncestor(descendant GtkTreePath) bool {
 func (v *GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
 	return gboolean2bool(C.gtk_tree_path_is_descendant(v.TreePath, ancestor.TreePath))
 }
+
 // TODO
 // gtk_tree_path_get_indices
 
@@ -3015,6 +3099,7 @@ func (v *GtkTreeModel) IterParent(iter *GtkTreeIter, child *GtkTreeIter) bool {
 func (v *GtkTreeModel) GetValue(iter *GtkTreeIter, col int, val *glib.GValue) {
 	C.gtk_tree_model_get_value(v.TreeModel, &iter.TreeIter, C.gint(col), C.to_GValueptr(unsafe.Pointer(&val.Value)))
 }
+
 // TODO
 // gtk_tree_model_ref_node
 // gtk_tree_model_unref_node
@@ -3125,6 +3210,7 @@ func (v *GtkComboBox) GetColumnSpanColumn() int {
 func (v *GtkComboBox) SetColumnSpanColumn(column_span int) {
 	C.gtk_combo_box_set_column_span_column(C.to_GtkComboBox(v.Widget), C.gint(column_span))
 }
+
 // TODO
 // gtk_combo_box_get_popup_accessible
 // gtk_combo_box_get_row_separator_func
@@ -3461,6 +3547,7 @@ func (v *GtkScrolledWindow) GetShadowType() GtkShadowType {
 func (v *GtkScrolledWindow) AddWithViewPort(w WidgetLike) {
 	C.gtk_scrolled_window_add_with_viewport(C.to_GtkScrolledWindow(v.Widget), w.ToNative())
 }
+
 // TODO
 // gtk_scrolled_window_get_hscrollbar
 // gtk_scrolled_window_get_vscrollbar
@@ -3491,6 +3578,7 @@ func (v *GtkTextTagTable) Lookup(name string) *GtkTextTag {
 func (v *GtkTextTagTable) GetSize() int {
 	return int(C.gtk_text_tag_table_get_size(v.TextTagTable))
 }
+
 // TODO
 // gtk_text_tag_table_foreach
 
@@ -3594,6 +3682,7 @@ func (v *GtkTextIter) GetVisibleText(end *GtkTextIter) string {
 func (v *GtkTextIter) GetMarks() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_text_iter_get_marks(&v.TextIter)))
 }
+
 // TODO
 // gtk_text_iter_get_pixbuf
 // gtk_text_iter_get_marks
@@ -3739,9 +3828,11 @@ func (v *GtkTextBuffer) InsertWithTag(iter *GtkTextIter, text string, tag *GtkTe
 	len := C.strlen(ptr)
 	C._gtk_text_buffer_insert_with_tag(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), tag.TextTag)
 }
+
 //func (v GtkTextBuffer) InsertWithTags(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
 //	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
 //}
+
 func (v *GtkTextBuffer) Delete(start *GtkTextIter, end *GtkTextIter) {
 	C._gtk_text_buffer_delete(v.TextBuffer, &start.TextIter, &end.TextIter)
 }
@@ -3920,18 +4011,22 @@ func (v *GtkTextView) ScrollToMark(mark *GtkTextMark, wm float64, ua bool, xa fl
 	C.gtk_text_view_scroll_to_mark(C.to_GtkTextView(v.Widget),
 		mark.TextMark, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya))
 }
+
 // TODO
 // void gtk_text_view_scroll_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_move_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_place_cursor_onscreen(GtkTextView* text_view);
+
 func (v *GtkTextView) GetCursorVisible() bool {
 	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.to_GtkTextView(v.Widget)))
 }
 func (v *GtkTextView) SetCursorVisible(setting bool) {
 	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.Widget), bool2gboolean(setting))
 }
+
 // void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
 // void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
+
 func (v *GtkTextView) GetIterAtPosition(iter *GtkTextIter, trailing *int, x int, y int) {
 	if nil != trailing {
 		var tt C.gint
@@ -3947,6 +4042,7 @@ func (v *GtkTextView) GetLineYrange(iter *GtkTextIter, y *int, h *int) {
 	*y = int(yy)
 	*h = int(hh)
 }
+
 // void gtk_text_view_get_line_at_y(GtkTextView* text_view, GtkTextIter* target_iter, gint y, gint* line_top);
 // void gtk_text_view_buffer_to_window_coords(GtkTextView* text_view, GtkTextWindowType win, gint buffer_x, gint buffer_y, gint* window_x, gint* window_y);
 // void gtk_text_view_window_to_buffer_coords(GtkTextView* text_view, GtkTextWindowType win, gint window_x, gint window_y, gint* buffer_x, gint* buffer_y);
@@ -3997,6 +4093,7 @@ func (v *GtkTextView) GetAcceptsTab() bool {
 func (v *GtkTextView) SetAcceptsTab(accepts_tab bool) {
 	C.gtk_text_view_set_accepts_tab(C.to_GtkTextView(v.Widget), bool2gboolean(accepts_tab))
 }
+
 // void gtk_text_view_set_pixels_above_lines(GtkTextView* text_view, gint pixels_above_lines);
 // gint gtk_text_view_get_pixels_above_lines(GtkTextView* text_view);
 // void gtk_text_view_set_pixels_below_lines(GtkTextView* text_view, gint pixels_below_lines);
@@ -4087,17 +4184,20 @@ func (v *GtkMenuItem) ToggleSizeRequest(i *int) {
 func (v *GtkMenuItem) ToggleSizeAllocate(i int) {
 	C.gtk_menu_item_toggle_size_allocate(C.to_GtkMenuItem(v.Widget), C.gint(i))
 }
+
 // TODO
 // void gtk_menu_item_set_accel_path(GtkMenuItem *menu_item, const gchar *accel_path);
 // G_CONST_RETURN gchar* gtk_menu_item_get_accel_path(GtkMenuItem *menu_item);
 // void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
 // G_CONST_RETURN gchar *gtk_menu_item_get_label(GtkMenuItem *menu_item);
+
 func (v *GtkMenuItem) GetUseUnderline() bool {
 	return gboolean2bool(C.gtk_menu_item_get_use_underline(C.to_GtkMenuItem(v.Widget)))
 }
 func (v *GtkMenuItem) SetUseUnderline(setting bool) {
 	C.gtk_menu_item_set_use_underline(C.to_GtkMenuItem(v.Widget), bool2gboolean(setting))
 }
+
 // #define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
 
 
@@ -4210,12 +4310,14 @@ func (v *GtkMenu) Popdown() {
 func (v *GtkMenu) GetActive() *GtkWidget {
 	return &GtkWidget{C.gtk_menu_get_active(C.to_GtkMenu(v.Widget))}
 }
+
 // void gtk_menu_set_active (GtkMenu *menu, guint index_);
 // void gtk_menu_set_accel_group (GtkMenu *menu, GtkAccelGroup *accel_group);
 // GtkAccelGroup* gtk_menu_get_accel_group (GtkMenu *menu);
 // void gtk_menu_set_accel_path(GtkMenu *menu, const gchar *accel_path);
 // const gchar* gtk_menu_get_accel_path(GtkMenu *menu);
 // void gtk_menu_attach_to_widget (GtkMenu *menu, GtkWidget *attach_widget, GtkMenuDetachFunc detacher);
+
 func (v *GtkMenu) Detach() {
 	C.gtk_menu_detach(C.to_GtkMenu(v.Widget))
 }
@@ -4228,6 +4330,7 @@ func (v *GtkMenu) GetTearoffState() bool {
 func (v *GtkMenu) SetTearoffState(b bool) {
 	C.gtk_menu_set_tearoff_state(C.to_GtkMenu(v.Widget), bool2gboolean(b))
 }
+
 // void gtk_menu_set_title(GtkMenu *menu, const gchar *title);
 // G_CONST_RETURN gchar *gtk_menu_get_title(GtkMenu *menu);
 // void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
@@ -4236,6 +4339,7 @@ func (v *GtkMenu) SetTearoffState(b bool) {
 // void gtk_menu_set_monitor(GtkMenu *menu, gint monitor_num);
 // gint gtk_menu_get_monitor(GtkMenu *menu);
 // GList* gtk_menu_get_for_attach_widget(GtkWidget *widget);
+
 func (v *GtkMenu) GetReserveToggleSize() bool {
 	return gboolean2bool(C.gtk_menu_get_reserve_toggle_size(C.to_GtkMenu(v.Widget)))
 }
@@ -4301,8 +4405,10 @@ func (v *GtkRange) GetValue() float64 {
 	C._gtk_range_get_value(C.to_GtkRange(v.Widget), &r)
 	return float64(r)
 }
+
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
+
 func (v *GtkRange) SetAdjustment(adjustment *GtkAdjustment) {
 	C.gtk_range_set_adjustment(C.to_GtkRange(v.Widget), adjustment.Adjustment)
 }
@@ -4322,10 +4428,12 @@ func (v *GtkRange) GetFlippable() bool {
 func (v *GtkRange) SetFlippable(b bool) {
 	C.gtk_range_set_flippable(C.to_GtkRange(v.Widget), bool2gboolean(b))
 }
+
 // void gtk_range_set_lower_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
 // GtkSensitivityType gtk_range_get_lower_stepper_sensitivity (GtkRange *range);
 // void gtk_range_set_upper_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
 // GtkSensitivityType gtk_range_get_upper_stepper_sensitivity (GtkRange *range);
+
 func (v *GtkRange) SetIncrements(step, page float64) {
 	C.gtk_range_set_increments(C.to_GtkRange(v.Widget), C.gdouble(step), C.gdouble(page))
 }
@@ -4386,7 +4494,9 @@ func (v *GtkScale) SetValuePos(pos GtkPositionType) {
 func (v *GtkScale) GetValuePos() GtkPositionType {
 	return GtkPositionType(C.gtk_scale_get_value_pos(C.to_GtkScale(v.Widget)))
 }
+
 // PangoLayout * gtk_scale_get_layout (GtkScale *scale);
+
 func (v *GtkScale) GetLayoutOffsets(x *int, y *int) {
 	var xx, yy C.gint
 	C.gtk_scale_get_layout_offsets(C.to_GtkScale(v.Widget), &xx, &yy)
@@ -4618,6 +4728,7 @@ func (v *GtkTreeViewColumn) SetTitle(title string) {
 func (v *GtkTreeViewColumn) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_tree_view_column_get_title(v.TreeViewColumn)))
 }
+
 //void gtk_tree_view_column_set_expand (GtkTreeViewColumn *tree_column, gboolean expand);
 //gboolean gtk_tree_view_column_get_expand (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_clickable (GtkTreeViewColumn *tree_column, gboolean clickable);
@@ -4745,43 +4856,53 @@ func (v *GtkTreeView) SetModel(model *GtkTreeModel) {
 	}
 	C.gtk_tree_view_set_model(C.to_GtkTreeView(v.Widget), tm)
 }
+
 //GtkWidget *gtk_tree_view_new (void);
 //GtkWidget *gtk_tree_view_new_with_model (GtkTreeModel *model);
 //GtkTreeModel *gtk_tree_view_get_model (GtkTreeView *tree_view);
 //void gtk_tree_view_set_model (GtkTreeView *tree_view, GtkTreeModel *model);
+
 func (v *GtkTreeView) GetSelection() *GtkTreeSelection {
 	return &GtkTreeSelection{C.gtk_tree_view_get_selection(C.to_GtkTreeView(v.Widget))}
 }
+
 //GtkAdjustment *gtk_tree_view_get_hadjustment (GtkTreeView *tree_view);
 //void gtk_tree_view_set_hadjustment (GtkTreeView *tree_view, GtkAdjustment *adjustment);
 //GtkAdjustment *gtk_tree_view_get_vadjustment (GtkTreeView *tree_view);
 //void gtk_tree_view_set_vadjustment (GtkTreeView *tree_view, GtkAdjustment *adjustment);
 //gboolean gtk_tree_view_get_headers_visible (GtkTreeView *tree_view);
+
 func (v *GtkTreeView) SetHeadersVisible(flag bool) {
 	C.gtk_tree_view_set_headers_visible(C.to_GtkTreeView(v.Widget), bool2gboolean(flag))
 }
+
 //void gtk_tree_view_columns_autosize (GtkTreeView *tree_view);
 //gboolean gtk_tree_view_get_headers_clickable (GtkTreeView *tree_view);
 //void gtk_tree_view_set_headers_clickable (GtkTreeView *tree_view, gboolean setting);
 //void gtk_tree_view_set_rules_hint (GtkTreeView *tree_view, gboolean setting);
 //gboolean gtk_tree_view_get_rules_hint (GtkTreeView *tree_view);
 //gint gtk_tree_view_append_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
+
 func (v *GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
 	return int(C.gtk_tree_view_append_column(C.to_GtkTreeView(v.Widget), column.TreeViewColumn))
 }
+
 //gint gtk_tree_view_remove_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
 //gint gtk_tree_view_insert_column (GtkTreeView *tree_view, GtkTreeViewColumn *column, gint position);
 //gint gtk_tree_view_insert_column_with_attributes (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, ...) G_GNUC_NULL_TERMINATED;
 //gint gtk_tree_view_insert_column_with_data_func (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, GtkTreeCellDataFunc func, gpointer data, GDestroyNotify dnotify);
+
 func (v *GtkTreeView) GetColumn(n int) *GtkTreeViewColumn {
 	return &GtkTreeViewColumn{C.gtk_tree_view_get_column(C.to_GtkTreeView(v.Widget), C.gint(n))}
 }
+
 //GList *gtk_tree_view_get_columns (GtkTreeView *tree_view);
 //void gtk_tree_view_move_column_after (GtkTreeView *tree_view, GtkTreeViewColumn *column, GtkTreeViewColumn *base_column);
 //void gtk_tree_view_set_expander_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
 //GtkTreeViewColumn *gtk_tree_view_get_expander_column (GtkTreeView *tree_view);
 //void gtk_tree_view_set_column_drag_function (GtkTreeView *tree_view, GtkTreeViewColumnDropFunc func, gpointer user_data, GDestroyNotify destroy);
 //void gtk_tree_view_scroll_to_point (GtkTreeView *tree_view, gint tree_x, gint tree_y);
+
 func (v *GtkTreeView) ScrollToCell(path *GtkTreePath, col *GtkTreeViewColumn, use bool, ra float64, ca float64) {
 	var pcol *C.GtkTreeViewColumn
 	if nil == col {
@@ -4792,13 +4913,16 @@ func (v *GtkTreeView) ScrollToCell(path *GtkTreePath, col *GtkTreeViewColumn, us
 	C.gtk_tree_view_scroll_to_cell(C.to_GtkTreeView(v.Widget), path.TreePath,
 		pcol, bool2gboolean(use), C.gfloat(ra), C.gfloat(ca))
 }
+
 //void gtk_tree_view_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column);
+
 func (v *GtkTreeView) ExpandAll() {
 	C.gtk_tree_view_expand_all(C.to_GtkTreeView(v.Widget))
 }
 func (v *GtkTreeView) CollapseAll() {
 	C.gtk_tree_view_collapse_all(C.to_GtkTreeView(v.Widget))
 }
+
 //void gtk_tree_view_expand_to_path (GtkTreeView *tree_view, GtkTreePath *path);
 
 func (v *GtkTreeView) ExpandRow(path *GtkTreePath, openall bool) bool {
@@ -4807,13 +4931,16 @@ func (v *GtkTreeView) ExpandRow(path *GtkTreePath, openall bool) bool {
 func (v *GtkTreeView) CollapseRow(path *GtkTreePath) bool {
 	return gboolean2bool(C.gtk_tree_view_collapse_row(C.to_GtkTreeView(v.Widget), path.TreePath))
 }
+
 //void gtk_tree_view_map_expanded_rows (GtkTreeView *tree_view, GtkTreeViewMappingFunc func, gpointer data);
 
 func (v *GtkTreeView) RowExpanded(path *GtkTreePath) bool {
 	return gboolean2bool(C.gtk_tree_view_row_expanded(C.to_GtkTreeView(v.Widget), path.TreePath))
 }
+
 //void gtk_tree_view_set_reorderable (GtkTreeView *tree_view, gboolean reorderable);
 //gboolean gtk_tree_view_get_reorderable (GtkTreeView *tree_view);
+
 func (v *GtkTreeView) SetCursor(path *GtkTreePath, col *GtkTreeViewColumn, se bool) {
 	var pcol *C.GtkTreeViewColumn
 	if nil == col {
@@ -4824,8 +4951,10 @@ func (v *GtkTreeView) SetCursor(path *GtkTreePath, col *GtkTreeViewColumn, se bo
 	C.gtk_tree_view_set_cursor(C.to_GtkTreeView(v.Widget), path.TreePath,
 		pcol, bool2gboolean(se))
 }
+
 //void gtk_tree_view_set_cursor_on_cell (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *focus_column, GtkCellRenderer *focus_cell, gboolean start_editing);
 //void gtk_tree_view_get_cursor (GtkTreeView *tree_view, GtkTreePath **path, GtkTreeViewColumn **focus_column);
+
 func (v *GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewColumn) {
 	*path = &GtkTreePath{nil}
 	if nil != focus_column {
@@ -4835,6 +4964,7 @@ func (v *GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewCo
 		C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, nil)
 	}
 }
+
 //GdkWindow *gtk_tree_view_get_bin_window (GtkTreeView *tree_view);
 //gboolean gtk_tree_view_get_path_at_pos (GtkTreeView *tree_view, gint x, gint y, GtkTreePath **path, GtkTreeViewColumn **column, gint *cell_x, gint *cell_y);
 //void gtk_tree_view_get_cell_area (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, GdkRectangle *rect);
@@ -4934,9 +5064,11 @@ func (v *GtkTreeModel) ToListStore() *GtkListStore {
 	return &GtkListStore{
 		C.to_GtkListStoreFromTreeModel(v.TreeModel)}
 }
+
 //GtkListStore *gtk_list_store_new(gint n_columns, ...);
 //GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
 //void gtk_list_store_set_column_types (GtkListStore *list_store, gint n_columns, GType *types);
+
 func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
@@ -4959,8 +5091,10 @@ func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
 		v.SetValue(iter, r, a[r])
 	}
 }
+
 //void gtk_list_store_set_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
 //void gtk_list_store_set_valist (GtkListStore *list_store, GtkTreeIter *iter, va_list var_args);
+
 func (v *GtkListStore) Remove(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_list_store_remove(v.ListStore, &iter.TreeIter))
 }
@@ -4973,8 +5107,10 @@ func (v *GtkListStore) InsertBefore(iter *GtkTreeIter, sibling *GtkTreeIter) {
 func (v *GtkListStore) InsertAfter(iter *GtkTreeIter, sibling *GtkTreeIter) {
 	C.gtk_list_store_insert_after(v.ListStore, &iter.TreeIter, &sibling.TreeIter)
 }
+
 //void gtk_list_store_insert_with_values (GtkListStore *list_store, GtkTreeIter *iter, gint position, ...);
 //void gtk_list_store_insert_with_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint position, gint *columns, GValue *values, gint n_values);
+
 func (v *GtkListStore) Prepend(iter *GtkTreeIter) {
 	C.gtk_list_store_prepend(v.ListStore, &iter.TreeIter)
 }
@@ -4995,13 +5131,13 @@ func (v *GtkListStore) Reorder(i *int) {
 func (v *GtkListStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
 	C.gtk_list_store_swap(v.ListStore, &a.TreeIter, &b.TreeIter)
 }
+
 //void gtk_list_store_move_after (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
 //void gtk_list_store_move_before (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
 
 //-----------------------------------------------------------------------
 // GtkTreeStore
 //-----------------------------------------------------------------------
-// GtkTreeStore *gtk_tree_store_new (gint n_columns, ...);
 type GtkTreeStore struct {
 	TreeStore *C.GtkTreeStore
 }
@@ -5019,8 +5155,10 @@ func (v *GtkTreeStore) ToTreeModel() *GtkTreeModel {
 	return &GtkTreeModel{
 		C.to_GtkTreeModelFromTreeStore(v.TreeStore)}
 }
+
 // GtkTreeStore *gtk_tree_store_newv (gint n_columns, GType *types);
 // void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types); void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
+
 func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
@@ -5043,8 +5181,10 @@ func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
 		v.SetValue(iter, r, a[r])
 	}
 }
+
 // void gtk_tree_store_set_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
 // void gtk_tree_store_set_valist (GtkTreeStore *tree_store, GtkTreeIter *iter, va_list var_args);
+
 func (v *GtkTreeStore) Remove(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_tree_store_remove(v.TreeStore, &iter.TreeIter))
 }
@@ -5057,8 +5197,10 @@ func (v *GtkTreeStore) InsertBefore(iter *GtkTreeIter, parent *GtkTreeIter, sibl
 func (v *GtkTreeStore) InsertAfter(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
 	C.gtk_tree_store_insert_after(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter)
 }
+
 // void gtk_tree_store_insert_with_values (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, ...);
 // void gtk_tree_store_insert_with_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, gint *columns, GValue *values, gint n_values);
+
 func (v *GtkTreeStore) Prepend(iter *GtkTreeIter, parent *GtkTreeIter) {
 	if parent == nil {
 		C.gtk_tree_store_prepend(v.TreeStore, &iter.TreeIter, nil)
@@ -5129,7 +5271,9 @@ func (v *GtkNotebook) InsertPageMenu(child WidgetLike, tab_label WidgetLike, men
 func (v *GtkNotebook) RemovePage(child WidgetLike, page_num int) {
 	C.gtk_notebook_remove_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))
 }
+
 // void gtk_notebook_set_window_creation_hook (GtkNotebookWindowCreationFunc func, gpointer data, GDestroyNotify destroy);
+
 func (v *GtkNotebook) SetGroupId(group_id int) {
 	C.gtk_notebook_set_group_id(C.to_GtkNotebook(v.Widget), C.gint(group_id))
 }
@@ -5425,8 +5569,10 @@ func (v *GtkBuilder) AddFromString(buffer string) (ret uint, error *glib.Error) 
 	}
 	return
 }
+
 // guint gtk_builder_add_objects_from_file (GtkBuilder *builder, const gchar *filename, gchar **object_ids, GError **error);
 // guint gtk_builder_add_objects_from_string (GtkBuilder *builder, const gchar *buffer, gsize length, gchar **object_ids, GError **error);
+
 func (v *GtkBuilder) GetObject(name string) *glib.GObject {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
@@ -5439,7 +5585,9 @@ func (v *GtkBuilder) GetObjects() *glib.SList {
 func (v *GtkBuilder) ConnectSignals(user_data interface{}) {
 	C.gtk_builder_connect_signals(v.Builder, nil)
 }
+
 // void gtk_builder_connect_signals_full (GtkBuilder *builder, GtkBuilderConnectFunc func, gpointer user_data);
+
 func (v *GtkBuilder) SetTranslationDomain(domain string) {
 	ptr := C.CString(domain)
 	defer C.free_string(ptr)
@@ -5453,6 +5601,7 @@ func (v *GtkBuilder) GetTypeFromName(type_name string) int {
 	defer C.free_string(ptr)
 	return int(C.gtk_builder_get_type_from_name(v.Builder, ptr))
 }
+
 // gboolean gtk_builder_value_from_string (GtkBuilder *builder, GParamSpec *pspec, const gchar *string, GValue *value, GError **error);
 // gboolean gtk_builder_value_from_string_type (GtkBuilder *builder, GType type, const gchar *string, GValue *value, GError **error);
 
@@ -5515,7 +5664,9 @@ func (v *GtkAssistant) AppendPage(page WidgetLike) int {
 func (v *GtkAssistant) InsertPage(page WidgetLike, position int) int {
 	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.ToNative(), C.gint(position)))
 }
+
 // void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
+
 func (v *GtkAssistant) SetPageType(page WidgetLike, t GtkAssistantPageType) {
 	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.Widget), page.ToNative(), C.GtkAssistantPageType(t))
 }
@@ -5632,6 +5783,7 @@ func EventBox() *GtkEventBox {
 	return &GtkEventBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_event_box_new()}}}}
 }
+
 // gboolean gtk_event_box_get_visible_window (GtkEventBox *event_box);
 // void gtk_event_box_set_visible_window (GtkEventBox *event_box, gboolean visible_window);
 // gboolean gtk_event_box_get_above_child (GtkEventBox *event_box);
@@ -5920,6 +6072,7 @@ func StatusIconFromIconName(icon_name string) *GtkStatusIcon {
 	return &GtkStatusIcon{
 		C.gtk_status_icon_new_from_icon_name(C.to_gcharptr(ptr))}
 }
+
 //GtkStatusIcon *gtk_status_icon_new_from_gicon(GIcon *icon);
 
 func (v *GtkStatusIcon) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
@@ -5940,6 +6093,7 @@ func (v *GtkStatusIcon) SetFromIconName(icon_name string) {
 	defer C.free_string(ptr)
 	C.gtk_status_icon_set_from_icon_name(v.StatusIcon, C.to_gcharptr(ptr))
 }
+
 //void gtk_status_icon_set_from_gicon (GtkStatusIcon *status_icon, GIcon *icon);
 //GtkImageType gtk_status_icon_get_storage_type (GtkStatusIcon *status_icon);
 
@@ -5953,6 +6107,7 @@ func (v *GtkStatusIcon) GetStock() string {
 func (v *GtkStatusIcon) GetIconName() string {
 	return C.GoString(C.to_charptr(C.gtk_status_icon_get_icon_name(v.StatusIcon)))
 }
+
 //GIcon *gtk_status_icon_get_gicon (GtkStatusIcon *status_icon);
 
 //gint gtk_status_icon_get_size (GtkStatusIcon *status_icon);
@@ -5971,6 +6126,7 @@ func (v *GtkStatusIcon) GetIconName() string {
 //gboolean gtk_status_icon_get_blinking (GtkStatusIcon *status_icon);
 //gboolean gtk_status_icon_is_embedded (GtkStatusIcon *status_icon);
 //void gtk_status_icon_position_menu (GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data);
+
 func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data interface{}) {
 	x := C.gint(*px)
 	y := C.gint(*py)
