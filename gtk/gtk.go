@@ -17,6 +17,9 @@ package gtk
 #include <string.h>
 #include <stdio.h>
 #include <pthread.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
@@ -477,6 +480,38 @@ static void _gtk_range_get_value(GtkRange* range, gdouble* value) {
 	*value = gtk_range_get_value(range);
 }
 
+typedef struct {
+	GtkMenu *menu;
+	gint x;
+	gint y;
+	gboolean push_in;
+	gpointer data;
+} _gtk_menu_position_func_info;
+
+extern void _go_gtk_menu_position_func(_gtk_menu_position_func_info* gmpfi);
+static void _c_gtk_menu_position_func(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data) {
+	_gtk_menu_position_func_info gmpfi;
+	gmpfi.menu = menu;
+	gmpfi.x = *x;
+	gmpfi.y = *y;
+	gmpfi.push_in = *push_in;
+	gmpfi.data = user_data;
+	_go_gtk_menu_position_func(&gmpfi);
+	*x = gmpfi.x;
+	*y = gmpfi.y;
+	*push_in = gmpfi.push_in;
+#ifdef _WIN32
+	RECT rect;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+	gint h = GTK_WIDGET(menu)->requisition.height;
+	if (*y + h > rect.bottom) *y -= h;
+#endif
+}
+
+static void _gtk_menu_popup(GtkWidget *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, void* data, guint button, guint32 activate_time) {
+	gtk_menu_popup(GTK_MENU(menu), parent_menu_shell, parent_menu_item, _c_gtk_menu_position_func, (gpointer) data, button, activate_time);
+}
+
 static inline GType* make_gtypes(int count) {
 	return g_new0(GType, count);
 }
@@ -516,7 +551,6 @@ static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 static inline void free_string(char* s) { free(s); }
 
 static GValue* to_GValueptr(void* s) { return (GValue*)s; }
-
 static GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
 static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
 static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
@@ -541,6 +575,7 @@ static GtkEntry* to_GtkEntry(GtkWidget* w) { return GTK_ENTRY(w); }
 static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 static GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
 static GtkSourceView* to_GtkSourceView(GtkWidget* w) { return GTK_SOURCE_VIEW(w); }
+static GtkMenu* to_GtkMenu(GtkWidget* w) { return GTK_MENU(w); }
 static GtkMenuBar* to_GtkMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
 static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
 static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
@@ -569,7 +604,6 @@ static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
 static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
 static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
-static GtkMenu* to_GtkMenu(GtkWidget* w) { return GTK_MENU(w); }
 
 static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
@@ -824,6 +858,9 @@ func WidgetFromObject(object *glib.GObject) *GtkWidget {
 		C.to_GtkWidget(unsafe.Pointer(object.Object))}
 }
 func (v *GtkWidget) ToNative() *C.GtkWidget {
+	if v == nil {
+		return nil
+	}
 	return v.Widget
 }
 func (v *GtkWidget) Hide() {
@@ -4130,8 +4167,40 @@ func (v *GtkMenu) Prepend(child WidgetLike) {
 func (v *GtkMenu) Insert(child WidgetLike, position int) {
 	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToNative(), C.gint(position))
 }
-// TODO
-// void gtk_menu_popup (GtkMenu *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, GtkMenuPositionFunc func, gpointer data, guint button, guint32 activate_time);
+type GtkMenuPositionFunc func(menu *GtkMenu, px, py *int, push_in *bool, data interface{})
+type GtkMenuPositionFuncInfo struct {
+	menu *GtkMenu
+	f GtkMenuPositionFunc
+	data interface{}
+}
+//export _go_gtk_menu_position_func
+func _go_gtk_menu_position_func(pgmpfi unsafe.Pointer) {
+	gmpfi := (*C._gtk_menu_position_func_info)(pgmpfi)
+	if gmpfi == nil {
+		return
+	}
+	gmpfigo := (*GtkMenuPositionFuncInfo)(gmpfi.data)
+	if gmpfigo.f == nil {
+		return
+	}
+	x := int(gmpfi.x)
+	y := int(gmpfi.y)
+	push_in := gboolean2bool(gmpfi.push_in)
+	gmpfigo.f(gmpfigo.menu, &x, &y, &push_in, gmpfigo.data)
+	gmpfi.x = C.gint(x)
+	gmpfi.y = C.gint(y)
+	gmpfi.push_in = bool2gboolean(push_in)
+}
+func (v *GtkMenu) Popup(parent_menu_shell, parent_menu_item WidgetLike, f GtkMenuPositionFunc, data interface{}, button uint, active_item uint) {
+	var pms, pmi *C.GtkWidget
+	if parent_menu_shell != nil {
+		pms = parent_menu_shell.ToNative()
+	}
+	if parent_menu_item != nil {
+		pmi = parent_menu_item.ToNative()
+	}
+	C._gtk_menu_popup(v.Widget, pms, pmi, unsafe.Pointer(&GtkMenuPositionFuncInfo{ v, f, data }), C.guint(button), C.guint32(active_item))
+}
 func (v *GtkMenu) Reposition() {
 	C.gtk_menu_reposition(C.to_GtkMenu(v.Widget))
 }
@@ -5902,6 +5971,23 @@ func (v *GtkStatusIcon) GetIconName() string {
 //gboolean gtk_status_icon_get_blinking (GtkStatusIcon *status_icon);
 //gboolean gtk_status_icon_is_embedded (GtkStatusIcon *status_icon);
 //void gtk_status_icon_position_menu (GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data);
+func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data interface{}) {
+	x := C.gint(*px)
+	y := C.gint(*py)
+	pi := bool2gboolean(*push_in)
+	var pdata C.gpointer
+	if sm, ok := data.(*GtkStatusIcon); ok {
+		pdata = C.gpointer(unsafe.Pointer(sm.StatusIcon))
+	}
+	C.gtk_status_icon_position_menu(C.to_GtkMenu(menu.Widget), &x, &y, &pi, pdata)
+	*px = int(x)
+	*py = int(y)
+	*push_in = gboolean2bool(pi)
+}
+func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.StatusIcon)))).Connect(s, f, datas...)
+}
+
 //gboolean gtk_status_icon_get_geometry (GtkStatusIcon *status_icon, GdkScreen **screen, GdkRectangle *area, GtkOrientation *orientation);
 //gboolean gtk_status_icon_get_has_tooltip (GtkStatusIcon *status_icon);
 //gchar *gtk_status_icon_get_tooltip_text (GtkStatusIcon *status_icon);
