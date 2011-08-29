@@ -11,6 +11,7 @@ all:
 	cd builder && gomake
 	cd sourceview && gomake
 	cd event && gomake
+	cd statusicon && gomake
 
 clean:
 	cd demo && gomake clean
@@ -25,3 +26,4 @@ clean:
 	cd builder && gomake clean
 	cd sourceview && gomake clean
 	cd event && gomake clean
+	cd statusicon && gomake clean
