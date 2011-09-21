@@ -87,6 +87,7 @@ typedef struct {
 	uintptr_t* args;
 	int args_no;
 	gboolean ret;
+    guint id;
 } callback_info;
 
 static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
@@ -127,7 +128,7 @@ static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
 	cbi->args = NULL;
 	cbi->target = obj;
 	cbi->args_no = query.n_params;
-	g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 	return cbi;
 }
 */
@@ -671,4 +672,10 @@ func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) {
 	defer C.free_string(ptr)
 	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
 	callback_contexts.Push(ctx)
+}
+
+func (v *GObject) StopEmission(s string) {
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	C.g_signal_stop_emission_by_name((C.gpointer)(v.Object), C.to_gcharptr(ptr));
 }
