@@ -3061,10 +3061,7 @@ func (v *GtkTreeModel) GetNColumns() int {
 	return int(C.gtk_tree_model_get_n_columns(v.TreeModel))
 }
 func (v *GtkTreeModel) GetIter(iter *GtkTreeIter, path *GtkTreePath) bool {
-	var path_ C.GtkTreePath
-	ret := gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter.TreeIter, unsafe.Pointer(&path_)))
-	path.TreePath = &path_
-	return ret
+	return gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter.TreeIter, unsafe.Pointer(&path.TreePath)))
 }
 func (v *GtkTreeModel) GetIterFromString(iter *GtkTreeIter, path_string string) bool {
 	ptr := C.CString(path_string)
