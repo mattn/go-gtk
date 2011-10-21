@@ -13,24 +13,28 @@ import (
 	"strings"
 )
 
-func url2pixbuf(url string) *gdkpixbuf.GdkPixbuf {
+func readURL(url string) ([]byte, *http.Response) {
 	r, err := http.Get(url)
 	if err != nil {
-		return nil
+		return nil, nil
 	}
-	t := r.Header.Get("Content-Type")
+	//t := r.Header.Get("Content-Type")
 	b := make([]byte, r.ContentLength)
 	if _, err = io.ReadFull(r.Body, b); err != nil {
-		return nil
+		return nil, nil
 	}
+	return b, r
+}
+
+func bytes2pixbuf(data []byte, typ string) *gdkpixbuf.GdkPixbuf {
 	var loader *gdkpixbuf.GdkPixbufLoader
-	if strings.Index(t, "jpeg") >= 0 {
+	if strings.Index(typ, "jpeg") >= 0 {
 		loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/jpeg")
 	} else {
 		loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/png")
 	}
 	loader.SetSize(24, 24)
-	loader.Write(b)
+	loader.Write(data)
 	loader.Close()
 	return loader.GetPixbuf()
 }
@@ -82,9 +86,10 @@ func main() {
 					data := arr[i].(map[string]interface{})
 					icon := data["user"].(map[string]interface{})["profile_image_url"].(string)
 					var iter gtk.GtkTextIter
+					pixbufbytes, resp := readURL(icon)
 					gdk.ThreadsEnter()
-					buffer.GetStartIter(&iter)
-					buffer.InsertPixbuf(&iter, url2pixbuf(icon))
+					buffer.GetEndIter(&iter)
+					buffer.InsertPixbuf(&iter, bytes2pixbuf(pixbufbytes, resp.Header.Get("Content-Type")))
 					gdk.ThreadsLeave()
 					name := data["user"].(map[string]interface{})["screen_name"].(string)
 					text := data["text"].(string)
