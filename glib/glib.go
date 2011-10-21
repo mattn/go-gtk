@@ -136,13 +136,8 @@ static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
 import "C"
 import "unsafe"
 import "reflect"
-import "container/vector"
 
-var callback_contexts *vector.Vector
-
-func init() {
-	callback_contexts = new(vector.Vector)
-}
+var callback_contexts []*CallbackContext
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -648,7 +643,7 @@ func (c *CallbackContext) Args(n int) uintptr {
 //export _go_glib_callback
 func _go_glib_callback(pcbi unsafe.Pointer) {
 	cbi := (*C.callback_info)(pcbi)
-	context := callback_contexts.At(int(cbi.func_no)).(*CallbackContext)
+	context := callback_contexts[int(cbi.func_no)]
 	rf := reflect.ValueOf(context.f)
 	t := rf.Type()
 	fargs := make([]reflect.Value, t.NumIn())
@@ -670,8 +665,8 @@ func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) {
 	ctx := &CallbackContext{f, nil, reflect.ValueOf(v), reflect.ValueOf(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(callback_contexts.Len())))
-	callback_contexts.Push(ctx)
+	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(len(callback_contexts))))
+	callback_contexts = append(callback_contexts, ctx)
 }
 
 func (v *GObject) StopEmission(s string) {

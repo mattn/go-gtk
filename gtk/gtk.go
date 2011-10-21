@@ -631,7 +631,6 @@ import "github.com/mattn/go-gtk/gdkpixbuf"
 import "github.com/mattn/go-gtk/pango"
 import "unsafe"
 import "reflect"
-import "container/vector"
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -2025,16 +2024,16 @@ func (v *GtkAboutDialog) SetWebsiteLabel(website_label string) {
 	C.gtk_about_dialog_set_website_label(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkAboutDialog) GetAuthors() []string {
-	var authors *vector.StringVector
+	var authors []string
 	cauthors := C.gtk_about_dialog_get_authors(C.to_GtkAboutDialog(v.Widget))
 	for {
-		authors.Push(C.GoString(C.to_charptr(*cauthors)))
+		authors = append(authors, C.GoString(C.to_charptr(*cauthors)))
 		cauthors = C.next_gcharptr(cauthors)
 		if *cauthors == nil {
 			break
 		}
 	}
-	return authors.Copy()
+	return authors
 }
 func (v *GtkAboutDialog) SetAuthors(authors []string) {
 	cauthors := C.make_strings(C.int(len(authors) + 1))
@@ -2048,16 +2047,16 @@ func (v *GtkAboutDialog) SetAuthors(authors []string) {
 	C.destroy_strings(cauthors)
 }
 func (v *GtkAboutDialog) GetDocumenters() []string {
-	var documenters *vector.StringVector
+	var documenters []string
 	cdocumenters := C.gtk_about_dialog_get_documenters(C.to_GtkAboutDialog(v.Widget))
 	for {
-		documenters.Push(C.GoString(C.to_charptr(*cdocumenters)))
+		documenters = append(documenters, C.GoString(C.to_charptr(*cdocumenters)))
 		cdocumenters = C.next_gcharptr(cdocumenters)
 		if *cdocumenters == nil {
 			break
 		}
 	}
-	return documenters.Copy()
+	return documenters
 }
 func (v *GtkAboutDialog) SetDocumenters(documenters []string) {
 	cdocumenters := C.make_strings(C.int(len(documenters)))
@@ -2070,16 +2069,16 @@ func (v *GtkAboutDialog) SetDocumenters(documenters []string) {
 	C.destroy_strings(cdocumenters)
 }
 func (v *GtkAboutDialog) GetArtists() []string {
-	var artists *vector.StringVector
+	var artists []string
 	cartists := C.gtk_about_dialog_get_artists(C.to_GtkAboutDialog(v.Widget))
 	for {
-		artists.Push(C.GoString(C.to_charptr(*cartists)))
+		artists = append(artists, C.GoString(C.to_charptr(*cartists)))
 		cartists = C.next_gcharptr(cartists)
 		if *cartists == nil {
 			break
 		}
 	}
-	return artists.Copy()
+	return artists
 }
 func (v *GtkAboutDialog) SetArtists(artists []string) {
 	cartists := C.make_strings(C.int(len(artists)))
