@@ -18,7 +18,6 @@ func readURL(url string) ([]byte, *http.Response) {
 	if err != nil {
 		return nil, nil
 	}
-	//t := r.Header.Get("Content-Type")
 	b := make([]byte, r.ContentLength)
 	if _, err = io.ReadFull(r.Body, b); err != nil {
 		return nil, nil
@@ -89,7 +88,9 @@ func main() {
 					pixbufbytes, resp := readURL(icon)
 					gdk.ThreadsEnter()
 					buffer.GetEndIter(&iter)
-					buffer.InsertPixbuf(&iter, bytes2pixbuf(pixbufbytes, resp.Header.Get("Content-Type")))
+					if resp != nil {
+						buffer.InsertPixbuf(&iter, bytes2pixbuf(pixbufbytes, resp.Header.Get("Content-Type")))
+					}
 					gdk.ThreadsLeave()
 					name := data["user"].(map[string]interface{})["screen_name"].(string)
 					text := data["text"].(string)
