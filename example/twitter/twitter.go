@@ -18,8 +18,8 @@ func readURL(url string) ([]byte, *http.Response) {
 	if err != nil {
 		return nil, nil
 	}
-	b := make([]byte, r.ContentLength)
-	if _, err = io.ReadFull(r.Body, b); err != nil {
+	var b []byte
+	if b, err = ioutil.ReadAll(r.Body); err != nil {
 		return nil, nil
 	}
 	return b, r
