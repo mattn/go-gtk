@@ -4,6 +4,7 @@ import (
 	"github.com/mattn/go-gtk/gtk"
 	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gdkpixbuf"
+	"fmt"
 	"http"
 	"json"
 	"bytes"
@@ -75,11 +76,15 @@ func main() {
 					_, err = io.ReadFull(r.Body, b)
 				}
 				if err != nil {
-					println(err.String())
+					fmt.Println(err)
 					return
 				}
 				var j interface{}
-				json.NewDecoder(bytes.NewBuffer(b)).Decode(&j)
+				err = json.NewDecoder(bytes.NewBuffer(b)).Decode(&j)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
 				arr := j.([]interface{})
 				for i := 0; i < len(arr); i++ {
 					data := arr[i].(map[string]interface{})
@@ -101,6 +106,8 @@ func main() {
 					gtk.MainIterationDo(false)
 					gdk.ThreadsLeave()
 				}
+			} else {
+				fmt.Println(err)
 			}
 			button.SetSensitive(true)
 		}()
