@@ -886,6 +886,9 @@ func (v *GtkWidget) Connect(s string, f interface{}, datas ...interface{}) {
 func (v *GtkWidget) StopEmission(s string) {
 	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).StopEmission(s)
 }
+func (v *GtkWidget) Emit(s string) {
+	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Emit(s)
+}
 func (v *GtkWidget) GetTopLevel() *GtkWidget {
 	return &GtkWidget{
 		C.gtk_widget_get_toplevel(v.Widget)}

@@ -46,32 +46,32 @@ static void _g_object_set_addr(gpointer object, const gchar *property_name, void
 	g_object_set(object, property_name, *(gpointer**)value, NULL);
 }
 //static void _g_object_get(gpointer object, const gchar *property_name, void* value) {
-//	g_object_get(object, property_name, value, NULL);
+//  g_object_get(object, property_name, value, NULL);
 //}
 
 static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
 static void g_value_init_string(GValue* gv) { g_value_init(gv, G_TYPE_STRING); }
 
 static GValue* init_gvalue_string_type() {
-  GValue* gv = g_new0(GValue, 1);
-  g_value_init(gv, G_TYPE_STRING);
-  return gv;
+	GValue* gv = g_new0(GValue, 1);
+	g_value_init(gv, G_TYPE_STRING);
+	return gv;
 }
 static GValue* init_gvalue_string(gchar* val) {
-  GValue* gv = init_gvalue_string_type();
-  g_value_set_string(gv, val);
-  return gv;
+	GValue* gv = init_gvalue_string_type();
+	g_value_set_string(gv, val);
+	return gv;
 }
 
 static GValue* init_gvalue_int_type() {
-  GValue* gv = g_new0(GValue, 1);
-  g_value_init(gv, G_TYPE_INT);
-  return gv;
+	GValue* gv = g_new0(GValue, 1);
+	g_value_init(gv, G_TYPE_INT);
+	return gv;
 }
 static GValue* init_gvalue_int(gint val) {
-  GValue* gv = init_gvalue_int_type();
-  g_value_set_int(gv, val);
-  return gv;
+	GValue* gv = init_gvalue_int_type();
+	g_value_set_int(gv, val);
+	return gv;
 }
 
 static GValue* init_gvalue_uint(guint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UINT); g_value_set_uint(gv, val); return gv; }
@@ -87,7 +87,7 @@ typedef struct {
 	uintptr_t* args;
 	int args_no;
 	gboolean ret;
-    guint id;
+	guint id;
 } callback_info;
 
 static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
@@ -130,6 +130,9 @@ static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
 	cbi->args_no = query.n_params;
 	cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 	return cbi;
+}
+static void _g_signal_emit_by_name(gpointer instance, const gchar *detailed_signal) {
+	g_signal_emit_by_name(instance, detailed_signal);
 }
 */
 // #cgo pkg-config: glib-2.0 gobject-2.0
@@ -468,7 +471,6 @@ func (v *GObject) SetProperty(name string, val *GValue) {
 	C.g_object_set_property(C.to_GObject(v.Object), C.to_gcharptr(str), &val.Value)
 }
 
-
 func Utf8Validate(str []byte, len int, bar **byte) bool {
 	return gboolean2bool(C._g_utf8_validate(unsafe.Pointer(&str[0]),
 		C.int(len), unsafe.Pointer(bar)))
@@ -672,5 +674,11 @@ func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) {
 func (v *GObject) StopEmission(s string) {
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	C.g_signal_stop_emission_by_name((C.gpointer)(v.Object), C.to_gcharptr(ptr));
+	C.g_signal_stop_emission_by_name((C.gpointer)(v.Object), C.to_gcharptr(ptr))
+}
+
+func (v *GObject) Emit(s string) {
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	C._g_signal_emit_by_name((C.gpointer)(v.Object), C.to_gcharptr(ptr))
 }
