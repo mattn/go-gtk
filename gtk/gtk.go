@@ -2295,8 +2295,12 @@ func (v *GtkEntry) GetWidthChars() int {
 
 // gtk_entry_get_layout
 // gtk_entry_get_layout_offsets
-// gtk_entry_set_alignment
-// gtk_entry_get_alignment
+func (v *GtkEntry) SetAlignment(xalign float64) {
+	C.gtk_entry_set_alignment(C.to_GtkEntry(v.Widget), C.gfloat(xalign))
+}
+func (v *GtkEntry) GetAlignment() float64 {
+	return float64(C.gtk_entry_get_alignment(C.to_GtkEntry(v.Widget)))
+}
 // gtk_entry_set_completion
 // gtk_entry_layout_index_to_text_index
 // gtk_entry_text_index_to_layout_index
