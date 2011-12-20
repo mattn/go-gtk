@@ -966,7 +966,7 @@ const (
 	GTK_ACCEL_MASK    GtkAccelFlags = 0x07
 )
 
-func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint, mods int, flags GtkAccelFlags) {
+func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint, mods gdk.GdkModifierType, flags GtkAccelFlags) {
 	csignal := C.CString(signal)
 	defer C.free_string(csignal)
 	C._gtk_widget_add_accelerator(v.Widget, C.to_gcharptr(csignal),
