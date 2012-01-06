@@ -966,7 +966,7 @@ const (
 	GTK_ACCEL_MASK    GtkAccelFlags = 0x07
 )
 
-func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint, mods int, flags GtkAccelFlags) {
+func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint, mods gdk.GdkModifierType, flags GtkAccelFlags) {
 	csignal := C.CString(signal)
 	defer C.free_string(csignal)
 	C._gtk_widget_add_accelerator(v.Widget, C.to_gcharptr(csignal),
@@ -5849,8 +5849,17 @@ func SourceBufferWithLanguage(lang *GtkSourceLanguage) *GtkSourceBuffer {
 	v := C.gtk_source_buffer_new_with_language(lang.SourceLanguage)
 	return &GtkSourceBuffer{v, GtkTextBuffer{unsafe.Pointer(v)}}
 }
+func (v *GtkSourceBuffer) SetHighlightSyntax(highlight bool) {
+	C.gtk_source_buffer_set_highlight_syntax(v.SourceBuffer, bool2gboolean(highlight))
+}
+func (v *GtkSourceBuffer) GetHighlightSyntax() bool {
+	return gboolean2bool(C.gtk_source_buffer_get_highlight_syntax(v.SourceBuffer))
+}
 func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
 	C.gtk_source_buffer_set_language(v.SourceBuffer, lang.SourceLanguage)
+}
+func (v *GtkSourceBuffer) GetLanguage() *GtkSourceLanguage {
+	return &GtkSourceLanguage{C.gtk_source_buffer_get_language(v.SourceBuffer)}
 }
 func (v *GtkSourceBuffer) BeginNotUndoableAction() {
 	C.gtk_source_buffer_begin_not_undoable_action(v.SourceBuffer)
@@ -5974,6 +5983,66 @@ type GtkSourceLanguage struct {
 	SourceLanguage *C.GtkSourceLanguage
 }
 
+func (v *GtkSourceLanguage) GetId() string {
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_id(v.SourceLanguage)))
+}
+func (v *GtkSourceLanguage) GetName() string {
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_name(v.SourceLanguage)))
+}
+func (v *GtkSourceLanguage) GetSection() string {
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_section(v.SourceLanguage)))
+}
+func (v *GtkSourceLanguage) GetHidden() bool {
+	return gboolean2bool(C.gtk_source_language_get_hidden(v.SourceLanguage))
+}
+func (v *GtkSourceLanguage) GetMetadata(name string) string {
+	cname := C.CString(name)
+	defer C.free_string(cname)
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.SourceLanguage, C.to_gcharptr(cname))))
+}
+func (v *GtkSourceLanguage) GetMimeTypes() []string {
+	var types []string
+	ctypes := C.gtk_source_language_get_mime_types(v.SourceLanguage)
+	for {
+		types = append(types, C.GoString(C.to_charptr(*ctypes)))
+		ctypes = C.next_gcharptr(ctypes)
+		if *ctypes == nil {
+			break
+		}
+	}
+	return types
+}
+func (v *GtkSourceLanguage) GetGlobs() []string {
+	var globs []string
+	cglobs := C.gtk_source_language_get_globs(v.SourceLanguage)
+	for {
+		globs = append(globs, C.GoString(C.to_charptr(*cglobs)))
+		cglobs = C.next_gcharptr(cglobs)
+		if *cglobs == nil {
+			break
+		}
+	}
+	return globs
+}
+func (v *GtkSourceLanguage) GetStyleName(styleId string) string {
+	cstyleId := C.CString(styleId)
+	defer C.free_string(cstyleId)
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.SourceLanguage, C.to_gcharptr(cstyleId))))
+}
+func (v *GtkSourceLanguage) GetStyleIds() []string {
+	var ids []string
+	cids := C.gtk_source_language_get_globs(v.SourceLanguage)
+	for {
+		ids = append(ids, C.GoString(C.to_charptr(*cids)))
+		cids = C.next_gcharptr(cids)
+		if *cids == nil {
+			break
+		}
+	}
+	return ids
+}
+//FINISH
+
 //-----------------------------------------------------------------------
 // GtkSourceLanguageManager
 //-----------------------------------------------------------------------
@@ -5981,14 +6050,11 @@ type GtkSourceLanguageManager struct {
 	LanguageManager *C.GtkSourceLanguageManager
 }
 
+func SourceLanguageManager() *GtkSourceLanguageManager {
+	return &GtkSourceLanguageManager{C.gtk_source_language_manager_new()}
+}
 func SourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
 	return &GtkSourceLanguageManager{C.gtk_source_language_manager_get_default()}
-}
-func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
-	cid := C.CString(id)
-	defer C.free_string(cid)
-	return &GtkSourceLanguage{C.gtk_source_language_manager_get_language(v.LanguageManager,
-		C.to_gcharptr(cid))}
 }
 func (v *GtkSourceLanguageManager) SetSearchPath(paths []string) {
 	cpaths := C.make_strings(C.int(len(paths) + 1))
@@ -6001,6 +6067,47 @@ func (v *GtkSourceLanguageManager) SetSearchPath(paths []string) {
 	C.gtk_source_language_manager_set_search_path(v.LanguageManager, cpaths)
 	C.destroy_strings(cpaths)
 }
+func (v *GtkSourceLanguageManager) GetSearchPath() []string {
+	var dirs []string
+	cdirs := C.gtk_source_language_manager_get_search_path(v.LanguageManager)
+	for {
+		dirs = append(dirs, C.GoString(C.to_charptr(*cdirs)))
+		cdirs = C.next_gcharptr(cdirs)
+		if *cdirs == nil {
+			break
+		}
+	}
+	return dirs
+}
+func (v *GtkSourceLanguageManager) GetLanguageIds() []string {
+	var ids []string
+	cids := C.gtk_source_language_manager_get_language_ids(v.LanguageManager)
+	for {
+		ids = append(ids, C.GoString(C.to_charptr(*cids)))
+		cids = C.next_gcharptr(cids)
+		if *cids == nil {
+			break
+		}
+	}
+	return ids
+}
+func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
+	cid := C.CString(id)
+	defer C.free_string(cid)
+	return &GtkSourceLanguage{C.gtk_source_language_manager_get_language(v.LanguageManager,
+		C.to_gcharptr(cid))}
+}
+func (v *GtkSourceLanguageManager) GuessLanguage(filename string, contentType string) *GtkSourceLanguage {
+	if filename == "" {
+		cct := C.CString(contentType)
+		defer C.free_string(cct)
+		return &GtkSourceLanguage{C.gtk_source_language_manager_guess_language(v.LanguageManager, nil, C.to_gcharptr(cct))}
+	}
+	cfn := C.CString(filename)
+	defer C.free_string(cfn)
+	return &GtkSourceLanguage{C.gtk_source_language_manager_guess_language(v.LanguageManager, C.to_gcharptr(cfn), nil)}
+}
+//FINISH
 
 //-----------------------------------------------------------------------
 // GtkSizeGroup
