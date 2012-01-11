@@ -3777,6 +3777,10 @@ type GtkTextTag struct {
 //-----------------------------------------------------------------------
 // GtkTextBuffer
 //-----------------------------------------------------------------------
+type TextBufferLike interface {
+	GetNativeBuffer() unsafe.Pointer
+}
+
 type GtkTextBuffer struct {
 	TextBuffer unsafe.Pointer
 }
@@ -3784,6 +3788,9 @@ type GtkTextBuffer struct {
 func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C._gtk_text_buffer_new(tagtable.TextTagTable)}
+}
+func (v *GtkTextBuffer) GetNativeBuffer() unsafe.Pointer {
+	return v.TextBuffer
 }
 func (v *GtkTextBuffer) Connect(s string, f interface{}, datas ...interface{}) {
 	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(v.TextBuffer))).Connect(s, f, datas...)
@@ -4002,8 +4009,8 @@ func TextViewWithBuffer(b GtkTextBuffer) *GtkTextView {
 	return &GtkTextView{GtkContainer{GtkWidget{
 		C._gtk_text_view_new_with_buffer(b.TextBuffer)}}}
 }
-func (v *GtkTextView) SetBuffer(b GtkTextBuffer) {
-	C._gtk_text_view_set_buffer(v.Widget, b.TextBuffer)
+func (v *GtkTextView) SetBuffer(b TextBufferLike) {
+	C._gtk_text_view_set_buffer(v.Widget, b.GetNativeBuffer())
 }
 func (v *GtkTextView) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer{
@@ -5848,6 +5855,9 @@ func SourceBuffer() *GtkSourceBuffer {
 func SourceBufferWithLanguage(lang *GtkSourceLanguage) *GtkSourceBuffer {
 	v := C.gtk_source_buffer_new_with_language(lang.SourceLanguage)
 	return &GtkSourceBuffer{v, GtkTextBuffer{unsafe.Pointer(v)}}
+}
+func (v *GtkSourceBuffer) GetNativeBuffer() unsafe.Pointer {
+	return unsafe.Pointer(v.SourceBuffer)
 }
 func (v *GtkSourceBuffer) SetHighlightSyntax(highlight bool) {
 	C.gtk_source_buffer_set_highlight_syntax(v.SourceBuffer, bool2gboolean(highlight))
