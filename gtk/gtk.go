@@ -6,10 +6,6 @@ package gtk
 #endif
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-#include <gtksourceview/gtksourceview.h>
-#include <gtksourceview/gtksourcebuffer.h>
-#include <gtksourceview/gtksourcelanguage.h>
-#include <gtksourceview/gtksourcelanguagemanager.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -363,10 +359,6 @@ static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interac
 	return gtk_text_buffer_delete_selection(GTK_TEXT_BUFFER(buffer), interactive, default_editable);
 }
 
-static GtkWidget* _gtk_source_view_new_with_buffer(void* buf) {
-	return gtk_source_view_new_with_buffer(GTK_SOURCE_BUFFER(buf));
-}
-
 // static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
 // static void gtk_text_buffer_copy_clipboard(void* buffer, GtkClipboard* clipboard);
 // static void gtk_text_buffer_cut_clipboard(void* buffer, GtkClipboard* clipboard, gboolean default_editable);
@@ -574,7 +566,6 @@ static GtkAccelLabel* to_GtkAccelLabel(GtkWidget* w) { return GTK_ACCEL_LABEL(w)
 static GtkEntry* to_GtkEntry(GtkWidget* w) { return GTK_ENTRY(w); }
 static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 static GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
-static GtkSourceView* to_GtkSourceView(GtkWidget* w) { return GTK_SOURCE_VIEW(w); }
 static GtkMenu* to_GtkMenu(GtkWidget* w) { return GTK_MENU(w); }
 static GtkMenuBar* to_GtkMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
 static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
@@ -623,7 +614,7 @@ static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
 
 static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 */
-// #cgo pkg-config: gtk+-2.0 gtksourceview-2.0
+// #cgo pkg-config: gtk+-2.0
 import "C"
 import "github.com/mattn/go-gtk/glib"
 import "github.com/mattn/go-gtk/gdk"
@@ -850,6 +841,10 @@ type WidgetLike interface {
 }
 type GtkWidget struct {
 	Widget *C.GtkWidget
+}
+
+func WidgetFromUnsafe(w unsafe.Pointer) *GtkWidget {
+	return &GtkWidget{C.to_GtkWidget(w)}
 }
 
 func WidgetFromObject(object *glib.GObject) *GtkWidget {
@@ -5839,7 +5834,7 @@ func MainIterationDo(blocking bool) bool {
 func MainQuit() {
 	C.gtk_main_quit()
 }
-
+/*
 //-----------------------------------------------------------------------
 // GtkSourceBuffer
 //-----------------------------------------------------------------------
@@ -6118,7 +6113,7 @@ func (v *GtkSourceLanguageManager) GuessLanguage(filename string, contentType st
 	return &GtkSourceLanguage{C.gtk_source_language_manager_guess_language(v.LanguageManager, C.to_gcharptr(cfn), nil)}
 }
 //FINISH
-
+*/
 //-----------------------------------------------------------------------
 // GtkSizeGroup
 //-----------------------------------------------------------------------
