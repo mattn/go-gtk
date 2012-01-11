@@ -3,7 +3,7 @@ package main
 import "github.com/mattn/go-gtk/gdk"
 import "github.com/mattn/go-gtk/gtk"
 import "strconv"
-import "syscall"
+import "time"
 import "runtime"
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 
 	window.SetSizeRequest(100, 100)
 	window.ShowAll()
-	syscall.Sleep(1000 * 1000 * 100)
+	time.Sleep(1000 * 1000 * 100)
 	go (func() {
 		for i := 0; i < 300000; i++ {
 			gdk.ThreadsEnter()
