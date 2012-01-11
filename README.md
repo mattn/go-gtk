@@ -42,6 +42,7 @@ AUTHORS:
   * Mark Andrew Gerads
   * Tobias Kortkamp
   * Mikhail Trushnikov
+  * Federico Sogaro
 
 GOAL:
 -----
