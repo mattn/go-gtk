@@ -25,10 +25,6 @@ static inline char* to_charptr(const gchar* s) { return (char*)s; }
 static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 static inline void free_string(char* s) { free(s); }
 static GtkSourceView* to_GtkSourceView(void* w) { return GTK_SOURCE_VIEW(w); }
-
-//static GtkWidget* _gtk_source_view_new_with_buffer(void* buf) {
-//	return _gtk_source_view_new_with_buffer(GTK_SOURCE_BUFFER(buf));
-//}
 */
 // #cgo pkg-config: gtksourceview-2.0
 import "C"
