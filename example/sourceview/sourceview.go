@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"github.com/mattn/go-gtk/gtk"
-	gsv "github.com/mattn/go-gtk/gtk/gtksourceview"
+	gsv "github.com/mattn/go-gtk/gtksourceview"
 )
 
 func main() {
