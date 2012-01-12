@@ -1,4 +1,5 @@
 * more widgets.
 * event handling(go pollEvents).
   using pipe? msgbuf? fifo?(no no)
-* split gtksourceview from gtk package
+* split gtksourceview from gtk package (done)
+* copyright header in sources
