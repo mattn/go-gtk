@@ -1477,8 +1477,13 @@ func (v *GtkWindow) SetDefault(w *GtkWidget) {
 // gtk_window_get_accept_focus
 // gtk_window_set_focus_on_map
 // gtk_window_get_focus_on_map
-// gtk_window_set_destroy_with_parent
-// gtk_window_get_destroy_with_parent
+
+func (v *GtkWindow) SetDestroyWithParent(setting bool) {
+	C.gtk_window_set_destroy_with_parent(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkWindow) GetDestroyWithParent() bool {
+	return gboolean2bool(C.gtk_window_get_destroy_with_parent(C.to_GtkWindow(v.Widget)))
+}
 // gtk_window_set_gravity
 // gtk_window_get_gravity
 // gtk_window_set_geometry_hints
