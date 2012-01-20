@@ -5297,6 +5297,9 @@ func (v *GtkNotebook) GetGroup() unsafe.Pointer {
 func (v *GtkNotebook) GetCurrentPage() int {
 	return int(C.gtk_notebook_get_current_page(C.to_GtkNotebook(v.Widget)))
 }
+func (v *GtkNotebook) SetCurrentPage(pageNum int) {
+	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.Widget), C.gint(pageNum))
+}
 func (v *GtkNotebook) GetNthPage(page_num int) *GtkWidget {
 	return &GtkWidget{
 		C.gtk_notebook_get_nth_page(C.to_GtkNotebook(v.Widget), C.gint(page_num))}
