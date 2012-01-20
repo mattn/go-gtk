@@ -1452,6 +1452,13 @@ func (v *GtkWindow) SetPosition(position GtkWindowPosition) {
 }
 
 // gtk_window_activate_focus
+
+func (v *GtkWindow) SetAcceptFocus(setting bool) {
+	C.gtk_window_set_accept_focus(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkWindow) GetAcceptFocus() bool {
+	return gboolean2bool(C.gtk_window_get_accept_focus(C.to_GtkWindow(v.Widget)))
+}
 // gtk_window_set_focus
 // gtk_window_get_focus
 
@@ -1513,8 +1520,13 @@ func (v *GtkWindow) GetDestroyWithParent() bool {
 // gtk_window_get_default_icon_name
 // gtk_window_set_default_icon_from_file
 // gtk_window_set_auto_startup_notification
-// gtk_window_set_modal
-// gtk_window_get_modal
+
+func (v *GtkWindow) SetModal(modal bool) {
+	C.gtk_window_set_modal(C.to_GtkWindow(v.Widget), bool2gboolean(modal))
+}
+func (v *GtkWindow) GetModal() bool {
+	return gboolean2bool(C.gtk_window_get_modal(C.to_GtkWindow(v.Widget)))
+}
 // gtk_window_list_toplevels
 // gtk_window_add_mnemonic
 // gtk_window_remove_mnemonic
@@ -1537,8 +1549,9 @@ func (v *GtkWindow) Present() {
 func (v *GtkWindow) Maximize() {
 	C.gtk_window_maximize(C.to_GtkWindow(v.Widget))
 }
-
-// gtk_window_unmaximize
+func (v *GtkWindow) Unmaximize() {
+	C.gtk_window_unmaximize(C.to_GtkWindow(v.Widget))
+}
 // gtk_window_fullscreen
 // gtk_window_unfullscreen
 // gtk_window_set_keep_above
