@@ -2758,7 +2758,14 @@ func (v *GtkButton) SetUseUnderline(setting bool) {
 // gtk_button_get_focus_on_click
 // gtk_button_set_alignment
 // gtk_button_get_alignment
-// gtk_button_set_image
+
+func (v *GtkButton) SetImage(image WidgetLike) {
+	C.gtk_button_set_image(C.to_GtkButton(v.Widget), image.ToNative())
+}
+func (v *GtkButton) GetImage() *GtkImage {
+	return &GtkImage{GtkWidget{C.gtk_button_get_image(C.to_GtkButton(v.Widget))}}
+}
+
 // gtk_button_get_image
 // gtk_button_set_image_position
 // gtk_button_get_image_position
