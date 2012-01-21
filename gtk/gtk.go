@@ -1452,6 +1452,13 @@ func (v *GtkWindow) SetPosition(position GtkWindowPosition) {
 }
 
 // gtk_window_activate_focus
+
+func (v *GtkWindow) SetAcceptFocus(setting bool) {
+	C.gtk_window_set_accept_focus(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkWindow) GetAcceptFocus() bool {
+	return gboolean2bool(C.gtk_window_get_accept_focus(C.to_GtkWindow(v.Widget)))
+}
 // gtk_window_set_focus
 // gtk_window_get_focus
 
@@ -1477,8 +1484,13 @@ func (v *GtkWindow) SetDefault(w *GtkWidget) {
 // gtk_window_get_accept_focus
 // gtk_window_set_focus_on_map
 // gtk_window_get_focus_on_map
-// gtk_window_set_destroy_with_parent
-// gtk_window_get_destroy_with_parent
+
+func (v *GtkWindow) SetDestroyWithParent(setting bool) {
+	C.gtk_window_set_destroy_with_parent(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkWindow) GetDestroyWithParent() bool {
+	return gboolean2bool(C.gtk_window_get_destroy_with_parent(C.to_GtkWindow(v.Widget)))
+}
 // gtk_window_set_gravity
 // gtk_window_get_gravity
 // gtk_window_set_geometry_hints
@@ -1508,8 +1520,13 @@ func (v *GtkWindow) SetDefault(w *GtkWidget) {
 // gtk_window_get_default_icon_name
 // gtk_window_set_default_icon_from_file
 // gtk_window_set_auto_startup_notification
-// gtk_window_set_modal
-// gtk_window_get_modal
+
+func (v *GtkWindow) SetModal(modal bool) {
+	C.gtk_window_set_modal(C.to_GtkWindow(v.Widget), bool2gboolean(modal))
+}
+func (v *GtkWindow) GetModal() bool {
+	return gboolean2bool(C.gtk_window_get_modal(C.to_GtkWindow(v.Widget)))
+}
 // gtk_window_list_toplevels
 // gtk_window_add_mnemonic
 // gtk_window_remove_mnemonic
@@ -1532,8 +1549,9 @@ func (v *GtkWindow) Present() {
 func (v *GtkWindow) Maximize() {
 	C.gtk_window_maximize(C.to_GtkWindow(v.Widget))
 }
-
-// gtk_window_unmaximize
+func (v *GtkWindow) Unmaximize() {
+	C.gtk_window_unmaximize(C.to_GtkWindow(v.Widget))
+}
 // gtk_window_fullscreen
 // gtk_window_unfullscreen
 // gtk_window_set_keep_above
@@ -2740,7 +2758,14 @@ func (v *GtkButton) SetUseUnderline(setting bool) {
 // gtk_button_get_focus_on_click
 // gtk_button_set_alignment
 // gtk_button_get_alignment
-// gtk_button_set_image
+
+func (v *GtkButton) SetImage(image WidgetLike) {
+	C.gtk_button_set_image(C.to_GtkButton(v.Widget), image.ToNative())
+}
+func (v *GtkButton) GetImage() *GtkImage {
+	return &GtkImage{GtkWidget{C.gtk_button_get_image(C.to_GtkButton(v.Widget))}}
+}
+
 // gtk_button_get_image
 // gtk_button_set_image_position
 // gtk_button_get_image_position
@@ -5296,6 +5321,9 @@ func (v *GtkNotebook) GetGroup() unsafe.Pointer {
 }
 func (v *GtkNotebook) GetCurrentPage() int {
 	return int(C.gtk_notebook_get_current_page(C.to_GtkNotebook(v.Widget)))
+}
+func (v *GtkNotebook) SetCurrentPage(pageNum int) {
+	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.Widget), C.gint(pageNum))
 }
 func (v *GtkNotebook) GetNthPage(page_num int) *GtkWidget {
 	return &GtkWidget{
