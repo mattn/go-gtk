@@ -1483,7 +1483,6 @@ func (v *GtkWindow) SetDefault(w *GtkWidget) {
 // gtk_window_set_accept_focus
 // gtk_window_get_accept_focus
 // gtk_window_set_focus_on_map
-// gtk_window_get_focus_on_map
 
 func (v *GtkWindow) SetDestroyWithParent(setting bool) {
 	C.gtk_window_set_destroy_with_parent(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
@@ -4584,6 +4583,10 @@ type GtkCellRenderer struct {
 func (v *GtkCellRenderer) ToGtkCellRenderer() *C.GtkCellRenderer {
 	return v.CellRenderer
 }
+
+func (v *GtkCellRenderer) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(v.CellRenderer)).Connect(s, f, datas...)
+}
 //-----------------------------------------------------------------------
 // GtkCellRendererText
 //-----------------------------------------------------------------------
@@ -4660,6 +4663,7 @@ func (v *GtkCellRendererToggle) GetActivatable() bool {
 func (v *GtkCellRendererToggle) SetActivatable(activatable bool) {
 	C.gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(activatable))
 }
+
 //-----------------------------------------------------------------------
 // GtkTreeViewColumn
 //-----------------------------------------------------------------------
