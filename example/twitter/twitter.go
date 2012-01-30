@@ -2,14 +2,14 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
+	"json"
 	"fmt"
 	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gdkpixbuf"
 	"github.com/mattn/go-gtk/gtk"
 	"io"
 	"io/ioutil"
-	"net/http"
+	"http"
 	"os"
 	"strings"
 )
