@@ -2603,10 +2603,10 @@ func (v *GtkLabel) SetPattern(pattern string) {
 	defer C.free_string(ptr)
 	C.gtk_label_set_pattern(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkLabel) GetUseLineWrap() bool {
+func (v *GtkLabel) GetLineWrap() bool {
 	return gboolean2bool(C.gtk_label_get_line_wrap(C.to_GtkLabel(v.Widget)))
 }
-func (v *GtkLabel) SetUseLineWrap(setting bool) {
+func (v *GtkLabel) SetLineWrap(setting bool) {
 	C.gtk_label_set_line_wrap(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkLabel) GetUseLineWrapMode() pango.PangoWrapMode {
