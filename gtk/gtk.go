@@ -1693,19 +1693,61 @@ const (
 	GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER GtkFileChooserAction = 3
 )
 
-type GtkFileChooser interface {
-	GetFilename() string
-	GetCurrentFolder() string
-	SetCurrentFolder(f string) bool
-}
-type GtkFileChooserWidget struct {
-	GtkFileChooser
-	GtkWidget
+type GtkFileChooser struct {
+	w *C.GtkFileChooser
 }
 
-func (v *GtkFileChooserWidget) GetFilename() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
+func (v *GtkFileChooser) SetAction(action GtkFileChooserAction) {
+	C.gtk_file_chooser_set_action(v.w, C.GtkFileChooserAction(action))
 }
+func (v *GtkFileChooser) GetAction() GtkFileChooserAction {
+	return GtkFileChooserAction(C.gtk_file_chooser_get_action(v.w))
+}
+func (v *GtkFileChooser) GetLocalOnly() bool {
+	return gboolean2bool(C.gtk_file_chooser_get_local_only(v.w))
+}
+func (v *GtkFileChooser) SetLocalOnly(b bool) {
+	C.gtk_file_chooser_set_local_only(v.w, bool2gboolean(b))
+}
+func (v *GtkFileChooser) GetFilename() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(v.w)))
+}
+func (v *GtkFileChooser) SetFilename(filename string) {
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	C.gtk_file_chooser_set_filename(v.w, ptr)
+}
+func (v *GtkFileChooser) GetCurrentFolder() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_current_folder(v.w)))
+}
+func (v *GtkFileChooser) SetCurrentFolder(f string) bool {
+	cf := C.CString(f)
+	defer C.free_string(cf)
+	return gboolean2bool(C.gtk_file_chooser_set_current_folder(v.w, C.to_gcharptr(cf)))
+}
+func (v *GtkFileChooser) AddFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_add_filter(v.w, filter.FileFilter)
+}
+func (v *GtkFileChooser) RemoveFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_remove_filter(v.w, filter.FileFilter)
+}
+func (v *GtkFileChooser) SetFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_set_filter(v.w, filter.FileFilter)
+}
+func (v *GtkFileChooser) GetFilter() *GtkFileFilter {
+	return &GtkFileFilter{C.gtk_file_chooser_get_filter(v.w)}
+}
+func (v *GtkFileChooser) ListFilters() []*GtkFileFilter {
+	c_list := C.gtk_file_chooser_list_filters(v.w)
+	defer C.g_slist_free(c_list)
+	n := int(C.g_slist_length(c_list))
+	ret := make([]*GtkFileFilter, n)
+	for i := 0; i < n; i++ {
+		ret[i] = &GtkFileFilter{C.to_GtkFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
+	}
+	return ret
+}
+
 
 // TODO
 // void gtk_file_chooser_set_action(GtkFileChooser* chooser, GtkFileChooserAction action);
@@ -1719,15 +1761,11 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders);
 // gboolean gtk_file_chooser_get_create_folders(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);
-// gchar*  gtk_file_chooser_get_filename(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_filename(GtkFileChooser* chooser, const char* filename);
 // gboolean gtk_file_chooser_select_filename(GtkFileChooser* chooser, const char* filename);
 // void gtk_file_chooser_unselect_filename(GtkFileChooser* chooser, const char* filename);
 // void gtk_file_chooser_select_all(GtkFileChooser* chooser);
 // void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
 // GSList*  gtk_file_chooser_get_filenames(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_current_folder(GtkFileChooser* chooser, const gchar* filename);
-// gchar*  gtk_file_chooser_get_current_folder(GtkFileChooser* chooser);
 // gchar*  gtk_file_chooser_get_uri(GtkFileChooser* chooser);
 // gboolean gtk_file_chooser_set_uri(GtkFileChooser* chooser, const char* uri);
 // gboolean gtk_file_chooser_select_uri(GtkFileChooser* chooser, const char* uri);
@@ -1754,14 +1792,6 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // void gtk_file_chooser_set_extra_widget(GtkFileChooser* chooser, GtkWidget* extra_widget);
 // GtkWidget* gtk_file_chooser_get_extra_widget(GtkFileChooser* chooser);
 
-
-// void gtk_file_chooser_add_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
-// void gtk_file_chooser_remove_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
-// GSList* gtk_file_chooser_list_filters(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
-// GtkFileFilter* gtk_file_chooser_get_filter(GtkFileChooser* chooser);
-
-
 // gboolean gtk_file_chooser_add_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // gboolean gtk_file_chooser_remove_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // GSList* gtk_file_chooser_list_shortcut_folders(GtkFileChooser* chooser);
@@ -1770,35 +1800,21 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // GSList* gtk_file_chooser_list_shortcut_folder_uris(GtkFileChooser* chooser);
 
 //-----------------------------------------------------------------------
-// GtkFontSelectionDialog
+// GtkFileChooserWidget
 //-----------------------------------------------------------------------
-type GtkFontSelectionDialog struct {
-	GtkDialog
-}
 
-func FontSelectionDialog(title string) *GtkFontSelectionDialog {
-	ptitle := C.CString(title)
-	defer C.free_string(ptitle)
-	return &GtkFontSelectionDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_font_selection_dialog_new(C.to_gcharptr(ptitle))}}}}}}
-}
-
-func (v *GtkFontSelectionDialog) SetFontName(font string) {
-	pfont := C.CString(font)
-	defer C.free_string(pfont)
-	C.gtk_font_selection_dialog_set_font_name(C.to_GtkFontSelectionDialog(v.Widget), C.to_gcharptr(pfont))
-}
-
-func (v *GtkFontSelectionDialog) GetFontName() string {
-	return C.GoString(C.to_charptr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.Widget))))
+type GtkFileChooserWidget struct {
+	GtkWidget
+	GtkFileChooser
 }
 
 //-----------------------------------------------------------------------
 // GtkFileChooserDialog
 //-----------------------------------------------------------------------
+
 type GtkFileChooserDialog struct {
 	GtkDialog
-	//GtkFileChooser;
+	GtkFileChooser
 }
 
 //The number of arguments bound to the final variadic parameter must be even: couples of string-int (button text - button action)
@@ -1807,13 +1823,16 @@ func FileChooserDialog(title string, parent WindowLike, file_chooser_action GtkF
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button_text)
 	defer C.free_string(pbutton)
-	ret := &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+	widget := GtkWidget{
 		C._gtk_file_chooser_dialog_new(
 			C.to_gcharptr(ptitle),
 			parent.ToNative(),
 			C.int(file_chooser_action),
 			C.int(button_action),
-			C.to_gcharptr(pbutton))}}}}}}
+			C.to_gcharptr(pbutton))}
+	ret := &GtkFileChooserDialog{
+			GtkDialog{GtkWindow{GtkBin{GtkContainer{widget}}}},
+			GtkFileChooser{C.to_GtkFileChooser(widget.Widget)}}
 	for i := 0; i < len(buttons)/2; i++ {
 		b_text, ok := buttons[2*i].(string)
 		if !ok {
@@ -1826,48 +1845,6 @@ func FileChooserDialog(title string, parent WindowLike, file_chooser_action GtkF
 		ret.AddButton(b_text, b_action)
 	}
 	return ret
-}
-
-//GtkFileChooserDialog must implement all GtkFileChooser functions unless there is a way (?) to tell that the GtkFileChooserDialog returned by FileChooserDialog() implements GtkFileChooser
-func (v *GtkFileChooserDialog) GetFilename() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
-}
-func (v *GtkFileChooserDialog) GetCurrentFolder() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_current_folder(C.to_GtkFileChooser(v.Widget))))
-}
-func (v *GtkFileChooserDialog) SetCurrentFolder(f string) bool {
-	cf := C.CString(f)
-	defer C.free_string(cf)
-	return gboolean2bool(C.gtk_file_chooser_set_current_folder(
-		C.to_GtkFileChooser(v.Widget), C.to_gcharptr(cf)))
-}
-func (v *GtkFileChooserDialog) AddFilter(filter *GtkFileFilter) {
-	C.gtk_file_chooser_add_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
-}
-func (v *GtkFileChooserDialog) RemoveFilter(filter *GtkFileFilter) {
-	C.gtk_file_chooser_remove_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
-}
-func (v *GtkFileChooserDialog) SetFilter(filter *GtkFileFilter) {
-	C.gtk_file_chooser_set_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
-}
-func (v *GtkFileChooserDialog) GetFilter() *GtkFileFilter {
-	return &GtkFileFilter{C.gtk_file_chooser_get_filter(C.to_GtkFileChooser(v.Widget))}
-}
-func (v *GtkFileChooserDialog) ListFilters() []*GtkFileFilter {
-	c_list := C.gtk_file_chooser_list_filters(C.to_GtkFileChooser(v.Widget))
-	defer C.g_slist_free(c_list)
-	n := int(C.g_slist_length(c_list))
-	ret := make([]*GtkFileFilter, n)
-	for i := 0; i < n; i++ {
-		ret[i] = &GtkFileFilter{C.to_GtkFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
-	}
-	return ret
-}
-func (v *GtkFileChooserDialog) GetLocalOnly() bool {
-	return gboolean2bool(C.gtk_file_chooser_get_local_only(C.to_GtkFileChooser(v.Widget)))
-}
-func (v *GtkFileChooserDialog) SetLocalOnly(b bool) {
-	C.gtk_file_chooser_set_local_only(C.to_GtkFileChooser(v.Widget), bool2gboolean(b))
 }
 
 //-----------------------------------------------------------------------
@@ -1905,6 +1882,30 @@ func (v *GtkFileFilter) AddPattern(pattern string) {
 
 //void gtk_file_filter_add_pixbuf_formats (GtkFileFilter *filter);
 //void gtk_file_filter_add_custom (GtkFileFilter *filter, GtkFileFilterFlags needed, GtkFileFilterFunc func, gpointer data, GDestroyNotify notify);
+
+//-----------------------------------------------------------------------
+// GtkFontSelectionDialog
+//-----------------------------------------------------------------------
+type GtkFontSelectionDialog struct {
+	GtkDialog
+}
+
+func FontSelectionDialog(title string) *GtkFontSelectionDialog {
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	return &GtkFontSelectionDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_font_selection_dialog_new(C.to_gcharptr(ptitle))}}}}}}
+}
+
+func (v *GtkFontSelectionDialog) SetFontName(font string) {
+	pfont := C.CString(font)
+	defer C.free_string(pfont)
+	C.gtk_font_selection_dialog_set_font_name(C.to_GtkFontSelectionDialog(v.Widget), C.to_gcharptr(pfont))
+}
+
+func (v *GtkFontSelectionDialog) GetFontName() string {
+	return C.GoString(C.to_charptr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.Widget))))
+}
 
 //-----------------------------------------------------------------------
 // GtkMessageDialog
