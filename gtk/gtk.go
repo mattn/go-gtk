@@ -555,7 +555,9 @@ static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON
 static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w); }
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
 static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
+//TODO(remove when safe) GtkComboBoxEntry is deprecated since 2.24.
 static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
+static GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
 static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
 static GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
@@ -620,6 +622,7 @@ import "github.com/mattn/go-gtk/glib"
 import "github.com/mattn/go-gtk/gdk"
 import "github.com/mattn/go-gtk/gdkpixbuf"
 import "github.com/mattn/go-gtk/pango"
+import "log"
 import "unsafe"
 import "reflect"
 
@@ -635,11 +638,17 @@ func gboolean2bool(b C.gboolean) bool {
 	}
 	return false
 }
-func panic_if_version_older(major int, minor int, micro int, message string) {
+func panic_if_version_older(major int, minor int, micro int, function string) {
 	if C._check_version(C.int(major), C.int(minor), C.int(micro)) == 0 {
-		panic(message)
+		log.Panicf("%s is not provided on your GTK, version %d.%d is required\n", function, major, minor)
 	}
 }
+func warning_if_deprecated(major int, minor int, micro int, function string) {
+	if C._check_version(C.int(major), C.int(minor), C.int(micro)) != 0 {
+		log.Printf("\nWarning: %s is deprecated since gtk %d.%d\n", function, major, minor)
+	}
+}
+
 //-----------------------------------------------------------------------
 // GtkObject
 //-----------------------------------------------------------------------
@@ -1483,7 +1492,6 @@ func (v *GtkWindow) SetDefault(w *GtkWidget) {
 // gtk_window_set_accept_focus
 // gtk_window_get_accept_focus
 // gtk_window_set_focus_on_map
-// gtk_window_get_focus_on_map
 
 func (v *GtkWindow) SetDestroyWithParent(setting bool) {
 	C.gtk_window_set_destroy_with_parent(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
@@ -1665,7 +1673,7 @@ func (v *GtkDialog) SetDefaultResponse(id int) {
 	C.gtk_dialog_set_default_response(C.to_GtkDialog(v.Widget), C.gint(id))
 }
 func (v *GtkDialog) GetWidgetForResponse(id int) *GtkWidget {
-	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response() is not provided on your GTK")
+	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response()")
 	return &GtkWidget{C._gtk_dialog_get_widget_for_response(C.to_GtkDialog(v.Widget), C.gint(id))}
 }
 func (v *GtkDialog) GetResponseForWidget(w *GtkWidget) int {
@@ -1694,19 +1702,61 @@ const (
 	GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER GtkFileChooserAction = 3
 )
 
-type GtkFileChooser interface {
-	GetFilename() string
-	GetCurrentFolder() string
-	SetCurrentFolder(f string) bool
-}
-type GtkFileChooserWidget struct {
-	GtkFileChooser
-	GtkWidget
+type GtkFileChooser struct {
+	w *C.GtkFileChooser
 }
 
-func (v *GtkFileChooserWidget) GetFilename() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
+func (v *GtkFileChooser) SetAction(action GtkFileChooserAction) {
+	C.gtk_file_chooser_set_action(v.w, C.GtkFileChooserAction(action))
 }
+func (v *GtkFileChooser) GetAction() GtkFileChooserAction {
+	return GtkFileChooserAction(C.gtk_file_chooser_get_action(v.w))
+}
+func (v *GtkFileChooser) GetLocalOnly() bool {
+	return gboolean2bool(C.gtk_file_chooser_get_local_only(v.w))
+}
+func (v *GtkFileChooser) SetLocalOnly(b bool) {
+	C.gtk_file_chooser_set_local_only(v.w, bool2gboolean(b))
+}
+func (v *GtkFileChooser) GetFilename() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(v.w)))
+}
+func (v *GtkFileChooser) SetFilename(filename string) {
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	C.gtk_file_chooser_set_filename(v.w, ptr)
+}
+func (v *GtkFileChooser) GetCurrentFolder() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_current_folder(v.w)))
+}
+func (v *GtkFileChooser) SetCurrentFolder(f string) bool {
+	cf := C.CString(f)
+	defer C.free_string(cf)
+	return gboolean2bool(C.gtk_file_chooser_set_current_folder(v.w, C.to_gcharptr(cf)))
+}
+func (v *GtkFileChooser) AddFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_add_filter(v.w, filter.FileFilter)
+}
+func (v *GtkFileChooser) RemoveFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_remove_filter(v.w, filter.FileFilter)
+}
+func (v *GtkFileChooser) SetFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_set_filter(v.w, filter.FileFilter)
+}
+func (v *GtkFileChooser) GetFilter() *GtkFileFilter {
+	return &GtkFileFilter{C.gtk_file_chooser_get_filter(v.w)}
+}
+func (v *GtkFileChooser) ListFilters() []*GtkFileFilter {
+	c_list := C.gtk_file_chooser_list_filters(v.w)
+	defer C.g_slist_free(c_list)
+	n := int(C.g_slist_length(c_list))
+	ret := make([]*GtkFileFilter, n)
+	for i := 0; i < n; i++ {
+		ret[i] = &GtkFileFilter{C.to_GtkFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
+	}
+	return ret
+}
+
 
 // TODO
 // void gtk_file_chooser_set_action(GtkFileChooser* chooser, GtkFileChooserAction action);
@@ -1720,15 +1770,11 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders);
 // gboolean gtk_file_chooser_get_create_folders(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);
-// gchar*  gtk_file_chooser_get_filename(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_filename(GtkFileChooser* chooser, const char* filename);
 // gboolean gtk_file_chooser_select_filename(GtkFileChooser* chooser, const char* filename);
 // void gtk_file_chooser_unselect_filename(GtkFileChooser* chooser, const char* filename);
 // void gtk_file_chooser_select_all(GtkFileChooser* chooser);
 // void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
 // GSList*  gtk_file_chooser_get_filenames(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_current_folder(GtkFileChooser* chooser, const gchar* filename);
-// gchar*  gtk_file_chooser_get_current_folder(GtkFileChooser* chooser);
 // gchar*  gtk_file_chooser_get_uri(GtkFileChooser* chooser);
 // gboolean gtk_file_chooser_set_uri(GtkFileChooser* chooser, const char* uri);
 // gboolean gtk_file_chooser_select_uri(GtkFileChooser* chooser, const char* uri);
@@ -1755,14 +1801,6 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // void gtk_file_chooser_set_extra_widget(GtkFileChooser* chooser, GtkWidget* extra_widget);
 // GtkWidget* gtk_file_chooser_get_extra_widget(GtkFileChooser* chooser);
 
-
-// void gtk_file_chooser_add_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
-// void gtk_file_chooser_remove_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
-// GSList* gtk_file_chooser_list_filters(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_filter(GtkFileChooser* chooser, GtkFileFilter* filter);
-// GtkFileFilter* gtk_file_chooser_get_filter(GtkFileChooser* chooser);
-
-
 // gboolean gtk_file_chooser_add_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // gboolean gtk_file_chooser_remove_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // GSList* gtk_file_chooser_list_shortcut_folders(GtkFileChooser* chooser);
@@ -1771,35 +1809,21 @@ func (v *GtkFileChooserWidget) GetFilename() string {
 // GSList* gtk_file_chooser_list_shortcut_folder_uris(GtkFileChooser* chooser);
 
 //-----------------------------------------------------------------------
-// GtkFontSelectionDialog
+// GtkFileChooserWidget
 //-----------------------------------------------------------------------
-type GtkFontSelectionDialog struct {
-	GtkDialog
-}
 
-func FontSelectionDialog(title string) *GtkFontSelectionDialog {
-	ptitle := C.CString(title)
-	defer C.free_string(ptitle)
-	return &GtkFontSelectionDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_font_selection_dialog_new(C.to_gcharptr(ptitle))}}}}}}
-}
-
-func (v *GtkFontSelectionDialog) SetFontName(font string) {
-	pfont := C.CString(font)
-	defer C.free_string(pfont)
-	C.gtk_font_selection_dialog_set_font_name(C.to_GtkFontSelectionDialog(v.Widget), C.to_gcharptr(pfont))
-}
-
-func (v *GtkFontSelectionDialog) GetFontName() string {
-	return C.GoString(C.to_charptr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.Widget))))
+type GtkFileChooserWidget struct {
+	GtkWidget
+	GtkFileChooser
 }
 
 //-----------------------------------------------------------------------
 // GtkFileChooserDialog
 //-----------------------------------------------------------------------
+
 type GtkFileChooserDialog struct {
 	GtkDialog
-	//GtkFileChooser;
+	GtkFileChooser
 }
 
 //The number of arguments bound to the final variadic parameter must be even: couples of string-int (button text - button action)
@@ -1808,13 +1832,16 @@ func FileChooserDialog(title string, parent WindowLike, file_chooser_action GtkF
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button_text)
 	defer C.free_string(pbutton)
-	ret := &GtkFileChooserDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+	widget := GtkWidget{
 		C._gtk_file_chooser_dialog_new(
 			C.to_gcharptr(ptitle),
 			parent.ToNative(),
 			C.int(file_chooser_action),
 			C.int(button_action),
-			C.to_gcharptr(pbutton))}}}}}}
+			C.to_gcharptr(pbutton))}
+	ret := &GtkFileChooserDialog{
+			GtkDialog{GtkWindow{GtkBin{GtkContainer{widget}}}},
+			GtkFileChooser{C.to_GtkFileChooser(widget.Widget)}}
 	for i := 0; i < len(buttons)/2; i++ {
 		b_text, ok := buttons[2*i].(string)
 		if !ok {
@@ -1827,48 +1854,6 @@ func FileChooserDialog(title string, parent WindowLike, file_chooser_action GtkF
 		ret.AddButton(b_text, b_action)
 	}
 	return ret
-}
-
-//GtkFileChooserDialog must implement all GtkFileChooser functions unless there is a way (?) to tell that the GtkFileChooserDialog returned by FileChooserDialog() implements GtkFileChooser
-func (v *GtkFileChooserDialog) GetFilename() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(C.to_GtkFileChooser(v.Widget))))
-}
-func (v *GtkFileChooserDialog) GetCurrentFolder() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_current_folder(C.to_GtkFileChooser(v.Widget))))
-}
-func (v *GtkFileChooserDialog) SetCurrentFolder(f string) bool {
-	cf := C.CString(f)
-	defer C.free_string(cf)
-	return gboolean2bool(C.gtk_file_chooser_set_current_folder(
-		C.to_GtkFileChooser(v.Widget), C.to_gcharptr(cf)))
-}
-func (v *GtkFileChooserDialog) AddFilter(filter *GtkFileFilter) {
-	C.gtk_file_chooser_add_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
-}
-func (v *GtkFileChooserDialog) RemoveFilter(filter *GtkFileFilter) {
-	C.gtk_file_chooser_remove_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
-}
-func (v *GtkFileChooserDialog) SetFilter(filter *GtkFileFilter) {
-	C.gtk_file_chooser_set_filter(C.to_GtkFileChooser(v.Widget), filter.FileFilter)
-}
-func (v *GtkFileChooserDialog) GetFilter() *GtkFileFilter {
-	return &GtkFileFilter{C.gtk_file_chooser_get_filter(C.to_GtkFileChooser(v.Widget))}
-}
-func (v *GtkFileChooserDialog) ListFilters() []*GtkFileFilter {
-	c_list := C.gtk_file_chooser_list_filters(C.to_GtkFileChooser(v.Widget))
-	defer C.g_slist_free(c_list)
-	n := int(C.g_slist_length(c_list))
-	ret := make([]*GtkFileFilter, n)
-	for i := 0; i < n; i++ {
-		ret[i] = &GtkFileFilter{C.to_GtkFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
-	}
-	return ret
-}
-func (v *GtkFileChooserDialog) GetLocalOnly() bool {
-	return gboolean2bool(C.gtk_file_chooser_get_local_only(C.to_GtkFileChooser(v.Widget)))
-}
-func (v *GtkFileChooserDialog) SetLocalOnly(b bool) {
-	C.gtk_file_chooser_set_local_only(C.to_GtkFileChooser(v.Widget), bool2gboolean(b))
 }
 
 //-----------------------------------------------------------------------
@@ -1906,6 +1891,30 @@ func (v *GtkFileFilter) AddPattern(pattern string) {
 
 //void gtk_file_filter_add_pixbuf_formats (GtkFileFilter *filter);
 //void gtk_file_filter_add_custom (GtkFileFilter *filter, GtkFileFilterFlags needed, GtkFileFilterFunc func, gpointer data, GDestroyNotify notify);
+
+//-----------------------------------------------------------------------
+// GtkFontSelectionDialog
+//-----------------------------------------------------------------------
+type GtkFontSelectionDialog struct {
+	GtkDialog
+}
+
+func FontSelectionDialog(title string) *GtkFontSelectionDialog {
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	return &GtkFontSelectionDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_font_selection_dialog_new(C.to_gcharptr(ptitle))}}}}}}
+}
+
+func (v *GtkFontSelectionDialog) SetFontName(font string) {
+	pfont := C.CString(font)
+	defer C.free_string(pfont)
+	C.gtk_font_selection_dialog_set_font_name(C.to_GtkFontSelectionDialog(v.Widget), C.to_gcharptr(pfont))
+}
+
+func (v *GtkFontSelectionDialog) GetFontName() string {
+	return C.GoString(C.to_charptr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.Widget))))
+}
 
 //-----------------------------------------------------------------------
 // GtkMessageDialog
@@ -2603,10 +2612,10 @@ func (v *GtkLabel) SetPattern(pattern string) {
 	defer C.free_string(ptr)
 	C.gtk_label_set_pattern(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkLabel) GetUseLineWrap() bool {
+func (v *GtkLabel) GetLineWrap() bool {
 	return gboolean2bool(C.gtk_label_get_line_wrap(C.to_GtkLabel(v.Widget)))
 }
-func (v *GtkLabel) SetUseLineWrap(setting bool) {
+func (v *GtkLabel) SetLineWrap(setting bool) {
 	C.gtk_label_set_line_wrap(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkLabel) GetUseLineWrapMode() pango.PangoWrapMode {
@@ -3144,11 +3153,21 @@ func ComboBox() *GtkComboBox {
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_combo_box_new()}}}}
 }
+func ComboBoxWithEntry() *GtkComboBox {
+	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new_with_entry()}}}}
+}
 func ComboBoxWithModel(model *GtkTreeModel) *GtkComboBox {
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_combo_box_new_with_model(model.TreeModel)}}}}
 }
+func ComboBoxWithModelAndEntry(model *GtkTreeModel) *GtkComboBox {
+	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_new_with_model_and_entry(model.TreeModel)}}}}
+}
+//TODO(remove when safe) deprecated since version 2.24.
 func ComboBoxNewText() *GtkComboBox {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_new_text()")
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_combo_box_new_text()}}}}
 }
@@ -3158,25 +3177,35 @@ func (v *GtkComboBox) GetWrapWidth() int {
 func (v *GtkComboBox) SetWrapWidth(width int) {
 	C.gtk_combo_box_set_wrap_width(C.to_GtkComboBox(v.Widget), C.gint(width))
 }
+//TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) AppendText(text string) {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_append_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_combo_box_append_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr))
 }
+//TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) InsertText(text string, position int) {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_insert_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_combo_box_insert_text(C.to_GtkComboBox(v.Widget), C.gint(position), C.to_gcharptr(ptr))
 }
+//TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) PrependText(text string) {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_prepend_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_combo_box_prepend_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr))
 }
+//TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) RemoveText(position int) {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_remove_text()")
 	C.gtk_combo_box_remove_text(C.to_GtkComboBox(v.Widget), C.gint(position))
 }
+//TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) GetActiveText() string {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_get_active_text()")
 	return C.GoString(C.to_charptr(C.gtk_combo_box_get_active_text(C.to_GtkComboBox(v.Widget))))
 }
 func (v *GtkComboBox) GetActive() int {
@@ -3245,6 +3274,81 @@ func (v *GtkComboBox) SetColumnSpanColumn(column_span int) {
 // gtk_combo_box_get_button_sensitivity
 
 //-----------------------------------------------------------------------
+// GtkComboBoxText (since gtk 2.24)
+//-----------------------------------------------------------------------
+type GtkComboBoxText struct {
+	GtkComboBox
+}
+
+func ComboBoxText() *GtkComboBoxText {
+	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_new()")
+	return &GtkComboBoxText{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_text_new()}}}}}
+}
+func ComboBoxTextWithEntry() *GtkComboBoxText {
+	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_new_with_entry()")
+	return &GtkComboBoxText{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_text_new_with_entry()}}}}}
+}
+func (v *GtkComboBoxText) AppendText(text string) {
+	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_append_text()")
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_combo_box_text_append_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkComboBoxText) InsertText(position int, text string) {
+	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_insert_text()")
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_combo_box_text_insert_text(C.to_GtkComboBoxText(v.Widget), C.gint(position), C.to_gcharptr(ptr))
+}
+func (v *GtkComboBoxText) PrependText(text string) {
+	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_prepend_text()")
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_combo_box_text_prepend_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkComboBoxText) GetActiveText() string {
+	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_get_active_text()")
+	return C.GoString(C.to_charptr(C.gtk_combo_box_text_get_active_text(C.to_GtkComboBoxText(v.Widget))))
+}
+func (v *GtkComboBoxText) Remove(position int) {
+	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_remove()")
+	C.gtk_combo_box_text_remove(C.to_GtkComboBoxText(v.Widget), C.gint(position))
+}
+
+//-----------------------------------------------------------------------
+// GtkComboBoxEntry
+//-----------------------------------------------------------------------
+//TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
+type GtkComboBoxEntry struct {
+	GtkComboBox
+}
+//TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
+func ComboBoxEntry() *GtkComboBoxEntry {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_new()")
+	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_entry_new()}}}}}
+}
+//TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
+func ComboBoxEntryNewText() *GtkComboBoxEntry {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_new_text()")
+	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_combo_box_entry_new_text()}}}}}
+}
+//TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
+func (v *GtkComboBoxEntry) GetTextColumn() int {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_get_text_column()")
+	return int(C.gtk_combo_box_entry_get_text_column(C.to_GtkComboBoxEntry(v.Widget)))
+}
+//TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
+func (v *GtkComboBoxEntry) SetTextColumn(text_column int) {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_set_text_column()")
+	C.gtk_combo_box_entry_set_text_column(C.to_GtkComboBoxEntry(v.Widget), C.gint(text_column))
+}
+// FINISH
+
+//-----------------------------------------------------------------------
 // GtkBin
 //-----------------------------------------------------------------------
 type GtkBin struct {
@@ -3281,29 +3385,6 @@ func (v *GtkAlignment) GetPadding() (padding_top uint, padding_bottom uint, padd
 	padding_left = uint(cpadding_left)
 	padding_right = uint(cpadding_right)
 	return
-}
-// FINISH
-
-//-----------------------------------------------------------------------
-// GtkComboBoxEntry
-//-----------------------------------------------------------------------
-type GtkComboBoxEntry struct {
-	GtkComboBox
-}
-
-func ComboBoxEntry() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_combo_box_entry_new()}}}}}
-}
-func ComboBoxEntryNewText() *GtkComboBoxEntry {
-	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_combo_box_entry_new_text()}}}}}
-}
-func (v *GtkComboBoxEntry) GetTextColumn() int {
-	return int(C.gtk_combo_box_entry_get_text_column(C.to_GtkComboBoxEntry(v.Widget)))
-}
-func (v *GtkComboBoxEntry) SetTextColumn(text_column int) {
-	C.gtk_combo_box_entry_set_text_column(C.to_GtkComboBoxEntry(v.Widget), C.gint(text_column))
 }
 // FINISH
 
@@ -3447,52 +3528,52 @@ func (v *GtkAdjustment) SetValue(value float64) {
 	C.gtk_adjustment_set_value(v.Adjustment, C.gdouble(value))
 }
 func (v *GtkAdjustment) GetLower() float64 {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_lower() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_lower()")
 	r := C._gtk_adjustment_get_lower(v.Adjustment)
 	return float64(r)
 }
 func (v *GtkAdjustment) SetLower(lower float64) {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_lower() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_lower()")
 	C._gtk_adjustment_set_lower(v.Adjustment, C.gdouble(lower))
 }
 func (v *GtkAdjustment) GetUpper() float64 {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_upper() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_upper()")
 	r := C._gtk_adjustment_get_upper(v.Adjustment)
 	return float64(r)
 }
 func (v *GtkAdjustment) SetUpper(upper float64) {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_upper() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_upper()")
 	C._gtk_adjustment_set_upper(v.Adjustment, C.gdouble(upper))
 }
 func (v *GtkAdjustment) GetStepIncrement() float64 {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_step_increment() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_step_increment()")
 	r := C._gtk_adjustment_get_step_increment(v.Adjustment)
 	return float64(r)
 }
 func (v *GtkAdjustment) SetStepIncrement(step_increment float64) {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_step_increment() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_step_increment()")
 	C._gtk_adjustment_set_step_increment(v.Adjustment, C.gdouble(step_increment))
 }
 func (v *GtkAdjustment) GetPageIncrement() float64 {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_increment() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_increment()")
 	r := C._gtk_adjustment_get_page_increment(v.Adjustment)
 	return float64(r)
 }
 func (v *GtkAdjustment) SetPageIncrement(page_increment float64) {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_increment() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_increment()")
 	C._gtk_adjustment_set_page_increment(v.Adjustment, C.gdouble(page_increment))
 }
 func (v *GtkAdjustment) GetPageSize() float64 {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_size() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_size()")
 	r := C._gtk_adjustment_get_page_size(v.Adjustment)
 	return float64(r)
 }
 func (v *GtkAdjustment) SetPageSize(page_size float64) {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_size() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_size()")
 	C._gtk_adjustment_set_page_size(v.Adjustment, C.gdouble(page_size))
 }
 func (v *GtkAdjustment) Configure(value float64, lower float64, upper float64, step_increment float64, page_increment float64, page_size float64) {
-	panic_if_version_older(2, 14, 0, "gtk_adjustment_configure() is not provided on your GTK")
+	panic_if_version_older(2, 14, 0, "gtk_adjustment_configure()")
 	C._gtk_adjustment_configure(v.Adjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size))
 }
 // FINISH
@@ -4584,6 +4665,10 @@ type GtkCellRenderer struct {
 func (v *GtkCellRenderer) ToGtkCellRenderer() *C.GtkCellRenderer {
 	return v.CellRenderer
 }
+
+func (v *GtkCellRenderer) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(v.CellRenderer)).Connect(s, f, datas...)
+}
 //-----------------------------------------------------------------------
 // GtkCellRendererText
 //-----------------------------------------------------------------------
@@ -4660,6 +4745,7 @@ func (v *GtkCellRendererToggle) GetActivatable() bool {
 func (v *GtkCellRendererToggle) SetActivatable(activatable bool) {
 	C.gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(activatable))
 }
+
 //-----------------------------------------------------------------------
 // GtkTreeViewColumn
 //-----------------------------------------------------------------------
