@@ -8,7 +8,7 @@ all:
 	cd table && gomake
 	cd expander && gomake
 	cd drawable && gomake
-	cd builder && gomake
+#	cd builder && gomake
 	cd sourceview && gomake
 	cd event && gomake
 	cd statusicon && gomake
@@ -23,7 +23,7 @@ clean:
 	cd table && gomake clean
 	cd expander && gomake clean
 	cd drawable && gomake clean
-	cd builder && gomake clean
+#	cd builder && gomake clean
 	cd sourceview && gomake clean
 	cd event && gomake clean
 	cd statusicon && gomake clean

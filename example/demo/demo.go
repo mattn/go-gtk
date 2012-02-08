@@ -187,7 +187,7 @@ func main() {
 	// GtkComboBoxEntry
 	//--------------------------------------------------------
 	combos := gtk.HBox(false, 1)
-	comboboxentry := gtk.ComboBoxEntryNewText()
+	comboboxentry := gtk.ComboBoxTextWithEntry()
 	comboboxentry.AppendText("Monkey")
 	comboboxentry.AppendText("Tiger")
 	comboboxentry.AppendText("Elephant")
@@ -199,7 +199,7 @@ func main() {
 	//--------------------------------------------------------
 	// GtkComboBox
 	//--------------------------------------------------------
-	combobox := gtk.ComboBoxNewText()
+	combobox := gtk.ComboBoxText()
 	combobox.AppendText("Peach")
 	combobox.AppendText("Banana")
 	combobox.AppendText("Apple")
@@ -290,7 +290,8 @@ func main() {
 			"David Roundy <roundyd@physics.oregonstate.edu>",
 			"Mark Andrew Gerads",
 			"Tobias Kortkamp",
-			"Mikhail Trushnikov"})
+			"Mikhail Trushnikov",
+			"Federico Sogaro <soggof@gmail.com>"})
 		dir, _ := path.Split(os.Args[0])
 		imagefile := path.Join(dir, "../../data/mattn-logo.png")
 		pixbuf, _ := gdkpixbuf.PixbufFromFile(imagefile)
