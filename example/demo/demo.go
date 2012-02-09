@@ -187,7 +187,7 @@ func main() {
 	// GtkComboBoxEntry
 	//--------------------------------------------------------
 	combos := gtk.HBox(false, 1)
-	comboboxentry := gtk.ComboBoxTextWithEntry()
+	comboboxentry := gtk.ComboBoxEntryNewText()
 	comboboxentry.AppendText("Monkey")
 	comboboxentry.AppendText("Tiger")
 	comboboxentry.AppendText("Elephant")
@@ -199,7 +199,7 @@ func main() {
 	//--------------------------------------------------------
 	// GtkComboBox
 	//--------------------------------------------------------
-	combobox := gtk.ComboBoxText()
+	combobox := gtk.ComboBoxNewText()
 	combobox.AppendText("Peach")
 	combobox.AppendText("Banana")
 	combobox.AppendText("Apple")
