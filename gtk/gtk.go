@@ -617,12 +617,10 @@ static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON
 static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w); }
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
 static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
-//TODO(remove when safe) GtkComboBoxEntry is deprecated since 2.24.
+static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
 #if GTK_CHECK_VERSION(2,24,0)
-static void* to_GtkComboBoxEntry(GtkWidget* w) { return w; }
 static GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
 #else
-static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
 static GtkWidget* to_GtkComboBoxText(GtkWidget* w) { return w; }
 #endif
 static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
