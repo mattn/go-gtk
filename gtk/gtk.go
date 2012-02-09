@@ -137,6 +137,68 @@ static void _gtk_adjustment_configure(GtkAdjustment* adjustment, gdouble value, 
 #endif
 }
 
+static GtkWidget* _gtk_combo_box_new_with_entry(void) {
+#if GTK_CHECK_VERSION(2,24,0)
+	return gtk_combo_box_new_with_entry();
+#else
+	return NULL;
+#endif
+}
+
+static GtkWidget* _gtk_combo_box_new_with_model_and_entry(GtkTreeModel *model) {
+#if GTK_CHECK_VERSION(2,24,0)
+	return gtk_combo_box_new_with_model_and_entry(model);
+#else
+	return NULL;
+#endif
+}
+
+static GtkWidget* _gtk_combo_box_text_new(void) {
+#if GTK_CHECK_VERSION(2,24,0)
+	return gtk_combo_box_entry_new();
+#else
+	return NULL;
+#endif
+}
+
+static GtkWidget* _gtk_combo_box_text_new_with_entry(void) {
+#if GTK_CHECK_VERSION(2,24,0)
+	return gtk_combo_box_text_new_with_entry();
+#else
+	return NULL;
+#endif
+}
+
+#if GTK_CHECK_VERSION(2,24,0)
+static void _gtk_combo_box_text_append_text(GtkComboBoxText *combo_box, const gchar *text) {
+	gtk_combo_box_text_append_text(combo_box, text);
+}
+static void  _gtk_combo_box_text_insert_text(GtkComboBoxText *combo_box, gint position, const gchar *text) {
+	gtk_combo_box_text_insert_text(combo_box, position, text);
+}
+static void _gtk_combo_box_text_prepend_text(GtkComboBoxText *combo_box, const gchar *text) {
+	gtk_combo_box_text_prepend_text(combo_box, text);
+}
+static void _gtk_combo_box_text_remove(GtkComboBoxText *combo_box, gint position) {
+	gtk_combo_box_text_remove(combo_box, position);
+}
+static gchar* _gtk_combo_box_text_get_active_text(GtkComboBoxText *combo_box) {
+	return gtk_combo_box_text_get_active_text(combo_box);
+}
+#else
+static void _gtk_combo_box_text_append_text(GtkWidget *combo_box, const gchar *text) {
+}
+static void  _gtk_combo_box_text_insert_text(GtkWidget *combo_box, gint position, const gchar *text) {
+}
+static void _gtk_combo_box_text_prepend_text(GtkWidget *combo_box, const gchar *text) {
+}
+static void _gtk_combo_box_text_remove(GtkWidget *combo_box, gint position) {
+}
+static gchar* _gtk_combo_box_text_get_active_text(GtkWidget *combo_box) {
+	return NULL;
+}
+#endif
+
 static void _gtk_text_tag_table_add(GtkTextTagTable* table, void* tag) {
 	gtk_text_tag_table_add(table, (GtkTextTag*)tag);
 }
@@ -556,8 +618,13 @@ static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w)
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
 static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
 //TODO(remove when safe) GtkComboBoxEntry is deprecated since 2.24.
-static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
+#if GTK_CHECK_VERSION(2,24,0)
+static void* to_GtkComboBoxEntry(GtkWidget* w) { return w; }
 static GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
+#else
+static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
+static GtkWidget* to_GtkComboBoxText(GtkWidget* w) { return w; }
+#endif
 static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
 static GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
@@ -3154,16 +3221,18 @@ func ComboBox() *GtkComboBox {
 		C.gtk_combo_box_new()}}}}
 }
 func ComboBoxWithEntry() *GtkComboBox {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_new_with_entry()")
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_combo_box_new_with_entry()}}}}
+		C._gtk_combo_box_new_with_entry()}}}}
 }
 func ComboBoxWithModel(model *GtkTreeModel) *GtkComboBox {
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_combo_box_new_with_model(model.TreeModel)}}}}
 }
 func ComboBoxWithModelAndEntry(model *GtkTreeModel) *GtkComboBox {
+	warning_if_deprecated(2, 24, 0, "gtk_combo_box_new_with_model_and_entry()")
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_combo_box_new_with_model_and_entry(model.TreeModel)}}}}
+		C._gtk_combo_box_new_with_model_and_entry(model.TreeModel)}}}}
 }
 //TODO(remove when safe) deprecated since version 2.24.
 func ComboBoxNewText() *GtkComboBox {
@@ -3283,38 +3352,38 @@ type GtkComboBoxText struct {
 func ComboBoxText() *GtkComboBoxText {
 	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_new()")
 	return &GtkComboBoxText{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_combo_box_text_new()}}}}}
+		C._gtk_combo_box_text_new()}}}}}
 }
 func ComboBoxTextWithEntry() *GtkComboBoxText {
 	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_new_with_entry()")
 	return &GtkComboBoxText{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_combo_box_text_new_with_entry()}}}}}
+		C._gtk_combo_box_text_new_with_entry()}}}}}
 }
 func (v *GtkComboBoxText) AppendText(text string) {
 	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_append_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	C.gtk_combo_box_text_append_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
+	C._gtk_combo_box_text_append_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkComboBoxText) InsertText(position int, text string) {
 	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_insert_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	C.gtk_combo_box_text_insert_text(C.to_GtkComboBoxText(v.Widget), C.gint(position), C.to_gcharptr(ptr))
+	C._gtk_combo_box_text_insert_text(C.to_GtkComboBoxText(v.Widget), C.gint(position), C.to_gcharptr(ptr))
 }
 func (v *GtkComboBoxText) PrependText(text string) {
 	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_prepend_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	C.gtk_combo_box_text_prepend_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
+	C._gtk_combo_box_text_prepend_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkComboBoxText) GetActiveText() string {
 	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_get_active_text()")
-	return C.GoString(C.to_charptr(C.gtk_combo_box_text_get_active_text(C.to_GtkComboBoxText(v.Widget))))
+	return C.GoString(C.to_charptr(C._gtk_combo_box_text_get_active_text(C.to_GtkComboBoxText(v.Widget))))
 }
 func (v *GtkComboBoxText) Remove(position int) {
 	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_remove()")
-	C.gtk_combo_box_text_remove(C.to_GtkComboBoxText(v.Widget), C.gint(position))
+	C._gtk_combo_box_text_remove(C.to_GtkComboBoxText(v.Widget), C.gint(position))
 }
 
 //-----------------------------------------------------------------------
