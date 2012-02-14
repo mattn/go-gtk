@@ -596,6 +596,7 @@ type GtkAccelGroup struct {
 func AccelGroup() *GtkAccelGroup {
 	return &GtkAccelGroup{C.gtk_accel_group_new()}
 }
+
 // gtk_accel_group_connect
 // gtk_accel_group_connect_by_path
 // gtk_accel_group_disconnect
@@ -632,16 +633,9 @@ func AccelGroup() *GtkAccelGroup {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkStock
+// GtkStockItem (done 4 out of 6 = 66%)
 //-----------------------------------------------------------------------
 const (
-	GTK_STOCK_DIALOG_AUTHENTICATION         = "gtk-dialog-authentication"
-	GTK_STOCK_DIALOG_INFO                   = "gtk-dialog-info"
-	GTK_STOCK_DIALOG_WARNING                = "gtk-dialog-warning"
-	GTK_STOCK_DIALOG_ERROR                  = "gtk-dialog-error"
-	GTK_STOCK_DIALOG_QUESTION               = "gtk-dialog-question"
-	GTK_STOCK_DND                           = "gtk-dnd"
-	GTK_STOCK_DND_MULTIPLE                  = "gtk-dnd-multiple"
 	GTK_STOCK_ABOUT                         = "gtk-about"
 	GTK_STOCK_ADD                           = "gtk-add"
 	GTK_STOCK_APPLY                         = "gtk-apply"
@@ -657,9 +651,16 @@ const (
 	GTK_STOCK_COPY                          = "gtk-copy"
 	GTK_STOCK_CUT                           = "gtk-cut"
 	GTK_STOCK_DELETE                        = "gtk-delete"
+	GTK_STOCK_DIALOG_AUTHENTICATION         = "gtk-dialog-authentication"
+	GTK_STOCK_DIALOG_INFO                   = "gtk-dialog-info"
+	GTK_STOCK_DIALOG_WARNING                = "gtk-dialog-warning"
+	GTK_STOCK_DIALOG_ERROR                  = "gtk-dialog-error"
+	GTK_STOCK_DIALOG_QUESTION               = "gtk-dialog-question"
 	GTK_STOCK_DIRECTORY                     = "gtk-directory"
 	GTK_STOCK_DISCARD                       = "gtk-discard"
 	GTK_STOCK_DISCONNECT                    = "gtk-disconnect"
+	GTK_STOCK_DND                           = "gtk-dnd"
+	GTK_STOCK_DND_MULTIPLE                  = "gtk-dnd-multiple"
 	GTK_STOCK_EDIT                          = "gtk-edit"
 	GTK_STOCK_EXECUTE                       = "gtk-execute"
 	GTK_STOCK_FILE                          = "gtk-file"
@@ -757,6 +758,10 @@ func GtkStockLookup(stock_id string, item *GtkStockItem) bool {
 	defer C.free_string(ptr)
 	return gboolean2bool(C.gtk_stock_lookup(C.to_gcharptr(ptr), item.StockItem))
 }
+
+// gtk_stock_item_copy
+// gtk_stock_item_free
+
 func GtkStockListIDs() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_stock_list_ids()))
 }
