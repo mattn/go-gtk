@@ -1598,7 +1598,7 @@ func Image() *GtkImage {
 // gtk_image_get_pixel_size
 
 //-----------------------------------------------------------------------
-// GtkLabel
+// GtkLabel (done 35 out of 44 = 79%)
 //-----------------------------------------------------------------------
 type GtkJustification int
 
@@ -1611,6 +1611,7 @@ const (
 
 type LabelLike interface {
 	WidgetLike
+	isLabelLike()
 	GetLabel() string
 	SetLabel(label string)
 }
@@ -1618,138 +1619,150 @@ type GtkLabel struct {
 	GtkWidget
 }
 
+func (GtkLabel) isLabelLike(){}
+
 func Label(label string) *GtkLabel {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
-	return &GtkLabel{GtkWidget{
-		C.gtk_label_new(C.to_gcharptr(ptr))}}
+	return &GtkLabel{GtkWidget{C.gtk_label_new(C.to_gcharptr(ptr))}}
 }
-func LabelWithMnemonic(label string) *GtkLabel {
-	ptr := C.CString(label)
-	defer C.free_string(ptr)
-	return &GtkLabel{GtkWidget{
-		C.gtk_label_new_with_mnemonic(C.to_gcharptr(ptr))}}
-}
-func (v *GtkLabel) GetLabel() string {
-	return C.GoString(C.to_charptr(C.gtk_label_get_text(C.to_GtkLabel(v.Widget))))
-}
-func (v *GtkLabel) SetLabel(label string) {
+func (v *GtkLabel) SetText(label string) {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
 	C.gtk_label_set_text(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
+// gtk_label_set_attributes
+
 func (v *GtkLabel) SetMarkup(markup string) {
 	ptr := C.CString(markup)
 	defer C.free_string(ptr)
 	C.gtk_label_set_markup(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkLabel) GetUseMarkup() bool {
-	return gboolean2bool(C.gtk_label_get_use_markup(C.to_GtkLabel(v.Widget)))
+// gtk_label_set_markup_with_mnemonic
+
+func (v *GtkLabel) SetPattern(pattern string) {
+	ptr := C.CString(pattern)
+	defer C.free_string(ptr)
+	C.gtk_label_set_pattern(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkLabel) SetUseMarkup(setting bool) {
-	C.gtk_label_set_use_markup(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+func (v *GtkLabel) SetJustify(jtype GtkJustification) {
+	C.gtk_label_set_justify(C.to_GtkLabel(v.Widget), C.GtkJustification(jtype))
 }
-func (v *GtkLabel) GetUseUnderline() bool {
-	return gboolean2bool(C.gtk_label_get_use_underline(C.to_GtkLabel(v.Widget)))
+func (v *GtkLabel) SetEllipsize(ellipsize pango.PangoEllipsizeMode) {
+	C.gtk_label_set_ellipsize(C.to_GtkLabel(v.Widget), C.PangoEllipsizeMode(ellipsize))
 }
-func (v *GtkLabel) SetUseUnderline(setting bool) {
-	C.gtk_label_set_use_underline(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+func (v *GtkLabel) SetWidthChars(n_chars int) {
+	C.gtk_label_set_width_chars(C.to_GtkLabel(v.Widget), C.gint(n_chars))
+}
+func (v *GtkLabel) SetMaxWidthChars(n_chars int) {
+	C.gtk_label_set_max_width_chars(C.to_GtkLabel(v.Widget), C.gint(n_chars))
+}
+func (v *GtkLabel) SetLineWrap(setting bool) {
+	C.gtk_label_set_line_wrap(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkLabel) SetUseLineWrapMode(wrap_mode pango.PangoWrapMode) {
+	C.gtk_label_set_line_wrap_mode(C.to_GtkLabel(v.Widget), C.PangoWrapMode(wrap_mode))
+}
+// gtk_label_get_layout_offsets
+// gtk_label_get_mnemonic_keyval
+
+func (v *GtkLabel) GetSelectable() bool {
+	return gboolean2bool(C.gtk_label_get_selectable(C.to_GtkLabel(v.Widget)))
+}
+func (v *GtkLabel) GetText() string {
+	return C.GoString(C.to_charptr(C.gtk_label_get_text(C.to_GtkLabel(v.Widget))))
+}
+func LabelWithMnemonic(label string) *GtkLabel {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkLabel{GtkWidget{C.gtk_label_new_with_mnemonic(C.to_gcharptr(ptr))}}
+}
+func (v *GtkLabel) SelectRegion(start_offset int, end_offset int) {
+	C.gtk_label_select_region(C.to_GtkLabel(v.Widget), C.gint(start_offset), C.gint(end_offset))
+}
+// gtk_label_set_mnemonic_widget
+
+func (v *GtkLabel) SetSelectable(setting bool) {
+	C.gtk_label_set_selectable(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkLabel) SetTextWithMnemonic(str string) {
 	ptr := C.CString(str)
 	defer C.free_string(ptr)
 	C.gtk_label_set_text_with_mnemonic(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkLabel) SetJustify(jtype GtkJustification) {
-	C.gtk_label_set_justify(C.to_GtkLabel(v.Widget), C.GtkJustification(jtype))
-}
+// gtk_label_get_attributes
 func (v *GtkLabel) GetJustify() GtkJustification {
 	return GtkJustification(C.gtk_label_get_justify(C.to_GtkLabel(v.Widget)))
 }
-func (v *GtkLabel) GetUseEllipsize() pango.PangoEllipsizeMode {
+func (v *GtkLabel) GetEllipsize() pango.PangoEllipsizeMode {
 	return pango.PangoEllipsizeMode(C.gtk_label_get_ellipsize(C.to_GtkLabel(v.Widget)))
-}
-func (v *GtkLabel) SetUseEllipsize(ellipsize pango.PangoEllipsizeMode) {
-	C.gtk_label_set_ellipsize(C.to_GtkLabel(v.Widget), C.PangoEllipsizeMode(ellipsize))
 }
 func (v *GtkLabel) GetWidthChars() int {
 	return int(C.gtk_label_get_width_chars(C.to_GtkLabel(v.Widget)))
 }
-func (v *GtkLabel) SetWidthChars(n_chars int) {
-	C.gtk_label_set_width_chars(C.to_GtkLabel(v.Widget), C.gint(n_chars))
-}
 func (v *GtkLabel) GetMaxWidthChars() int {
 	return int(C.gtk_label_get_max_width_chars(C.to_GtkLabel(v.Widget)))
 }
-func (v *GtkLabel) SetMaxWidthChars(n_chars int) {
-	C.gtk_label_set_max_width_chars(C.to_GtkLabel(v.Widget), C.gint(n_chars))
+func (v *GtkLabel) GetLabel() string {
+	return C.GoString(C.to_charptr(C.gtk_label_get_label(C.to_GtkLabel(v.Widget))))
 }
-func (v *GtkLabel) SetPattern(pattern string) {
-	ptr := C.CString(pattern)
-	defer C.free_string(ptr)
-	C.gtk_label_set_pattern(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
-}
+// gtk_label_get_layout
+
 func (v *GtkLabel) GetLineWrap() bool {
 	return gboolean2bool(C.gtk_label_get_line_wrap(C.to_GtkLabel(v.Widget)))
 }
-func (v *GtkLabel) SetLineWrap(setting bool) {
-	C.gtk_label_set_line_wrap(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
-}
-func (v *GtkLabel) GetUseLineWrapMode() pango.PangoWrapMode {
+func (v *GtkLabel) GetLineWrapMode() pango.PangoWrapMode {
 	return pango.PangoWrapMode(C.gtk_label_get_line_wrap_mode(C.to_GtkLabel(v.Widget)))
 }
-func (v *GtkLabel) SetUseLineWrapMode(wrap_mode pango.PangoWrapMode) {
-	C.gtk_label_set_line_wrap_mode(C.to_GtkLabel(v.Widget), C.PangoWrapMode(wrap_mode))
-}
-func (v *GtkLabel) GetSelectable() bool {
-	return gboolean2bool(C.gtk_label_get_selectable(C.to_GtkLabel(v.Widget)))
-}
-func (v *GtkLabel) SetSelectable(setting bool) {
-	C.gtk_label_set_selectable(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
-}
-func (v *GtkLabel) GetAngle() float64 {
-	r := C.gtk_label_get_angle(C.to_GtkLabel(v.Widget))
-	return float64(r)
-}
-func (v *GtkLabel) SetAngle(angle float64) {
-	C.gtk_label_set_angle(C.to_GtkLabel(v.Widget), C.gdouble(angle))
-}
-func (v *GtkLabel) SelectRegion(start_offset int, end_offset int) {
-	C.gtk_label_select_region(C.to_GtkLabel(v.Widget), C.gint(start_offset), C.gint(end_offset))
-}
+// gtk_label_get_mnemonic_widget
 func (v *GtkLabel) GetSelectionBounds(start *int, end *int) {
 	var cstart, cend C.gint
 	C.gtk_label_get_selection_bounds(C.to_GtkLabel(v.Widget), &cstart, &cend)
 	*start = int(cstart)
 	*end = int(cend)
 }
+func (v *GtkLabel) GetUseMarkup() bool {
+	return gboolean2bool(C.gtk_label_get_use_markup(C.to_GtkLabel(v.Widget)))
+}
+func (v *GtkLabel) GetUseUnderline() bool {
+	return gboolean2bool(C.gtk_label_get_use_underline(C.to_GtkLabel(v.Widget)))
+}
 func (v *GtkLabel) GetSingleLineMode() bool {
 	return gboolean2bool(C.gtk_label_get_single_line_mode(C.to_GtkLabel(v.Widget)))
+}
+func (v *GtkLabel) GetAngle() float64 {
+	r := C.gtk_label_get_angle(C.to_GtkLabel(v.Widget))
+	return float64(r)
+}
+func (v *GtkLabel) SetLabel(label string) {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	C.gtk_label_set_label(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkLabel) SetUseMarkup(setting bool) {
+	C.gtk_label_set_use_markup(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkLabel) SetUseUnderline(setting bool) {
+	C.gtk_label_set_use_underline(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkLabel) SetSingleLineMode(single_line bool) {
 	C.gtk_label_set_single_line_mode(C.to_GtkLabel(v.Widget), bool2gboolean(single_line))
 }
+func (v *GtkLabel) SetAngle(angle float64) {
+	C.gtk_label_set_angle(C.to_GtkLabel(v.Widget), C.gdouble(angle))
+}
 func (v *GtkLabel) GetCurrentUri() string {
+	panic_if_version_older(2, 18, 0, "gtk_label_get_current_uri()")
 	return C.GoString(C.to_charptr(C.gtk_label_get_current_uri(C.to_GtkLabel(v.Widget))))
 }
-func (v *GtkLabel) GetTrackVisitedLinks() bool {
-	return gboolean2bool(C.gtk_label_get_track_visited_links(C.to_GtkLabel(v.Widget)))
-}
 func (v *GtkLabel) SetTrackVisitedLinks(track_links bool) {
+	panic_if_version_older(2, 18, 0, "gtk_label_set_track_visited_links()")
 	C.gtk_label_set_track_visited_links(C.to_GtkLabel(v.Widget), bool2gboolean(track_links))
 }
-
-// TODO
-// gtk_label_set_attributes
-// gtk_label_get_attributes
-// gtk_label_set_markup_with_mnemonic
-// gtk_label_get_mnemonic_keyval
-// gtk_label_set_mnemonic_widget
-// gtk_label_get_mnemonic_widget
-// gtk_label_get_layout
-// gtk_label_get_layout_offsets
-// gtk_label_get(deprecated)
-// gtk_label_parse_uline(deprecated)
+func (v *GtkLabel) GetTrackVisitedLinks() bool {
+	panic_if_version_older(2, 18, 0, "gtk_label_get_track_visited_links()")
+	return gboolean2bool(C.gtk_label_get_track_visited_links(C.to_GtkLabel(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
 // GtkProgressBar
@@ -1994,6 +2007,8 @@ func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) {
 type GtkButton struct {
 	GtkBin
 }
+
+func (GtkButton) isLabelLike(){}
 
 func Button() *GtkButton {
 	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
