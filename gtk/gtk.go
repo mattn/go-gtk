@@ -464,6 +464,7 @@ static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLL
 static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
+static GtkEditable* to_GtkEditable(GtkWidget* w) { return GTK_EDITABLE(w); }
 //static GtkTreeViewColumn* to_GtkTreeViewColumn(GtkWidget* w) { return GTK_TREE_VIEW_COLUMN(w); }
 //static GType* to_GTypePtr(void* w) { return (GType*)w; }
 static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
@@ -2250,7 +2251,7 @@ func (v *GtkLinkButton) SetVisited(visited bool) {
 // gtk_volume_button_new
 
 //-----------------------------------------------------------------------
-// GtkEntry
+// GtkEntry (done 25 out of 69 = 36%)
 //-----------------------------------------------------------------------
 type TextInputLike interface {
 	WidgetLike
@@ -2259,45 +2260,67 @@ type TextInputLike interface {
 }
 type GtkEntry struct {
 	GtkWidget
+	GtkEditable
 }
 
 func Entry() *GtkEntry {
-	return &GtkEntry{GtkWidget{C.gtk_entry_new()}}
+	widget := GtkWidget{C.gtk_entry_new()}
+	return &GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}
 }
-func EntryWithMaxLength(i int) *GtkEntry {
-	return &GtkEntry{GtkWidget{C.gtk_entry_new_with_max_length(C.gint(i))}}
-}
-
-//func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry {
+//func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry { //since 2.18 TODO
 //	return &GtkEntry{GtkWidget{
 //		C.gtk_entry_new_with_buffer(C.to_GtkTextbuffer.TextBuffer)}}
 //}
-
-func (v *GtkEntry) GetText() string {
-	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
+//Deprecated since 2.0. Use SetMaxLength() instead.
+func EntryWithMaxLength(i int) *GtkEntry {
+	deprecated_since(2, 0, 0, "gtk_entry_new_with_max_length()")
+	widget := GtkWidget{C.gtk_entry_new_with_max_length(C.gint(i))}
+	return &GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}
 }
+//func (v *GtkEntry) GetBuffer() *GtkTextBuffer { //since 2.18 TODO
+//	return &GtkTextBuffer{
+//		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
+//}
+//func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) { //since 2.18 TODO
+//	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), C.to_GtkTextBuffer(buffer.TextBuffer))
+//}
 func (v *GtkEntry) SetText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
 }
-
-//func (v *GtkEntry) GetBuffer() *GtkTextBuffer {
-//	return &GtkTextBuffer{
-//		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
-//}
-//func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) {
-//	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), C.to_GtkTextBuffer(buffer.TextBuffer))
-//}
-
-func (v *GtkEntry) GetVisibility() bool {
-	return gboolean2bool(C.gtk_entry_get_visibility(C.to_GtkEntry(v.Widget)))
+//Deprecated since 2.0. Use GtkEditable.InsertText() instead.
+func (v *GtkEntry) AppendText(text string) {
+	deprecated_since(2, 0, 0, "gtk_entry_append_text()")
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_entry_append_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
+}
+//Deprecated since 2.0. Use GtkEditable.InsertText() instead.
+func (v *GtkEntry) PrependText(text string) {
+	deprecated_since(2, 0, 0, "gtk_entry_prepend_text()")
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_entry_prepend_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
+}
+//Deprecated since 2.0. Use GtkEditable.SetPosition() instead.
+func (v *GtkEntry) SetPosition(position int) {
+	deprecated_since(2, 0, 0, "gtk_entry_set_position()")
+	C.gtk_entry_set_position(C.to_GtkEntry(v.Widget), C.gint(position))
+}
+func (v *GtkEntry) GetText() string {
+	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
+}
+func (v *GtkEntry) GetTextLength() int {
+	return int(C.gtk_entry_get_text_length(C.to_GtkEntry(v.Widget)))
+}
+//Deprecated since 2.0. Use GtkEditable.SelectRegion() instead.
+func (v *GtkEntry) SelectRegion(start, end int) {
+	deprecated_since(2, 0, 0, "gtk_entry_select_region()")
+	C.gtk_entry_select_region(C.to_GtkEntry(v.Widget), C.gint(start), C.gint(end))
 }
 func (v *GtkEntry) SetVisibility(setting bool) {
 	C.gtk_entry_set_visibility(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
-}
-func (v *GtkEntry) GetInvisibleChar() uint8 {
-	return uint8(C.gtk_entry_get_invisible_char(C.to_GtkEntry(v.Widget)))
 }
 func (v *GtkEntry) SetInvisibleChar(ch uint8) {
 	C.gtk_entry_set_invisible_char(C.to_GtkEntry(v.Widget), C.gunichar(ch))
@@ -2305,50 +2328,60 @@ func (v *GtkEntry) SetInvisibleChar(ch uint8) {
 func (v *GtkEntry) UnsetInvisibleChar() {
 	C.gtk_entry_unset_invisible_char(C.to_GtkEntry(v.Widget))
 }
-func (v *GtkEntry) GetHasFrame() bool {
-	return gboolean2bool(C.gtk_entry_get_has_frame(C.to_GtkEntry(v.Widget)))
-}
-func (v *GtkEntry) SetHasFrame(setting bool) {
-	C.gtk_entry_set_has_frame(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
-}
-
-// gtk_entry_set_inner_border
-// gtk_entry_set_overwrite_mode
-// gtk_entry_get_overwrite_mode
-
-func (v *GtkEntry) GetMaxLength() int {
-	return int(C.gtk_entry_get_max_length(C.to_GtkEntry(v.Widget)))
+//Deprecated since 2.0. Use GtkEditable.SetEditable() instead.
+func (v *GtkEntry) SetEditable(setting bool) {
+	deprecated_since(2, 0, 0, "gtk_entry_set_editable()")
+	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkEntry) SetMaxLength(i int) {
 	C.gtk_entry_set_max_length(C.to_GtkEntry(v.Widget), C.gint(i))
 }
-func (v *GtkEntry) GetTextLength() int {
-	return int(C.gtk_entry_get_text_length(C.to_GtkEntry(v.Widget)))
-}
 func (v *GtkEntry) GetActivatesDefault() bool {
 	return gboolean2bool(C.gtk_entry_get_activates_default(C.to_GtkEntry(v.Widget)))
+}
+func (v *GtkEntry) GetHasFrame() bool {
+	return gboolean2bool(C.gtk_entry_get_has_frame(C.to_GtkEntry(v.Widget)))
+}
+// gtk_entry_get_inner_border
+
+func (v *GtkEntry) GetWidthChars() int {
+	return int(C.gtk_entry_get_width_chars(C.to_GtkEntry(v.Widget)))
 }
 func (v *GtkEntry) SetActivatesDefault(setting bool) {
 	C.gtk_entry_set_activates_default(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
+func (v *GtkEntry) SetHasFrame(setting bool) {
+	C.gtk_entry_set_has_frame(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
+}
+// gtk_entry_set_inner_border
+
 func (v *GtkEntry) SetWidthChars(i int) {
 	C.gtk_entry_set_width_chars(C.to_GtkEntry(v.Widget), C.gint(i))
 }
-func (v *GtkEntry) GetWidthChars() int {
-	return int(C.gtk_entry_get_width_chars(C.to_GtkEntry(v.Widget)))
+func (v *GtkEntry) GetInvisibleChar() uint8 {
+	return uint8(C.gtk_entry_get_invisible_char(C.to_GtkEntry(v.Widget)))
 }
-
-// gtk_entry_get_layout
-// gtk_entry_get_layout_offsets
 func (v *GtkEntry) SetAlignment(xalign float64) {
 	C.gtk_entry_set_alignment(C.to_GtkEntry(v.Widget), C.gfloat(xalign))
 }
 func (v *GtkEntry) GetAlignment() float64 {
 	return float64(C.gtk_entry_get_alignment(C.to_GtkEntry(v.Widget)))
 }
-// gtk_entry_set_completion
+// gtk_entry_set_overwrite_mode
+// gtk_entry_get_overwrite_mode
+// gtk_entry_get_layout
+// gtk_entry_get_layout_offsets
 // gtk_entry_layout_index_to_text_index
 // gtk_entry_text_index_to_layout_index
+
+func (v *GtkEntry) GetMaxLength() int {
+	return int(C.gtk_entry_get_max_length(C.to_GtkEntry(v.Widget)))
+}
+func (v *GtkEntry) GetVisibility() bool {
+	return gboolean2bool(C.gtk_entry_get_visibility(C.to_GtkEntry(v.Widget)))
+}
+// gtk_entry_set_completion
+// gtk_entry_get_completion
 // gtk_entry_set_cursor_hadjustment
 // gtk_entry_get_cursor_hadjustment
 // gtk_entry_set_progress_fraction
@@ -2356,6 +2389,8 @@ func (v *GtkEntry) GetAlignment() float64 {
 // gtk_entry_set_progress_pulse_step
 // gtk_entry_get_progress_pulse_step
 // gtk_entry_progress_pulse
+// gtk_entry_im_context_filter_keypresse //since 2.22
+// gtk_entry_reset_im_context //since 2.22
 // gtk_entry_set_icon_from_pixbuf
 // gtk_entry_set_icon_from_stock
 // gtk_entry_set_icon_from_icon_name
@@ -2376,26 +2411,8 @@ func (v *GtkEntry) GetAlignment() float64 {
 // gtk_entry_get_icon_tooltip_markup
 // gtk_entry_set_icon_drag_source
 // gtk_entry_get_current_icon_drag_source
-
-func (v *GtkEntry) AppendText(text string) {
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	C.gtk_entry_append_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
-}
-func (v *GtkEntry) PrependText(text string) {
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	C.gtk_entry_prepend_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
-}
-func (v *GtkEntry) SetPosition(position int) {
-	C.gtk_entry_set_position(C.to_GtkEntry(v.Widget), C.gint(position))
-}
-func (v *GtkEntry) SelectRegion(start, end int) {
-	C.gtk_entry_select_region(C.to_GtkEntry(v.Widget), C.gint(start), C.gint(end))
-}
-func (v *GtkEntry) SetEditable(setting bool) {
-	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
-}
+// gtk_entry_get_icon_window //since 2.20
+// gtk_entry_get_text_window //since 2.20
 
 //-----------------------------------------------------------------------
 // GtkEntryBuffer (done 0 out of 11 = 0%)
@@ -2472,6 +2489,62 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 //-----------------------------------------------------------------------
 // GtkSpinButton (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
+
+//-----------------------------------------------------------------------
+// GtkEditable (done 13 out of 13 = 100%)
+//-----------------------------------------------------------------------
+type GtkEditable struct {
+	Editable *C.GtkEditable
+}
+
+func (v *GtkEditable) SelectRegion(startPos int, endPos int) {
+	C.gtk_editable_select_region(v.Editable, C.gint(startPos), C.gint(endPos))
+}
+func (v *GtkEditable) GetSelectionBounds() (isSelected bool,
+			startPos int, endPos int) {
+	var s, e C.gint
+	return gboolean2bool(C.gtk_editable_get_selection_bounds(v.Editable, &s, &e)),
+		int(s), int(e)
+}
+func (v *GtkEditable) InsertText(newText string, position int) int {
+	ptr := C.CString(newText)
+	defer C.free_string(ptr)
+	gpos := (C.gint)(position)
+	C.gtk_editable_insert_text(v.Editable, C.to_gcharptr(ptr),
+			C.gint(len(newText)), &gpos)
+	return int(gpos)
+}
+func (v *GtkEditable) DeleteText(startPos int, endPos int) {
+	C.gtk_editable_delete_text(v.Editable, C.gint(startPos), C.gint(endPos))
+}
+func (v *GtkEditable) GetChars(startPos int, endPos int) string {
+	return C.GoString(C.to_charptr(C.gtk_editable_get_chars(v.Editable,
+			C.gint(startPos), C.gint(endPos))))
+}
+func (v *GtkEditable) CutClipboard() {
+	C.gtk_editable_cut_clipboard(v.Editable)
+}
+func (v *GtkEditable) CopyClipboard() {
+	C.gtk_editable_copy_clipboard(v.Editable)
+}
+func (v *GtkEditable) PasteClipboard() {
+	C.gtk_editable_paste_clipboard(v.Editable)
+}
+func (v *GtkEditable) DeleteSelection() {
+	C.gtk_editable_delete_selection(v.Editable)
+}
+func (v *GtkEditable) SetPosition(position int) {
+	C.gtk_editable_set_position(v.Editable, C.gint(position))
+}
+func (v *GtkEditable) GetPosition() int {
+	return int(C.gtk_editable_get_position(v.Editable))
+}
+func (v *GtkEditable) SetEditable(isEditable bool) {
+	C.gtk_editable_set_editable(v.Editable, bool2gboolean(isEditable))
+}
+func (v *GtkEditable) GetEditable() bool {
+	return gboolean2bool(C.gtk_editable_get_editable(v.Editable))
+}
 
 //-----------------------------------------------------------------------
 // GtkTextIter
