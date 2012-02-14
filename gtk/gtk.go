@@ -451,15 +451,6 @@ static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
 	return gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 }
 
-static void _gtk_widget_add_accelerator(GtkWidget* w, gchar* s, void* g,
-		guint key, int mods, int flags) {
-	gtk_widget_add_accelerator(w, (const gchar*)s, GTK_ACCEL_GROUP(g), key, mods, flags);
-}
-
-static void _gtk_window_add_accel_group(GtkWidget* w, void* ag) {
-	gtk_window_add_accel_group(GTK_WINDOW(w), GTK_ACCEL_GROUP(ag));
-}
-
 //////////////////////////////////////////////
 // ############# Version Control #############
 //////////////////////////////////////////////
@@ -857,15 +848,33 @@ func MainIterationDo(blocking bool) bool {
 // gtk_propagate_event
 
 //-----------------------------------------------------------------------
-// GtkAccelGroup
+// GtkAccelGroup (done 1 out of 20 = 5%)
 //-----------------------------------------------------------------------
 type GtkAccelGroup struct {
-	AccelGroup unsafe.Pointer
+	AccelGroup *C.GtkAccelGroup
 }
 
 func AccelGroup() *GtkAccelGroup {
-	return &GtkAccelGroup{unsafe.Pointer(C.gtk_accel_group_new())}
+	return &GtkAccelGroup{C.gtk_accel_group_new()}
 }
+// gtk_accel_group_connect
+// gtk_accel_group_connect_by_path
+// gtk_accel_group_disconnect
+// gtk_accel_group_disconnect_key
+// gtk_accel_group_query
+// gtk_accel_group_activate
+// gtk_accel_group_lock
+// gtk_accel_group_unlock
+// gtk_accel_group_from_accel_closure
+// gtk_accel_groups_activate
+// gtk_accel_groups_from_object
+// gtk_accel_group_find
+// gtk_accelerator_valid
+// gtk_accelerator_parse
+// gtk_accelerator_name
+// gtk_accelerator_get_label
+// gtk_accelerator_set_default_mod_mask
+// gtk_accelerator_get_default_mod_mask
 
 //-----------------------------------------------------------------------
 // GtkStock
@@ -1208,7 +1217,7 @@ func (v *GtkWindow) SetResizable(resizable bool) {
 // gtk_window_get_role
 
 func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
-	C._gtk_window_add_accel_group(v.Widget, group.AccelGroup)
+	C.gtk_window_add_accel_group(C.to_GtkWindow(v.Widget), group.AccelGroup)
 }
 
 type GtkWindowPosition int
@@ -5872,8 +5881,7 @@ const (
 func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint, mods gdk.GdkModifierType, flags GtkAccelFlags) {
 	csignal := C.CString(signal)
 	defer C.free_string(csignal)
-	C._gtk_widget_add_accelerator(v.Widget, C.to_gcharptr(csignal),
-		group.AccelGroup, C.guint(key), C.int(mods), C.int(flags))
+	C.gtk_widget_add_accelerator(v.Widget, C.to_gcharptr(csignal), group.AccelGroup, C.guint(key), C.GdkModifierType(mods), C.GtkAccelFlags(flags))
 }
 
 // gtk_widget_remove_accelerator
