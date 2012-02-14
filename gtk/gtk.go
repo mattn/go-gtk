@@ -109,9 +109,9 @@ static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter
 	gtk_tree_store_set(tree_store, iter, column, *(gpointer*)data, -1);
 }
 
-static void _gtk_range_get_value(GtkRange* range, gdouble* value) {
-	*value = gtk_range_get_value(range);
-}
+//static void _gtk_range_get_value(GtkRange* range, gdouble* value) {
+//	*value = gtk_range_get_value(range);
+//}
 
 typedef struct {
 	GtkMenu *menu;
@@ -5802,9 +5802,10 @@ func (v *GtkRange) SetValue(value float64) {
 	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
 func (v *GtkRange) GetValue() float64 {
-	var r C.gdouble
-	C._gtk_range_get_value(C.to_GtkRange(v.Widget), &r)
-	return float64(r)
+	return float64(C.gtk_range_get_value(C.to_GtkRange(v.Widget))) //TODO test
+	//var r C.gdouble
+	//C._gtk_range_get_value(C.to_GtkRange(v.Widget), &r)
+	//return float64(r)
 }
 
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
