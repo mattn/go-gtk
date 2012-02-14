@@ -24,18 +24,6 @@ static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
 }
 
-static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
-#if GTK_CHECK_VERSION(2,20,0)
-	return gtk_dialog_get_widget_for_response(dialog, id);
-#else
-	return NULL;
-#endif
-}
-
-static gint _gtk_dialog_get_response_for_widget(GtkDialog* dialog, GtkWidget* widget) {
-	return gtk_dialog_get_response_for_widget(dialog, widget);
-}
-
 static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, gchar *message) {
 	return gtk_message_dialog_new(
 			GTK_WINDOW(parent),
@@ -64,143 +52,146 @@ static GtkTreePath* _gtk_tree_model_get_path(GtkTreeModel* tree_model, GtkTreeIt
 	return gtk_tree_model_get_path(tree_model, iter);
 }
 
-static gdouble _gtk_adjustment_get_lower(GtkAdjustment* adjustment) {
-#if GTK_CHECK_VERSION(2,14,0)
-	return gtk_adjustment_get_lower(adjustment);
-#else
-	return 0f;
+static void _gtk_text_buffer_insert_with_tag(void* buffer, GtkTextIter* iter, const gchar* text, gint len, void* tag) {
+	gtk_text_buffer_insert_with_tags(GTK_TEXT_BUFFER(buffer), iter, text, len, tag, NULL);
+}
+
+//static void _gtk_text_buffer_insert_with_tags_by_name(void* buffer, GtkTextIter* iter, const gchar* text, gint len, const gchar* first_tag_name, ...);
+
+static void* _gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name) {
+	return gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(buffer), tag_name, NULL);
+}
+
+static void _gtk_widget_hide_on_delete(GtkWidget* w) {
+	g_signal_connect(GTK_WIDGET(w), "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
+}
+
+static void _gtk_text_iter_assign(GtkTextIter* one, GtkTextIter* two) {
+	*one = *two;
+}
+
+static void _apply_property(void* obj, const gchar* prop, const gchar* val) {
+	GParamSpec *pspec;
+	GValue fromvalue = { 0, };
+	GValue tovalue = { 0, };
+	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(obj), prop);
+	if (!pspec) return;
+	g_value_init(&fromvalue, G_TYPE_STRING);
+	g_value_set_string(&fromvalue, val);
+	g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
+	g_value_transform(&fromvalue, &tovalue);
+	g_object_set_property((GObject *)obj, prop, &tovalue);
+	g_value_unset(&fromvalue);
+	g_value_unset(&tovalue);
+}
+
+static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attribute(gchar* title, GtkCellRenderer* cell) {
+	return gtk_tree_view_column_new_with_attributes(title, cell, NULL);
+}
+
+static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attributes(gchar* title, GtkCellRenderer* cell, gchar* prop, gint column) {
+	return gtk_tree_view_column_new_with_attributes(title, cell, prop, column, NULL);
+}
+
+static void _gtk_list_store_set_ptr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_list_store_set(list_store, iter, column, data, -1);
+}
+
+static void _gtk_list_store_set_addr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_list_store_set(list_store, iter, column, *(gpointer*)data, -1);
+}
+
+static void _gtk_tree_store_set_ptr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_tree_store_set(tree_store, iter, column, data, -1);
+}
+
+static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
+	gtk_tree_store_set(tree_store, iter, column, *(gpointer*)data, -1);
+}
+
+static void _gtk_range_get_value(GtkRange* range, gdouble* value) {
+	*value = gtk_range_get_value(range);
+}
+
+typedef struct {
+	GtkMenu *menu;
+	gint x;
+	gint y;
+	gboolean push_in;
+	gpointer data;
+} _gtk_menu_position_func_info;
+
+extern void _go_gtk_menu_position_func(_gtk_menu_position_func_info* gmpfi);
+static void _c_gtk_menu_position_func(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data) {
+	_gtk_menu_position_func_info gmpfi;
+	gmpfi.menu = menu;
+	gmpfi.x = *x;
+	gmpfi.y = *y;
+	gmpfi.push_in = *push_in;
+	gmpfi.data = user_data;
+	_go_gtk_menu_position_func(&gmpfi);
+	*x = gmpfi.x;
+	*y = gmpfi.y;
+	*push_in = gmpfi.push_in;
+#ifdef _WIN32
+	RECT rect;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+	gint h = GTK_WIDGET(menu)->requisition.height;
+	if (*y + h > rect.bottom) *y -= h;
 #endif
 }
 
-static void _gtk_adjustment_set_lower(GtkAdjustment* adjustment, gdouble lower) {
-#if GTK_CHECK_VERSION(2,14,0)
-	gtk_adjustment_set_lower(adjustment, lower);
-#endif
+static void _gtk_menu_popup(GtkWidget *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, void* data, guint button, guint32 activate_time) {
+	gtk_menu_popup(GTK_MENU(menu), parent_menu_shell, parent_menu_item, _c_gtk_menu_position_func, (gpointer) data, button, activate_time);
 }
 
-static gdouble _gtk_adjustment_get_upper(GtkAdjustment* adjustment) {
-#if GTK_CHECK_VERSION(2,14,0)
-	return gtk_adjustment_get_upper(adjustment);
-#else
-	return 0f;
-#endif
+static inline GType* make_gtypes(int count) {
+	return g_new0(GType, count);
 }
 
-static void _gtk_adjustment_set_upper(GtkAdjustment* adjustment, gdouble upper) {
-#if GTK_CHECK_VERSION(2,14,0)
-	gtk_adjustment_set_upper(adjustment, upper);
-#endif
+static inline void destroy_gtypes(GType* types) {
+	g_free(types);
 }
 
-static gdouble _gtk_adjustment_get_step_increment(GtkAdjustment* adjustment) {
-#if GTK_CHECK_VERSION(2,14,0)
-	return gtk_adjustment_get_step_increment(adjustment);
-#else
-	return 0f;
-#endif
+static inline void set_gtype(GType* types, int n, int type) {
+	types[n] = (GType) type;
 }
 
-static void _gtk_adjustment_set_step_increment(GtkAdjustment* adjustment, gdouble step_increment) {
-#if GTK_CHECK_VERSION(2,14,0)
-	gtk_adjustment_set_step_increment(adjustment, step_increment);
-#endif
+static inline gchar** make_strings(int count) {
+	return (gchar**)malloc(sizeof(gchar*) * count);
 }
 
-static gdouble _gtk_adjustment_get_page_increment(GtkAdjustment* adjustment) {
-#if GTK_CHECK_VERSION(2,14,0)
-	return gtk_adjustment_get_page_increment(adjustment);
-#else
-	return 0f;
-#endif
+static inline void destroy_strings(gchar** strings) {
+	free(strings);
 }
 
-static void _gtk_adjustment_set_page_increment(GtkAdjustment* adjustment, gdouble page_increment) {
-#if GTK_CHECK_VERSION(2,14,0)
-	gtk_adjustment_set_page_increment(adjustment, page_increment);
-#endif
+static inline gchar* get_string(gchar** strings, int n) {
+	return strings[n];
 }
 
-static gdouble _gtk_adjustment_get_page_size(GtkAdjustment* adjustment) {
-#if GTK_CHECK_VERSION(2,14,0)
-	return gtk_adjustment_get_page_size(adjustment);
-#else
-	return 0f;
-#endif
+static inline void set_string(gchar** strings, int n, gchar* str) {
+	strings[n] = str;
 }
 
-static void _gtk_adjustment_set_page_size(GtkAdjustment* adjustment, gdouble page_size) {
-#if GTK_CHECK_VERSION(2,14,0)
-	gtk_adjustment_set_page_size(adjustment, page_size);
-#endif
+static GSList* to_gslist(void* gs) {
+	return (GSList*)gs;
 }
 
-static void _gtk_adjustment_configure(GtkAdjustment* adjustment, gdouble value, gdouble lower, gdouble upper, gdouble step_increment, gdouble page_increment, gdouble page_size) {
-#if GTK_CHECK_VERSION(2,14,0)
-	gtk_adjustment_configure(adjustment, value, lower, upper, step_increment, page_increment, page_size);
-#endif
+static int _check_version(int major, int minor, int micro) {
+	return GTK_CHECK_VERSION(major, minor, micro);
 }
 
-static GtkWidget* _gtk_combo_box_new_with_entry(void) {
-#if GTK_CHECK_VERSION(2,24,0)
-	return gtk_combo_box_new_with_entry();
-#else
-	return NULL;
-#endif
+static void _gtk_tree_iter_assign(void* iter, void* to) {
+	*(GtkTreeIter*)iter = *(GtkTreeIter*)to;
 }
 
-static GtkWidget* _gtk_combo_box_new_with_model_and_entry(GtkTreeModel *model) {
-#if GTK_CHECK_VERSION(2,24,0)
-	return gtk_combo_box_new_with_model_and_entry(model);
-#else
-	return NULL;
-#endif
+static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
+  return GTK_DIALOG(w)->vbox;
 }
 
-static GtkWidget* _gtk_combo_box_text_new(void) {
-#if GTK_CHECK_VERSION(2,24,0)
-	return gtk_combo_box_entry_new();
-#else
-	return NULL;
-#endif
+static gint _gtk_dialog_get_response_for_widget(GtkDialog* dialog, GtkWidget* widget) {
+	return gtk_dialog_get_response_for_widget(dialog, widget);
 }
-
-static GtkWidget* _gtk_combo_box_text_new_with_entry(void) {
-#if GTK_CHECK_VERSION(2,24,0)
-	return gtk_combo_box_text_new_with_entry();
-#else
-	return NULL;
-#endif
-}
-
-#if GTK_CHECK_VERSION(2,24,0)
-static void _gtk_combo_box_text_append_text(GtkComboBoxText *combo_box, const gchar *text) {
-	gtk_combo_box_text_append_text(combo_box, text);
-}
-static void  _gtk_combo_box_text_insert_text(GtkComboBoxText *combo_box, gint position, const gchar *text) {
-	gtk_combo_box_text_insert_text(combo_box, position, text);
-}
-static void _gtk_combo_box_text_prepend_text(GtkComboBoxText *combo_box, const gchar *text) {
-	gtk_combo_box_text_prepend_text(combo_box, text);
-}
-static void _gtk_combo_box_text_remove(GtkComboBoxText *combo_box, gint position) {
-	gtk_combo_box_text_remove(combo_box, position);
-}
-static gchar* _gtk_combo_box_text_get_active_text(GtkComboBoxText *combo_box) {
-	return gtk_combo_box_text_get_active_text(combo_box);
-}
-#else
-static void _gtk_combo_box_text_append_text(GtkWidget *combo_box, const gchar *text) {
-}
-static void  _gtk_combo_box_text_insert_text(GtkWidget *combo_box, gint position, const gchar *text) {
-}
-static void _gtk_combo_box_text_prepend_text(GtkWidget *combo_box, const gchar *text) {
-}
-static void _gtk_combo_box_text_remove(GtkWidget *combo_box, gint position) {
-}
-static gchar* _gtk_combo_box_text_get_active_text(GtkWidget *combo_box) {
-	return NULL;
-}
-#endif
 
 static void _gtk_text_tag_table_add(GtkTextTagTable* table, void* tag) {
 	gtk_text_tag_table_add(table, (GtkTextTag*)tag);
@@ -257,12 +248,7 @@ static gboolean _gtk_text_buffer_insert_range_interactive(void* buffer, GtkTextI
 	return gtk_text_buffer_insert_range_interactive(GTK_TEXT_BUFFER(buffer), iter, start, end, default_editable);
 }
 
-static void _gtk_text_buffer_insert_with_tag(void* buffer, GtkTextIter* iter, const gchar* text, gint len, void* tag) {
-	gtk_text_buffer_insert_with_tags(GTK_TEXT_BUFFER(buffer), iter, text, len, tag, NULL);
-}
 //static void _gtk_text_buffer_insert_with_tags(void* buffer, GtkTextIter* iter, const gchar* text, gint len, GtkTextTag* first_tag, ...);
-
-//static void _gtk_text_buffer_insert_with_tags_by_name(void* buffer, GtkTextIter* iter, const gchar* text, gint len, const gchar* first_tag_name, ...);
 
 static void _gtk_text_buffer_delete(void* buffer, GtkTextIter* start, GtkTextIter* end) {
 	gtk_text_buffer_delete(GTK_TEXT_BUFFER(buffer), start, end);
@@ -372,10 +358,6 @@ static void _gtk_text_buffer_remove_all_tags(void* buffer, const GtkTextIter* st
 	gtk_text_buffer_remove_all_tags(GTK_TEXT_BUFFER(buffer), start, end);
 }
 
-static void* _gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name) {
-	return gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(buffer), tag_name, NULL);
-}
-
 static void _gtk_text_buffer_get_iter_at_line_offset(void* buffer, GtkTextIter* iter, gint line_number, gint char_offset) {
 	gtk_text_buffer_get_iter_at_line_offset(GTK_TEXT_BUFFER(buffer), iter, line_number, char_offset);
 }
@@ -461,67 +443,12 @@ static GtkWidget* _gtk_text_view_new_with_buffer(void* buffer) {
 	return gtk_text_view_new_with_buffer(GTK_TEXT_BUFFER(buffer));
 }
 
-static void _gtk_widget_hide_on_delete(GtkWidget* w) {
-	g_signal_connect(GTK_WIDGET(w), "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
-}
-
 static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
 	gtk_text_view_set_buffer(GTK_TEXT_VIEW(textview), GTK_TEXT_BUFFER(buffer));
 }
 
 static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
 	return gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-}
-
-static void _gtk_text_iter_assign(GtkTextIter* one, GtkTextIter* two) {
-	*one = *two;
-}
-
-static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
-#ifdef GTK_CELL_RENDERER_SPINNER
-	return gtk_cell_renderer_spinner_new();
-#else
-	return gtk_cell_renderer_spin_new();
-#endif
-}
-
-static void _apply_property(void* obj, const gchar* prop, const gchar* val) {
-	GParamSpec *pspec;
-	GValue fromvalue = { 0, };
-	GValue tovalue = { 0, };
-	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(obj), prop);
-	if (!pspec) return;
-	g_value_init(&fromvalue, G_TYPE_STRING);
-	g_value_set_string(&fromvalue, val);
-	g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
-	g_value_transform(&fromvalue, &tovalue);
-	g_object_set_property((GObject *)obj, prop, &tovalue);
-	g_value_unset(&fromvalue);
-	g_value_unset(&tovalue);
-}
-
-static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attribute(gchar* title, GtkCellRenderer* cell) {
-	return gtk_tree_view_column_new_with_attributes(title, cell, NULL);
-}
-
-static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attributes(gchar* title, GtkCellRenderer* cell, gchar* prop, gint column) {
-	return gtk_tree_view_column_new_with_attributes(title, cell, prop, column, NULL);
-}
-
-static void _gtk_list_store_set_ptr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_list_store_set(list_store, iter, column, data, -1);
-}
-
-static void _gtk_list_store_set_addr(GtkListStore* list_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_list_store_set(list_store, iter, column, *(gpointer*)data, -1);
-}
-
-static void _gtk_tree_store_set_ptr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_tree_store_set(tree_store, iter, column, data, -1);
-}
-
-static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter, gint column, void* data) {
-	gtk_tree_store_set(tree_store, iter, column, *(gpointer*)data, -1);
 }
 
 static void _gtk_widget_add_accelerator(GtkWidget* w, gchar* s, void* g,
@@ -533,78 +460,238 @@ static void _gtk_window_add_accel_group(GtkWidget* w, void* ag) {
 	gtk_window_add_accel_group(GTK_WINDOW(w), GTK_ACCEL_GROUP(ag));
 }
 
-static void _gtk_range_get_value(GtkRange* range, gdouble* value) {
-	*value = gtk_range_get_value(range);
+//////////////////////////////////////////////
+// ############# Version Control #############
+//////////////////////////////////////////////
+
+#if GTK_CHECK_VERSION(2,14,0)
+static gdouble _gtk_adjustment_get_lower(GtkAdjustment* adjustment) {
+	return gtk_adjustment_get_lower(adjustment);
 }
+static void _gtk_adjustment_set_lower(GtkAdjustment* adjustment, gdouble lower) {
+	gtk_adjustment_set_lower(adjustment, lower);
+}
+static gdouble _gtk_adjustment_get_upper(GtkAdjustment* adjustment) {
+	return gtk_adjustment_get_upper(adjustment);
+}
+static void _gtk_adjustment_set_upper(GtkAdjustment* adjustment, gdouble upper) {
+	gtk_adjustment_set_upper(adjustment, upper);
+}
+static gdouble _gtk_adjustment_get_step_increment(GtkAdjustment* adjustment) {
+	return gtk_adjustment_get_step_increment(adjustment);
+}
+static void _gtk_adjustment_set_step_increment(GtkAdjustment* adjustment, gdouble step_increment) {
+	gtk_adjustment_set_step_increment(adjustment, step_increment);
+}
+static gdouble _gtk_adjustment_get_page_increment(GtkAdjustment* adjustment) {
+	return gtk_adjustment_get_page_increment(adjustment);
+}
+static void _gtk_adjustment_set_page_increment(GtkAdjustment* adjustment, gdouble page_increment) {
+	gtk_adjustment_set_page_increment(adjustment, page_increment);
+}
+static gdouble _gtk_adjustment_get_page_size(GtkAdjustment* adjustment) {
+	return gtk_adjustment_get_page_size(adjustment);
+}
+static void _gtk_adjustment_set_page_size(GtkAdjustment* adjustment, gdouble page_size) {
+	gtk_adjustment_set_page_size(adjustment, page_size);
+}
+static void _gtk_adjustment_configure(GtkAdjustment* adjustment, gdouble value, gdouble lower, gdouble upper, gdouble step_increment, gdouble page_increment, gdouble page_size) {
+	gtk_adjustment_configure(adjustment, value, lower, upper, step_increment, page_increment, page_size);
+}
+#else //GTK_CHECK_VERSION(2,14,0)
+static gdouble _gtk_adjustment_get_lower(GtkAdjustment* adjustment) {
+	return 0f;
+}
+static void _gtk_adjustment_set_lower(GtkAdjustment* adjustment, gdouble lower) {
+}
+static gdouble _gtk_adjustment_get_upper(GtkAdjustment* adjustment) {
+	return 0f;
+}
+static void _gtk_adjustment_set_upper(GtkAdjustment* adjustment, gdouble upper) {
+}
+static gdouble _gtk_adjustment_get_step_increment(GtkAdjustment* adjustment) {
+	return 0f;
+}
+static void _gtk_adjustment_set_step_increment(GtkAdjustment* adjustment, gdouble step_increment) {
+}
+static gdouble _gtk_adjustment_get_page_increment(GtkAdjustment* adjustment) {
+	return 0f;
+}
+static void _gtk_adjustment_set_page_increment(GtkAdjustment* adjustment, gdouble page_increment) {
+}
+static gdouble _gtk_adjustment_get_page_size(GtkAdjustment* adjustment) {
+	return 0f;
+}
+static void _gtk_adjustment_set_page_size(GtkAdjustment* adjustment, gdouble page_size) {
+}
+static void _gtk_adjustment_configure(GtkAdjustment* adjustment, gdouble value, gdouble lower, gdouble upper, gdouble step_increment, gdouble page_increment, gdouble page_size) {
+}
+#endif //GTK_CHECK_VERSION(2,14,0)
 
-typedef struct {
-	GtkMenu *menu;
-	gint x;
-	gint y;
-	gboolean push_in;
-	gpointer data;
-} _gtk_menu_position_func_info;
+#if GTK_CHECK_VERSION(2,18,0)
+void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
+	gtk_widget_set_has_window(widget, has_window);
+}
+gboolean _gtk_widget_get_sensitive(GtkWidget *widget) {
+	return gtk_widget_get_sensitive(widget);
+}
+gboolean _gtk_widget_is_sensitive(GtkWidget *widget) {
+	return gtk_widget_is_sensitive(widget);
+}
+GtkStateType _gtk_widget_get_state(GtkWidget *widget) {
+	return gtk_widget_get_state(widget);
+}
+gboolean _gtk_widget_get_visible(GtkWidget *widget) {
+	return gtk_widget_get_visible(widget);
+}
+void _gtk_widget_set_visible(GtkWidget *widget, gboolean visible) {
+	gtk_widget_set_visible(widget, visible);
+}
+gboolean _gtk_widget_has_default(GtkWidget *widget) {
+	return gtk_widget_has_default(widget);
+}
+gboolean _gtk_widget_has_focus(GtkWidget *widget) {
+	return gtk_widget_has_focus(widget);
+}
+gboolean _gtk_widget_has_grab(GtkWidget *widget) {
+	return gtk_widget_has_grab(widget);
+}
+gboolean _gtk_widget_is_drawable(GtkWidget *widget) {
+	return gtk_widget_is_drawable(widget);
+}
+gboolean _gtk_widget_is_toplevel(GtkWidget *widget) {
+	return gtk_widget_is_toplevel(widget);
+}
+void _gtk_widget_set_window(GtkWidget *widget, GdkWindow *window) {
+	gtk_widget_set_window(widget, window);
+}
+void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receives_default) {
+	gtk_widget_set_receives_default(widget, receives_default);
+}
+gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
+	return gtk_widget_get_receives_default(widget);
+}
+#else //!GTK_CHECK_VERSION(2,18,0)
+void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
+}
+gboolean _gtk_widget_get_sensitive(GtkWidget *widget) {
+	return 0;
+}
+gboolean _gtk_widget_is_sensitive(GtkWidget *widget) {
+	return 0;
+}
+GtkStateType _gtk_widget_get_state(GtkWidget *widget) {
+	return 0;
+}
+gboolean _gtk_widget_get_visible(GtkWidget *widget) {
+	return 0;
+}
+void _gtk_widget_set_visible(GtkWidget *widget, gboolean visible) {
+}
+gboolean _gtk_widget_has_default(GtkWidget *widget) {
+	return 0;
+}
+gboolean _gtk_widget_has_focus(GtkWidget *widget) {
+	return 0:
+}
+gboolean _gtk_widget_has_grab(GtkWidget *widget) {
+	return 0;
+}
+gboolean _gtk_widget_is_drawable(GtkWidget *widget) {
+	return 0:
+}
+gboolean _gtk_widget_is_toplevel(GtkWidget *widget) {
+	return 0;
+}
+void _gtk_widget_set_window(GtkWidget *widget, GdkWindow *window) {
+}
+void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receives_default) {
+}
+gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
+	return 0;
+}
+#endif //GTK_CHECK_VERSION(2,18,0)
 
-extern void _go_gtk_menu_position_func(_gtk_menu_position_func_info* gmpfi);
-static void _c_gtk_menu_position_func(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data) {
-	_gtk_menu_position_func_info gmpfi;
-	gmpfi.menu = menu;
-	gmpfi.x = *x;
-	gmpfi.y = *y;
-	gmpfi.push_in = *push_in;
-	gmpfi.data = user_data;
-	_go_gtk_menu_position_func(&gmpfi);
-	*x = gmpfi.x;
-	*y = gmpfi.y;
-	*push_in = gmpfi.push_in;
-#ifdef _WIN32
-	RECT rect;
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
-	gint h = GTK_WIDGET(menu)->requisition.height;
-	if (*y + h > rect.bottom) *y -= h;
+#if GTK_CHECK_VERSION(2,20,0)
+static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
+	return gtk_dialog_get_widget_for_response(dialog, id);
+}
+#else //GTK_CHECK_VERSION(2,20,0)
+static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
+	return NULL;
+}
+#endif //GTK_CHECK_VERSION(2,20,0)
+
+#if GTK_CHECK_VERSION(2,24,0)
+static GtkWidget* _gtk_combo_box_new_with_entry(void) {
+	return gtk_combo_box_new_with_entry();
+}
+static GtkWidget* _gtk_combo_box_new_with_model_and_entry(GtkTreeModel *model) {
+	return gtk_combo_box_new_with_model_and_entry(model);
+}
+static GtkWidget* _gtk_combo_box_text_new(void) {
+	return gtk_combo_box_text_new();
+}
+static GtkWidget* _gtk_combo_box_text_new_with_entry(void) {
+	return gtk_combo_box_text_new_with_entry();
+}
+static void _gtk_combo_box_text_append_text(GtkComboBoxText *combo_box, const gchar *text) {
+	gtk_combo_box_text_append_text(combo_box, text);
+}
+static void  _gtk_combo_box_text_insert_text(GtkComboBoxText *combo_box, gint position, const gchar *text) {
+	gtk_combo_box_text_insert_text(combo_box, position, text);
+}
+static void _gtk_combo_box_text_prepend_text(GtkComboBoxText *combo_box, const gchar *text) {
+	gtk_combo_box_text_prepend_text(combo_box, text);
+}
+static void _gtk_combo_box_text_remove(GtkComboBoxText *combo_box, gint position) {
+	gtk_combo_box_text_remove(combo_box, position);
+}
+static gchar* _gtk_combo_box_text_get_active_text(GtkComboBoxText *combo_box) {
+	return gtk_combo_box_text_get_active_text(combo_box);
+}
+#else //GTK_CHECK_VERSION(2,24,0)
+static GtkWidget* _gtk_combo_box_new_with_entry(void) {
+	return NULL;
+}
+static GtkWidget* _gtk_combo_box_new_with_model_and_entry(GtkTreeModel *model) {
+	return NULL;
+}
+static GtkWidget* _gtk_combo_box_text_new(void) {
+	return NULL;
+}
+static GtkWidget* _gtk_combo_box_text_new_with_entry(void) {
+	return NULL;
+}
+static void _gtk_combo_box_text_append_text(GtkWidget *combo_box, const gchar *text) {
+}
+static void  _gtk_combo_box_text_insert_text(GtkWidget *combo_box, gint position, const gchar *text) {
+}
+static void _gtk_combo_box_text_prepend_text(GtkWidget *combo_box, const gchar *text) {
+}
+static void _gtk_combo_box_text_remove(GtkWidget *combo_box, gint position) {
+}
+static gchar* _gtk_combo_box_text_get_active_text(GtkWidget *combo_box) {
+	return NULL;
+}
+#endif //GTK_CHECK_VERSION(2,24,0)
+
+static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
+#ifdef GTK_CELL_RENDERER_SPINNER //2.20
+	return gtk_cell_renderer_spinner_new();
+#else
+	return gtk_cell_renderer_spin_new();
 #endif
 }
 
-static void _gtk_menu_popup(GtkWidget *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, void* data, guint button, guint32 activate_time) {
-	gtk_menu_popup(GTK_MENU(menu), parent_menu_shell, parent_menu_item, _c_gtk_menu_position_func, (gpointer) data, button, activate_time);
-}
-
-static inline GType* make_gtypes(int count) {
-	return g_new0(GType, count);
-}
-
-static inline void destroy_gtypes(GType* types) {
-	g_free(types);
-}
-
-static inline void set_gtype(GType* types, int n, int type) {
-	types[n] = (GType) type;
-}
-
-static inline gchar** make_strings(int count) {
-	return (gchar**)malloc(sizeof(gchar*) * count);
-}
-
-static inline void destroy_strings(gchar** strings) {
-	free(strings);
-}
-
-static inline gchar* get_string(gchar** strings, int n) {
-	return strings[n];
-}
-
-static inline void set_string(gchar** strings, int n, gchar* str) {
-	strings[n] = str;
-}
+//////////////////////////////////////////////
+// ################# Casting #################
+//////////////////////////////////////////////
 
 static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
-
 static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
-
 static inline char* to_charptr(const gchar* s) { return (char*)s; }
-
 static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
-
 static inline void free_string(char* s) { free(s); }
 
 static GValue* to_GValueptr(void* s) { return (GValue*)s; }
@@ -621,11 +708,13 @@ static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w)
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
 static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
 static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
+
 #if GTK_CHECK_VERSION(2,24,0)
 static GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
 #else
 static GtkWidget* to_GtkComboBoxText(GtkWidget* w) { return w; }
 #endif
+
 static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
 static GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
@@ -665,23 +754,6 @@ static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
 static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
 static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
-
-static GSList* to_gslist(void* gs) {
-	return (GSList*)gs;
-}
-
-static int _check_version(int major, int minor, int micro) {
-	return GTK_CHECK_VERSION(major, minor, micro);
-}
-
-static void _gtk_tree_iter_assign(void* iter, void* to) {
-	*(GtkTreeIter*)iter = *(GtkTreeIter*)to;
-}
-
-static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
-  return GTK_DIALOG(w)->vbox;
-}
-
 static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 */
 // #cgo pkg-config: gtk+-2.0
