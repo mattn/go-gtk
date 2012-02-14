@@ -1373,14 +1373,12 @@ func (v *GtkAboutDialog) SetLogoIconName(icon_name string) {
 	defer C.free_string(ptr)
 	C.gtk_about_dialog_set_logo_icon_name(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
 }
-
 // gtk_about_dialog_set_email_hook //deprecated since 2.24
 // gtk_about_dialog_set_url_hook //deprecated since 2.24
-
 // gtk_show_about_dialog
 
 //-----------------------------------------------------------------------
-// GtkAssistant
+// GtkAssistant (done 20 out of 22 = 90%)
 //-----------------------------------------------------------------------
 type GtkAssistantPageType int
 
@@ -1397,8 +1395,7 @@ type GtkAssistant struct {
 }
 
 func Assistant() *GtkAssistant {
-	return &GtkAssistant{GtkWidget{
-		C.gtk_assistant_new()}}
+	return &GtkAssistant{GtkWidget{C.gtk_assistant_new()}}
 }
 func (v *GtkAssistant) GetCurrentPage() int {
 	return int(C.gtk_assistant_get_current_page(C.to_GtkAssistant(v.Widget)))
@@ -1422,7 +1419,6 @@ func (v *GtkAssistant) AppendPage(page WidgetLike) int {
 func (v *GtkAssistant) InsertPage(page WidgetLike, position int) int {
 	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.Widget), page.ToNative(), C.gint(position)))
 }
-
 // void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
 
 func (v *GtkAssistant) SetPageType(page WidgetLike, t GtkAssistantPageType) {
@@ -1468,6 +1464,7 @@ func (v *GtkAssistant) RemoveActionWidget(child WidgetLike) {
 func (v *GtkAssistant) UpdateButtonsState() {
 	C.gtk_assistant_update_buttons_state(C.to_GtkAssistant(v.Widget))
 }
+// gtk_assistant_commit //since 2.22
 
 //-----------------------------------------------------------------------
 // GtkOffscreenWindow (done 0 out of ? = 0%)
