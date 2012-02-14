@@ -54,11 +54,11 @@ type GtkSourceBuffer struct {
 
 func SourceBuffer() *GtkSourceBuffer {
 	v := C.gtk_source_buffer_new(nil)
-	return &GtkSourceBuffer{v, gtk.GtkTextBuffer{unsafe.Pointer(v)}}
+	return &GtkSourceBuffer{v, gtk.TextBufferFromPointer(unsafe.Pointer(v))}
 }
 func SourceBufferWithLanguage(lang *GtkSourceLanguage) *GtkSourceBuffer {
 	v := C.gtk_source_buffer_new_with_language(lang.SourceLanguage)
-	return &GtkSourceBuffer{v, gtk.GtkTextBuffer{unsafe.Pointer(v)}}
+	return &GtkSourceBuffer{v, gtk.TextBufferFromPointer(unsafe.Pointer(v))}
 }
 func (v *GtkSourceBuffer) GetNativeBuffer() unsafe.Pointer {
 	return unsafe.Pointer(v.SourceBuffer)

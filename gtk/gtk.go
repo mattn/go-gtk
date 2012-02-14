@@ -52,14 +52,14 @@ static GtkTreePath* _gtk_tree_model_get_path(GtkTreeModel* tree_model, GtkTreeIt
 	return gtk_tree_model_get_path(tree_model, iter);
 }
 
-static void _gtk_text_buffer_insert_with_tag(void* buffer, GtkTextIter* iter, const gchar* text, gint len, GtkTextTag* tag) {
-	gtk_text_buffer_insert_with_tags(GTK_TEXT_BUFFER(buffer), iter, text, len, tag, NULL);
+static void _gtk_text_buffer_insert_with_tag(GtkTextBuffer* buffer, GtkTextIter* iter, const gchar* text, gint len, GtkTextTag* tag) {
+	gtk_text_buffer_insert_with_tags(buffer, iter, text, len, tag, NULL);
 }
 
-//static void _gtk_text_buffer_insert_with_tags_by_name(void* buffer, GtkTextIter* iter, const gchar* text, gint len, const gchar* first_tag_name, ...);
+//static void _gtk_text_buffer_insert_with_tags_by_name(GtkTextBuffer* buffer, GtkTextIter* iter, const gchar* text, gint len, const gchar* first_tag_name, ...);
 
-static GtkTextTag* _gtk_text_buffer_create_tag(void* buffer, const gchar* tag_name) {
-	return gtk_text_buffer_create_tag(GTK_TEXT_BUFFER(buffer), tag_name, NULL);
+static GtkTextTag* _gtk_text_buffer_create_tag(GtkTextBuffer* buffer, const gchar* tag_name) {
+	return gtk_text_buffer_create_tag(buffer, tag_name, NULL);
 }
 
 static void _gtk_widget_hide_on_delete(GtkWidget* w) {
@@ -191,244 +191,6 @@ static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
 
 static gint _gtk_dialog_get_response_for_widget(GtkDialog* dialog, GtkWidget* widget) {
 	return gtk_dialog_get_response_for_widget(dialog, widget);
-}
-
-static void* _gtk_text_iter_get_buffer(GtkTextIter* iter) {
-	return gtk_text_iter_get_buffer(iter);
-}
-
-static void* _gtk_text_buffer_new(GtkTextTagTable* tagtable) {
-	return gtk_text_buffer_new(tagtable);
-}
-
-static gint _gtk_text_buffer_get_line_count(void* buffer) {
-	return gtk_text_buffer_get_line_count(GTK_TEXT_BUFFER(buffer));
-}
-
-static gint _gtk_text_buffer_get_char_count(void* buffer) {
-	return gtk_text_buffer_get_char_count(GTK_TEXT_BUFFER(buffer));
-}
-
-static GtkTextTagTable* _gtk_text_buffer_get_tag_table(void* buffer) {
-	return gtk_text_buffer_get_tag_table(GTK_TEXT_BUFFER(buffer));
-}
-static void _gtk_text_buffer_insert(void* buffer, GtkTextIter* iter, const gchar* text, gint len) {
-	gtk_text_buffer_insert(GTK_TEXT_BUFFER(buffer), iter, text, len);
-}
-
-static void _gtk_text_buffer_insert_at_cursor(void *buffer, const gchar *text, gint len) {
-	gtk_text_buffer_insert_at_cursor(GTK_TEXT_BUFFER(buffer), text, len);
-}
-
-static gboolean _gtk_text_buffer_insert_interactive(void* buffer, GtkTextIter* iter, const gchar* text, gint len, gboolean default_editable) {
-	return gtk_text_buffer_insert_interactive(GTK_TEXT_BUFFER(buffer), iter, text, len, default_editable);
-}
-
-static gboolean _gtk_text_buffer_insert_interactive_at_cursor(void* buffer, const gchar* text, gint len, gboolean default_editable) {
-	return gtk_text_buffer_insert_interactive_at_cursor(GTK_TEXT_BUFFER(buffer), text, len, default_editable);
-}
-
-static void _gtk_text_buffer_insert_range(void* buffer, GtkTextIter* iter, const GtkTextIter* start, const GtkTextIter* end) {
-	gtk_text_buffer_insert_range(GTK_TEXT_BUFFER(buffer), iter, start, end);
-}
-
-static gboolean _gtk_text_buffer_insert_range_interactive(void* buffer, GtkTextIter* iter, const GtkTextIter* start, const GtkTextIter* end, gboolean default_editable) {
-	return gtk_text_buffer_insert_range_interactive(GTK_TEXT_BUFFER(buffer), iter, start, end, default_editable);
-}
-
-//static void _gtk_text_buffer_insert_with_tags(void* buffer, GtkTextIter* iter, const gchar* text, gint len, GtkTextTag* first_tag, ...);
-
-static void _gtk_text_buffer_delete(void* buffer, GtkTextIter* start, GtkTextIter* end) {
-	gtk_text_buffer_delete(GTK_TEXT_BUFFER(buffer), start, end);
-}
-
-static gboolean _gtk_text_buffer_delete_interactive(void* buffer, GtkTextIter* start_iter, GtkTextIter* end_iter, gboolean default_editable) {
-	return gtk_text_buffer_delete_interactive(GTK_TEXT_BUFFER(buffer), start_iter, end_iter, default_editable);
-}
-
-static gboolean _gtk_text_buffer_backspace(void* buffer, GtkTextIter* iter, gboolean interactive, gboolean default_editable) {
-	return gtk_text_buffer_backspace(GTK_TEXT_BUFFER(buffer), iter, interactive, default_editable);
-}
-
-static void _gtk_text_buffer_set_text(void* buffer, const gchar* text, gint len) {
-	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(buffer), text, len);
-}
-
-static gchar* _gtk_text_buffer_get_text(void* buffer, const GtkTextIter* start, const GtkTextIter* end, gboolean include_hidden_chars) {
-	return gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer), start, end, include_hidden_chars);
-}
-
-static gchar* _gtk_text_buffer_get_slice(void* buffer, const GtkTextIter* start, const GtkTextIter* end, gboolean include_hidden_chars) {
-	return gtk_text_buffer_get_slice(GTK_TEXT_BUFFER(buffer), start, end, include_hidden_chars);
-}
-
-static void _gtk_text_buffer_insert_pixbuf(void* buffer, GtkTextIter* iter, GdkPixbuf* pixbuf) {
-	gtk_text_buffer_insert_pixbuf(GTK_TEXT_BUFFER(buffer), iter, pixbuf);
-}
-
-// static void _gtk_text_buffer_insert_child_anchor(void* buffer, GtkTextIter* iter, GtkTextChildAnchor* anchor) {
-// 	gtk_text_buffer_insert_child_anchor(GTK_TEXT_BUFFER(buffer), iter, anchor);
-// }
-
-// static GtkTextChildAnchor* _gtk_text_buffer_create_child_anchor(void* buffer, GtkTextIter* iter) {
-// 	return gtk_text_buffer_create_child_anchor(GTK_TEXT_BUFFER(buffer), iter);
-// }
-//
-static GtkTextMark* _gtk_text_buffer_create_mark(void* buffer, const gchar* mark_name, const GtkTextIter* where, gboolean left_gravity) {
-	return gtk_text_buffer_create_mark(GTK_TEXT_BUFFER(buffer), mark_name, where, left_gravity);
-}
-
-static void _gtk_text_buffer_move_mark(void* buffer, GtkTextMark* mark, const GtkTextIter* where) {
-	gtk_text_buffer_move_mark(GTK_TEXT_BUFFER(buffer), mark, where);
-}
-
-static void _gtk_text_buffer_move_mark_by_name(void* buffer, const gchar* name, const GtkTextIter* where) {
-	gtk_text_buffer_move_mark_by_name(GTK_TEXT_BUFFER(buffer), name, where);
-}
-
-static void _gtk_text_buffer_add_mark(void* buffer, GtkTextMark* mark, const GtkTextIter* where) {
-	gtk_text_buffer_add_mark(GTK_TEXT_BUFFER(buffer), mark, where);
-}
-
-static void _gtk_text_buffer_delete_mark(void* buffer, GtkTextMark* mark) {
-	gtk_text_buffer_delete_mark(GTK_TEXT_BUFFER(buffer), mark);
-}
-
-static void _gtk_text_buffer_delete_mark_by_name(void* buffer, const gchar* name) {
-	gtk_text_buffer_delete_mark_by_name(GTK_TEXT_BUFFER(buffer), name);
-}
-
-static GtkTextMark* _gtk_text_buffer_get_mark(void* buffer, const gchar* name) {
-	return gtk_text_buffer_get_mark(GTK_TEXT_BUFFER(buffer), name);
-}
-
-static GtkTextMark* _gtk_text_buffer_get_insert(void* buffer) {
-	return gtk_text_buffer_get_insert(GTK_TEXT_BUFFER(buffer));
-}
-
-static GtkTextMark* _gtk_text_buffer_get_selection_bound(void* buffer) {
-	return gtk_text_buffer_get_selection_bound(GTK_TEXT_BUFFER(buffer));
-}
-
-static gboolean _gtk_text_buffer_get_selection_bounds(void* buffer, GtkTextIter* be, GtkTextIter* en) {
-	return gtk_text_buffer_get_selection_bounds(GTK_TEXT_BUFFER(buffer), be, en);
-}
-
-static gboolean _gtk_text_buffer_get_has_selection(void* buffer) {
-	return gtk_text_buffer_get_has_selection(GTK_TEXT_BUFFER(buffer));
-}
-
-static void _gtk_text_buffer_place_cursor(void* buffer, const GtkTextIter* where) {
-	gtk_text_buffer_place_cursor(GTK_TEXT_BUFFER(buffer), where);
-}
-
-static void _gtk_text_buffer_select_range(void* buffer, const GtkTextIter* ins, const GtkTextIter* bound) {
-	gtk_text_buffer_select_range(GTK_TEXT_BUFFER(buffer), ins, bound);
-}
-
-static void _gtk_text_buffer_apply_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
-	gtk_text_buffer_apply_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
-}
-
-static void _gtk_text_buffer_remove_tag_by_name(void* buffer, const gchar* name, const GtkTextIter* start, const GtkTextIter* end) {
-	gtk_text_buffer_remove_tag_by_name(GTK_TEXT_BUFFER(buffer), name, start, end);
-}
-
-static void _gtk_text_buffer_remove_all_tags(void* buffer, const GtkTextIter* start, const GtkTextIter* end) {
-	gtk_text_buffer_remove_all_tags(GTK_TEXT_BUFFER(buffer), start, end);
-}
-
-static void _gtk_text_buffer_get_iter_at_line_offset(void* buffer, GtkTextIter* iter, gint line_number, gint char_offset) {
-	gtk_text_buffer_get_iter_at_line_offset(GTK_TEXT_BUFFER(buffer), iter, line_number, char_offset);
-}
-
-static void _gtk_text_buffer_get_iter_at_offset(void* buffer, GtkTextIter* iter, gint char_offset) {
-	gtk_text_buffer_get_iter_at_offset(GTK_TEXT_BUFFER(buffer), iter, char_offset);
-}
-
-static void _gtk_text_buffer_get_iter_at_line(void* buffer, GtkTextIter* iter, gint line_number) {
-	gtk_text_buffer_get_iter_at_line(GTK_TEXT_BUFFER(buffer), iter, line_number);
-}
-
-static void _gtk_text_buffer_get_iter_at_line_index(void* buffer, GtkTextIter* iter, gint line_number, gint byte_index) {
-	gtk_text_buffer_get_iter_at_line_index(GTK_TEXT_BUFFER(buffer), iter, line_number, byte_index);
-}
-
-static void _gtk_text_buffer_get_iter_at_mark(void* buffer, GtkTextIter* iter, GtkTextMark* mark) {
-	gtk_text_buffer_get_iter_at_mark(GTK_TEXT_BUFFER(buffer), iter, mark);
-}
-
-static void _gtk_text_buffer_get_iter_at_child_anchor(void* buffer, GtkTextIter* iter, GtkTextChildAnchor* anchor) {
-	gtk_text_buffer_get_iter_at_child_anchor(GTK_TEXT_BUFFER(buffer), iter, anchor);
-}
-
-static void _gtk_text_buffer_get_start_iter(void* buffer, GtkTextIter* iter) {
-	gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), iter);
-}
-
-static void _gtk_text_buffer_get_end_iter(void* buffer, GtkTextIter* iter) {
-	gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), iter);
-}
-
-static void _gtk_text_buffer_get_bounds(void* buffer, GtkTextIter* start, GtkTextIter* end) {
-	gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(buffer), start, end);
-}
-
-static gboolean _gtk_text_buffer_get_modified(void* buffer) {
-	return gtk_text_buffer_get_modified(GTK_TEXT_BUFFER(buffer));
-}
-
-static void _gtk_text_buffer_set_modified(void* buffer, gboolean setting) {
-	gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(buffer), setting);
-}
-
-static gboolean _gtk_text_buffer_delete_selection(void* buffer, gboolean interactive, gboolean default_editable) {
-	return gtk_text_buffer_delete_selection(GTK_TEXT_BUFFER(buffer), interactive, default_editable);
-}
-
-// static void gtk_text_buffer_paste_clipboard(void* buffer, GtkClipboard* clipboard, void* override_location, gboolean default_editable);
-// static void gtk_text_buffer_copy_clipboard(void* buffer, GtkClipboard* clipboard);
-// static void gtk_text_buffer_cut_clipboard(void* buffer, GtkClipboard* clipboard, gboolean default_editable);
-// static gboolean gtk_text_buffer_get_selection_bounds(void* buffer, GtkTextIter* start, GtkTextIter* end);
-// static void gtk_text_buffer_begin_user_action(void* buffer);
-// static void gtk_text_buffer_end_user_action(void* buffer);
-// static void gtk_text_buffer_add_selection_clipboard(GtkTextBuffer* buffer, GtkClipboard* clipboard);
-// static void gtk_text_buffer_remove_selection_clipboard(void* buffer, GtkClipboard* clipboard);
-// enum GtkTextBufferTargetInfo;
-// gboolean (*GtkTextBufferDeserializeFunc) (GtkTextBuffer *register_buffer, GtkTextBuffer *content_buffer, void *iter, const guint8 *data, gsize length, gboolean create_tags, gpointer user_data, GError **error);
-// gboolean gtk_text_buffer_deserialize (GtkTextBuffer *register_buffer, GtkTextBuffer *content_buffer, GdkAtom format, void *iter, const guint8 *data, gsize length, GError **error);
-// gboolean gtk_text_buffer_deserialize_get_can_create_tags (GtkTextBuffer *buffer, GdkAtom format);
-// void gtk_text_buffer_deserialize_set_can_create_tags (GtkTextBuffer *buffer, GdkAtom format, gboolean can_create_tags); GtkTargetList* gtk_text_buffer_get_copy_target_list(GtkTextBuffer *buffer) { }
-// GdkAtom * gtk_text_buffer_get_deserialize_formats (GtkTextBuffer *buffer, gint *n_formats);
-// GtkTargetList * gtk_text_buffer_get_paste_target_list (GtkTextBuffer *buffer);
-// GdkAtom * gtk_text_buffer_get_serialize_formats (GtkTextBuffer *buffer, gint *n_formats);
-// GdkAtom gtk_text_buffer_register_deserialize_format (GtkTextBuffer *buffer, const gchar *mime_type, GtkTextBufferDeserializeFunc function, gpointer user_data, GDestroyNotify user_data_destroy);
-// GdkAtom gtk_text_buffer_register_deserialize_tagset (GtkTextBuffer *buffer, const gchar *tagset_name);
-// GdkAtom gtk_text_buffer_register_serialize_format (GtkTextBuffer *buffer, const gchar *mime_type, GtkTextBufferSerializeFunc function, gpointer user_data, GDestroyNotify user_data_destroy);
-// GdkAtom gtk_text_buffer_register_serialize_tagset (GtkTextBuffer *buffer, const gchar *tagset_name); static guint8* (*GtkTextBufferSerializeFunc) (GtkTextBuffer *register_buffer, GtkTextBuffer *content_buffer, const void *start, const void *end, gsize *length, gpointer user_data);
-
-// static guint8* _gtk_text_buffer_serialize(void* register_buffer, void* content_buffer, GdkAtom format, const GtkTextIter* start, const GtkTextIter* end, gsize* length) {
-// 	return gtk_text_buffer_serialize(GTK_TEXT_BUFFER(register_buffer), GTK_TEXT_BUFFER(content_buffer), format, start, end, length);
-// }
-
-// static void _gtk_text_buffer_unregister_deserialize_format(void* buffer, GdkAtom format) {
-// 	gtk_text_buffer_unregister_deserialize_format(GTK_TEXT_BUFFER(buffer), format);
-// }
-
-// static void _gtk_text_buffer_unregister_serialize_format(void* buffer, GdkAtom format) {
-// 	gtk_text_buffer_unregister_serialize_format(GTK_TEXT_BUFFER(buffer), format) {
-// }
-
-static GtkWidget* _gtk_text_view_new_with_buffer(void* buffer) {
-	return gtk_text_view_new_with_buffer(GTK_TEXT_BUFFER(buffer));
-}
-
-static void _gtk_text_view_set_buffer(GtkWidget* textview, void* buffer) {
-	gtk_text_view_set_buffer(GTK_TEXT_VIEW(textview), GTK_TEXT_BUFFER(buffer));
-}
-
-static void* _gtk_text_view_get_buffer(GtkWidget* textview) {
-	return gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 }
 
 //////////////////////////////////////////////
@@ -2726,7 +2488,7 @@ func (v *GtkTextIter) ForwardChar() bool {
 }
 func (v *GtkTextIter) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer{
-		C._gtk_text_iter_get_buffer(&v.TextIter)}
+		C.gtk_text_iter_get_buffer(&v.TextIter)}
 }
 func (v *GtkTextIter) Copy() *GtkTextIter {
 	return &GtkTextIter{
@@ -2855,72 +2617,72 @@ func (v *GtkTextIter) GetMarks() *glib.SList {
 // gtk_text_iter_order
 
 //-----------------------------------------------------------------------
-// GtkTextMark
+// GtkTextMark (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
 type GtkTextMark struct {
 	TextMark *C.GtkTextMark
 }
 
 //-----------------------------------------------------------------------
-// GtkTextBuffer
+// GtkTextBuffer (done 49 out of 74 = 66%)
 //-----------------------------------------------------------------------
 type TextBufferLike interface {
 	GetNativeBuffer() unsafe.Pointer
 }
 
 type GtkTextBuffer struct {
-	TextBuffer unsafe.Pointer
+	TextBuffer *C.GtkTextBuffer
 }
 
+func (v *GtkTextBuffer) GetNativeBuffer() unsafe.Pointer {
+	return unsafe.Pointer(v.TextBuffer)
+}
+func TextBufferFromPointer(v unsafe.Pointer) GtkTextBuffer {
+	return GtkTextBuffer{C.to_GtkTextBuffer(v)}
+}
 func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
 	return &GtkTextBuffer{
-		C._gtk_text_buffer_new(tagtable.TextTagTable)}
-}
-func (v *GtkTextBuffer) GetNativeBuffer() unsafe.Pointer {
-	return v.TextBuffer
-}
-func (v *GtkTextBuffer) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(v.TextBuffer))).Connect(s, f, datas...)
+		C.gtk_text_buffer_new(tagtable.TextTagTable)}
 }
 func (v *GtkTextBuffer) GetLineCount() int {
-	return int(C._gtk_text_buffer_get_line_count(v.TextBuffer))
+	return int(C.gtk_text_buffer_get_line_count(v.TextBuffer))
 }
 func (v *GtkTextBuffer) GetCharCount() int {
-	return int(C._gtk_text_buffer_get_char_count(v.TextBuffer))
+	return int(C.gtk_text_buffer_get_char_count(v.TextBuffer))
 }
-func (v *GtkTextBuffer) GetTextTagTable() *GtkTextTagTable {
+func (v *GtkTextBuffer) GetTagTable() *GtkTextTagTable {
 	return &GtkTextTagTable{
-		C._gtk_text_buffer_get_tag_table(v.TextBuffer)}
+		C.gtk_text_buffer_get_tag_table(v.TextBuffer)}
 }
 func (v *GtkTextBuffer) Insert(iter *GtkTextIter, text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	len := C.strlen(ptr)
-	C._gtk_text_buffer_insert(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len))
-}
-func (v *GtkTextBuffer) InsertInteractive(iter *GtkTextIter, text string, default_editable bool) bool {
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	len := C.strlen(ptr)
-	return gboolean2bool(C._gtk_text_buffer_insert_interactive(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
+	C.gtk_text_buffer_insert(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len))
 }
 func (v *GtkTextBuffer) InsertAtCursor(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	len := C.strlen(ptr)
-	C._gtk_text_buffer_insert_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
+	C.gtk_text_buffer_insert_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
+}
+func (v *GtkTextBuffer) InsertInteractive(iter *GtkTextIter, text string, default_editable bool) bool {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	len := C.strlen(ptr)
+	return gboolean2bool(C.gtk_text_buffer_insert_interactive(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
 }
 func (v *GtkTextBuffer) InsertInteractiveAtCursor(text string, default_editable bool) bool {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	len := C.strlen(ptr)
-	return gboolean2bool(C._gtk_text_buffer_insert_interactive_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
+	return gboolean2bool(C.gtk_text_buffer_insert_interactive_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
 }
 func (v *GtkTextBuffer) InsertRange(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_insert_range(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_insert_range(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) InsertRangeInteractive(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
-	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)))
+	return gboolean2bool(C.gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)))
 }
 func (v *GtkTextBuffer) InsertWithTag(iter *GtkTextIter, text string, tag *GtkTextTag) {
 	ptr := C.CString(text)
@@ -2928,107 +2690,107 @@ func (v *GtkTextBuffer) InsertWithTag(iter *GtkTextIter, text string, tag *GtkTe
 	len := C.strlen(ptr)
 	C._gtk_text_buffer_insert_with_tag(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), tag.TextTag)
 }
-
 //func (v GtkTextBuffer) InsertWithTags(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
 //	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
 //}
+// gtk_text_buffer_insert_with_tags_by_name
 
 func (v *GtkTextBuffer) Delete(start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_delete(v.TextBuffer, &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_delete(v.TextBuffer, &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) DeleteInteractive(start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
-	return gboolean2bool(C._gtk_text_buffer_delete_interactive(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)))
+	return gboolean2bool(C.gtk_text_buffer_delete_interactive(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)))
 }
 func (v *GtkTextBuffer) Backspace(iter *GtkTextIter, interactive bool, default_editable bool) bool {
-	return gboolean2bool(C._gtk_text_buffer_backspace(v.TextBuffer, &iter.TextIter, bool2gboolean(interactive), bool2gboolean(default_editable)))
+	return gboolean2bool(C.gtk_text_buffer_backspace(v.TextBuffer, &iter.TextIter, bool2gboolean(interactive), bool2gboolean(default_editable)))
 }
 func (v *GtkTextBuffer) SetText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	len := C.strlen(ptr)
-	C._gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
+	C.gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
 }
 func (v *GtkTextBuffer) GetText(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
-	pchar := C.to_charptr(C._gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
+	pchar := C.to_charptr(C.gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
 	defer C.free(unsafe.Pointer(pchar))
 	return C.GoString(pchar)
 }
 func (v *GtkTextBuffer) GetSlice(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
-	pchar := C.to_charptr(C._gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
+	pchar := C.to_charptr(C.gtk_text_buffer_get_slice(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
 	defer C.free(unsafe.Pointer(pchar))
 	return C.GoString(pchar)
 }
 func (v *GtkTextBuffer) InsertPixbuf(iter *GtkTextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C._gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf)
+	C.gtk_text_buffer_insert_pixbuf(v.TextBuffer, &iter.TextIter, pixbuf.Pixbuf)
 }
+// gtk_text_buffer_insert_child_anchor
+// gtk_text_buffer_create_child_anchor
+
 func (v *GtkTextBuffer) CreateMark(mark_name string, where *GtkTextIter, left_gravity bool) *GtkTextMark {
 	ptr := C.CString(mark_name)
 	defer C.free_string(ptr)
-	return &GtkTextMark{C._gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter, bool2gboolean(left_gravity))}
+	return &GtkTextMark{C.gtk_text_buffer_create_mark(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter, bool2gboolean(left_gravity))}
 }
 func (v *GtkTextBuffer) MoveMark(mark *GtkTextMark, where *GtkTextIter) {
-	C._gtk_text_buffer_move_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
+	C.gtk_text_buffer_move_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
 }
 func (v *GtkTextBuffer) MoveMarkByName(name string, where *GtkTextIter) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C._gtk_text_buffer_move_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter)
+	C.gtk_text_buffer_move_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr), &where.TextIter)
 }
 func (v *GtkTextBuffer) AddMark(mark *GtkTextMark, where *GtkTextIter) {
-	C._gtk_text_buffer_add_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
+	C.gtk_text_buffer_add_mark(v.TextBuffer, mark.TextMark, &where.TextIter)
 }
 func (v *GtkTextBuffer) DeleteMark(mark *GtkTextMark) {
-	C._gtk_text_buffer_delete_mark(v.TextBuffer, mark.TextMark)
+	C.gtk_text_buffer_delete_mark(v.TextBuffer, mark.TextMark)
 }
 func (v *GtkTextBuffer) DeleteMarkByName(name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C._gtk_text_buffer_delete_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr))
+	C.gtk_text_buffer_delete_mark_by_name(v.TextBuffer, C.to_gcharptr(ptr))
 }
 func (v *GtkTextBuffer) GetMark(name string) *GtkTextMark {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 	return &GtkTextMark{
-		C._gtk_text_buffer_get_mark(v.TextBuffer, C.to_gcharptr(ptr))}
+		C.gtk_text_buffer_get_mark(v.TextBuffer, C.to_gcharptr(ptr))}
 }
 func (v *GtkTextBuffer) GetInsert() *GtkTextMark {
 	return &GtkTextMark{
-		C._gtk_text_buffer_get_insert(v.TextBuffer)}
+		C.gtk_text_buffer_get_insert(v.TextBuffer)}
 }
 func (v *GtkTextBuffer) GetSelectionBound() *GtkTextMark {
 	return &GtkTextMark{
-		C._gtk_text_buffer_get_selection_bound(v.TextBuffer)}
-}
-func (v *GtkTextBuffer) GetSelectionBounds(be, en *GtkTextIter) bool {
-	return gboolean2bool(C._gtk_text_buffer_get_selection_bounds(v.TextBuffer, &be.TextIter, &en.TextIter))
+		C.gtk_text_buffer_get_selection_bound(v.TextBuffer)}
 }
 func (v *GtkTextBuffer) GetHasSelection() bool {
-	return gboolean2bool(C._gtk_text_buffer_get_has_selection(v.TextBuffer))
+	return gboolean2bool(C.gtk_text_buffer_get_has_selection(v.TextBuffer))
 }
 func (v *GtkTextBuffer) PlaceCursor(where *GtkTextIter) {
-	C._gtk_text_buffer_place_cursor(v.TextBuffer, &where.TextIter)
+	C.gtk_text_buffer_place_cursor(v.TextBuffer, &where.TextIter)
 }
 func (v *GtkTextBuffer) SelectRange(ins *GtkTextIter, bound *GtkTextIter) {
-	C._gtk_text_buffer_select_range(v.TextBuffer, &ins.TextIter, &bound.TextIter)
+	C.gtk_text_buffer_select_range(v.TextBuffer, &ins.TextIter, &bound.TextIter)
 }
 func (v *GtkTextBuffer) ApplyTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
-	C.gtk_text_buffer_apply_tag(C.to_GtkTextBuffer(v.TextBuffer), tag.TextTag, &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_apply_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) RemoveTag(tag *GtkTextTag, start *GtkTextIter, end *GtkTextIter) {
-	C.gtk_text_buffer_remove_tag(C.to_GtkTextBuffer(v.TextBuffer), tag.TextTag, &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_remove_tag(v.TextBuffer, tag.TextTag, &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) ApplyTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C._gtk_text_buffer_apply_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_apply_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) RemoveTagByName(name string, start *GtkTextIter, end *GtkTextIter) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C._gtk_text_buffer_remove_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_remove_tag_by_name(v.TextBuffer, C.to_gcharptr(ptr), &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) RemoveAllTags(start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_remove_all_tags(v.TextBuffer, &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_remove_all_tags(v.TextBuffer, &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) CreateTag(tag_name string, props map[string]string) *GtkTextTag {
 	ptr := C.CString(tag_name)
@@ -3044,60 +2806,88 @@ func (v *GtkTextBuffer) CreateTag(tag_name string, props map[string]string) *Gtk
 	return &GtkTextTag{tag}
 }
 func (v *GtkTextBuffer) GetIterAtLineOffset(iter *GtkTextIter, line_number int, char_offset int) {
-	C._gtk_text_buffer_get_iter_at_line_offset(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(char_offset))
+	C.gtk_text_buffer_get_iter_at_line_offset(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(char_offset))
 }
 func (v *GtkTextBuffer) GetIterAtOffset(iter *GtkTextIter, char_offset int) {
-	C._gtk_text_buffer_get_iter_at_offset(v.TextBuffer, &iter.TextIter, C.gint(char_offset))
+	C.gtk_text_buffer_get_iter_at_offset(v.TextBuffer, &iter.TextIter, C.gint(char_offset))
 }
 func (v *GtkTextBuffer) GetIterAtLine(iter *GtkTextIter, line_number int) {
-	C._gtk_text_buffer_get_iter_at_line(v.TextBuffer, &iter.TextIter, C.gint(line_number))
+	C.gtk_text_buffer_get_iter_at_line(v.TextBuffer, &iter.TextIter, C.gint(line_number))
 }
 func (v *GtkTextBuffer) GetIterAtLineIndex(iter *GtkTextIter, line_number int, byte_index int) {
-	C._gtk_text_buffer_get_iter_at_line_index(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(byte_index))
+	C.gtk_text_buffer_get_iter_at_line_index(v.TextBuffer, &iter.TextIter, C.gint(line_number), C.gint(byte_index))
 }
 func (v *GtkTextBuffer) GetIterAtMark(iter *GtkTextIter, mark *GtkTextMark) {
-	C._gtk_text_buffer_get_iter_at_mark(v.TextBuffer, &iter.TextIter, mark.TextMark)
+	C.gtk_text_buffer_get_iter_at_mark(v.TextBuffer, &iter.TextIter, mark.TextMark)
 }
 func (v *GtkTextBuffer) GetIterAtChildAnchor(iter *GtkTextIter, anchor *GtkTextChildAnchor) {
-	C._gtk_text_buffer_get_iter_at_child_anchor(v.TextBuffer, &iter.TextIter, anchor.TextChildAnchor)
+	C.gtk_text_buffer_get_iter_at_child_anchor(v.TextBuffer, &iter.TextIter, anchor.TextChildAnchor)
 }
 func (v *GtkTextBuffer) GetStartIter(iter *GtkTextIter) {
-	C._gtk_text_buffer_get_start_iter(v.TextBuffer, &iter.TextIter)
+	C.gtk_text_buffer_get_start_iter(v.TextBuffer, &iter.TextIter)
 }
 func (v *GtkTextBuffer) GetEndIter(iter *GtkTextIter) {
-	C._gtk_text_buffer_get_end_iter(v.TextBuffer, &iter.TextIter)
+	C.gtk_text_buffer_get_end_iter(v.TextBuffer, &iter.TextIter)
 }
 func (v *GtkTextBuffer) GetBounds(start *GtkTextIter, end *GtkTextIter) {
-	C._gtk_text_buffer_get_bounds(v.TextBuffer, &start.TextIter, &end.TextIter)
+	C.gtk_text_buffer_get_bounds(v.TextBuffer, &start.TextIter, &end.TextIter)
 }
 func (v *GtkTextBuffer) GetModified() bool {
-	return gboolean2bool(C._gtk_text_buffer_get_modified(v.TextBuffer))
+	return gboolean2bool(C.gtk_text_buffer_get_modified(v.TextBuffer))
 }
 func (v *GtkTextBuffer) SetModified(setting bool) {
-	C._gtk_text_buffer_set_modified(v.TextBuffer, bool2gboolean(setting))
+	C.gtk_text_buffer_set_modified(v.TextBuffer, bool2gboolean(setting))
 }
 func (v *GtkTextBuffer) DeleteSelection(interactive bool, default_editable bool) {
-	C._gtk_text_buffer_delete_selection(v.TextBuffer, bool2gboolean(interactive), bool2gboolean(default_editable))
+	C.gtk_text_buffer_delete_selection(v.TextBuffer, bool2gboolean(interactive), bool2gboolean(default_editable))
 }
-// TODO
+// gtk_text_buffer_paste_clipboard
+// gtk_text_buffer_copy_clipboard
+// gtk_text_buffer_cut_clipboard
+
+func (v *GtkTextBuffer) GetSelectionBounds(be, en *GtkTextIter) bool {
+	return gboolean2bool(C.gtk_text_buffer_get_selection_bounds(v.TextBuffer, &be.TextIter, &en.TextIter))
+}
+// gtk_text_buffer_begin_user_action
+// gtk_text_buffer_end_user_action
+// gtk_text_buffer_add_selection_clipboard
+// gtk_text_buffer_remove_selection_clipboard
+// gtk_text_buffer_deserialize
+// gtk_text_buffer_deserialize_get_can_create_tags
+// gtk_text_buffer_deserialize_set_can_create_tags
+// gtk_text_buffer_get_copy_target_list
+// gtk_text_buffer_get_deserialize_formats
+// gtk_text_buffer_get_paste_target_list
+// gtk_text_buffer_get_serialize_formats
+// gtk_text_buffer_register_deserialize_format
+// gtk_text_buffer_register_deserialize_tagset
+// gtk_text_buffer_register_serialize_format
+// gtk_text_buffer_register_serialize_tagset
+// gtk_text_buffer_serialize
+// gtk_text_buffer_unregister_deserialize_format
+// gtk_text_buffer_unregister_serialize_format
+
+func (v *GtkTextBuffer) Connect(s string, f interface{}, datas ...interface{}) {
+	//glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(v.TextBuffer))).Connect(s, f, datas...)
+	glib.ObjectFromNative(unsafe.Pointer(v.TextBuffer)).Connect(s, f, datas...)
+}
 
 //-----------------------------------------------------------------------
-// GtkTextTag
+// GtkTextTag (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
 type GtkTextTag struct {
 	TextTag *C.GtkTextTag
 }
 
 //-----------------------------------------------------------------------
-// GtkTextTagTable
+// GtkTextTagTable (done 5 out of 6 = 83%)
 //-----------------------------------------------------------------------
 type GtkTextTagTable struct {
 	TextTagTable *C.GtkTextTagTable
 }
 
 func TextTagTable() *GtkTextTagTable {
-	return &GtkTextTagTable{
-		C.gtk_text_tag_table_new()}
+	return &GtkTextTagTable{C.gtk_text_tag_table_new()}
 }
 func (v *GtkTextTagTable) Add(tag *GtkTextTag) {
 	C.gtk_text_tag_table_add(v.TextTagTable, tag.TextTag)
@@ -3111,62 +2901,70 @@ func (v *GtkTextTagTable) Lookup(name string) *GtkTextTag {
 	return &GtkTextTag{
 		C.gtk_text_tag_table_lookup(v.TextTagTable, C.to_gcharptr(ptr))}
 }
+// gtk_text_tag_table_foreach
+
 func (v *GtkTextTagTable) GetSize() int {
 	return int(C.gtk_text_tag_table_get_size(v.TextTagTable))
 }
 
-// TODO
-// gtk_text_tag_table_foreach
+//-----------------------------------------------------------------------
+// GtkTextView (done 18 out of 64 = 28%)
+//-----------------------------------------------------------------------
+type GtkWrapMode int
 
-//-----------------------------------------------------------------------
-// GtkTextView
-//-----------------------------------------------------------------------
+const (
+	GTK_WRAP_NONE      GtkWrapMode = 0
+	GTK_WRAP_CHAR      GtkWrapMode = 1
+	GTK_WRAP_WORD      GtkWrapMode = 2
+	GTK_WRAP_WORD_CHAR GtkWrapMode = 3
+)
+
 type GtkTextChildAnchor struct {
 	TextChildAnchor *C.GtkTextChildAnchor
 }
 
-
+// gtk_text_child_anchor_new
+// gtk_text_child_anchor_get_widgets
+// gtk_text_child_anchor_get_deleted
 type GtkTextView struct {
 	GtkContainer
 }
 
 func TextView() *GtkTextView {
-	return &GtkTextView{GtkContainer{GtkWidget{
-		C.gtk_text_view_new()}}}
+	return &GtkTextView{GtkContainer{GtkWidget{C.gtk_text_view_new()}}}
 }
 func TextViewWithBuffer(b GtkTextBuffer) *GtkTextView {
 	return &GtkTextView{GtkContainer{GtkWidget{
-		C._gtk_text_view_new_with_buffer(b.TextBuffer)}}}
+		C.gtk_text_view_new_with_buffer(b.TextBuffer)}}}
 }
 func (v *GtkTextView) SetBuffer(b TextBufferLike) {
-	C._gtk_text_view_set_buffer(v.Widget, b.GetNativeBuffer())
+	C.gtk_text_view_set_buffer(C.to_GtkTextView(v.Widget), C.to_GtkTextBuffer(b.GetNativeBuffer()))
 }
 func (v *GtkTextView) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer{
-		C._gtk_text_view_get_buffer(v.Widget)}
-}
-func (v *GtkTextView) ScrollToIter(iter *GtkTextIter, wm float64, ua bool, xa float64, ya float64) bool {
-	return gboolean2bool(C.gtk_text_view_scroll_to_iter(C.to_GtkTextView(v.Widget),
-		&iter.TextIter, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya)))
+		C.gtk_text_view_get_buffer(C.to_GtkTextView(v.Widget))}
 }
 func (v *GtkTextView) ScrollToMark(mark *GtkTextMark, wm float64, ua bool, xa float64, ya float64) {
 	C.gtk_text_view_scroll_to_mark(C.to_GtkTextView(v.Widget),
 		mark.TextMark, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya))
 }
-
-// TODO
+func (v *GtkTextView) ScrollToIter(iter *GtkTextIter, wm float64, ua bool, xa float64, ya float64) bool {
+	return gboolean2bool(C.gtk_text_view_scroll_to_iter(C.to_GtkTextView(v.Widget),
+		&iter.TextIter, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya)))
+}
 // void gtk_text_view_scroll_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_move_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
 // gboolean gtk_text_view_place_cursor_onscreen(GtkTextView* text_view);
-
-func (v *GtkTextView) GetCursorVisible() bool {
-	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.to_GtkTextView(v.Widget)))
-}
-func (v *GtkTextView) SetCursorVisible(setting bool) {
-	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.Widget), bool2gboolean(setting))
-}
-
+// gtk_text_view_get_visible_rect
 // void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
+// void gtk_text_view_get_line_at_y(GtkTextView* text_view, GtkTextIter* target_iter, gint y, gint* line_top);
+
+func (v *GtkTextView) GetLineYrange(iter *GtkTextIter, y *int, h *int) {
+	var yy, hh C.gint
+	C.gtk_text_view_get_line_yrange(C.to_GtkTextView(v.Widget), &iter.TextIter, &yy, &hh)
+	*y = int(yy)
+	*h = int(hh)
+}
 // void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
 
 func (v *GtkTextView) GetIterAtPosition(iter *GtkTextIter, trailing *int, x int, y int) {
@@ -3178,14 +2976,6 @@ func (v *GtkTextView) GetIterAtPosition(iter *GtkTextIter, trailing *int, x int,
 		C.gtk_text_view_get_iter_at_position(C.to_GtkTextView(v.Widget), &iter.TextIter, nil, C.gint(x), C.gint(y))
 	}
 }
-func (v *GtkTextView) GetLineYrange(iter *GtkTextIter, y *int, h *int) {
-	var yy, hh C.gint
-	C.gtk_text_view_get_line_yrange(C.to_GtkTextView(v.Widget), &iter.TextIter, &yy, &hh)
-	*y = int(yy)
-	*h = int(hh)
-}
-
-// void gtk_text_view_get_line_at_y(GtkTextView* text_view, GtkTextIter* target_iter, gint y, gint* line_top);
 // void gtk_text_view_buffer_to_window_coords(GtkTextView* text_view, GtkTextWindowType win, gint buffer_x, gint buffer_y, gint* window_x, gint* window_y);
 // void gtk_text_view_window_to_buffer_coords(GtkTextView* text_view, GtkTextWindowType win, gint window_x, gint window_y, gint* buffer_x, gint* buffer_y);
 // GdkWindow* gtk_text_view_get_window(GtkTextView* text_view, GtkTextWindowType win);
@@ -3202,40 +2992,30 @@ func (v *GtkTextView) GetLineYrange(iter *GtkTextIter, y *int, h *int) {
 // void gtk_text_view_add_child_in_window(GtkTextView* text_view, GtkWidget* child, GtkTextWindowType which_window, gint xpos, gint ypos);
 // void gtk_text_view_move_child(GtkTextView* text_view, GtkWidget* child, gint xpos, gint ypos);
 
-type GtkWrapMode int
-
-const (
-	GTK_WRAP_NONE      GtkWrapMode = 0
-	GTK_WRAP_CHAR      GtkWrapMode = 1
-	GTK_WRAP_WORD      GtkWrapMode = 2
-	GTK_WRAP_WORD_CHAR GtkWrapMode = 3
-)
-
 func (v *GtkTextView) SetWrapMode(mode GtkWrapMode) {
 	C.gtk_text_view_set_wrap_mode(C.to_GtkTextView(v.Widget), C.GtkWrapMode(mode))
 }
 func (v *GtkTextView) GetWrapMode() GtkWrapMode {
 	return GtkWrapMode(C.gtk_text_view_get_wrap_mode(C.to_GtkTextView(v.Widget)))
 }
-func (v *GtkTextView) GetEditable() bool {
-	return gboolean2bool(C.gtk_text_view_get_editable(C.to_GtkTextView(v.Widget)))
-}
 func (v *GtkTextView) SetEditable(setting bool) {
 	C.gtk_text_view_set_editable(C.to_GtkTextView(v.Widget), bool2gboolean(setting))
 }
-func (v *GtkTextView) GetOverwrite() bool {
-	return gboolean2bool(C.gtk_text_view_get_overwrite(C.to_GtkTextView(v.Widget)))
+func (v *GtkTextView) GetEditable() bool {
+	return gboolean2bool(C.gtk_text_view_get_editable(C.to_GtkTextView(v.Widget)))
+}
+func (v *GtkTextView) SetCursorVisible(setting bool) {
+	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkTextView) GetCursorVisible() bool {
+	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.to_GtkTextView(v.Widget)))
 }
 func (v *GtkTextView) SetOverwrite(overwrite bool) {
 	C.gtk_text_view_set_overwrite(C.to_GtkTextView(v.Widget), bool2gboolean(overwrite))
 }
-func (v *GtkTextView) GetAcceptsTab() bool {
-	return gboolean2bool(C.gtk_text_view_get_accepts_tab(C.to_GtkTextView(v.Widget)))
+func (v *GtkTextView) GetOverwrite() bool {
+	return gboolean2bool(C.gtk_text_view_get_overwrite(C.to_GtkTextView(v.Widget)))
 }
-func (v *GtkTextView) SetAcceptsTab(accepts_tab bool) {
-	C.gtk_text_view_set_accepts_tab(C.to_GtkTextView(v.Widget), bool2gboolean(accepts_tab))
-}
-
 // void gtk_text_view_set_pixels_above_lines(GtkTextView* text_view, gint pixels_above_lines);
 // gint gtk_text_view_get_pixels_above_lines(GtkTextView* text_view);
 // void gtk_text_view_set_pixels_below_lines(GtkTextView* text_view, gint pixels_below_lines);
@@ -3252,7 +3032,18 @@ func (v *GtkTextView) SetAcceptsTab(accepts_tab bool) {
 // gint gtk_text_view_get_indent(GtkTextView* text_view);
 // void gtk_text_view_set_tabs(GtkTextView* text_view, PangoTabArray* tabs);
 // PangoTabArray* gtk_text_view_get_tabs(GtkTextView* text_view);
+
+func (v *GtkTextView) SetAcceptsTab(accepts_tab bool) {
+	C.gtk_text_view_set_accepts_tab(C.to_GtkTextView(v.Widget), bool2gboolean(accepts_tab))
+}
+func (v *GtkTextView) GetAcceptsTab() bool {
+	return gboolean2bool(C.gtk_text_view_get_accepts_tab(C.to_GtkTextView(v.Widget)))
+}
 // GtkTextAttributes* gtk_text_view_get_default_attributes(GtkTextView* text_view);
+// gtk_text_view_im_context_filter_keypress //since 2.22
+// gtk_text_view_reset_im_context //since 2.22
+// gtk_text_view_get_hadjustment //since 2.22
+// gtk_text_view_get_vadjustment //since 2.22
 
 //-----------------------------------------------------------------------
 // GtkTreePath
