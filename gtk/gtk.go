@@ -775,11 +775,22 @@ func GtkStockListIDs() *glib.SList {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkSettings
+// GtkSettings (done 3 out of 13 = 23%)
 //-----------------------------------------------------------------------
 type GtkSettings struct {
 	Settings *C.GtkSettings
 }
+
+// gtk_settings_get_default
+// gtk_settings_get_for_screen
+// gtk_settings_install_property
+// gtk_settings_install_property_parser
+// gtk_rc_property_parse_color
+// gtk_rc_property_parse_enum
+// gtk_rc_property_parse_flags
+// gtk_rc_property_parse_requisition
+// gtk_rc_property_parse_border
+// gtk_settings_set_property_value
 
 func (s *GtkSettings) SetStringProperty(name string, v_string string, origin string) {
 	ptrn := C.CString(name)
