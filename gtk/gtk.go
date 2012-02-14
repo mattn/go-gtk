@@ -1211,7 +1211,7 @@ func (v *GtkWindow) Resize(width int, height int) {
 // gtk_window_group_get_current_grab
 
 //-----------------------------------------------------------------------
-// GtkAboutDialog
+// GtkAboutDialog (done 29 out of 32 = 90%)
 //-----------------------------------------------------------------------
 type GtkAboutDialog struct {
 	GtkDialog
@@ -1220,17 +1220,6 @@ type GtkAboutDialog struct {
 func AboutDialog() *GtkAboutDialog {
 	return &GtkAboutDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_about_dialog_new()}}}}}}
-}
-func ShowAboutDialog(v ...interface{}) {
-	//TODO
-}
-func (v *GtkAboutDialog) GetName() string {
-	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_name(C.to_GtkAboutDialog(v.Widget))))
-}
-func (v *GtkAboutDialog) SetName(name string) {
-	ptr := C.CString(name)
-	defer C.free_string(ptr)
-	C.gtk_about_dialog_set_name(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkAboutDialog) GetProgramName() string {
 	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_program_name(C.to_GtkAboutDialog(v.Widget))))
@@ -1317,28 +1306,6 @@ func (v *GtkAboutDialog) SetAuthors(authors []string) {
 	C.gtk_about_dialog_set_authors(C.to_GtkAboutDialog(v.Widget), cauthors)
 	C.destroy_strings(cauthors)
 }
-func (v *GtkAboutDialog) GetDocumenters() []string {
-	var documenters []string
-	cdocumenters := C.gtk_about_dialog_get_documenters(C.to_GtkAboutDialog(v.Widget))
-	for {
-		documenters = append(documenters, C.GoString(C.to_charptr(*cdocumenters)))
-		cdocumenters = C.next_gcharptr(cdocumenters)
-		if *cdocumenters == nil {
-			break
-		}
-	}
-	return documenters
-}
-func (v *GtkAboutDialog) SetDocumenters(documenters []string) {
-	cdocumenters := C.make_strings(C.int(len(documenters)))
-	for i, author := range documenters {
-		ptr := C.CString(author)
-		defer C.free_string(ptr)
-		C.set_string(cdocumenters, C.int(i), C.to_gcharptr(ptr))
-	}
-	C.gtk_about_dialog_set_documenters(C.to_GtkAboutDialog(v.Widget), cdocumenters)
-	C.destroy_strings(cdocumenters)
-}
 func (v *GtkAboutDialog) GetArtists() []string {
 	var artists []string
 	cartists := C.gtk_about_dialog_get_artists(C.to_GtkAboutDialog(v.Widget))
@@ -1360,6 +1327,28 @@ func (v *GtkAboutDialog) SetArtists(artists []string) {
 	}
 	C.gtk_about_dialog_set_artists(C.to_GtkAboutDialog(v.Widget), cartists)
 	C.destroy_strings(cartists)
+}
+func (v *GtkAboutDialog) GetDocumenters() []string {
+	var documenters []string
+	cdocumenters := C.gtk_about_dialog_get_documenters(C.to_GtkAboutDialog(v.Widget))
+	for {
+		documenters = append(documenters, C.GoString(C.to_charptr(*cdocumenters)))
+		cdocumenters = C.next_gcharptr(cdocumenters)
+		if *cdocumenters == nil {
+			break
+		}
+	}
+	return documenters
+}
+func (v *GtkAboutDialog) SetDocumenters(documenters []string) {
+	cdocumenters := C.make_strings(C.int(len(documenters)))
+	for i, author := range documenters {
+		ptr := C.CString(author)
+		defer C.free_string(ptr)
+		C.set_string(cdocumenters, C.int(i), C.to_gcharptr(ptr))
+	}
+	C.gtk_about_dialog_set_documenters(C.to_GtkAboutDialog(v.Widget), cdocumenters)
+	C.destroy_strings(cdocumenters)
 }
 func (v *GtkAboutDialog) GetTranslatorCredits() string {
 	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_translator_credits(C.to_GtkAboutDialog(v.Widget))))
@@ -1384,7 +1373,11 @@ func (v *GtkAboutDialog) SetLogoIconName(icon_name string) {
 	defer C.free_string(ptr)
 	C.gtk_about_dialog_set_logo_icon_name(C.to_GtkAboutDialog(v.Widget), C.to_gcharptr(ptr))
 }
-// FINISH
+
+// gtk_about_dialog_set_email_hook //deprecated since 2.24
+// gtk_about_dialog_set_url_hook //deprecated since 2.24
+
+// gtk_show_about_dialog
 
 //-----------------------------------------------------------------------
 // GtkAssistant
