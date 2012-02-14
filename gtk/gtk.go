@@ -1,3 +1,6 @@
+/*
+Go Bindings for Gtk+ 2. Support version 2.16 and later.
+*/
 package gtk
 
 /*
