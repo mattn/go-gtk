@@ -1765,7 +1765,7 @@ func (v *GtkLabel) GetTrackVisitedLinks() bool {
 }
 
 //-----------------------------------------------------------------------
-// GtkProgressBar
+// GtkProgressBar (done 10 out of 12 = 83%)
 //-----------------------------------------------------------------------
 type GtkProgressBarOrientation int
 
@@ -1786,37 +1786,40 @@ func ProgressBar() *GtkProgressBar {
 func (v *GtkProgressBar) Pulse() {
 	C.gtk_progress_bar_pulse(C.to_GtkProgressBar(v.Widget))
 }
-func (v *GtkProgressBar) GetFraction() float64 {
-	r := C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget))
-	return float64(r)
-}
-func (v *GtkProgressBar) SetFraction(fraction float64) {
-	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
-}
-func (v *GtkProgressBar) GetText() string {
-	return C.GoString(C.to_charptr(C.gtk_progress_bar_get_text(C.to_GtkProgressBar(v.Widget))))
-}
 func (v *GtkProgressBar) SetText(show_text string) {
 	ptr := C.CString(show_text)
 	defer C.free_string(ptr)
 	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkProgressBar) GetPulseStep() float64 {
-	r := C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget))
-	return float64(r)
+func (v *GtkProgressBar) SetFraction(fraction float64) {
+	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
 }
 func (v *GtkProgressBar) SetPulseStep(fraction float64) {
 	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.Widget), C.gdouble(fraction))
 }
-func (v *GtkProgressBar) GetOrientation() GtkProgressBarOrientation {
-	return GtkProgressBarOrientation(C.gtk_progress_bar_get_orientation(C.to_GtkProgressBar(v.Widget)))
-}
 func (v *GtkProgressBar) SetOrientation(i GtkProgressBarOrientation) {
 	C.gtk_progress_bar_set_orientation(C.to_GtkProgressBar(v.Widget), C.GtkProgressBarOrientation(i))
 }
+// gtk_progress_bar_set_ellipsize
+
+func (v *GtkProgressBar) GetText() string {
+	return C.GoString(C.to_charptr(C.gtk_progress_bar_get_text(C.to_GtkProgressBar(v.Widget))))
+}
+func (v *GtkProgressBar) GetFraction() float64 {
+	r := C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.Widget))
+	return float64(r)
+}
+func (v *GtkProgressBar) GetPulseStep() float64 {
+	r := C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.Widget))
+	return float64(r)
+}
+func (v *GtkProgressBar) GetOrientation() GtkProgressBarOrientation {
+	return GtkProgressBarOrientation(C.gtk_progress_bar_get_orientation(C.to_GtkProgressBar(v.Widget)))
+}
+// gtk_progress_bar_get_ellipsize
 
 //-----------------------------------------------------------------------
-// GtkStatusbar
+// GtkStatusbar (done 7 out of 9 = 77%)
 //-----------------------------------------------------------------------
 type GtkStatusbar struct {
 	GtkHBox
@@ -1842,13 +1845,15 @@ func (v *GtkStatusbar) Pop(context_id uint) {
 func (v *GtkStatusbar) Remove(context_id uint, message_id uint) {
 	C.gtk_statusbar_remove(C.to_GtkStatusbar(v.Widget), C.guint(context_id), C.guint(message_id))
 }
-func (v *GtkStatusbar) GetHasResizeGrip() bool {
-	return gboolean2bool(C.gtk_statusbar_get_has_resize_grip(C.to_GtkStatusbar(v.Widget)))
-}
+// gtk_statusbar_remove_all //since 2.22
+
 func (v *GtkStatusbar) SetHasResizeGrip(add_tearoffs bool) {
 	C.gtk_statusbar_set_has_resize_grip(C.to_GtkStatusbar(v.Widget), bool2gboolean(add_tearoffs))
 }
-// FINISH
+func (v *GtkStatusbar) GetHasResizeGrip() bool {
+	return gboolean2bool(C.gtk_statusbar_get_has_resize_grip(C.to_GtkStatusbar(v.Widget)))
+}
+// gtk_statusbar_get_message_area //since 2.20
 
 //-----------------------------------------------------------------------
 // GtkInfoBar (done 0 out of 12 = 0%) //since 2.18
@@ -1868,7 +1873,7 @@ func (v *GtkStatusbar) SetHasResizeGrip(add_tearoffs bool) {
 // gtk_info_bar_get_content_area
 
 //-----------------------------------------------------------------------
-// GtkStatusIcon
+// GtkStatusIcon (done 13 out of 36 = 36%)
 //-----------------------------------------------------------------------
 type GtkStatusIcon struct {
 	StatusIcon *C.GtkStatusIcon
@@ -1900,7 +1905,6 @@ func StatusIconFromIconName(icon_name string) *GtkStatusIcon {
 	return &GtkStatusIcon{
 		C.gtk_status_icon_new_from_icon_name(C.to_gcharptr(ptr))}
 }
-
 //GtkStatusIcon *gtk_status_icon_new_from_gicon(GIcon *icon);
 
 func (v *GtkStatusIcon) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
@@ -1921,7 +1925,6 @@ func (v *GtkStatusIcon) SetFromIconName(icon_name string) {
 	defer C.free_string(ptr)
 	C.gtk_status_icon_set_from_icon_name(v.StatusIcon, C.to_gcharptr(ptr))
 }
-
 //void gtk_status_icon_set_from_gicon (GtkStatusIcon *status_icon, GIcon *icon);
 //GtkImageType gtk_status_icon_get_storage_type (GtkStatusIcon *status_icon);
 
@@ -1935,26 +1938,26 @@ func (v *GtkStatusIcon) GetStock() string {
 func (v *GtkStatusIcon) GetIconName() string {
 	return C.GoString(C.to_charptr(C.gtk_status_icon_get_icon_name(v.StatusIcon)))
 }
-
 //GIcon *gtk_status_icon_get_gicon (GtkStatusIcon *status_icon);
 
 //gint gtk_status_icon_get_size (GtkStatusIcon *status_icon);
 //void gtk_status_icon_set_screen (GtkStatusIcon *status_icon, GdkScreen *screen);
 //GdkScreen *gtk_status_icon_get_screen (GtkStatusIcon *status_icon);
-//void gtk_status_icon_set_tooltip (GtkStatusIcon *status_icon, const gchar *tooltip_text);
-//void gtk_status_icon_set_has_tooltip (GtkStatusIcon *status_icon, gboolean has_tooltip);
-//void gtk_status_icon_set_tooltip_text (GtkStatusIcon *status_icon, const gchar *text);
-//void gtk_status_icon_set_tooltip_markup (GtkStatusIcon *status_icon, const gchar *markup);
-//void gtk_status_icon_set_title (GtkStatusIcon *status_icon, const gchar *title);
-//gchar *gtk_status_icon_get_title (GtkStatusIcon *status_icon);
-//void gtk_status_icon_set_name (GtkStatusIcon *status_icon, const gchar *name);
-//void gtk_status_icon_set_visible (GtkStatusIcon *status_icon, gboolean visible);
-//gboolean gtk_status_icon_get_visible (GtkStatusIcon *status_icon);
-//void gtk_status_icon_set_blinking (GtkStatusIcon *status_icon, gboolean blinking);
-//gboolean gtk_status_icon_get_blinking (GtkStatusIcon *status_icon);
-//gboolean gtk_status_icon_is_embedded (GtkStatusIcon *status_icon);
-//void gtk_status_icon_position_menu (GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data);
+// gtk_status_icon_set_tooltip_text
+// gtk_status_icon_get_tooltip_text
+// gtk_status_icon_set_tooltip_markup
+// gtk_status_icon_get_tooltip_markup
+// gtk_status_icon_set_has_tooltip
+// gtk_status_icon_get_has_tooltip
+// gtk_status_icon_set_title //since 2.18
 
+// gtk_status_icon_get_title //since 2.18
+// gtk_status_icon_set_name //since 2.20
+// gtk_status_icon_set_visible
+// gtk_status_icon_get_visible
+// gtk_status_icon_set_blinking //deprecated since 2.22
+// gtk_status_icon_get_blinking //deprecated since 2.22
+// gtk_status_icon_is_embedded
 func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data interface{}) {
 	x := C.gint(*px)
 	y := C.gint(*py)
@@ -1968,16 +1971,13 @@ func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data i
 	*py = int(y)
 	*push_in = gboolean2bool(pi)
 }
+
+// gtk_status_icon_get_geometry
+// gtk_status_icon_get_x11_window_id
+
 func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
 	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.StatusIcon)))).Connect(s, f, datas...)
 }
-
-//gboolean gtk_status_icon_get_geometry (GtkStatusIcon *status_icon, GdkScreen **screen, GdkRectangle *area, GtkOrientation *orientation);
-//gboolean gtk_status_icon_get_has_tooltip (GtkStatusIcon *status_icon);
-//gchar *gtk_status_icon_get_tooltip_text (GtkStatusIcon *status_icon);
-//gchar *gtk_status_icon_get_tooltip_markup (GtkStatusIcon *status_icon);
-
-//guint32 gtk_status_icon_get_x11_window_id (GtkStatusIcon *status_icon);
 
 //-----------------------------------------------------------------------
 // GtkSpinner (done 0 out of 3 = 0%)
@@ -1988,21 +1988,17 @@ func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
 // gtk_spinner_stop //since 2.20
 
 //-----------------------------------------------------------------------
-// GtkButton
+// GtkButton (done 9 out of 26 = 34%)
 //-----------------------------------------------------------------------
-type ButtonLike interface { // Buttons are LabelLike Widgets!
+/*type ButtonLike interface { // Buttons are LabelLike Widgets!
 	LabelLike
 	// the following should be just Clickable; ...
 	Clicked(interface{}, ...interface{}) // this is a very simple interface...
-}
-type Clickable interface {
+}*/
+/*type Clickable interface {
 	WidgetLike
 	Clicked(interface{}, ...interface{}) // this is a very simple interface...
-}
-
-func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) {
-	v.Connect("clicked", onclick, datas...)
-}
+}*/
 
 type GtkButton struct {
 	GtkBin
@@ -2020,6 +2016,19 @@ func ButtonWithLabel(label string) *GtkButton {
 	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_button_new_with_label(C.to_gcharptr(ptr))}}}}
 }
+// gtk_button_new_with_mnemonic
+// gtk_button_new_from_stock
+// gtk_button_pressed //deprecated since 2.20
+// gtk_button_released //deprecated since 2.20
+
+func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) {
+	v.Connect("clicked", onclick, datas...)
+}
+// gtk_button_enter //deprecated since 2.20
+// gtk_button_leave //deprecated since 2.20
+// gtk_button_set_relief
+// gtk_button_get_relief
+
 func (v *GtkButton) GetLabel() string {
 	return C.GoString(C.to_charptr(C.gtk_button_get_label(C.to_GtkButton(v.Widget))))
 }
@@ -2028,12 +2037,8 @@ func (v *GtkButton) SetLabel(label string) {
 	defer C.free_string(ptr)
 	C.gtk_button_set_label(C.to_GtkButton(v.Widget), C.to_gcharptr(ptr))
 }
-
-// TODO
-// gtk_button_new_from_stock
-// gtk_button_new_with_mnemonic
-// gtk_button_set_relief
-// gtk_button_get_relief
+// gtk_button_get_use_stock
+// gtk_button_set_use_stock
 
 func (v *GtkButton) GetUseUnderline() bool {
 	return gboolean2bool(C.gtk_button_get_use_underline(C.to_GtkButton(v.Widget)))
@@ -2041,11 +2046,8 @@ func (v *GtkButton) GetUseUnderline() bool {
 func (v *GtkButton) SetUseUnderline(setting bool) {
 	C.gtk_button_set_use_underline(C.to_GtkButton(v.Widget), bool2gboolean(setting))
 }
-
-// gtk_button_set_use_stock
-// gtk_button_get_use_stock
-// gtk_button_set_focus_on_click
 // gtk_button_get_focus_on_click
+// gtk_button_set_focus_on_click
 // gtk_button_set_alignment
 // gtk_button_get_alignment
 
@@ -2055,13 +2057,12 @@ func (v *GtkButton) SetImage(image WidgetLike) {
 func (v *GtkButton) GetImage() *GtkImage {
 	return &GtkImage{GtkWidget{C.gtk_button_get_image(C.to_GtkButton(v.Widget))}}
 }
-
-// gtk_button_get_image
 // gtk_button_set_image_position
 // gtk_button_get_image_position
+// gtk_button_get_event_window
 
 //-----------------------------------------------------------------------
-// GtkCheckButton
+// GtkCheckButton (done 3 out of 3 = 100%)
 //-----------------------------------------------------------------------
 type GtkCheckButton struct {
 	GtkToggleButton
@@ -2083,10 +2084,9 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 	return &GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_check_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
-// GtkRadioButton
+// GtkRadioButton (done 8 out of 8 = 100%)
 //-----------------------------------------------------------------------
 type GtkRadioButton struct {
 	GtkCheckButton
@@ -2100,6 +2100,10 @@ func RadioButton(group *glib.SList) *GtkRadioButton {
 	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_radio_button_new(nil)}}}}}}}
 }
+func RadioButtonFromWidget(w *GtkRadioButton) *GtkRadioButton {
+	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_button_new_from_widget(C.to_GtkRadioButton(w.Widget))}}}}}}}
+}
 func RadioButtonWithLabel(group *glib.SList, label string) *GtkRadioButton {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
@@ -2109,10 +2113,6 @@ func RadioButtonWithLabel(group *glib.SList, label string) *GtkRadioButton {
 	}
 	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}}}
-}
-func RadioButtonFromWidget(w *GtkRadioButton) *GtkRadioButton {
-	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_radio_button_new_from_widget(C.to_GtkRadioButton(w.Widget))}}}}}}}
 }
 func RadioButtonWithLabelFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
 	ptr := C.CString(label)
@@ -2146,10 +2146,9 @@ func (v *GtkRadioButton) SetGroup(group *glib.SList) {
 		C.gtk_radio_button_set_group(C.to_GtkRadioButton(v.Widget), nil)
 	}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
-// GtkToggleButton
+// GtkToggleButton (done 9 out of 9 = 100%)
 //-----------------------------------------------------------------------
 type GtkToggleButton struct {
 	GtkButton
@@ -2171,11 +2170,11 @@ func ToggleButtonWithMnemonic(label string) *GtkToggleButton {
 	return &GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_toggle_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}
 }
-func (v *GtkToggleButton) GetMode() bool {
-	return gboolean2bool(C.gtk_toggle_button_get_mode(C.to_GtkToggleButton(v.Widget)))
-}
 func (v *GtkToggleButton) SetMode(draw_indicator bool) {
 	C.gtk_toggle_button_set_mode(C.to_GtkToggleButton(v.Widget), bool2gboolean(draw_indicator))
+}
+func (v *GtkToggleButton) GetMode() bool {
+	return gboolean2bool(C.gtk_toggle_button_get_mode(C.to_GtkToggleButton(v.Widget)))
 }
 func (v *GtkToggleButton) GetActive() bool {
 	return gboolean2bool(C.gtk_toggle_button_get_active(C.to_GtkToggleButton(v.Widget)))
@@ -2189,10 +2188,9 @@ func (v *GtkToggleButton) GetInconsistent() bool {
 func (v *GtkToggleButton) SetInconsistent(setting bool) {
 	C.gtk_toggle_button_set_inconsistent(C.to_GtkToggleButton(v.Widget), bool2gboolean(setting))
 }
-// FINISH
 
 //-----------------------------------------------------------------------
-// GtkLinkButton
+// GtkLinkButton (done 6 out of 7 = 85%)
 //-----------------------------------------------------------------------
 type GtkLinkButton struct {
 	GtkButton
@@ -2220,11 +2218,10 @@ func (v *GtkLinkButton) SetUri(uri string) {
 	defer C.free_string(ptr)
 	C.gtk_link_button_set_uri(C.to_GtkLinkButton(v.Widget), C.to_gcharptr(ptr))
 }
-
+//gtk_link_button_set_uri_hook has been deprecated since 2.24. Use clicked signal instead. //TODO
 //func (v GtkLinkButton) SetUriHook(f func(button *GtkLinkButton, link string, user_data unsafe.Pointer), ) {
 // GtkLinkButtonUriFunc gtk_link_button_set_uri_hook (GtkLinkButtonUriFunc func, gpointer data, GDestroyNotify destroy);
 //}
-
 func (v *GtkLinkButton) GetVisited() bool {
 	return gboolean2bool(C.gtk_link_button_get_visited(C.to_GtkLinkButton(v.Widget)))
 }
