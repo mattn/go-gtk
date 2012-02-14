@@ -1471,41 +1471,40 @@ func (v *GtkAssistant) UpdateButtonsState() {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkAccelLabel
+// GtkAccelLabel (done 5 out of 6 = 83%)
 //-----------------------------------------------------------------------
-type AccelLabelLike interface {
+/*type AccelLabelLike interface {
 	WidgetLike
 	GetAccelWidget() GtkWidget
 	SetAccelWidget(GtkWidget)
-}
+}*/
 type GtkAccelLabel struct {
 	GtkWidget
 }
-
 func AccelLabel(label string) *GtkAccelLabel {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
 	return &GtkAccelLabel{GtkWidget{
 		C.gtk_accel_label_new(C.to_gcharptr(ptr))}}
 }
+
+// gtk_accel_label_set_accel_closure
+
 func (v *GtkAccelLabel) GetAccelWidget() GtkWidget {
 	return GtkWidget{C.gtk_accel_label_get_accel_widget(C.to_GtkAccelLabel(v.Widget))}
 }
-func (v *GtkAccelLabel) GetAccelWidth() uint {
-	return uint(C.gtk_accel_label_get_accel_width(C.to_GtkAccelLabel(v.Widget)))
-}
 func (v *GtkAccelLabel) SetAccelWidget(w WidgetLike) {
 	C.gtk_accel_label_set_accel_widget(C.to_GtkAccelLabel(v.Widget), w.ToNative())
+}
+func (v *GtkAccelLabel) GetAccelWidth() uint {
+	return uint(C.gtk_accel_label_get_accel_width(C.to_GtkAccelLabel(v.Widget)))
 }
 func (v *GtkAccelLabel) Refetch() bool {
 	return gboolean2bool(C.gtk_accel_label_refetch(C.to_GtkAccelLabel(v.Widget)))
 }
 
-// TODO
-// gtk_accel_label_set_accel_closure
-
 //-----------------------------------------------------------------------
-// GtkImage
+// GtkImage (done 9 out of 31 = 29%)
 //-----------------------------------------------------------------------
 type GtkIconSize int
 
@@ -1519,85 +1518,84 @@ const (
 	GTK_ICON_SIZE_DIALOG        GtkIconSize = 6
 )
 
-type ImageLike interface {
+/*type ImageLike interface {
 	WidgetLike
-}
+}*/
 type GtkImage struct {
 	GtkWidget
 }
+// gtk_image_get_icon_set
+// gtk_image_get_image
 
-func Image() *GtkImage {
-	return &GtkImage{GtkWidget{
-		C.gtk_image_new()}}
+func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
+	return &gdkpixbuf.GdkPixbuf{
+		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget))}
 }
+// gtk_image_get_pixmap
+// gtk_image_get_stock
+// gtk_image_get_animation
+// gtk_image_get_icon_name
+// gtk_image_get_gicon
+// gtk_image_get_storage_type
+
 func ImageFromFile(filename string) *GtkImage {
 	ptr := C.CString(filename)
 	defer C.free_string(ptr)
 	return &GtkImage{GtkWidget{
 		C.gtk_image_new_from_file(C.to_gcharptr(ptr))}}
 }
-func ImageFromStock(stock_id string, size GtkIconSize) *GtkImage {
-	ptr := C.CString(stock_id)
-	defer C.free_string(ptr)
-	return &GtkImage{GtkWidget{
-		C.gtk_image_new_from_stock(C.to_gcharptr(ptr), C.GtkIconSize(size))}}
-}
+// gtk_image_new_from_icon_set
+// gtk_image_new_from_image
 
 func ImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *GtkImage {
 	return &GtkImage{GtkWidget{
 		C.gtk_image_new_from_pixbuf(pixbuf.Pixbuf)}}
 }
 
-func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf{
-		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget))}
-}
+// gtk_image_new_from_pixmap
 
-func (v *GtkImage) Clear() {
-	C.gtk_image_clear(C.to_GtkImage(v.Widget))
+func ImageFromStock(stock_id string, size GtkIconSize) *GtkImage {
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	return &GtkImage{GtkWidget{
+		C.gtk_image_new_from_stock(C.to_gcharptr(ptr), C.GtkIconSize(size))}}
 }
+// gtk_image_new_from_animation
+// gtk_image_new_from_icon_name
+// gtk_image_new_from_gicon
 
 func (v *GtkImage) SetFromFile(filename string) {
 	ptr := C.CString(filename)
 	defer C.free_string(ptr)
 	C.gtk_image_set_from_file(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr))
 }
+// gtk_image_set_from_icon_set
+// gtk_image_set_from_image
+
+func (v *GtkImage) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_image_set_from_pixbuf(C.to_GtkImage(v.Widget), pixbuf.Pixbuf)
+}
+// gtk_image_set_from_pixmap
 
 func (v *GtkImage) SetFromStock(stock_id string, size GtkIconSize) {
 	ptr := C.CString(stock_id)
 	defer C.free_string(ptr)
 	C.gtk_image_set_from_stock(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr), C.GtkIconSize(size))
 }
-
-func (v *GtkImage) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_image_set_from_pixbuf(C.to_GtkImage(v.Widget), pixbuf.Pixbuf)
-}
-
-// TODO
-// gtk_image_new_from_pixmap
-// gtk_image_new_from_image
-// gtk_image_new_from_icon_set
-// gtk_image_new_from_animation
-// gtk_image_new_from_icon_name
-// gtk_image_new_from_gicon
-// gtk_image_set_from_pixmap
-// gtk_image_set_from_image
-// gtk_image_set_from_icon_set
 // gtk_image_set_from_animation
 // gtk_image_set_from_icon_name
 // gtk_image_set_from_gicon
+
+func (v *GtkImage) Clear() {
+	C.gtk_image_clear(C.to_GtkImage(v.Widget))
+}
+func Image() *GtkImage {
+	return &GtkImage{GtkWidget{
+		C.gtk_image_new()}}
+}
+
 // gtk_image_set_pixel_size
-// gtk_image_get_storage_type
-// gtk_image_get_pixmap
-// gtk_image_get_image
-// gtk_image_get_stock
-// gtk_image_get_icon_set
-// gtk_image_get_animation
-// gtk_image_get_icon_name
-// gtk_image_get_gicon
 // gtk_image_get_pixel_size
-// gtk_image_set
-// gtk_image_get
 
 //-----------------------------------------------------------------------
 // GtkLabel
