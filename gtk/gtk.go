@@ -189,10 +189,6 @@ static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
   return GTK_DIALOG(w)->vbox;
 }
 
-static gint _gtk_dialog_get_response_for_widget(GtkDialog* dialog, GtkWidget* widget) {
-	return gtk_dialog_get_response_for_widget(dialog, widget);
-}
-
 //////////////////////////////////////////////
 // ############# Version Control #############
 //////////////////////////////////////////////
@@ -902,7 +898,7 @@ func (v *GtkDialog) GetWidgetForResponse(id int) *GtkWidget {
 	return &GtkWidget{C._gtk_dialog_get_widget_for_response(C.to_GtkDialog(v.Widget), C.gint(id))}
 }
 func (v *GtkDialog) GetResponseForWidget(w *GtkWidget) int {
-	return int(C._gtk_dialog_get_response_for_widget(C.to_GtkDialog(v.Widget), w.Widget))
+	return int(C.gtk_dialog_get_response_for_widget(C.to_GtkDialog(v.Widget), w.Widget))
 }
 func (v *GtkDialog) SetHasSeparator(f bool) {
 	C.gtk_dialog_set_has_separator(C.to_GtkDialog(v.Widget), bool2gboolean(f))
