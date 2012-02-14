@@ -982,7 +982,7 @@ func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, but
 // gtk_message_dialog_format_secondary_markup
 
 //-----------------------------------------------------------------------
-// GtkWindow
+// GtkWindow (done 24 out of 102 = 23%)
 //-----------------------------------------------------------------------
 type GtkWindowType int
 
@@ -990,48 +990,6 @@ const (
 	GTK_WINDOW_TOPLEVEL GtkWindowType = 0
 	GTK_WINDOW_POPUP    GtkWindowType = 1
 )
-
-type WindowLike interface {
-	ContainerLike
-	SetTransientFor(parent WindowLike)
-	GetTitle() string
-	SetTitle(title string)
-}
-type GtkWindow struct {
-	GtkBin
-}
-
-func Window(t GtkWindowType) *GtkWindow {
-	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_window_new(C.GtkWindowType(t))}}}}
-}
-func (v *GtkWindow) GetTitle() string {
-	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.Widget))))
-}
-func (v *GtkWindow) SetTitle(title string) {
-	ptr := C.CString(title)
-	defer C.free_string(ptr)
-	C.gtk_window_set_title(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr))
-}
-func (v *GtkWindow) SetTransientFor(parent WindowLike) {
-	C.gtk_window_set_transient_for(C.to_GtkWindow(v.Widget), C.to_GtkWindow(parent.ToNative()))
-}
-func (v *GtkWindow) GetResizable() bool {
-	return gboolean2bool(C.gtk_window_get_resizable(C.to_GtkWindow(v.Widget)))
-}
-func (v *GtkWindow) SetResizable(resizable bool) {
-	C.gtk_window_set_resizable(C.to_GtkWindow(v.Widget), bool2gboolean(resizable))
-}
-
-// TODO
-// gtk_window_set_wmclass
-// gtk_window_set_role
-// gtk_window_set_startup_id
-// gtk_window_get_role
-
-func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
-	C.gtk_window_add_accel_group(C.to_GtkWindow(v.Widget), group.AccelGroup)
-}
 
 type GtkWindowPosition int
 
@@ -1043,96 +1001,81 @@ const (
 	GTK_WIN_POS_CENTER_ON_PARENT GtkWindowPosition = 4
 )
 
+/*type WindowLike interface {
+	ContainerLike
+	SetTransientFor(parent WindowLike)
+	GetTitle() string
+	SetTitle(title string)
+}*/
+
+type GtkWindow struct {
+	GtkBin
+}
+
+func Window(t GtkWindowType) *GtkWindow {
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_window_new(C.GtkWindowType(t))}}}}
+}
+func (v *GtkWindow) SetTitle(title string) {
+	ptr := C.CString(title)
+	defer C.free_string(ptr)
+	C.gtk_window_set_title(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr))
+}
+
+// gtk_window_set_wmclass
+
+func (v *GtkWindow) SetResizable(resizable bool) {
+	C.gtk_window_set_resizable(C.to_GtkWindow(v.Widget), bool2gboolean(resizable))
+}
+func (v *GtkWindow) GetResizable() bool {
+	return gboolean2bool(C.gtk_window_get_resizable(C.to_GtkWindow(v.Widget)))
+}
+func (v *GtkWindow) AddAccelGroup(group *GtkAccelGroup) {
+	C.gtk_window_add_accel_group(C.to_GtkWindow(v.Widget), group.AccelGroup)
+}
+
 // gtk_window_remove_accel_group
-
-func (v *GtkWindow) SetPosition(position GtkWindowPosition) {
-	C.gtk_window_set_position(C.to_GtkWindow(v.Widget), C.GtkWindowPosition(position))
-}
-
 // gtk_window_activate_focus
-
-func (v *GtkWindow) SetAcceptFocus(setting bool) {
-	C.gtk_window_set_accept_focus(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
-}
-func (v *GtkWindow) GetAcceptFocus() bool {
-	return gboolean2bool(C.gtk_window_get_accept_focus(C.to_GtkWindow(v.Widget)))
-}
-// gtk_window_set_focus
-// gtk_window_get_focus
-
-func (v *GtkWindow) SetDefault(w *GtkWidget) {
-	C.gtk_window_set_default(C.to_GtkWindow(v.Widget), w.Widget)
-}
-
-// gtk_window_get_default_widget
 // gtk_window_activate_default
-// gtk_window_set_transient_for
-// gtk_window_get_transient_for
-// gtk_window_set_opacity
-// gtk_window_get_opacity
-// gtk_window_set_type_hint
-// gtk_window_get_type_hint
-// gtk_window_set_skip_taskbar_hint
-// gtk_window_get_skip_taskbar_hint
-// gtk_window_set_skip_pager_hint
-// gtk_window_get_skip_pager_hint
-// gtk_window_set_urgency_hint
-// gtk_window_get_urgency_hint
-// gtk_window_set_accept_focus
-// gtk_window_get_accept_focus
-// gtk_window_set_focus_on_map
-
-func (v *GtkWindow) SetDestroyWithParent(setting bool) {
-	C.gtk_window_set_destroy_with_parent(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
-}
-func (v *GtkWindow) GetDestroyWithParent() bool {
-	return gboolean2bool(C.gtk_window_get_destroy_with_parent(C.to_GtkWindow(v.Widget)))
-}
-// gtk_window_set_gravity
-// gtk_window_get_gravity
-// gtk_window_set_geometry_hints
-// gtk_window_set_screen
-// gtk_window_get_screen
-// gtk_window_is_active
-// gtk_window_has_toplevel_focus
-// gtk_window_set_has_frame
-// gtk_window_get_has_frame
-// gtk_window_set_frame_dimensions
-// gtk_window_get_frame_dimensions
-// gtk_window_set_decorated
-// gtk_window_get_decorated
-// gtk_window_set_deletable
-// gtk_window_get_deletable
-// gtk_window_set_icon_list
-// gtk_window_get_icon_list
-// gtk_window_set_icon
-// gtk_window_set_icon_name
-// gtk_window_set_icon_from_file
-// gtk_window_get_icon
-// gtk_window_get_icon_name
-// gtk_window_set_default_icon_list
-// gtk_window_get_default_icon_list
-// gtk_window_set_default_icon
-// gtk_window_set_default_icon_name
-// gtk_window_get_default_icon_name
-// gtk_window_set_default_icon_from_file
-// gtk_window_set_auto_startup_notification
 
 func (v *GtkWindow) SetModal(modal bool) {
 	C.gtk_window_set_modal(C.to_GtkWindow(v.Widget), bool2gboolean(modal))
 }
-func (v *GtkWindow) GetModal() bool {
-	return gboolean2bool(C.gtk_window_get_modal(C.to_GtkWindow(v.Widget)))
+func (v *GtkWindow) SetDefaultSize(width int, height int) {
+	C.gtk_window_set_default_size(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
 }
+
+// gtk_window_set_geometry_hints
+// gtk_window_set_gravity
+// gtk_window_get_gravity
+
+func (v *GtkWindow) SetPosition(position GtkWindowPosition) {
+	C.gtk_window_set_position(C.to_GtkWindow(v.Widget), C.GtkWindowPosition(position))
+}
+func (v *GtkWindow) SetTransientFor(parent *GtkWindow) {
+	C.gtk_window_set_transient_for(C.to_GtkWindow(v.Widget), C.to_GtkWindow(parent.ToNative()))
+}
+func (v *GtkWindow) SetDestroyWithParent(setting bool) {
+	C.gtk_window_set_destroy_with_parent(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
+}
+
+// gtk_window_set_screen
+// gtk_window_get_screen
+// gtk_window_is_active
+// gtk_window_has_toplevel_focus
 // gtk_window_list_toplevels
 // gtk_window_add_mnemonic
 // gtk_window_remove_mnemonic
 // gtk_window_mnemonic_activate
-// gtk_window_set_mnemonic_modifier
-// gtk_window_get_mnemonic_modifier
 // gtk_window_activate_key
 // gtk_window_propagate_key_event
+// gtk_window_get_focus
+// gtk_window_set_focus
+// gtk_window_get_default_widget
 
+func (v *GtkWindow) SetDefault(w *GtkWidget) {
+	C.gtk_window_set_default(C.to_GtkWindow(v.Widget), w.Widget)
+}
 func (v *GtkWindow) Present() {
 	C.gtk_window_present(C.to_GtkWindow(v.Widget))
 }
@@ -1149,34 +1092,54 @@ func (v *GtkWindow) Maximize() {
 func (v *GtkWindow) Unmaximize() {
 	C.gtk_window_unmaximize(C.to_GtkWindow(v.Widget))
 }
+
 // gtk_window_fullscreen
 // gtk_window_unfullscreen
 // gtk_window_set_keep_above
 // gtk_window_set_keep_below
 // gtk_window_begin_resize_drag
 // gtk_window_begin_move_drag
-// gtk_window_set_policy
+// gtk_window_set_decorated
+// gtk_window_set_deletable
+// gtk_window_set_frame_dimensions //deprecated since 2.24
+// gtk_window_set_has_frame  //deprecated since 2.24
+// gtk_window_set_mnemonic_modifier
+// gtk_window_set_type_hint
+// gtk_window_set_skip_taskbar_hint
+// gtk_window_set_skip_pager_hint
+// gtk_window_set_urgency_hint
 
-func (v *GtkWindow) SetDefaultSize(width int, height int) {
-	C.gtk_window_set_default_size(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
+func (v *GtkWindow) SetAcceptFocus(setting bool) {
+	C.gtk_window_set_accept_focus(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
 }
+
+// gtk_window_set_focus_on_map
+// gtk_window_set_startup_id
+// gtk_window_set_role
+// gtk_window_get_decorated
+// gtk_window_get_deletable
+// gtk_window_get_default_icon_list
+// gtk_window_get_default_icon_name
+
 func (v *GtkWindow) GetDefaultSize(width *int, height *int) {
 	var cwidth, cheight C.gint
 	C.gtk_window_get_default_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight)
 	*width = int(cwidth)
 	*height = int(cheight)
 }
-func (v *GtkWindow) Resize(width int, height int) {
-	C.gtk_window_resize(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
+func (v *GtkWindow) GetDestroyWithParent() bool {
+	return gboolean2bool(C.gtk_window_get_destroy_with_parent(C.to_GtkWindow(v.Widget)))
 }
-func (v *GtkWindow) GetSize(width *int, height *int) {
-	var cwidth, cheight C.gint
-	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight)
-	*width = int(cwidth)
-	*height = int(cheight)
-}
-func (v *GtkWindow) Move(x int, y int) {
-	C.gtk_window_move(C.to_GtkWindow(v.Widget), C.gint(x), C.gint(y))
+
+// gtk_window_get_frame_dimensions //deprecated since 2.24
+// gtk_window_get_has_frame  //deprecated since 2.24
+// gtk_window_get_icon
+// gtk_window_get_icon_list
+// gtk_window_get_icon_name
+// gtk_window_get_mnemonic_modifier
+
+func (v *GtkWindow) GetModal() bool {
+	return gboolean2bool(C.gtk_window_get_modal(C.to_GtkWindow(v.Widget)))
 }
 func (v *GtkWindow) GetPosition(root_x *int, root_y *int) {
 	var croot_x, croot_y C.gint
@@ -1185,16 +1148,57 @@ func (v *GtkWindow) GetPosition(root_x *int, root_y *int) {
 	*root_y = int(croot_y)
 }
 
-// gtk_window_parse_geometry
+// gtk_window_get_role
+
+func (v *GtkWindow) GetSize(width *int, height *int) {
+	var cwidth, cheight C.gint
+	C.gtk_window_get_size(C.to_GtkWindow(v.Widget), &cwidth, &cheight)
+	*width = int(cwidth)
+	*height = int(cheight)
+}
+func (v *GtkWindow) GetTitle() string {
+	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.Widget))))
+}
+
+// gtk_window_get_transient_for
+// gtk_window_get_type_hint
+// gtk_window_get_skip_taskbar_hint
+// gtk_window_get_skip_pager_hint
+// gtk_window_get_urgency_hint
+
+func (v *GtkWindow) GetAcceptFocus() bool {
+	return gboolean2bool(C.gtk_window_get_accept_focus(C.to_GtkWindow(v.Widget)))
+}
+
+// gtk_window_get_focus_on_map
 // gtk_window_get_group
+// gtk_window_has_group //since 2.22
+// gtk_window_get_window_type //since 2.20
+
+func (v *GtkWindow) Move(x int, y int) {
+	C.gtk_window_move(C.to_GtkWindow(v.Widget), C.gint(x), C.gint(y))
+}
+
+// gtk_window_parse_geometry
 // gtk_window_reshow_with_initial_size
-// gtk_window_group_get_type
-// gtk_window_group_new
-// gtk_window_group_add_window
-// gtk_window_group_remove_window
-// gtk_window_group_list_windows
-// gtk_window_remove_embedded_xid
-// gtk_window_add_embedded_xid
+
+func (v *GtkWindow) Resize(width int, height int) {
+	C.gtk_window_resize(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
+}
+
+// gtk_window_set_default_icon_list
+// gtk_window_set_default_icon
+// gtk_window_set_default_icon_from_file
+// gtk_window_set_default_icon_name
+// gtk_window_set_icon
+// gtk_window_set_icon_list
+// gtk_window_set_icon_from_file
+// gtk_window_set_icon_name
+// gtk_window_set_auto_startup_notification
+// gtk_window_get_opacity
+// gtk_window_set_opacity
+// gtk_window_get_mnemonics_visible //since 2.20
+// gtk_window_set_mnemonics_visible //since 2.20
 
 //-----------------------------------------------------------------------
 // GtkWindowGroup (done 0 out of 5 = 0%)
@@ -4676,7 +4680,7 @@ type GtkFileChooserDialog struct {
 }
 
 //The number of arguments bound to the final variadic parameter must be even: couples of string-int (button text - button action)
-func FileChooserDialog(title string, parent WindowLike, file_chooser_action GtkFileChooserAction, button_text string, button_action int, buttons ...interface{}) *GtkFileChooserDialog {
+func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkFileChooserAction, button_text string, button_action int, buttons ...interface{}) *GtkFileChooserDialog {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button_text)
@@ -6376,7 +6380,7 @@ func (v *GtkWidget) IsComposited() bool {
 // gtk_widget_add_mnemonic_label
 // gtk_widget_remove_mnemonic_label
 
-func (v *GtkWidget) SetTooltipWindow(w WindowLike) {
+func (v *GtkWidget) SetTooltipWindow(w *GtkWindow) {
 	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToNative()))
 }
 func (v *GtkWidget) GetTooltipWindow() *GtkWindow {
