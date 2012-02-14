@@ -513,7 +513,7 @@ func panic_if_version_older(major int, minor int, micro int, function string) {
 		log.Panicf("%s is not provided on your GTK, version %d.%d is required\n", function, major, minor)
 	}
 }
-func warning_if_deprecated(major int, minor int, micro int, function string) {
+func deprecated_since(major int, minor int, micro int, function string) {
 	if C._check_version(C.int(major), C.int(minor), C.int(micro)) != 0 {
 		log.Printf("\nWarning: %s is deprecated since gtk %d.%d\n", function, major, minor)
 	}
@@ -3966,7 +3966,7 @@ func ComboBox() *GtkComboBox {
 		C.gtk_combo_box_new()}}}}
 }
 func ComboBoxWithEntry() *GtkComboBox {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_new_with_entry()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_new_with_entry()")
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_combo_box_new_with_entry()}}}}
 }
@@ -3975,13 +3975,13 @@ func ComboBoxWithModel(model *GtkTreeModel) *GtkComboBox {
 		C.gtk_combo_box_new_with_model(model.TreeModel)}}}}
 }
 func ComboBoxWithModelAndEntry(model *GtkTreeModel) *GtkComboBox {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_new_with_model_and_entry()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_new_with_model_and_entry()")
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_combo_box_new_with_model_and_entry(model.TreeModel)}}}}
 }
 //TODO(remove when safe) deprecated since version 2.24.
 func ComboBoxNewText() *GtkComboBox {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_new_text()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_new_text()")
 	return &GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_combo_box_new_text()}}}}
 }
@@ -3993,33 +3993,33 @@ func (v *GtkComboBox) SetWrapWidth(width int) {
 }
 //TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) AppendText(text string) {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_append_text()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_append_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_combo_box_append_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr))
 }
 //TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) InsertText(text string, position int) {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_insert_text()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_insert_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_combo_box_insert_text(C.to_GtkComboBox(v.Widget), C.gint(position), C.to_gcharptr(ptr))
 }
 //TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) PrependText(text string) {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_prepend_text()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_prepend_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_combo_box_prepend_text(C.to_GtkComboBox(v.Widget), C.to_gcharptr(ptr))
 }
 //TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) RemoveText(position int) {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_remove_text()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_remove_text()")
 	C.gtk_combo_box_remove_text(C.to_GtkComboBox(v.Widget), C.gint(position))
 }
 //TODO(remove when safe) deprecated since version 2.24.
 func (v *GtkComboBox) GetActiveText() string {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_get_active_text()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_get_active_text()")
 	return C.GoString(C.to_charptr(C.gtk_combo_box_get_active_text(C.to_GtkComboBox(v.Widget))))
 }
 func (v *GtkComboBox) GetActive() int {
@@ -4140,24 +4140,24 @@ type GtkComboBoxEntry struct {
 }
 //TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
 func ComboBoxEntry() *GtkComboBoxEntry {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_new()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_entry_new()")
 	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_combo_box_entry_new()}}}}}
 }
 //TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
 func ComboBoxEntryNewText() *GtkComboBoxEntry {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_new_text()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_entry_new_text()")
 	return &GtkComboBoxEntry{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_combo_box_entry_new_text()}}}}}
 }
 //TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
 func (v *GtkComboBoxEntry) GetTextColumn() int {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_get_text_column()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_entry_get_text_column()")
 	return int(C.gtk_combo_box_entry_get_text_column(C.to_GtkComboBoxEntry(v.Widget)))
 }
 //TODO(remove when save) GtkComboBoxEntry is deprecated since 2.24.
 func (v *GtkComboBoxEntry) SetTextColumn(text_column int) {
-	warning_if_deprecated(2, 24, 0, "gtk_combo_box_entry_set_text_column()")
+	deprecated_since(2, 24, 0, "gtk_combo_box_entry_set_text_column()")
 	C.gtk_combo_box_entry_set_text_column(C.to_GtkComboBoxEntry(v.Widget), C.gint(text_column))
 }
 // FINISH
