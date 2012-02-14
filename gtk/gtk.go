@@ -845,7 +845,7 @@ func (s *GtkSettings) SetDoubleProperty(name string, v_double float64, origin st
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkDialog
+// GtkDialog (done 8 out of 19 = 42%)
 //-----------------------------------------------------------------------
 type GtkDialogFlags int
 
@@ -871,22 +871,21 @@ const (
 	GTK_RESPONSE_HELP         GtkResponseType = -11
 )
 
-type DialogLike interface {
+/*type DialogLike interface {
 	WidgetLike
 	Run() int
 	Response(interface{}, ...interface{})
-}
+}*/
+
 type GtkDialog struct {
 	GtkWindow
 }
 
 func Dialog() *GtkDialog {
-	return &GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_dialog_new()}}}}}
+	return &GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{C.gtk_dialog_new()}}}}}
 }
-func (v *GtkDialog) GetVBox() *GtkVBox {
-	return &GtkVBox{GtkBox{GtkContainer{GtkWidget{C._gtk_dialog_get_vbox(v.Widget)}}}}
-}
+// gtk_dialog_new_with_buttons
+
 func (v *GtkDialog) Run() int {
 	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
 }
@@ -900,35 +899,42 @@ func (v *GtkDialog) AddButton(button_text string, response_id int) *GtkButton {
 		C.gtk_dialog_add_button(C.to_GtkDialog(v.Widget), C.to_gcharptr(ptr), C.gint(response_id))}}}}
 }
 
-// TODO
-// gtk_dialog_new_with_buttons
-// gtk_dialog_add_action_widget
 // gtk_dialog_add_buttons
-// gtk_dialog_set_response_sensitive
+// gtk_dialog_add_action_widget
+// gtk_dialog_get_has_separator //deprecated since 2.22
 
+//Deprecated since 2.22.
+func (v *GtkDialog) SetHasSeparator(f bool) {
+	deprecated_since(2, 22, 0, "gtk_dialog_set_has_separator()")
+	C.gtk_dialog_set_has_separator(C.to_GtkDialog(v.Widget), bool2gboolean(f))
+}
 func (v *GtkDialog) SetDefaultResponse(id int) {
 	C.gtk_dialog_set_default_response(C.to_GtkDialog(v.Widget), C.gint(id))
+}
+
+// gtk_dialog_set_has_separator //deprecated since 2.22
+// gtk_dialog_set_response_sensitive
+
+func (v *GtkDialog) GetResponseForWidget(w *GtkWidget) int {
+	return int(C.gtk_dialog_get_response_for_widget(C.to_GtkDialog(v.Widget), w.Widget))
 }
 func (v *GtkDialog) GetWidgetForResponse(id int) *GtkWidget {
 	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response()")
 	return &GtkWidget{C._gtk_dialog_get_widget_for_response(C.to_GtkDialog(v.Widget), C.gint(id))}
 }
-func (v *GtkDialog) GetResponseForWidget(w *GtkWidget) int {
-	return int(C.gtk_dialog_get_response_for_widget(C.to_GtkDialog(v.Widget), w.Widget))
-}
-func (v *GtkDialog) SetHasSeparator(f bool) {
-	C.gtk_dialog_set_has_separator(C.to_GtkDialog(v.Widget), bool2gboolean(f))
-}
 
-// gtk_dialog_get_has_separator
+// gtk_dialog_get_action_area
+// gtk_dialog_get_content_area
 // gtk_alternative_dialog_button_order
 // gtk_dialog_set_alternative_button_order
 // gtk_dialog_set_alternative_button_order_from_array
-// gtk_dialog_get_action_area
-// gtk_dialog_get_content_area
+
+func (v *GtkDialog) GetVBox() *GtkVBox {
+	return &GtkVBox{GtkBox{GtkContainer{GtkWidget{C._gtk_dialog_get_vbox(v.Widget)}}}}
+}
 
 //-----------------------------------------------------------------------
-// GtkMessageDialog
+// GtkMessageDialog (done 1 out of 8 = 12%)
 //-----------------------------------------------------------------------
 type GtkMessageType int
 
@@ -955,7 +961,7 @@ type GtkMessageDialog struct {
 	GtkDialog
 }
 
-func MessageDialog(parent WindowLike, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, message string) *GtkMessageDialog {
+func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, message string) *GtkMessageDialog {
 	ptr := C.CString(message)
 	defer C.free_string(ptr)
 	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
@@ -967,11 +973,11 @@ func MessageDialog(parent WindowLike, flag GtkDialogFlags, t GtkMessageType, but
 			C.to_gcharptr(ptr))}}}}}}
 }
 
-// TODO
 // gtk_message_dialog_new_with_markup
+// gtk_message_dialog_set_markup
 // gtk_message_dialog_set_image
 // gtk_message_dialog_get_image
-// gtk_message_dialog_set_markup
+// gtk_message_dialog_get_message_area //since 2.22
 // gtk_message_dialog_format_secondary_text
 // gtk_message_dialog_format_secondary_markup
 
