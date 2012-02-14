@@ -790,12 +790,18 @@ func warning_if_deprecated(major int, minor int, micro int, function string) {
 }
 
 //-----------------------------------------------------------------------
-// Main Loop and Events
+// Main Loop and Events (done 5 out of 24 = 20%)
 //-----------------------------------------------------------------------
 
+//Deprecated since 2.24. Use setlocale() directly.
+//(see http://developer.gnome.org/gtk/stable/gtk-General.html#gtk-set-locale)
 func SetLocale() {
 	C.gtk_set_locale()
 }
+
+// gtk_disable_setlocale
+// gtk_get_default_language
+// gtk_parse_args
 
 func Init(args *[]string) {
 	if args != nil {
@@ -818,8 +824,19 @@ func Init(args *[]string) {
 	}
 }
 
+// gtk_init_check
+// gtk_init_with_args
+// gtk_get_option_group
+// gtk_event_pending
+
 func Main() {
 	C.gtk_main()
+}
+
+// gtk_main_level
+
+func MainQuit() {
+	C.gtk_main_quit()
 }
 func MainIteration() bool {
 	return gboolean2bool(C.gtk_main_iteration())
@@ -827,9 +844,17 @@ func MainIteration() bool {
 func MainIterationDo(blocking bool) bool {
 	return gboolean2bool(C.gtk_main_iteration_do(bool2gboolean(blocking)))
 }
-func MainQuit() {
-	C.gtk_main_quit()
-}
+// gtk_main_do_event
+// gtk_grab_add
+// gtk_grab_get_current
+// gtk_grab_remove
+// gtk_key_snooper_install
+// gtk_key_snooper_remove
+// gtk_get_current_event
+// gtk_get_current_event_time
+// gtk_get_current_event_state
+// gtk_get_event_widget
+// gtk_propagate_event
 
 //-----------------------------------------------------------------------
 // GtkAccelGroup
