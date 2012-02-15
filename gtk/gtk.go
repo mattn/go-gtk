@@ -270,6 +270,12 @@ static void _gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_to
 static gboolean _gtk_menu_get_reserve_toggle_size(GtkMenu *menu) {
 	return gtk_menu_get_reserve_toggle_size(menu);
 }
+static gboolean _gtk_range_get_flippable(GtkRange *range) {
+	return gtk_range_get_flippable(range);
+}
+static void _gtk_range_set_flippable(GtkRange *range, gboolean flippable) {
+	gtk_range_set_flippable(range, flippable);
+}
 static void _gtk_widget_get_allocation(GtkWidget *widget, GtkAllocation *allocation) {
 	gtk_widget_get_allocation(widget, allocation);
 }
@@ -350,6 +356,11 @@ static void _gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_to
 }
 static gboolean _gtk_menu_get_reserve_toggle_size(GtkMenu *menu) {
 	return 0;
+}
+static gboolean _gtk_range_get_flippable(GtkRange *range) {
+	return 0;
+}
+static void _gtk_range_set_flippable(GtkRange *range, gboolean flippable) {
 }
 static void _gtk_widget_get_allocation(GtkWidget *widget, GtkAllocation *allocation) {
 }
@@ -5981,31 +5992,39 @@ type GtkObject struct {
 }
 
 //-----------------------------------------------------------------------
-// GtkRange
+// GtkRange (done 16 out of 30 = 53%)
 //-----------------------------------------------------------------------
 type GtkRange struct {
 	GtkWidget
 }
 
-func (v *GtkRange) SetValue(value float64) {
-	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value))
+func (v *GtkRange) GetFillLevel() float64 {
+	r := C.gtk_range_get_fill_level(C.to_GtkRange(v.Widget))
+	return float64(r)
 }
-func (v *GtkRange) GetValue() float64 {
-	return float64(C.gtk_range_get_value(C.to_GtkRange(v.Widget))) //TODO test
-	//var r C.gdouble
-	//C._gtk_range_get_value(C.to_GtkRange(v.Widget), &r)
-	//return float64(r)
+func (v *GtkRange) GetRestrictToFillLevel() bool {
+	return gboolean2bool(C.gtk_range_get_restrict_to_fill_level(C.to_GtkRange(v.Widget)))
 }
-
-// void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy);
-// GtkUpdateType gtk_range_get_update_policy (GtkRange *range);
-
-func (v *GtkRange) SetAdjustment(adjustment *GtkAdjustment) {
-	C.gtk_range_set_adjustment(C.to_GtkRange(v.Widget), adjustment.Adjustment)
+func (v *GtkRange) GetShowFillLevel() bool {
+	return gboolean2bool(C.gtk_range_get_show_fill_level(C.to_GtkRange(v.Widget)))
+}
+func (v *GtkRange) SetFillLevel(value float64) {
+	C.gtk_range_set_fill_level(C.to_GtkRange(v.Widget), C.gdouble(value))
+}
+func (v *GtkRange) SetRestrictToFillLevel(b bool) {
+	C.gtk_range_set_restrict_to_fill_level(C.to_GtkRange(v.Widget), bool2gboolean(b))
+}
+func (v *GtkRange) SetShowFillLevel(b bool) {
+	C.gtk_range_set_show_fill_level(C.to_GtkRange(v.Widget), bool2gboolean(b))
 }
 func (v *GtkRange) GetAdjustment() *GtkAdjustment {
 	return &GtkAdjustment{
 		C.gtk_range_get_adjustment(C.to_GtkRange(v.Widget))}
+}
+// void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy); //deprecated in 2.24
+
+func (v *GtkRange) SetAdjustment(adjustment *GtkAdjustment) {
+	C.gtk_range_set_adjustment(C.to_GtkRange(v.Widget), adjustment.Adjustment)
 }
 func (v *GtkRange) GetInverted() bool {
 	return gboolean2bool(C.gtk_range_get_inverted(C.to_GtkRange(v.Widget)))
@@ -6013,17 +6032,7 @@ func (v *GtkRange) GetInverted() bool {
 func (v *GtkRange) SetInverted(b bool) {
 	C.gtk_range_set_inverted(C.to_GtkRange(v.Widget), bool2gboolean(b))
 }
-func (v *GtkRange) GetFlippable() bool {
-	return gboolean2bool(C.gtk_range_get_flippable(C.to_GtkRange(v.Widget)))
-}
-func (v *GtkRange) SetFlippable(b bool) {
-	C.gtk_range_set_flippable(C.to_GtkRange(v.Widget), bool2gboolean(b))
-}
-
-// void gtk_range_set_lower_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
-// GtkSensitivityType gtk_range_get_lower_stepper_sensitivity (GtkRange *range);
-// void gtk_range_set_upper_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
-// GtkSensitivityType gtk_range_get_upper_stepper_sensitivity (GtkRange *range);
+// GtkUpdateType gtk_range_get_update_policy (GtkRange *range); //deprecated since 2.24
 
 func (v *GtkRange) SetIncrements(step, page float64) {
 	C.gtk_range_set_increments(C.to_GtkRange(v.Widget), C.gdouble(step), C.gdouble(page))
@@ -6031,25 +6040,36 @@ func (v *GtkRange) SetIncrements(step, page float64) {
 func (v *GtkRange) SetRange(min, max float64) {
 	C.gtk_range_set_range(C.to_GtkRange(v.Widget), C.gdouble(min), C.gdouble(max))
 }
-func (v *GtkRange) GetShowFillLevel() bool {
-	return gboolean2bool(C.gtk_range_get_show_fill_level(C.to_GtkRange(v.Widget)))
+func (v *GtkRange) GetValue() float64 {
+	return float64(C.gtk_range_get_value(C.to_GtkRange(v.Widget))) //TODO test
+	//var r C.gdouble
+	//C._gtk_range_get_value(C.to_GtkRange(v.Widget), &r)
+	//return float64(r)
 }
-func (v *GtkRange) SetShowFillLevel(b bool) {
-	C.gtk_range_set_show_fill_level(C.to_GtkRange(v.Widget), bool2gboolean(b))
+func (v *GtkRange) SetValue(value float64) {
+	C.gtk_range_set_value(C.to_GtkRange(v.Widget), C.gdouble(value))
 }
-func (v *GtkRange) GetRestrictToFillLevel() bool {
-	return gboolean2bool(C.gtk_range_get_restrict_to_fill_level(C.to_GtkRange(v.Widget)))
+// gtk_range_get_round_digits //since 2.24
+// gtk_range_set_round_digits //since 2.24
+// void gtk_range_set_lower_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
+// GtkSensitivityType gtk_range_get_lower_stepper_sensitivity (GtkRange *range);
+// void gtk_range_set_upper_stepper_sensitivity (GtkRange *range, GtkSensitivityType sensitivity);
+// GtkSensitivityType gtk_range_get_upper_stepper_sensitivity (GtkRange *range);
+
+func (v *GtkRange) GetFlippable() bool {
+	panic_if_version_older(2, 18, 0, "gtk_range_get_flippable()")
+	return gboolean2bool(C._gtk_range_get_flippable(C.to_GtkRange(v.Widget)))
 }
-func (v *GtkRange) SetRestrictToFillLevel(b bool) {
-	C.gtk_range_set_restrict_to_fill_level(C.to_GtkRange(v.Widget), bool2gboolean(b))
+func (v *GtkRange) SetFlippable(b bool) {
+	panic_if_version_older(2, 18, 0, "gtk_range_set_flippable()")
+	C._gtk_range_set_flippable(C.to_GtkRange(v.Widget), bool2gboolean(b))
 }
-func (v *GtkRange) SetFillLevel(value float64) {
-	C.gtk_range_set_fill_level(C.to_GtkRange(v.Widget), C.gdouble(value))
-}
-func (v *GtkRange) GetFillLevel() float64 {
-	r := C.gtk_range_get_fill_level(C.to_GtkRange(v.Widget))
-	return float64(r)
-}
+// gtk_range_get_min_slider_size //since 2.20
+// gtk_range_get_range_rect //since 2.20
+// gtk_range_get_slider_range //since 2.20
+// gtk_range_get_slider_size_fixed //since 2.20
+// gtk_range_set_min_slider_size //since 2.20
+// gtk_range_set_slider_size_fixed //since 2.20
 
 //-----------------------------------------------------------------------
 // GtkScale
