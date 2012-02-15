@@ -2461,7 +2461,7 @@ func (v *GtkEntry) GetVisibility() bool {
 // gtk_entry_completion_get_popup_single_match
 
 //-----------------------------------------------------------------------
-// GtkHScale
+// GtkHScale (done 2 out of 2 = 100%)
 //-----------------------------------------------------------------------
 func HScale(adjustment *GtkAdjustment) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
@@ -2471,10 +2471,9 @@ func HScaleWithRange(min float64, max float64, step float64) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
 		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
-// GtkVScale
+// GtkVScale (done 2 out of 2 = 100%)
 //-----------------------------------------------------------------------
 func VScale(adjustment *GtkAdjustment) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
@@ -2484,7 +2483,6 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
 		C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
 // GtkSpinButton (done 0 out of ? = 0%)
