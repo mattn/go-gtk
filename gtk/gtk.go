@@ -258,6 +258,12 @@ static void _gtk_adjustment_configure(GtkAdjustment* adjustment, gdouble value, 
 #endif //GTK_CHECK_VERSION(2,14,0)
 
 #if GTK_CHECK_VERSION(2,18,0)
+static gboolean _gtk_cell_renderer_toggle_get_activatable(GtkCellRendererToggle *toggle) {
+	return gtk_cell_renderer_toggle_get_activatable(toggle);
+}
+static void _gtk_cell_renderer_toggle_set_activatable(GtkCellRendererToggle *toggle, gboolean setting) {
+	gtk_cell_renderer_toggle_set_activatable(toggle, setting);
+}
 void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
 	gtk_widget_set_has_window(widget, has_window);
 }
@@ -301,6 +307,11 @@ gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
 	return gtk_widget_get_receives_default(widget);
 }
 #else //!GTK_CHECK_VERSION(2,18,0)
+static gboolean _gtk_cell_renderer_toggle_get_activatable(GtkCellRendererToggle *toggle) {
+	return 0;
+}
+static void _gtk_cell_renderer_toggle_set_activatable(GtkCellRendererToggle *toggle, gboolean setting) {
+}
 void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
 }
 gboolean _gtk_widget_get_sensitive(GtkWidget *widget) {
@@ -3720,7 +3731,7 @@ func (v *GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewCo
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkCellRenderer
+// GtkCellRenderer (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
 type CellRendererLike interface {
 	ToGtkCellRenderer() *C.GtkCellRenderer
@@ -3751,7 +3762,7 @@ func (v *GtkCellRenderer) Connect(s string, f interface{}, datas ...interface{})
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkCellRendererPixbuf
+// GtkCellRendererPixbuf (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
 type GtkCellRendererPixbuf struct {
 	GtkCellRenderer
@@ -3761,8 +3772,9 @@ func CellRendererPixbuf() *GtkCellRendererPixbuf {
 	return &GtkCellRendererPixbuf{GtkCellRenderer{
 		C.gtk_cell_renderer_pixbuf_new(), nil}}
 }
+
 //-----------------------------------------------------------------------
-// GtkCellRendererProgress
+// GtkCellRendererProgress (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
 type GtkCellRendererProgress struct {
 	GtkCellRenderer
@@ -3774,11 +3786,19 @@ func CellRendererProgress() *GtkCellRendererProgress {
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererSpin (done 0 out of 1 = 100%)
+// GtkCellRendererSpin (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
+type GtkCellRendererSpin struct {
+	GtkCellRenderer
+}
+
+func CellRendererSpin() *GtkCellRendererSpin {
+	return &GtkCellRendererSpin{GtkCellRenderer{
+		C.gtk_cell_renderer_spin_new(), nil}}
+}
 
 //-----------------------------------------------------------------------
-// GtkCellRendererText
+// GtkCellRendererText (done 2 out of 2 = 100%)
 //-----------------------------------------------------------------------
 type GtkCellRendererText struct {
 	GtkCellRenderer
@@ -3793,7 +3813,7 @@ func (v *GtkCellRendererText) SetFixedHeightFromFont(number_of_rows int) {
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererToggle
+// GtkCellRendererToggle (done 2 out of 2 = 100%)
 //-----------------------------------------------------------------------
 type GtkCellRendererToggle struct {
 	GtkCellRenderer
@@ -3816,20 +3836,23 @@ func (v *GtkCellRendererToggle) SetActive(active bool) {
 	C.gtk_cell_renderer_toggle_set_active(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(active))
 }
 func (v *GtkCellRendererToggle) GetActivatable() bool {
-	return gboolean2bool(C.gtk_cell_renderer_toggle_get_activatable(C.to_GtkCellRendererToggle(v.CellRenderer)))
+	panic_if_version_older(2, 18, 0, "gtk_cell_renderer_toggle_get_activatable()")
+	return gboolean2bool(C._gtk_cell_renderer_toggle_get_activatable(C.to_GtkCellRendererToggle(v.CellRenderer)))
 }
 func (v *GtkCellRendererToggle) SetActivatable(activatable bool) {
-	C.gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(activatable))
+	panic_if_version_older(2, 18, 0, "gtk_cell_renderer_toggle_set_activatable()")
+	C._gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.CellRenderer), bool2gboolean(activatable))
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererSpinner
+// GtkCellRendererSpinner (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
 type GtkCellRendererSpinner struct {
 	GtkCellRenderer
 }
 
 func CellRendererSpinner() *GtkCellRendererSpinner {
+	panic_if_version_older(2, 20, 0, "gtk_cell_renderer_spinner_new()")
 	return &GtkCellRendererSpinner{GtkCellRenderer{
 		C._gtk_cell_renderer_spinner_new(), nil}}
 }
