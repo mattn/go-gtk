@@ -611,7 +611,7 @@ func deprecated_since(major int, minor int, micro int, function string) {
 }
 
 //-----------------------------------------------------------------------
-// Main Loop and Events (done 5 out of 24 = 20%)
+// Main Loop and Events
 //-----------------------------------------------------------------------
 
 //Deprecated since 2.24. Use setlocale() directly.
@@ -678,7 +678,7 @@ func MainIterationDo(blocking bool) bool {
 // gtk_propagate_event
 
 //-----------------------------------------------------------------------
-// GtkAccelGroup (done 1 out of 20 = 5%)
+// GtkAccelGroup
 //-----------------------------------------------------------------------
 type GtkAccelGroup struct {
 	AccelGroup *C.GtkAccelGroup
@@ -708,23 +708,136 @@ func AccelGroup() *GtkAccelGroup {
 // gtk_accelerator_get_default_mod_mask
 
 //-----------------------------------------------------------------------
-// GtkAccelMap (done 0 out of ? = 0%)
+// GtkAccelMap
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkClipboard (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_accel_map_add_entry
+// gtk_accel_map_lookup_entry
+// gtk_accel_map_change_entry
+// gtk_accel_map_load
+// gtk_accel_map_save
+// gtk_accel_map_foreach
+// gtk_accel_map_load_fd
+// gtk_accel_map_save_fd
+// gtk_accel_map_load_scanner
+// gtk_accel_map_add_filter
+// gtk_accel_map_foreach_unfiltered
+// gtk_accel_map_get
+// gtk_accel_map_lock_path
+// gtk_accel_map_unlock_path
 
 //-----------------------------------------------------------------------
-// Drag and Drop (done 0 out of ? = 0%)
+// GtkClipboard
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkIconTheme (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_clipboard_get
+// gtk_clipboard_get_for_display
+// gtk_clipboard_get_display
+// gtk_clipboard_set_with_data
+// gtk_clipboard_set_with_owner
+// gtk_clipboard_get_owner
+// gtk_clipboard_clear
+// gtk_clipboard_set_text
+// gtk_clipboard_set_image
+// gtk_clipboard_request_contents
+// gtk_clipboard_request_text
+// gtk_clipboard_request_image
+// gtk_clipboard_request_targets
+// gtk_clipboard_request_rich_text
+// gtk_clipboard_request_uris
+// gtk_clipboard_wait_for_contents
+// gtk_clipboard_wait_for_text
+// gtk_clipboard_wait_for_image
+// gtk_clipboard_wait_for_rich_text
+// gtk_clipboard_wait_for_uris
+// gtk_clipboard_wait_is_text_available
+// gtk_clipboard_wait_is_image_available
+// gtk_clipboard_wait_is_rich_text_available
+// gtk_clipboard_wait_is_uris_available
+// gtk_clipboard_wait_for_targets
+// gtk_clipboard_wait_is_target_available
+// gtk_clipboard_set_can_store
+// gtk_clipboard_store
 
 //-----------------------------------------------------------------------
-// GtkStockItem (done 4 out of 6 = 66%)
+// Drag and Drop
+//-----------------------------------------------------------------------
+
+// gtk_drag_dest_set
+// gtk_drag_dest_set_proxy
+// gtk_drag_dest_unset
+// gtk_drag_dest_find_target
+// gtk_drag_dest_get_target_list
+// gtk_drag_dest_set_target_list
+// gtk_drag_dest_add_text_targets
+// gtk_drag_dest_add_image_targets
+// gtk_drag_dest_add_uri_targets
+// gtk_drag_dest_set_track_motion
+// gtk_drag_dest_get_track_motion
+// gtk_drag_finish
+// gtk_drag_get_data
+// gtk_drag_get_source_widget
+// gtk_drag_highlight
+// gtk_drag_unhighlight
+// gtk_drag_begin
+// gtk_drag_set_icon_widget
+// gtk_drag_set_icon_pixmap
+// gtk_drag_set_icon_pixbuf
+// gtk_drag_set_icon_stock
+// gtk_drag_set_icon_name
+// gtk_drag_set_icon_default
+// gtk_drag_set_default_icon
+// gtk_drag_check_threshold
+// gtk_drag_source_set
+// gtk_drag_source_set_icon
+// gtk_drag_source_set_icon_pixbuf
+// gtk_drag_source_set_icon_stock
+// gtk_drag_source_set_icon_name
+// gtk_drag_source_unset
+// gtk_drag_source_set_target_list
+// gtk_drag_source_get_target_list
+// gtk_drag_source_add_text_targets
+// gtk_drag_source_add_image_targets
+// gtk_drag_source_add_uri_targets
+
+//-----------------------------------------------------------------------
+// GtkIconTheme
+//-----------------------------------------------------------------------
+
+// gtk_icon_theme_new
+// gtk_icon_theme_get_default
+// gtk_icon_theme_get_for_screen
+// gtk_icon_theme_set_screen
+// gtk_icon_theme_set_search_path
+// gtk_icon_theme_get_search_path
+// gtk_icon_theme_append_search_path
+// gtk_icon_theme_prepend_search_path
+// gtk_icon_theme_set_custom_theme
+// gtk_icon_theme_has_icon
+// gtk_icon_theme_lookup_icon
+// gtk_icon_theme_choose_icon
+// gtk_icon_theme_lookup_by_gicon
+// gtk_icon_theme_load_icon
+// gtk_icon_theme_list_contexts
+// gtk_icon_theme_list_icons
+// gtk_icon_theme_get_icon_sizes
+// gtk_icon_theme_get_example_icon_name
+// gtk_icon_theme_rescan_if_needed
+// gtk_icon_theme_add_builtin_icon
+// gtk_icon_info_copy
+// gtk_icon_info_free
+// gtk_icon_info_new_for_pixbuf
+// gtk_icon_info_get_base_size
+// gtk_icon_info_get_filename
+// gtk_icon_info_get_builtin_pixbuf
+// gtk_icon_info_load_icon
+// gtk_icon_info_set_raw_coordinates
+// gtk_icon_info_get_embedded_rect
+// gtk_icon_info_get_attach_points
+// gtk_icon_info_get_display_name
+
+//-----------------------------------------------------------------------
+// GtkStockItem
 //-----------------------------------------------------------------------
 const (
 	GTK_STOCK_ABOUT                         = "gtk-about"
@@ -858,15 +971,86 @@ func GtkStockListIDs() *glib.SList {
 }
 
 //-----------------------------------------------------------------------
-// Themeable Stock Images (done 0 out of ? = 0%)
+// Themeable Stock Images
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// Resource Files (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_icon_source_copy
+// gtk_icon_source_free
+// gtk_icon_factory_add
+// gtk_icon_factory_add_default
+// gtk_icon_factory_lookup
+// gtk_icon_factory_lookup_default
+// gtk_icon_factory_new
+// gtk_icon_factory_remove_default
+// gtk_icon_set_add_source
+// gtk_icon_set_copy
+// gtk_icon_set_new
+// gtk_icon_set_new_from_pixbuf
+// gtk_icon_set_ref
+// gtk_icon_set_render_icon
+// gtk_icon_set_unref
+// gtk_icon_size_lookup
+// gtk_icon_size_lookup_for_settings
+// gtk_icon_size_register
+// gtk_icon_size_register_alias
+// gtk_icon_size_from_name
+// gtk_icon_size_get_name
+// gtk_icon_set_get_sizes
+// gtk_icon_source_get_direction
+// gtk_icon_source_get_direction_wildcarded
+// gtk_icon_source_get_filename
+// gtk_icon_source_get_pixbuf
+// gtk_icon_source_get_icon_name
+// gtk_icon_source_get_size
+// gtk_icon_source_get_size_wildcarded
+// gtk_icon_source_get_state
+// gtk_icon_source_get_state_wildcarded
+// gtk_icon_source_new
+// gtk_icon_source_set_direction
+// gtk_icon_source_set_direction_wildcarded
+// gtk_icon_source_set_filename
+// gtk_icon_source_set_pixbuf
+// gtk_icon_source_set_icon_name
+// gtk_icon_source_set_size
+// gtk_icon_source_set_size_wildcarded
+// gtk_icon_source_set_state
+// gtk_icon_source_set_state_wildcarded
 
 //-----------------------------------------------------------------------
-// GtkSettings (done 3 out of 13 = 23%)
+// Resource Files
+//-----------------------------------------------------------------------
+
+// gtk_rc_scanner_new
+// gtk_rc_get_style
+// gtk_rc_get_style_by_paths
+// gtk_rc_add_widget_name_style
+// gtk_rc_add_widget_class_style
+// gtk_rc_add_class_style
+// gtk_rc_parse
+// gtk_rc_parse_string
+// gtk_rc_reparse_all
+// gtk_rc_reparse_all_for_settings
+// gtk_rc_reset_styles
+// gtk_rc_add_default_file
+// gtk_rc_get_default_files
+// gtk_rc_set_default_files
+// gtk_rc_parse_color
+// gtk_rc_parse_color_full
+// gtk_rc_parse_state
+// gtk_rc_parse_priority
+// gtk_rc_find_module_in_path
+// gtk_rc_find_pixmap_in_path
+// gtk_rc_get_module_dir
+// gtk_rc_get_im_module_path
+// gtk_rc_get_im_module_file
+// gtk_rc_get_theme_dir
+// gtk_rc_style_new
+// gtk_rc_style_copy
+// gtk_rc_style_ref
+// gtk_rc_style_unref
+
+//-----------------------------------------------------------------------
+// GtkSettings
 //-----------------------------------------------------------------------
 type GtkSettings struct {
 	Settings *C.GtkSettings
@@ -908,35 +1092,197 @@ func (s *GtkSettings) SetDoubleProperty(name string, v_double float64, origin st
 }
 
 //-----------------------------------------------------------------------
-// GtkBinding (done 0 out of ? = 0%)
+// GtkBinding
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// Graphics Contexts (done 0 out of 2 = 0%)
-//-----------------------------------------------------------------------
+// gtk_binding_entry_add
+// gtk_binding_entry_add_signall
+// gtk_binding_entry_clear
+// gtk_binding_parse_binding
+// gtk_binding_set_new
+// gtk_binding_set_by_class
+// gtk_binding_set_find
+// gtk_bindings_activate
+// gtk_bindings_activate_event
+// gtk_binding_set_activate
+// gtk_binding_entry_add_signal
+// gtk_binding_entry_skip
+// gtk_binding_entry_remove
+// gtk_binding_set_add_path
 
 //-----------------------------------------------------------------------
-// GtkStyle (done 0 out of ? = 0%)
+// Graphics Contexts
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// Selections (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_gc_get
+// gtk_gc_release
 
 //-----------------------------------------------------------------------
-// Version Information (done 0 out of ? = 0%)
+// GtkStyle
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// Testing (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_style_new
+// gtk_style_copy
+// gtk_style_attach
+// gtk_style_detach
+// gtk_style_ref
+// gtk_style_unref
+// gtk_style_set_background
+// gtk_style_apply_default_background
+// gtk_style_apply_default_pixmap
+// gtk_style_lookup_color
+// gtk_style_lookup_icon_set
+// gtk_style_render_icon
+// gtk_style_get_font
+// gtk_style_set_font
+// gtk_style_get_style_property
+// gtk_style_get_valist
+// gtk_style_get
+// gtk_draw_hline
+// gtk_draw_vline
+// gtk_draw_shadow
+// gtk_draw_polygon
+// gtk_draw_arrow
+// gtk_draw_diamond
+// gtk_draw_string
+// gtk_draw_box
+// gtk_draw_box_gap
+// gtk_draw_check
+// gtk_draw_extension
+// gtk_draw_flat_box
+// gtk_draw_focus
+// gtk_draw_handle
+// gtk_draw_option
+// gtk_draw_shadow_gap
+// gtk_draw_slider
+// gtk_draw_tab
+// gtk_draw_expander
+// gtk_draw_layout
+// gtk_draw_resize_grip
+// gtk_paint_arrow
+// gtk_paint_box
+// gtk_paint_box_gap
+// gtk_paint_check
+// gtk_paint_diamond
+// gtk_paint_extension
+// gtk_paint_flat_box
+// gtk_paint_focus
+// gtk_paint_handle
+// gtk_paint_hline
+// gtk_paint_option
+// gtk_paint_polygon
+// gtk_paint_shadow
+// gtk_paint_shadow_gap
+// gtk_paint_slider
+// gtk_paint_spinner
+// gtk_paint_string
+// gtk_paint_tab
+// gtk_paint_vline
+// gtk_paint_expander
+// gtk_paint_layout
+// gtk_paint_resize_grip
+// gtk_draw_insertion_cursor
+// gtk_border_new
+// gtk_border_copy
+// gtk_border_free
 
 //-----------------------------------------------------------------------
-// Filesystem Utilities (done 0 out of ? = 0%)
+// Selections
 //-----------------------------------------------------------------------
 
+// gtk_target_list_new
+// gtk_target_list_ref
+// gtk_target_list_unref
+// gtk_target_list_add
+// gtk_target_list_add_table
+// gtk_target_list_add_text_targets
+// gtk_target_list_add_image_targets
+// gtk_target_list_add_uri_targets
+// gtk_target_list_add_rich_text_targets
+// gtk_target_list_remove
+// gtk_target_list_find
+// gtk_target_table_free
+// gtk_target_table_new_from_list
+// gtk_selection_owner_set
+// gtk_selection_owner_set_for_display
+// gtk_selection_add_target
+// gtk_selection_add_targets
+// gtk_selection_clear_targets
+// gtk_selection_convert
+// gtk_selection_data_set
+// gtk_selection_data_set_text
+// gtk_selection_data_get_text
+// gtk_selection_data_set_pixbuf
+// gtk_selection_data_get_pixbuf
+// gtk_selection_data_set_uris
+// gtk_selection_data_get_uris
+// gtk_selection_data_get_targets
+// gtk_selection_data_targets_include_image
+// gtk_selection_data_targets_include_text
+// gtk_selection_data_targets_include_uri
+// gtk_selection_data_targets_include_rich_text
+// gtk_selection_data_get_selection
+// gtk_selection_data_get_data
+// gtk_selection_data_get_length
+// gtk_selection_data_get_data_type
+// gtk_selection_data_get_display
+// gtk_selection_data_get_format
+// gtk_selection_data_get_target
+// gtk_targets_include_image
+// gtk_targets_include_text
+// gtk_targets_include_uri
+// gtk_targets_include_rich_text
+// gtk_selection_remove_all
+// gtk_selection_clear
+// gtk_selection_data_copy
+// gtk_selection_data_free
+
 //-----------------------------------------------------------------------
-// GtkDialog (done 8 out of 19 = 42%)
+// Version Information
+//-----------------------------------------------------------------------
+
+// gtk_major_version
+// gtk_minor_version
+// gtk_micro_version
+// gtk_binary_age
+// gtk_interface_age
+// gtk_check_version
+
+//-----------------------------------------------------------------------
+// Testing
+//-----------------------------------------------------------------------
+
+// gtk_test_create_simple_window
+// gtk_test_create_widget
+// gtk_test_display_button_window
+// gtk_test_find_label
+// gtk_test_find_sibling
+// gtk_test_find_widget
+// gtk_test_init
+// gtk_test_list_all_types
+// gtk_test_register_all_types
+// gtk_test_slider_get_value
+// gtk_test_slider_set_perc
+// gtk_test_spin_button_click
+// gtk_test_text_get
+// gtk_test_text_set
+// gtk_test_widget_click
+// gtk_test_widget_send_key
+
+//-----------------------------------------------------------------------
+// Filesystem Utilities
+//-----------------------------------------------------------------------
+
+// gtk_mount_operation_new
+// gtk_mount_operation_is_showing
+// gtk_mount_operation_set_parent
+// gtk_mount_operation_get_parent
+// gtk_mount_operation_set_screen
+// gtk_mount_operation_get_screen
+// gtk_show_uri
+
+//-----------------------------------------------------------------------
+// GtkDialog
 //-----------------------------------------------------------------------
 type GtkDialogFlags int
 
@@ -1025,7 +1371,7 @@ func (v *GtkDialog) GetVBox() *GtkVBox {
 }
 
 //-----------------------------------------------------------------------
-// GtkMessageDialog (done 1 out of 8 = 12%)
+// GtkMessageDialog
 //-----------------------------------------------------------------------
 type GtkMessageType int
 
@@ -1073,7 +1419,7 @@ func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, but
 // gtk_message_dialog_format_secondary_markup
 
 //-----------------------------------------------------------------------
-// GtkWindow (done 24 out of 102 = 23%)
+// GtkWindow
 //-----------------------------------------------------------------------
 type GtkWindowType int
 
@@ -1292,7 +1638,7 @@ func (v *GtkWindow) Resize(width int, height int) {
 // gtk_window_set_mnemonics_visible //since 2.20
 
 //-----------------------------------------------------------------------
-// GtkWindowGroup (done 0 out of 5 = 0%)
+// GtkWindowGroup
 //-----------------------------------------------------------------------
 
 // gtk_window_group_new
@@ -1302,7 +1648,7 @@ func (v *GtkWindow) Resize(width int, height int) {
 // gtk_window_group_get_current_grab
 
 //-----------------------------------------------------------------------
-// GtkAboutDialog (done 29 out of 32 = 90%)
+// GtkAboutDialog
 //-----------------------------------------------------------------------
 type GtkAboutDialog struct {
 	GtkDialog
@@ -1469,7 +1815,7 @@ func (v *GtkAboutDialog) SetLogoIconName(icon_name string) {
 // gtk_show_about_dialog
 
 //-----------------------------------------------------------------------
-// GtkAssistant (done 20 out of 22 = 90%)
+// GtkAssistant
 //-----------------------------------------------------------------------
 type GtkAssistantPageType int
 
@@ -1558,11 +1904,15 @@ func (v *GtkAssistant) UpdateButtonsState() {
 // gtk_assistant_commit //since 2.22
 
 //-----------------------------------------------------------------------
-// GtkOffscreenWindow (done 0 out of ? = 0%)
+// GtkOffscreenWindow
 //-----------------------------------------------------------------------
 
+// gtk_offscreen_window_new
+// gtk_offscreen_window_get_pixmap
+// gtk_offscreen_window_get_pixbuf
+
 //-----------------------------------------------------------------------
-// GtkAccelLabel (done 5 out of 6 = 83%)
+// GtkAccelLabel
 //-----------------------------------------------------------------------
 /*type AccelLabelLike interface {
 	WidgetLike
@@ -1595,7 +1945,7 @@ func (v *GtkAccelLabel) Refetch() bool {
 }
 
 //-----------------------------------------------------------------------
-// GtkImage (done 9 out of 31 = 29%)
+// GtkImage
 //-----------------------------------------------------------------------
 type GtkIconSize int
 
@@ -1689,7 +2039,7 @@ func Image() *GtkImage {
 // gtk_image_get_pixel_size
 
 //-----------------------------------------------------------------------
-// GtkLabel (done 35 out of 44 = 79%)
+// GtkLabel
 //-----------------------------------------------------------------------
 type GtkJustification int
 
@@ -1856,7 +2206,7 @@ func (v *GtkLabel) GetTrackVisitedLinks() bool {
 }
 
 //-----------------------------------------------------------------------
-// GtkProgressBar (done 10 out of 12 = 83%)
+// GtkProgressBar
 //-----------------------------------------------------------------------
 type GtkProgressBarOrientation int
 
@@ -1910,7 +2260,7 @@ func (v *GtkProgressBar) GetOrientation() GtkProgressBarOrientation {
 // gtk_progress_bar_get_ellipsize
 
 //-----------------------------------------------------------------------
-// GtkStatusbar (done 7 out of 9 = 77%)
+// GtkStatusbar
 //-----------------------------------------------------------------------
 type GtkStatusbar struct {
 	GtkHBox
@@ -1947,8 +2297,10 @@ func (v *GtkStatusbar) GetHasResizeGrip() bool {
 // gtk_statusbar_get_message_area //since 2.20
 
 //-----------------------------------------------------------------------
-// GtkInfoBar (done 0 out of 12 = 0%) //since 2.18
+// GtkInfoBar
 //-----------------------------------------------------------------------
+
+//since 2.18
 
 // gtk_info_bar_new
 // gtk_info_bar_new_with_buttons
@@ -1964,7 +2316,7 @@ func (v *GtkStatusbar) GetHasResizeGrip() bool {
 // gtk_info_bar_get_content_area
 
 //-----------------------------------------------------------------------
-// GtkStatusIcon (done 13 out of 36 = 36%)
+// GtkStatusIcon
 //-----------------------------------------------------------------------
 type GtkStatusIcon struct {
 	StatusIcon *C.GtkStatusIcon
@@ -2071,7 +2423,7 @@ func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
 }
 
 //-----------------------------------------------------------------------
-// GtkSpinner (done 0 out of 3 = 0%)
+// GtkSpinner
 //-----------------------------------------------------------------------
 
 // gtk_spinner_new //since 2.20
@@ -2079,7 +2431,7 @@ func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
 // gtk_spinner_stop //since 2.20
 
 //-----------------------------------------------------------------------
-// GtkButton (done 9 out of 26 = 34%)
+// GtkButton
 //-----------------------------------------------------------------------
 /*type ButtonLike interface { // Buttons are LabelLike Widgets!
 	LabelLike
@@ -2153,7 +2505,7 @@ func (v *GtkButton) GetImage() *GtkImage {
 // gtk_button_get_event_window
 
 //-----------------------------------------------------------------------
-// GtkCheckButton (done 3 out of 3 = 100%)
+// GtkCheckButton
 //-----------------------------------------------------------------------
 type GtkCheckButton struct {
 	GtkToggleButton
@@ -2177,7 +2529,7 @@ func CheckButtonWithMnemonic(label string) *GtkCheckButton {
 }
 
 //-----------------------------------------------------------------------
-// GtkRadioButton (done 8 out of 8 = 100%)
+// GtkRadioButton
 //-----------------------------------------------------------------------
 type GtkRadioButton struct {
 	GtkCheckButton
@@ -2239,7 +2591,7 @@ func (v *GtkRadioButton) SetGroup(group *glib.SList) {
 }
 
 //-----------------------------------------------------------------------
-// GtkToggleButton (done 9 out of 9 = 100%)
+// GtkToggleButton
 //-----------------------------------------------------------------------
 type GtkToggleButton struct {
 	GtkButton
@@ -2281,7 +2633,7 @@ func (v *GtkToggleButton) SetInconsistent(setting bool) {
 }
 
 //-----------------------------------------------------------------------
-// GtkLinkButton (done 6 out of 7 = 85%)
+// GtkLinkButton
 //-----------------------------------------------------------------------
 type GtkLinkButton struct {
 	GtkButton
@@ -2321,7 +2673,7 @@ func (v *GtkLinkButton) SetVisited(visited bool) {
 }
 
 //-----------------------------------------------------------------------
-// GtkScaleButton (done 0 out of 9 = 0%)
+// GtkScaleButton
 //-----------------------------------------------------------------------
 
 // gtk_scale_button_new
@@ -2335,13 +2687,13 @@ func (v *GtkLinkButton) SetVisited(visited bool) {
 // gtk_scale_button_get_minus_button
 
 //-----------------------------------------------------------------------
-// GtkVolumeButton (done 0 out of 1 = 0%)
+// GtkVolumeButton
 //-----------------------------------------------------------------------
 
 // gtk_volume_button_new
 
 //-----------------------------------------------------------------------
-// GtkEntry (done 25 out of 69 = 36%)
+// GtkEntry
 //-----------------------------------------------------------------------
 type TextInputLike interface {
 	WidgetLike
@@ -2505,7 +2857,7 @@ func (v *GtkEntry) GetVisibility() bool {
 // gtk_entry_get_text_window //since 2.20
 
 //-----------------------------------------------------------------------
-// GtkEntryBuffer (done 0 out of 11 = 0%)
+// GtkEntryBuffer
 //-----------------------------------------------------------------------
 
 // gtk_entry_buffer_new //since 2.18
@@ -2521,7 +2873,7 @@ func (v *GtkEntry) GetVisibility() bool {
 // gtk_entry_buffer_emit_inserted_text //since 2.18
 
 //-----------------------------------------------------------------------
-// GtkEntryCompletion (done 0 out of 25 = 0%)
+// GtkEntryCompletion
 //-----------------------------------------------------------------------
 
 // gtk_entry_completion_new
@@ -2551,7 +2903,7 @@ func (v *GtkEntry) GetVisibility() bool {
 // gtk_entry_completion_get_popup_single_match
 
 //-----------------------------------------------------------------------
-// GtkHScale (done 2 out of 2 = 100%)
+// GtkHScale
 //-----------------------------------------------------------------------
 func HScale(adjustment *GtkAdjustment) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
@@ -2563,7 +2915,7 @@ func HScaleWithRange(min float64, max float64, step float64) *GtkScale {
 }
 
 //-----------------------------------------------------------------------
-// GtkVScale (done 2 out of 2 = 100%)
+// GtkVScale
 //-----------------------------------------------------------------------
 func VScale(adjustment *GtkAdjustment) *GtkScale {
 	return &GtkScale{GtkRange{GtkWidget{
@@ -2575,11 +2927,37 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 }
 
 //-----------------------------------------------------------------------
-// GtkSpinButton (done 0 out of ? = 0%)
+// GtkSpinButton
 //-----------------------------------------------------------------------
 
+// gtk_spin_button_configure
+// gtk_spin_button_new
+// gtk_spin_button_new_with_range
+// gtk_spin_button_set_adjustment
+// gtk_spin_button_get_adjustment
+// gtk_spin_button_set_digits
+// gtk_spin_button_set_increments
+// gtk_spin_button_set_range
+// gtk_spin_button_get_value_as_float
+// gtk_spin_button_get_value_as_int
+// gtk_spin_button_set_value
+// gtk_spin_button_set_update_policy
+// gtk_spin_button_set_numeric
+// gtk_spin_button_spin
+// gtk_spin_button_set_wrap
+// gtk_spin_button_set_snap_to_ticks
+// gtk_spin_button_update
+// gtk_spin_button_get_digits
+// gtk_spin_button_get_increments
+// gtk_spin_button_get_numeric
+// gtk_spin_button_get_range
+// gtk_spin_button_get_snap_to_ticks
+// gtk_spin_button_get_update_policy
+// gtk_spin_button_get_value
+// gtk_spin_button_get_wrap
+
 //-----------------------------------------------------------------------
-// GtkEditable (done 13 out of 13 = 100%)
+// GtkEditable
 //-----------------------------------------------------------------------
 type GtkEditable struct {
 	Editable *C.GtkEditable
@@ -2635,7 +3013,7 @@ func (v *GtkEditable) GetEditable() bool {
 }
 
 //-----------------------------------------------------------------------
-// GtkTextIter (done 0 out of ? = 0%)
+// GtkTextIter
 //-----------------------------------------------------------------------
 type GtkTextIter struct {
 	TextIter C.GtkTextIter
@@ -2798,14 +3176,22 @@ func (v *GtkTextIter) Assign(iter *GtkTextIter) {
 }
 
 //-----------------------------------------------------------------------
-// GtkTextMark (done 0 out of ? = 0%)
+// GtkTextMark
 //-----------------------------------------------------------------------
 type GtkTextMark struct {
 	TextMark *C.GtkTextMark
 }
 
+// gtk_text_mark_new
+// gtk_text_mark_set_visible
+// gtk_text_mark_get_visible
+// gtk_text_mark_get_deleted
+// gtk_text_mark_get_name
+// gtk_text_mark_get_buffer
+// gtk_text_mark_get_left_gravity
+
 //-----------------------------------------------------------------------
-// GtkTextBuffer (done 49 out of 74 = 66%)
+// GtkTextBuffer
 //-----------------------------------------------------------------------
 type TextBufferLike interface {
 	GetNativeBuffer() unsafe.Pointer
@@ -3054,14 +3440,24 @@ func (v *GtkTextBuffer) Connect(s string, f interface{}, datas ...interface{}) {
 }
 
 //-----------------------------------------------------------------------
-// GtkTextTag (done 0 out of ? = 0%)
+// GtkTextTag
 //-----------------------------------------------------------------------
 type GtkTextTag struct {
 	TextTag *C.GtkTextTag
 }
 
+// gtk_text_tag_new
+// gtk_text_tag_get_priority
+// gtk_text_tag_set_priority
+// gtk_text_tag_event
+// gtk_text_attributes_new
+// gtk_text_attributes_copy
+// gtk_text_attributes_copy_values
+// gtk_text_attributes_unref
+// gtk_text_attributes_ref
+
 //-----------------------------------------------------------------------
-// GtkTextTagTable (done 5 out of 6 = 83%)
+// GtkTextTagTable
 //-----------------------------------------------------------------------
 type GtkTextTagTable struct {
 	TextTagTable *C.GtkTextTagTable
@@ -3089,7 +3485,7 @@ func (v *GtkTextTagTable) GetSize() int {
 }
 
 //-----------------------------------------------------------------------
-// GtkTextView (done 18 out of 64 = 28%)
+// GtkTextView
 //-----------------------------------------------------------------------
 type GtkWrapMode int
 
@@ -3227,7 +3623,7 @@ func (v *GtkTextView) GetAcceptsTab() bool {
 // gtk_text_view_get_vadjustment //since 2.22
 
 //-----------------------------------------------------------------------
-// GtkTreePath (done 0 out of ? = 0%)
+// GtkTreePath
 //-----------------------------------------------------------------------
 type GtkTreePath struct {
 	TreePath *C.GtkTreePath
@@ -3291,7 +3687,7 @@ func (v *GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
 }
 
 //-----------------------------------------------------------------------
-// GtkTreeRowReference (done 0 out of 10 = 0%)
+// GtkTreeRowReference
 //-----------------------------------------------------------------------
 
 // gtk_tree_row_reference_new
@@ -3306,7 +3702,7 @@ func (v *GtkTreePath) IsDescendant(ancestor GtkTreePath) bool {
 // gtk_tree_row_reference_reordered
 
 //-----------------------------------------------------------------------
-// GtkTreeIter (done 0 out of 0 = 100%)
+// GtkTreeIter
 //-----------------------------------------------------------------------
 type GtkTreeIter struct {
 	TreeIter C.GtkTreeIter
@@ -3317,7 +3713,7 @@ func (v *GtkTreeIter) Assign(to *GtkTreeIter) {
 }
 
 //-----------------------------------------------------------------------
-// GtkTreeModel (done 14 out of 25 = 56%)
+// GtkTreeModel
 //-----------------------------------------------------------------------
 type GtkTreeModelFlags int
 
@@ -3396,7 +3792,7 @@ func (v *GtkTreeModel) GetStringFromIter(iter *GtkTreeIter) string {
 // gtk_tree_model_rows_reordered
 
 //-----------------------------------------------------------------------
-// GtkTreeSelection (done 14 out of 19 = 73%)
+// GtkTreeSelection
 //-----------------------------------------------------------------------
 type GtkTreeSelection struct {
 	TreeSelection *C.GtkTreeSelection
@@ -3468,7 +3864,7 @@ func (v *GtkTreeSelection) UnselectRange(start_path *GtkTreePath, end_path *GtkT
 }
 
 //-----------------------------------------------------------------------
-// GtkTreeViewColumn (done 18 out of 51 = 35%)
+// GtkTreeViewColumn
 //-----------------------------------------------------------------------
 type GtkTreeViewColumnSizing int
 
@@ -3616,7 +4012,7 @@ func (v *GtkTreeViewColumn) GetTitle() string {
 //GtkWidget *gtk_tree_view_column_get_tree_view (GtkTreeViewColumn *tree_column);
 
 //-----------------------------------------------------------------------
-// GtkTreeView (done 14 out of 97 = 14%)
+// GtkTreeView
 //-----------------------------------------------------------------------
 type GtkTreeView struct {
 	GtkContainer
@@ -3784,35 +4180,157 @@ func (v *GtkTreeView) RowExpanded(path *GtkTreePath) bool {
 //void gtk_tree_view_set_tooltip_column (GtkTreeView *tree_view, gint column);
 
 //-----------------------------------------------------------------------
-// GtkTreeView drag-and-drop (done 0 out of ? = 0%)
+// GtkTreeView drag-and-drop
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkCellView (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tree_drag_source_drag_data_delete
+// gtk_tree_drag_source_drag_data_get
+// gtk_tree_drag_source_row_draggable
+// gtk_tree_drag_dest_drag_data_received
+// gtk_tree_drag_dest_row_drop_possible
+// gtk_tree_set_row_drag_data
+// gtk_tree_get_row_drag_data
 
 //-----------------------------------------------------------------------
-// GtkIconView (done 0 out of ? = 0%)
+// GtkCellView
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkTreeSortable (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_cell_view_new
+// gtk_cell_view_new_with_text
+// gtk_cell_view_new_with_markup
+// gtk_cell_view_new_with_pixbuf
+// gtk_cell_view_set_model
+// gtk_cell_view_get_model
+// gtk_cell_view_set_displayed_row
+// gtk_cell_view_get_displayed_row
+// gtk_cell_view_get_size_of_row
+// gtk_cell_view_set_background_color
+// gtk_cell_view_get_cell_renderers
 
 //-----------------------------------------------------------------------
-// GtkTreeModelSort (done 0 out of ? = 0%)
+// GtkIconView
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkTreeModelFilter (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_icon_view_new
+// gtk_icon_view_new_with_model
+// gtk_icon_view_set_model
+// gtk_icon_view_get_model
+// gtk_icon_view_set_text_column
+// gtk_icon_view_get_text_column
+// gtk_icon_view_set_markup_column
+// gtk_icon_view_get_markup_column
+// gtk_icon_view_set_pixbuf_column
+// gtk_icon_view_get_pixbuf_column
+// gtk_icon_view_get_path_at_pos
+// gtk_icon_view_get_item_at_pos
+// gtk_icon_view_convert_widget_to_bin_window_coords
+// gtk_icon_view_set_cursor
+// gtk_icon_view_get_cursor
+// gtk_icon_view_selected_foreach
+// gtk_icon_view_set_selection_mode
+// gtk_icon_view_get_selection_mode
+// gtk_icon_view_set_orientation
+// gtk_icon_view_get_orientation
+// gtk_icon_view_set_item_orientation
+// gtk_icon_view_get_item_orientation
+// gtk_icon_view_set_columns
+// gtk_icon_view_get_columns
+// gtk_icon_view_set_item_width
+// gtk_icon_view_get_item_width
+// gtk_icon_view_set_spacing
+// gtk_icon_view_get_spacing
+// gtk_icon_view_set_row_spacing
+// gtk_icon_view_get_row_spacing
+// gtk_icon_view_set_column_spacing
+// gtk_icon_view_get_column_spacing
+// gtk_icon_view_set_margin
+// gtk_icon_view_get_margin
+// gtk_icon_view_set_item_padding
+// gtk_icon_view_get_item_padding
+// gtk_icon_view_select_path
+// gtk_icon_view_unselect_path
+// gtk_icon_view_path_is_selected
+// gtk_icon_view_get_selected_items
+// gtk_icon_view_select_all
+// gtk_icon_view_unselect_all
+// gtk_icon_view_item_activated
+// gtk_icon_view_scroll_to_path
+// gtk_icon_view_get_visible_range
+// gtk_icon_view_set_tooltip_item
+// gtk_icon_view_set_tooltip_cell
+// gtk_icon_view_get_tooltip_context
+// gtk_icon_view_set_tooltip_column
+// gtk_icon_view_get_tooltip_column
+// gtk_icon_view_get_item_row
+// gtk_icon_view_get_item_column
+// gtk_icon_view_enable_model_drag_source
+// gtk_icon_view_enable_model_drag_dest
+// gtk_icon_view_unset_model_drag_source
+// gtk_icon_view_unset_model_drag_dest
+// gtk_icon_view_set_reorderable
+// gtk_icon_view_get_reorderable
+// gtk_icon_view_set_drag_dest_item
+// gtk_icon_view_get_drag_dest_item
+// gtk_icon_view_get_dest_item_at_pos
+// gtk_icon_view_create_drag_icon
 
 //-----------------------------------------------------------------------
-// GtkCellLayout (done 0 out of ? = 0%)
+// GtkTreeSortable
 //-----------------------------------------------------------------------
 
+// gtk_tree_sortable_sort_column_changed
+// gtk_tree_sortable_get_sort_column_id
+// gtk_tree_sortable_set_sort_column_id
+// gtk_tree_sortable_set_sort_func
+// gtk_tree_sortable_set_default_sort_func
+// gtk_tree_sortable_has_default_sort_func
+
 //-----------------------------------------------------------------------
-// GtkCellRenderer (done 0 out of ? = 0%)
+// GtkTreeModelSort
+//-----------------------------------------------------------------------
+
+// gtk_tree_model_sort_new_with_model
+// gtk_tree_model_sort_get_model
+// gtk_tree_model_sort_convert_child_path_to_path
+// gtk_tree_model_sort_convert_child_iter_to_iter
+// gtk_tree_model_sort_convert_path_to_child_path
+// gtk_tree_model_sort_convert_iter_to_child_iter
+// gtk_tree_model_sort_reset_default_sort_func
+// gtk_tree_model_sort_clear_cache
+// gtk_tree_model_sort_iter_is_valid
+
+//-----------------------------------------------------------------------
+// GtkTreeModelFilter
+//-----------------------------------------------------------------------
+
+// gtk_tree_model_filter_new
+// gtk_tree_model_filter_set_visible_func
+// gtk_tree_model_filter_set_modify_func
+// gtk_tree_model_filter_set_visible_column
+// gtk_tree_model_filter_get_model
+// gtk_tree_model_filter_convert_child_iter_to_iter
+// gtk_tree_model_filter_convert_iter_to_child_iter
+// gtk_tree_model_filter_convert_child_path_to_path
+// gtk_tree_model_filter_convert_path_to_child_path
+// gtk_tree_model_filter_refilter
+// gtk_tree_model_filter_clear_cache
+
+//-----------------------------------------------------------------------
+// GtkCellLayout
+//-----------------------------------------------------------------------
+
+// gtk_cell_layout_pack_start
+// gtk_cell_layout_pack_end
+// gtk_cell_layout_get_cells
+// gtk_cell_layout_reorder
+// gtk_cell_layout_clear
+// gtk_cell_layout_set_attributes
+// gtk_cell_layout_add_attribute
+// gtk_cell_layout_set_cell_data_func
+// gtk_cell_layout_clear_attributes
+
+//-----------------------------------------------------------------------
+// GtkCellRenderer
 //-----------------------------------------------------------------------
 type CellRendererLike interface {
 	ToGtkCellRenderer() *C.GtkCellRenderer
@@ -3831,19 +4349,27 @@ func (v *GtkCellRenderer) Connect(s string, f interface{}, datas ...interface{})
 }
 
 //-----------------------------------------------------------------------
-// GtkCellEditable (done 0 out of ? = 0%)
+// GtkCellEditable
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkCellRendererAccel (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_cell_editable_start_editing
+// gtk_cell_editable_editing_done
+// gtk_cell_editable_remove_widget
 
 //-----------------------------------------------------------------------
-// GtkCellRendererCombo (done 0 out of ? = 0%)
+// GtkCellRendererAccel
 //-----------------------------------------------------------------------
 
+// gtk_cell_renderer_accel_new
+
 //-----------------------------------------------------------------------
-// GtkCellRendererPixbuf (done 1 out of 1 = 100%)
+// GtkCellRendererCombo
+//-----------------------------------------------------------------------
+
+// gtk_cell_renderer_combo_new
+
+//-----------------------------------------------------------------------
+// GtkCellRendererPixbuf
 //-----------------------------------------------------------------------
 type GtkCellRendererPixbuf struct {
 	GtkCellRenderer
@@ -3855,7 +4381,7 @@ func CellRendererPixbuf() *GtkCellRendererPixbuf {
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererProgress (done 1 out of 1 = 100%)
+// GtkCellRendererProgress
 //-----------------------------------------------------------------------
 type GtkCellRendererProgress struct {
 	GtkCellRenderer
@@ -3867,7 +4393,7 @@ func CellRendererProgress() *GtkCellRendererProgress {
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererSpin (done 1 out of 1 = 100%)
+// GtkCellRendererSpin
 //-----------------------------------------------------------------------
 type GtkCellRendererSpin struct {
 	GtkCellRenderer
@@ -3879,7 +4405,7 @@ func CellRendererSpin() *GtkCellRendererSpin {
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererText (done 2 out of 2 = 100%)
+// GtkCellRendererText
 //-----------------------------------------------------------------------
 type GtkCellRendererText struct {
 	GtkCellRenderer
@@ -3894,7 +4420,7 @@ func (v *GtkCellRendererText) SetFixedHeightFromFont(number_of_rows int) {
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererToggle (done 2 out of 2 = 100%)
+// GtkCellRendererToggle
 //-----------------------------------------------------------------------
 type GtkCellRendererToggle struct {
 	GtkCellRenderer
@@ -3926,7 +4452,7 @@ func (v *GtkCellRendererToggle) SetActivatable(activatable bool) {
 }
 
 //-----------------------------------------------------------------------
-// GtkCellRendererSpinner (done 1 out of 1 = 100%)
+// GtkCellRendererSpinner
 //-----------------------------------------------------------------------
 type GtkCellRendererSpinner struct {
 	GtkCellRenderer
@@ -3939,7 +4465,7 @@ func CellRendererSpinner() *GtkCellRendererSpinner {
 }
 
 //-----------------------------------------------------------------------
-// GtkListStore (done 15 out of 18 = 83%)
+// GtkListStore
 //-----------------------------------------------------------------------
 const (
 	GTK_TYPE_CHAR    = glib.G_TYPE_CHAR
@@ -4051,7 +4577,7 @@ func (v *GtkListStore) MoveAfter(iter *GtkTreeIter, position *GtkTreeIter) {
 }*/
 
 //-----------------------------------------------------------------------
-// GtkTreeStore (done 15 out of 18 = 83%)
+// GtkTreeStore
 //-----------------------------------------------------------------------
 type GtkTreeStore struct {
 	GtkTreeModel
@@ -4154,7 +4680,7 @@ func (v *GtkTreeStore) MoveAfter(iter *GtkTreeIter, position *GtkTreeIter) {
 }
 
 //-----------------------------------------------------------------------
-// GtkComboBox (done 30 out of 38 = 78%)
+// GtkComboBox
 //-----------------------------------------------------------------------
 type GtkComboBox struct {
 	GtkBin
@@ -4290,7 +4816,7 @@ func (v *GtkComboBox) GetFocusOnClick() bool {
 // gtk_combo_box_get_entry_text_column //since 2.24
 
 //-----------------------------------------------------------------------
-// GtkComboBoxText (done 7 out of 7 = 100%)
+// GtkComboBoxText
 //-----------------------------------------------------------------------
 type GtkComboBoxText struct {
 	GtkComboBox
@@ -4334,7 +4860,7 @@ func (v *GtkComboBoxText) GetActiveText() string {
 }
 
 //-----------------------------------------------------------------------
-// GtkComboBoxEntry (done 4 out of 5 = 80%)
+// GtkComboBoxEntry
 //-----------------------------------------------------------------------
 type GtkComboBoxEntry struct {
 	GtkComboBox
@@ -4362,7 +4888,7 @@ func (v *GtkComboBoxEntry) SetTextColumn(text_column int) {
 }
 
 //-----------------------------------------------------------------------
-// GtkMenu (done 11 out of 25 = 44%)
+// GtkMenu
 //-----------------------------------------------------------------------
 type GtkMenu struct {
 	GtkContainer
@@ -4470,7 +4996,7 @@ func _go_gtk_menu_position_func(pgmpfi unsafe.Pointer) {
 }
 
 //-----------------------------------------------------------------------
-// GtkMenuBar (done 5 out of 5 = 100%)
+// GtkMenuBar
 //-----------------------------------------------------------------------
 type GtkPackDirection int
 
@@ -4514,7 +5040,7 @@ func (v *GtkMenuBar) Insert(child WidgetLike, position int) {
 }
 
 //-----------------------------------------------------------------------
-// GtkMenuItem (done 14 out of 18 = 77%)
+// GtkMenuItem
 //-----------------------------------------------------------------------
 type GtkMenuItem struct {
 	GtkItem
@@ -4584,15 +5110,37 @@ func (v *GtkMenuItem) ToggleSizeAllocate(i int) {
 }
 
 //-----------------------------------------------------------------------
-// GtkImageMenuItem (done 0 out of ? = 0%)
+// GtkImageMenuItem
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkRadioMenuItem (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_image_menu_item_set_image
+// gtk_image_menu_item_get_image
+// gtk_image_menu_item_new
+// gtk_image_menu_item_new_from_stock
+// gtk_image_menu_item_new_with_label
+// gtk_image_menu_item_new_with_mnemonic
+// gtk_image_menu_item_get_use_stock
+// gtk_image_menu_item_set_use_stock
+// gtk_image_menu_item_get_always_show_image
+// gtk_image_menu_item_set_always_show_image
+// gtk_image_menu_item_set_accel_group
 
 //-----------------------------------------------------------------------
-// GtkCheckMenuItem (done 10 out of 10 = 100%)
+// GtkRadioMenuItem
+//-----------------------------------------------------------------------
+
+// gtk_radio_menu_item_new
+// gtk_radio_menu_item_new_with_label
+// gtk_radio_menu_item_new_with_mnemonic
+// gtk_radio_menu_item_new_from_widget
+// gtk_radio_menu_item_new_with_label_from_widget
+// gtk_radio_menu_item_new_with_mnemonic_from_widget
+// gtk_radio_menu_item_group
+// gtk_radio_menu_item_set_group
+// gtk_radio_menu_item_get_group
+
+//-----------------------------------------------------------------------
+// GtkCheckMenuItem
 //-----------------------------------------------------------------------
 type GtkCheckMenuItem struct {
 	GtkMenuItem
@@ -4637,7 +5185,7 @@ func (v *GtkCheckMenuItem) GetDrawAsRadio() bool {
 }
 
 //-----------------------------------------------------------------------
-// GtkSeparatorMenuItem (done 1 out of 1 = 100%)
+// GtkSeparatorMenuItem
 //-----------------------------------------------------------------------
 type GtkSeparatorMenuItem struct {
 	GtkMenuItem
@@ -4649,95 +5197,408 @@ func SeparatorMenuItem() *GtkSeparatorMenuItem {
 }
 
 //-----------------------------------------------------------------------
-// GtkTearoffMenuItem (done 0 out of 1 = 0%)
+// GtkTearoffMenuItem
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkToolShell (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tearoff_menu_item_new
 
 //-----------------------------------------------------------------------
-// GtkToolbar (done 0 out of ? = 0%)
+// GtkToolShell
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkToolItem (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tool_shell_get_ellipsize_mode
+// gtk_tool_shell_get_icon_size
+// gtk_tool_shell_get_orientation
+// gtk_tool_shell_get_relief_style
+// gtk_tool_shell_get_style
+// gtk_tool_shell_get_text_alignment
+// gtk_tool_shell_get_text_orientation
+// gtk_tool_shell_rebuild_menu
+// gtk_tool_shell_get_text_size_group
 
 //-----------------------------------------------------------------------
-// GtkToolPalette (done 0 out of ? = 0%)
+// GtkToolbar
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkToolItemGroup (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_toolbar_new
+// gtk_toolbar_insert
+// gtk_toolbar_get_item_index
+// gtk_toolbar_get_n_items
+// gtk_toolbar_get_nth_item
+// gtk_toolbar_get_drop_index
+// gtk_toolbar_set_drop_highlight_item
+// gtk_toolbar_set_show_arrow
+// gtk_toolbar_set_orientation
+// gtk_toolbar_set_tooltips
+// gtk_toolbar_unset_icon_size
+// gtk_toolbar_get_show_arrow
+// gtk_toolbar_get_orientation
+// gtk_toolbar_get_style
+// gtk_toolbar_get_icon_size
+// gtk_toolbar_get_tooltips
+// gtk_toolbar_get_relief_style
+// gtk_toolbar_append_item
+// gtk_toolbar_prepend_item
+// gtk_toolbar_insert_item
+// gtk_toolbar_append_space
+// gtk_toolbar_prepend_space
+// gtk_toolbar_insert_space
+// gtk_toolbar_append_element
+// gtk_toolbar_prepend_element
+// gtk_toolbar_insert_element
+// gtk_toolbar_append_widget
+// gtk_toolbar_prepend_widget
+// gtk_toolbar_insert_widget
+// gtk_toolbar_set_style
+// gtk_toolbar_insert_stock
+// gtk_toolbar_set_icon_size
+// gtk_toolbar_remove_space
+// gtk_toolbar_unset_style
 
 //-----------------------------------------------------------------------
-// GtkSeparatorToolItem (done 0 out of ? = 0%)
+// GtkToolItem
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkToolButton (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tool_item_new
+// gtk_tool_item_set_homogeneous
+// gtk_tool_item_get_homogeneous
+// gtk_tool_item_set_expand
+// gtk_tool_item_get_expand
+// gtk_tool_item_set_tooltip
+// gtk_tool_item_set_tooltip_text
+// gtk_tool_item_set_tooltip_markup
+// gtk_tool_item_set_use_drag_window
+// gtk_tool_item_get_use_drag_window
+// gtk_tool_item_set_visible_horizontal
+// gtk_tool_item_get_visible_horizontal
+// gtk_tool_item_set_visible_vertical
+// gtk_tool_item_get_visible_vertical
+// gtk_tool_item_set_is_important
+// gtk_tool_item_get_is_important
+// gtk_tool_item_get_ellipsize_mode
+// gtk_tool_item_get_icon_size
+// gtk_tool_item_get_orientation
+// gtk_tool_item_get_toolbar_style
+// gtk_tool_item_get_relief_style
+// gtk_tool_item_get_text_alignment
+// gtk_tool_item_get_text_orientation
+// gtk_tool_item_retrieve_proxy_menu_item
+// gtk_tool_item_get_proxy_menu_item
+// gtk_tool_item_set_proxy_menu_item
+// gtk_tool_item_rebuild_menu
+// gtk_tool_item_toolbar_reconfigured
+// gtk_tool_item_get_text_size_group
 
 //-----------------------------------------------------------------------
-// GtkMenuToolButton (done 0 out of ? = 0%)
+// GtkToolPalette
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkToggleToolButton (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tool_palette_new
+// gtk_tool_palette_get_exclusive
+// gtk_tool_palette_set_exclusive
+// gtk_tool_palette_get_expand
+// gtk_tool_palette_set_expand
+// gtk_tool_palette_get_group_position
+// gtk_tool_palette_set_group_position
+// gtk_tool_palette_get_icon_size
+// gtk_tool_palette_set_icon_size
+// gtk_tool_palette_unset_icon_size
+// gtk_tool_palette_get_style
+// gtk_tool_palette_set_style
+// gtk_tool_palette_unset_style
+// gtk_tool_palette_add_drag_dest
+// gtk_tool_palette_get_drag_item
+// gtk_tool_palette_get_drag_target_group
+// gtk_tool_palette_get_drag_target_item
+// gtk_tool_palette_get_drop_group
+// gtk_tool_palette_get_drop_item
+// gtk_tool_palette_set_drag_source
+// gtk_tool_palette_get_hadjustment
+// gtk_tool_palette_get_vadjustment
 
 //-----------------------------------------------------------------------
-// GtkRadioToolButton (done 0 out of ? = 0%)
+// GtkToolItemGroup
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkUIManager (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tool_item_group_get_collapsed
+// gtk_tool_item_group_get_drop_item
+// gtk_tool_item_group_get_ellipsize
+// gtk_tool_item_group_get_item_position
+// gtk_tool_item_group_get_n_items
+// gtk_tool_item_group_get_label
+// gtk_tool_item_group_get_label_widget
+// gtk_tool_item_group_get_nth_item
+// gtk_tool_item_group_get_header_relief
+// gtk_tool_item_group_insert
+// gtk_tool_item_group_new
+// gtk_tool_item_group_set_collapsed
+// gtk_tool_item_group_set_ellipsize
+// gtk_tool_item_group_set_item_position
+// gtk_tool_item_group_set_label
+// gtk_tool_item_group_set_label_widget
+// gtk_tool_item_group_set_header_relief
 
 //-----------------------------------------------------------------------
-// GtkActionGroup (done 0 out of ? = 0%)
+// GtkSeparatorToolItem
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkAction (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_separator_tool_item_new
+// gtk_separator_tool_item_set_draw
+// gtk_separator_tool_item_get_draw
 
 //-----------------------------------------------------------------------
-// GtkToggleAction (done 0 out of ? = 0%)
+// GtkToolButton
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkRadioAction (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tool_button_new
+// gtk_tool_button_new_from_stock
+// gtk_tool_button_set_label
+// gtk_tool_button_get_label
+// gtk_tool_button_set_use_underline
+// gtk_tool_button_get_use_underline
+// gtk_tool_button_set_stock_id
+// gtk_tool_button_get_stock_id
+// gtk_tool_button_set_icon_name
+// gtk_tool_button_get_icon_name
+// gtk_tool_button_set_icon_widget
+// gtk_tool_button_get_icon_widget
+// gtk_tool_button_set_label_widget
+// gtk_tool_button_get_label_widget
 
 //-----------------------------------------------------------------------
-// GtkRecentAction (done 0 out of ? = 0%)
+// GtkMenuToolButton
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkActivatable (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_menu_tool_button_new
+// gtk_menu_tool_button_new_from_stock
+// gtk_menu_tool_button_set_menu
+// gtk_menu_tool_button_get_menu
+// gtk_menu_tool_button_set_arrow_tooltip
+// gtk_menu_tool_button_set_arrow_tooltip_text
+// gtk_menu_tool_button_set_arrow_tooltip_markup
 
 //-----------------------------------------------------------------------
-// GtkColorButton (done 0 out of ? = 0%)
+// GtkToggleToolButton
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkColorSelectionDialog (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_toggle_tool_button_new
+// gtk_toggle_tool_button_new_from_stock
+// gtk_toggle_tool_button_set_active
+// gtk_toggle_tool_button_get_active
 
 //-----------------------------------------------------------------------
-// GtkColorSelection (done 0 out of ? = 0%)
+// GtkRadioToolButton
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkHSV (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_radio_tool_button_new
+// gtk_radio_tool_button_new_from_stock
+// gtk_radio_tool_button_new_from_widget
+// gtk_radio_tool_button_new_with_stock_from_widget
+// gtk_radio_tool_button_get_group
+// gtk_radio_tool_button_set_group
 
 //-----------------------------------------------------------------------
-// GtkFileChooser (done 13 out of 58 = 22%)
+// GtkUIManager
+//-----------------------------------------------------------------------
+
+// gtk_ui_manager_new
+// gtk_ui_manager_set_add_tearoffs
+// gtk_ui_manager_get_add_tearoffs
+// gtk_ui_manager_insert_action_group
+// gtk_ui_manager_remove_action_group
+// gtk_ui_manager_get_action_groups
+// gtk_ui_manager_get_accel_group
+// gtk_ui_manager_get_widget
+// gtk_ui_manager_get_toplevels
+// gtk_ui_manager_get_action
+// gtk_ui_manager_add_ui_from_string
+// gtk_ui_manager_add_ui_from_file
+// gtk_ui_manager_new_merge_id
+// gtk_ui_manager_add_ui
+// gtk_ui_manager_remove_ui
+// gtk_ui_manager_get_ui
+// gtk_ui_manager_ensure_update
+
+//-----------------------------------------------------------------------
+// GtkActionGroup
+//-----------------------------------------------------------------------
+
+// gtk_action_group_new
+// gtk_action_group_get_name
+// gtk_action_group_get_sensitive
+// gtk_action_group_set_sensitive
+// gtk_action_group_get_visible
+// gtk_action_group_set_visible
+// gtk_action_group_get_action
+// gtk_action_group_list_actions
+// gtk_action_group_add_action
+// gtk_action_group_add_action_with_accel
+// gtk_action_group_remove_action
+// gtk_action_group_add_actions
+// gtk_action_group_add_actions_full
+// gtk_action_group_add_toggle_actions
+// gtk_action_group_add_toggle_actions_full
+// gtk_action_group_add_radio_actions
+// gtk_action_group_add_radio_actions_full
+// gtk_action_group_set_translate_func
+// gtk_action_group_set_translation_domain
+// gtk_action_group_translate_string
+
+//-----------------------------------------------------------------------
+// GtkAction
+//-----------------------------------------------------------------------
+
+// gtk_action_new
+// gtk_action_get_name
+// gtk_action_is_sensitive
+// gtk_action_get_sensitive
+// gtk_action_set_sensitive
+// gtk_action_is_visible
+// gtk_action_get_visible
+// gtk_action_set_visible
+// gtk_action_activate
+// gtk_action_create_icon
+// gtk_action_create_menu_item
+// gtk_action_create_tool_item
+// gtk_action_create_menu
+// gtk_action_connect_proxy
+// gtk_action_disconnect_proxy
+// gtk_action_get_proxies
+// gtk_action_connect_accelerator
+// gtk_action_disconnect_accelerator
+// gtk_action_block_activate
+// gtk_action_unblock_activate
+// gtk_action_block_activate_from
+// gtk_action_unblock_activate_from
+// gtk_action_get_always_show_image
+// gtk_action_set_always_show_image
+// gtk_action_get_accel_path
+// gtk_action_set_accel_path
+// gtk_action_get_accel_closure
+// gtk_action_set_accel_group
+// gtk_action_set_label
+// gtk_action_get_label
+// gtk_action_set_short_label
+// gtk_action_get_short_label
+// gtk_action_set_tooltip
+// gtk_action_get_tooltip
+// gtk_action_set_stock_id
+// gtk_action_get_stock_id
+// gtk_action_set_gicon
+// gtk_action_get_gicon
+// gtk_action_set_icon_name
+// gtk_action_get_icon_name
+// gtk_action_set_visible_horizontal
+// gtk_action_get_visible_horizontal
+// gtk_action_set_visible_vertical
+// gtk_action_get_visible_vertical
+// gtk_action_set_is_important
+// gtk_action_get_is_important
+
+//-----------------------------------------------------------------------
+// GtkToggleAction
+//-----------------------------------------------------------------------
+
+// gtk_toggle_action_new
+// gtk_toggle_action_toggled
+// gtk_toggle_action_set_active
+// gtk_toggle_action_get_active
+// gtk_toggle_action_set_draw_as_radio
+// gtk_toggle_action_get_draw_as_radio
+
+//-----------------------------------------------------------------------
+// GtkRadioAction
+//-----------------------------------------------------------------------
+
+// gtk_radio_action_new
+// gtk_radio_action_get_group
+// gtk_radio_action_set_group
+// gtk_radio_action_get_current_value
+// gtk_radio_action_set_current_value
+
+//-----------------------------------------------------------------------
+// GtkRecentAction
+//-----------------------------------------------------------------------
+
+// gtk_recent_action_new
+// gtk_recent_action_new_for_manager
+// gtk_recent_action_get_show_numbers
+// gtk_recent_action_set_show_numbers
+
+//-----------------------------------------------------------------------
+// GtkActivatable
+//-----------------------------------------------------------------------
+
+// gtk_activatable_do_set_related_action
+// gtk_activatable_get_related_action
+// gtk_activatable_get_use_action_appearance
+// gtk_activatable_sync_action_properties
+// gtk_activatable_set_related_action
+// gtk_activatable_set_use_action_appearance
+
+//-----------------------------------------------------------------------
+// GtkColorButton
+//-----------------------------------------------------------------------
+
+// gtk_color_button_new
+// gtk_color_button_new_with_color
+// gtk_color_button_set_color
+// gtk_color_button_get_color
+// gtk_color_button_set_alpha
+// gtk_color_button_get_alpha
+// gtk_color_button_set_use_alpha
+// gtk_color_button_get_use_alpha
+// gtk_color_button_set_title
+// gtk_color_button_get_title
+
+//-----------------------------------------------------------------------
+// GtkColorSelectionDialog
+//-----------------------------------------------------------------------
+
+// gtk_color_selection_dialog_new
+// gtk_color_selection_dialog_get_color_selection
+
+//-----------------------------------------------------------------------
+// GtkColorSelection
+//-----------------------------------------------------------------------
+
+// gtk_color_selection_new
+// gtk_color_selection_set_update_policy
+// gtk_color_selection_set_has_opacity_control
+// gtk_color_selection_get_has_opacity_control
+// gtk_color_selection_set_has_palette
+// gtk_color_selection_get_has_palette
+// gtk_color_selection_get_current_alpha
+// gtk_color_selection_set_current_alpha
+// gtk_color_selection_get_current_color
+// gtk_color_selection_set_current_color
+// gtk_color_selection_get_previous_alpha
+// gtk_color_selection_set_previous_alpha
+// gtk_color_selection_get_previous_color
+// gtk_color_selection_set_previous_color
+// gtk_color_selection_is_adjusting
+// gtk_color_selection_palette_from_string
+// gtk_color_selection_palette_to_string
+// gtk_color_selection_set_change_palette_hook
+// gtk_color_selection_set_change_palette_with_screen_hook
+// gtk_color_selection_set_color
+// gtk_color_selection_get_color
+
+//-----------------------------------------------------------------------
+// GtkHSV
+//-----------------------------------------------------------------------
+
+// gtk_hsv_new
+// gtk_hsv_set_color
+// gtk_hsv_get_color
+// gtk_hsv_set_metrics
+// gtk_hsv_get_metrics
+// gtk_hsv_is_adjusting
+// gtk_hsv_to_rgb
+// gtk_rgb_to_hsv
+
+//-----------------------------------------------------------------------
+// GtkFileChooser
 //-----------------------------------------------------------------------
 type GtkFileChooserAction int
 
@@ -4852,11 +5713,21 @@ func (v *GtkFileChooser) GetFilter() *GtkFileFilter {
 // void gtk_file_chooser_unselect_file(GtkFileChooser* chooser, GFile* file);
 
 //-----------------------------------------------------------------------
-// GtkFileChooserButton (done 0 out of ? = 0%)
+// GtkFileChooserButton
 //-----------------------------------------------------------------------
 
+// gtk_file_chooser_button_new
+// gtk_file_chooser_button_new_with_backend
+// gtk_file_chooser_button_new_with_dialog
+// gtk_file_chooser_button_get_title
+// gtk_file_chooser_button_set_title
+// gtk_file_chooser_button_get_width_chars
+// gtk_file_chooser_button_set_width_chars
+// gtk_file_chooser_button_get_focus_on_click
+// gtk_file_chooser_button_set_focus_on_click
+
 //-----------------------------------------------------------------------
-// GtkFileChooserDialog (done 1 out of 1 = 100%)
+// GtkFileChooserDialog
 //-----------------------------------------------------------------------
 type GtkFileChooserDialog struct {
 	GtkDialog
@@ -4896,15 +5767,18 @@ func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkF
 }
 
 //-----------------------------------------------------------------------
-// GtkFileChooserWidget (done 0 out of 1 = 0%)
+// GtkFileChooserWidget
 //-----------------------------------------------------------------------
 type GtkFileChooserWidget struct {
 	GtkWidget
 	GtkFileChooser
 }
 
+// gtk_file_chooser_widget_new
+// gtk_file_chooser_widget_new_with_backend
+
 //-----------------------------------------------------------------------
-// GtkFileFilter (done 5 out of 7 = 71%)
+// GtkFileFilter
 //-----------------------------------------------------------------------
 type GtkFileFilter struct {
 	FileFilter *C.GtkFileFilter
@@ -4937,7 +5811,7 @@ func (v *GtkFileFilter) AddPattern(pattern string) {
 // gtk_file_filter_filter  //for use in the implementation of GtkFileChooser
 
 //-----------------------------------------------------------------------
-// GtkFontButton (done 10 out of 14 = 71%)
+// GtkFontButton
 //-----------------------------------------------------------------------
 type GtkFontButton struct {
 	GtkButton
@@ -4989,11 +5863,26 @@ func (v *GtkFontButton) GetTitle() string {
 }
 
 //-----------------------------------------------------------------------
-// GtkFontSelection (done 0 out of ? = 0%)
+// GtkFontSelection
 //-----------------------------------------------------------------------
 
+// gtk_font_selection_new
+// gtk_font_selection_get_font
+// gtk_font_selection_get_font_name
+// gtk_font_selection_set_font_name
+// gtk_font_selection_get_preview_text
+// gtk_font_selection_set_preview_text
+// gtk_font_selection_get_face
+// gtk_font_selection_get_face_list
+// gtk_font_selection_get_family
+// gtk_font_selection_get_size
+// gtk_font_selection_get_family_list
+// gtk_font_selection_get_preview_entry
+// gtk_font_selection_get_size_entry
+// gtk_font_selection_get_size_list
+
 //-----------------------------------------------------------------------
-// GtkFontSelectionDialog (done 3 out of 8 = 37%)
+// GtkFontSelectionDialog
 //-----------------------------------------------------------------------
 type GtkFontSelectionDialog struct {
 	GtkDialog
@@ -5020,11 +5909,13 @@ func (v *GtkFontSelectionDialog) SetFontName(font string) {
 // gtk_font_selection_dialog_get_font_selection //since 2.22
 
 //-----------------------------------------------------------------------
-// GtkInputDialog (done 0 out of ? = 0%) //deprecated in 2.20
+// GtkInputDialog
 //-----------------------------------------------------------------------
 
+// gtk_input_dialog_new //deprecated in 2.20
+
 //-----------------------------------------------------------------------
-// GtkAlignment (done 4 out of 4 = 100%)
+// GtkAlignment
 //-----------------------------------------------------------------------
 type GtkAlignment struct {
 	GtkBin
@@ -5051,11 +5942,14 @@ func (v *GtkAlignment) GetPadding() (padding_top uint, padding_bottom uint, padd
 }
 
 //-----------------------------------------------------------------------
-// GtkAspectFrame (done 0 out of ? = 0%)
+// GtkAspectFrame
 //-----------------------------------------------------------------------
 
+// gtk_aspect_frame_new
+// gtk_aspect_frame_set
+
 //-----------------------------------------------------------------------
-// GtkHBox (done 1 out of 1 = 100%)
+// GtkHBox
 //-----------------------------------------------------------------------
 type GtkHBox struct {
 	GtkBox
@@ -5067,7 +5961,7 @@ func HBox(homogeneous bool, spacing uint) *GtkHBox {
 }
 
 //-----------------------------------------------------------------------
-// GtkVBox (done 1 out of 1 = 100%)
+// GtkVBox
 //-----------------------------------------------------------------------
 type GtkVBox struct {
 	GtkBox
@@ -5079,15 +5973,27 @@ func VBox(homogeneous bool, spacing uint) *GtkVBox {
 }
 
 //-----------------------------------------------------------------------
-// GtkHButtonBox (done 0 out of ? = 0%)
+// GtkHButtonBox
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkVButtonBox (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_hbutton_box_new
+// gtk_hbutton_box_get_spacing_default
+// gtk_hbutton_box_get_layout_default
+// gtk_hbutton_box_set_spacing_default
+// gtk_hbutton_box_set_layout_default
 
 //-----------------------------------------------------------------------
-// GtkFixed (done 3 out of 3 = 100%)
+// GtkVButtonBox
+//-----------------------------------------------------------------------
+
+// gtk_vbutton_box_new
+// gtk_vbutton_box_get_spacing_default
+// gtk_vbutton_box_set_spacing_default
+// gtk_vbutton_box_get_layout_default
+// gtk_vbutton_box_set_layout_default
+
+//-----------------------------------------------------------------------
+// GtkFixed
 //-----------------------------------------------------------------------
 type GtkFixed struct {
 	GtkContainer
@@ -5117,7 +6023,7 @@ func (v *GtkFixed) SetHasWindow(has_window bool) {
 }*/
 
 //-----------------------------------------------------------------------
-// GtkHPaned (done 1 out of 1 = 100%)
+// GtkHPaned
 //-----------------------------------------------------------------------
 type GtkHPaned struct {
 	GtkPaned
@@ -5129,7 +6035,7 @@ func HPaned() *GtkHPaned {
 }
 
 //-----------------------------------------------------------------------
-// GtkVPaned (done 1 out of 1 = 100%)
+// GtkVPaned
 //-----------------------------------------------------------------------
 type GtkVPaned struct {
 	GtkPaned
@@ -5141,11 +6047,24 @@ func VPaned() *GtkVPaned {
 }
 
 //-----------------------------------------------------------------------
-// GtkLayout (done 0 out of ? = 0%)
+// GtkLayout
 //-----------------------------------------------------------------------
 
+// gtk_layout_new
+// gtk_layout_put
+// gtk_layout_move
+// gtk_layout_set_size
+// gtk_layout_get_size
+// gtk_layout_freeze
+// gtk_layout_thaw
+// gtk_layout_get_hadjustment
+// gtk_layout_get_vadjustment
+// gtk_layout_set_hadjustment
+// gtk_layout_set_vadjustment
+// gtk_layout_get_bin_window
+
 //-----------------------------------------------------------------------
-// GtkNotebook (done 40 out of 45 = 88%)
+// GtkNotebook
 //-----------------------------------------------------------------------
 type GtkNotebook struct {
 	GtkContainer
@@ -5346,7 +6265,7 @@ func (v *GtkNotebook) GetGroupName() string {
 // void gtk_notebook_set_window_creation_hook (GtkNotebookWindowCreationFunc func, gpointer data, GDestroyNotify destroy); //deprecated in 2.24
 
 //-----------------------------------------------------------------------
-// GtkTable (done 14 out of 15 = 93%)
+// GtkTable
 //-----------------------------------------------------------------------
 type GtkAttachOptions int
 
@@ -5406,7 +6325,7 @@ func (v *GtkTable) GetDefaultColSpacing(child WidgetLike) uint {
 // gtk_table_get_size //since 2.22
 
 //-----------------------------------------------------------------------
-// GtkExpander (done 14 out of 16 = 87%)
+// GtkExpander
 //-----------------------------------------------------------------------
 type GtkExpander struct {
 	GtkBin
@@ -5468,14 +6387,14 @@ func (v *GtkExpander) GetLabelWidget() LabelLike {
 // gtk_expander_get_label_fill //since 2.22
 
 //-----------------------------------------------------------------------
-// GtkOrientable (done 0 out of 2 = 0%)
+// GtkOrientable
 //-----------------------------------------------------------------------
 
 // gtk_orientable_get_orientation
 // gtk_orientable_set_orientation
 
 //-----------------------------------------------------------------------
-// GtkFrame (done 9 out of 9 = 100%)
+// GtkFrame
 //-----------------------------------------------------------------------
 type GtkShadowType int
 
@@ -5528,7 +6447,7 @@ func (v *GtkFrame) GetShadowType() GtkShadowType {
 }
 
 //-----------------------------------------------------------------------
-// GtkHSeparator (done 1 out of 1 = 100%)
+// GtkHSeparator
 //-----------------------------------------------------------------------
 type GtkHSeparator struct {
 	GtkSeparator
@@ -5540,7 +6459,7 @@ func HSeparator() *GtkHSeparator {
 }
 
 //-----------------------------------------------------------------------
-// GtkVSeparator (done 1 out of 1 = 100%)
+// GtkVSeparator
 //-----------------------------------------------------------------------
 type GtkVSeparator struct {
 	GtkSeparator
@@ -5552,15 +6471,19 @@ func VSeparator() *GtkVSeparator {
 }
 
 //-----------------------------------------------------------------------
-// GtkHScrollbar (done 0 out of ? = 0%)
+// GtkHScrollbar
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkVScrollbar (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_hscrollbar_new
 
 //-----------------------------------------------------------------------
-// GtkScrolledWindow (done 13 out of 15 = 86%)
+// GtkVScrollbar
+//-----------------------------------------------------------------------
+
+// gtk_vscrollbar_new
+
+//-----------------------------------------------------------------------
+// GtkScrolledWindow
 //-----------------------------------------------------------------------
 type GtkPolicyType int
 
@@ -5640,11 +6563,274 @@ func (v *GtkScrolledWindow) GetShadowType() GtkShadowType {
 }
 
 //-----------------------------------------------------------------------
-// GtkPrint ... (done 0 out of ? = 0%)
+// GtkPrintOperation
 //-----------------------------------------------------------------------
 
+// gtk_print_operation_new
+// gtk_print_operation_set_allow_async
+// gtk_print_operation_get_error
+// gtk_print_operation_set_default_page_setup
+// gtk_print_operation_get_default_page_setup
+// gtk_print_operation_set_print_settings
+// gtk_print_operation_get_print_settings
+// gtk_print_operation_set_job_name
+// gtk_print_operation_set_n_pages
+// gtk_print_operation_get_n_pages_to_print
+// gtk_print_operation_set_current_page
+// gtk_print_operation_set_use_full_page
+// gtk_print_operation_set_unit
+// gtk_print_operation_set_export_filename
+// gtk_print_operation_set_show_progress
+// gtk_print_operation_set_track_print_status
+// gtk_print_operation_set_custom_tab_label
+// gtk_print_operation_run
+// gtk_print_operation_cancel
+// gtk_print_operation_draw_page_finish
+// gtk_print_operation_set_defer_drawing
+// gtk_print_operation_get_status
+// gtk_print_operation_get_status_string
+// gtk_print_operation_is_finished
+// gtk_print_operation_set_support_selection
+// gtk_print_operation_get_support_selection
+// gtk_print_operation_set_has_selection
+// gtk_print_operation_get_has_selection
+// gtk_print_operation_set_embed_page_setup
+// gtk_print_operation_get_embed_page_setup
+// gtk_print_run_page_setup_dialog
+// gtk_print_run_page_setup_dialog_async
+// gtk_print_operation_preview_end_preview
+// gtk_print_operation_preview_is_selected
+// gtk_print_operation_preview_render_page
+
 //-----------------------------------------------------------------------
-// GtkAdjustment (done 14 out of 17 = 82%)
+// GtkPrintContext
+//-----------------------------------------------------------------------
+
+// gtk_print_context_get_cairo_context
+// gtk_print_context_set_cairo_context
+// gtk_print_context_get_page_setup
+// gtk_print_context_get_width
+// gtk_print_context_get_height
+// gtk_print_context_get_dpi_x
+// gtk_print_context_get_dpi_y
+// gtk_print_context_get_pango_fontmap
+// gtk_print_context_create_pango_context
+// gtk_print_context_create_pango_layout
+// gtk_print_context_get_hard_margins
+
+//-----------------------------------------------------------------------
+// GtkPrintSettings
+//-----------------------------------------------------------------------
+
+// gtk_print_settings_new
+// gtk_print_settings_copy
+// gtk_print_settings_has_key
+// gtk_print_settings_get
+// gtk_print_settings_set
+// gtk_print_settings_unset
+// gtk_print_settings_foreach
+// gtk_print_settings_get_bool
+// gtk_print_settings_set_bool
+// gtk_print_settings_get_double
+// gtk_print_settings_get_double_with_default
+// gtk_print_settings_set_double
+// gtk_print_settings_get_length
+// gtk_print_settings_set_length
+// gtk_print_settings_get_int
+// gtk_print_settings_get_int_with_default
+// gtk_print_settings_set_int
+// gtk_print_settings_get_printer
+// gtk_print_settings_set_printer
+// gtk_print_settings_get_orientation
+// gtk_print_settings_set_orientation
+// gtk_print_settings_get_paper_size
+// gtk_print_settings_set_paper_size
+// gtk_print_settings_get_paper_width
+// gtk_print_settings_set_paper_width
+// gtk_print_settings_get_paper_height
+// gtk_print_settings_set_paper_height
+// gtk_print_settings_get_use_color
+// gtk_print_settings_set_use_color
+// gtk_print_settings_get_collate
+// gtk_print_settings_set_collate
+// gtk_print_settings_get_reverse
+// gtk_print_settings_set_reverse
+// gtk_print_settings_get_duplex
+// gtk_print_settings_set_duplex
+// gtk_print_settings_get_quality
+// gtk_print_settings_set_quality
+// gtk_print_settings_get_n_copies
+// gtk_print_settings_set_n_copies
+// gtk_print_settings_get_number_up
+// gtk_print_settings_set_number_up
+// gtk_print_settings_get_number_up_layout
+// gtk_print_settings_set_number_up_layout
+// gtk_print_settings_get_resolution
+// gtk_print_settings_set_resolution
+// gtk_print_settings_set_resolution_xy
+// gtk_print_settings_get_resolution_x
+// gtk_print_settings_get_resolution_y
+// gtk_print_settings_get_printer_lpi
+// gtk_print_settings_set_printer_lpi
+// gtk_print_settings_get_scale
+// gtk_print_settings_set_scale
+// gtk_print_settings_get_print_pages
+// gtk_print_settings_set_print_pages
+// gtk_print_settings_get_page_ranges
+// gtk_print_settings_set_page_ranges
+// gtk_print_settings_get_page_set
+// gtk_print_settings_set_page_set
+// gtk_print_settings_get_default_source
+// gtk_print_settings_set_default_source
+// gtk_print_settings_get_media_type
+// gtk_print_settings_set_media_type
+// gtk_print_settings_get_dither
+// gtk_print_settings_set_dither
+// gtk_print_settings_get_finishings
+// gtk_print_settings_set_finishings
+// gtk_print_settings_get_output_bin
+// gtk_print_settings_set_output_bin
+// gtk_print_settings_new_from_file
+// gtk_print_settings_new_from_key_file
+// gtk_print_settings_load_file
+// gtk_print_settings_load_key_file
+// gtk_print_settings_to_file
+// gtk_print_settings_to_key_file
+
+//-----------------------------------------------------------------------
+// GtkPageSetup
+//-----------------------------------------------------------------------
+
+// gtk_page_setup_new
+// gtk_page_setup_copy
+// gtk_page_setup_get_orientation
+// gtk_page_setup_set_orientation
+// gtk_page_setup_get_paper_size
+// gtk_page_setup_set_paper_size
+// gtk_page_setup_get_top_margin
+// gtk_page_setup_set_top_margin
+// gtk_page_setup_get_bottom_margin
+// gtk_page_setup_set_bottom_margin
+// gtk_page_setup_get_left_margin
+// gtk_page_setup_set_left_margin
+// gtk_page_setup_get_right_margin
+// gtk_page_setup_set_right_margin
+// gtk_page_setup_set_paper_size_and_default_margins
+// gtk_page_setup_get_paper_width
+// gtk_page_setup_get_paper_height
+// gtk_page_setup_get_page_width
+// gtk_page_setup_get_page_height
+// gtk_page_setup_new_from_file
+// gtk_page_setup_new_from_key_file
+// gtk_page_setup_load_file
+// gtk_page_setup_load_key_file
+// gtk_page_setup_to_file
+// gtk_page_setup_to_key_file
+
+//-----------------------------------------------------------------------
+// GtkPaperSize
+//-----------------------------------------------------------------------
+
+// gtk_paper_size_new
+// gtk_paper_size_new_from_ppd
+// gtk_paper_size_new_custom
+// gtk_paper_size_copy
+// gtk_paper_size_free
+// gtk_paper_size_is_equal
+// gtk_paper_size_get_paper_sizes
+// gtk_paper_size_get_name
+// gtk_paper_size_get_display_name
+// gtk_paper_size_get_ppd_name
+// gtk_paper_size_get_width
+// gtk_paper_size_get_height
+// gtk_paper_size_is_custom
+// gtk_paper_size_set_size
+// gtk_paper_size_get_default_top_margin
+// gtk_paper_size_get_default_bottom_margin
+// gtk_paper_size_get_default_left_margin
+// gtk_paper_size_get_default_right_margin
+// gtk_paper_size_get_default
+// gtk_paper_size_new_from_key_file
+// gtk_paper_size_to_key_file
+
+//-----------------------------------------------------------------------
+// GtkPrinter
+//-----------------------------------------------------------------------
+
+// gtk_printer_new
+// gtk_printer_get_backend
+// gtk_printer_get_name
+// gtk_printer_get_state_message
+// gtk_printer_get_description
+// gtk_printer_get_location
+// gtk_printer_get_icon_name
+// gtk_printer_get_job_count
+// gtk_printer_is_active
+// gtk_printer_is_paused
+// gtk_printer_is_accepting_jobs
+// gtk_printer_is_virtual
+// gtk_printer_is_default
+// gtk_printer_accepts_ps
+// gtk_printer_accepts_pdf
+// gtk_printer_list_papers
+// gtk_printer_compare
+// gtk_printer_has_details
+// gtk_printer_request_details
+// gtk_printer_get_capabilities
+// gtk_printer_get_default_page_size
+// gtk_printer_get_hard_margins
+// gtk_enumerate_printers
+
+//-----------------------------------------------------------------------
+// GtkPrintJob
+//-----------------------------------------------------------------------
+
+// gtk_print_job_new
+// gtk_print_job_get_settings
+// gtk_print_job_get_printer
+// gtk_print_job_get_title
+// gtk_print_job_get_status
+// gtk_print_job_set_source_file
+// gtk_print_job_get_surface
+// gtk_print_job_send
+// gtk_print_job_set_track_print_status
+// gtk_print_job_get_track_print_status
+
+//-----------------------------------------------------------------------
+// GtkPrintUnixDialog
+//-----------------------------------------------------------------------
+
+// gtk_print_unix_dialog_new
+// gtk_print_unix_dialog_set_page_setup
+// gtk_print_unix_dialog_get_page_setup
+// gtk_print_unix_dialog_set_current_page
+// gtk_print_unix_dialog_get_current_page
+// gtk_print_unix_dialog_set_settings
+// gtk_print_unix_dialog_get_settings
+// gtk_print_unix_dialog_get_selected_printer
+// gtk_print_unix_dialog_add_custom_tab
+// gtk_print_unix_dialog_set_support_selection
+// gtk_print_unix_dialog_get_support_selection
+// gtk_print_unix_dialog_set_has_selection
+// gtk_print_unix_dialog_get_has_selection
+// gtk_print_unix_dialog_set_embed_page_setup
+// gtk_print_unix_dialog_get_embed_page_setup
+// gtk_print_unix_dialog_get_page_setup_set
+// gtk_print_unix_dialog_set_manual_capabilities
+// gtk_print_unix_dialog_get_manual_capabilities
+
+//-----------------------------------------------------------------------
+// GtkPageSetupUnixDialog
+//-----------------------------------------------------------------------
+
+// gtk_page_setup_unix_dialog_new
+// gtk_page_setup_unix_dialog_set_page_setup
+// gtk_page_setup_unix_dialog_get_page_setup
+// gtk_page_setup_unix_dialog_set_print_settings
+// gtk_page_setup_unix_dialog_get_print_settings
+
+//-----------------------------------------------------------------------
+// GtkAdjustment
 //-----------------------------------------------------------------------
 type GtkAdjustment struct {
 	Adjustment *C.GtkAdjustment
@@ -5716,15 +6902,36 @@ func (v *GtkAdjustment) SetUpper(upper float64) {
 }
 
 //-----------------------------------------------------------------------
-// GtkArrow (done 0 out of ? = 0%)
+// GtkArrow
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkCalendar (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_arrow_new
+// gtk_arrow_set
 
 //-----------------------------------------------------------------------
-// GtkDrawingArea (done 1 out of 1 = 100%)
+// GtkCalendar
+//-----------------------------------------------------------------------
+
+// gtk_calendar_new
+// gtk_calendar_select_month
+// gtk_calendar_select_day
+// gtk_calendar_mark_day
+// gtk_calendar_unmark_day
+// gtk_calendar_clear_marks
+// gtk_calendar_get_display_options
+// gtk_calendar_set_display_options
+// gtk_calendar_get_date
+// gtk_calendar_set_detail_func
+// gtk_calendar_get_detail_width_chars
+// gtk_calendar_set_detail_width_chars
+// gtk_calendar_get_detail_height_rows
+// gtk_calendar_set_detail_height_rows
+// gtk_calendar_display_options
+// gtk_calendar_freeze
+// gtk_calendar_thaw
+
+//-----------------------------------------------------------------------
+// GtkDrawingArea
 //-----------------------------------------------------------------------
 type GtkDrawingArea struct {
 	GtkWidget
@@ -5740,7 +6947,7 @@ func (v *GtkDrawingArea) GetSizeRequest(width int, height int) {
 }
 
 //-----------------------------------------------------------------------
-// GtkEventBox (done 1 out of 5 = 20%)
+// GtkEventBox
 //-----------------------------------------------------------------------
 type GtkEventBox struct {
 	GtkBin
@@ -5756,19 +6963,36 @@ func EventBox() *GtkEventBox {
 // gboolean gtk_event_box_get_visible_window (GtkEventBox *event_box);
 
 //-----------------------------------------------------------------------
-// GtkHandleBox (done 0 out of ? = 0%)
+// GtkHandleBox
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkIMContextSimple (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_handle_box_new
+// gtk_handle_box_set_shadow_type
+// gtk_handle_box_set_handle_position
+// gtk_handle_box_set_snap_edge
+// gtk_handle_box_get_handle_position
+// gtk_handle_box_get_shadow_type
+// gtk_handle_box_get_snap_edge
+// gtk_handle_box_get_child_detached
 
 //-----------------------------------------------------------------------
-// GtkIMMulticontext (done 0 out of ? = 0%)
+// GtkIMContextSimple
 //-----------------------------------------------------------------------
 
+// gtk_im_context_simple_new
+// gtk_im_context_simple_add_table
+
 //-----------------------------------------------------------------------
-// GtkSizeGroup (done 8 out of 8 = 100%)
+// GtkIMMulticontext
+//-----------------------------------------------------------------------
+
+// gtk_im_multicontext_new
+// gtk_im_multicontext_append_menuitems
+// gtk_im_multicontext_get_context_id
+// gtk_im_multicontext_set_context_id
+
+//-----------------------------------------------------------------------
+// GtkSizeGroup
 //-----------------------------------------------------------------------
 type GtkSizeGroupMode int
 
@@ -5809,19 +7033,43 @@ func (v *GtkSizeGroup) GetWidgets() *glib.SList {
 }
 
 //-----------------------------------------------------------------------
-// GtkTooltip (done 0 out of ? = 0%)
+// GtkTooltip
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkViewport (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_tooltip_set_markup
+// gtk_tooltip_set_text
+// gtk_tooltip_set_icon
+// gtk_tooltip_set_icon_from_stock
+// gtk_tooltip_set_icon_from_icon_name
+// gtk_tooltip_set_icon_from_gicon
+// gtk_tooltip_set_custom
+// gtk_tooltip_trigger_tooltip_query
+// gtk_tooltip_set_tip_area
 
 //-----------------------------------------------------------------------
-// GtkAccessible (done 0 out of ? = 0%)
+// GtkViewport
 //-----------------------------------------------------------------------
 
+// gtk_viewport_new
+// gtk_viewport_get_hadjustment
+// gtk_viewport_get_vadjustment
+// gtk_viewport_set_hadjustment
+// gtk_viewport_set_vadjustment
+// gtk_viewport_set_shadow_type
+// gtk_viewport_get_shadow_type
+// gtk_viewport_get_bin_window
+// gtk_viewport_get_view_window
+
 //-----------------------------------------------------------------------
-// GtkBin (done 1 out of 1 = 100%)
+// GtkAccessible
+//-----------------------------------------------------------------------
+
+// gtk_accessible_connect_widget_destroyed
+// gtk_accessible_get_widget
+// gtk_accessible_set_widget
+
+//-----------------------------------------------------------------------
+// GtkBin
 //-----------------------------------------------------------------------
 type GtkBin struct {
 	GtkContainer
@@ -5832,7 +7080,7 @@ func (v *GtkBin) GetChild() *GtkWidget {
 }
 
 //-----------------------------------------------------------------------
-// GtkBox (done 9 out of 9 = 100%)
+// GtkBox
 //-----------------------------------------------------------------------
 type GtkPackType int
 
@@ -5896,11 +7144,22 @@ func (v *GtkBox) SetChildPacking(child WidgetLike, expand bool, fill bool, paddi
 }
 
 //-----------------------------------------------------------------------
-// GtkButtonBox (done 0 out of ? = 0%)
+// GtkButtonBox
 //-----------------------------------------------------------------------
 
+// gtk_button_box_get_spacing
+// gtk_button_box_get_layout
+// gtk_button_box_get_child_size
+// gtk_button_box_get_child_ipadding
+// gtk_button_box_get_child_secondary
+// gtk_button_box_set_spacing
+// gtk_button_box_set_layout
+// gtk_button_box_set_child_size
+// gtk_button_box_set_child_ipadding
+// gtk_button_box_set_child_secondary
+
 //-----------------------------------------------------------------------
-// GtkContainer (done 6 out of 33 = 18%)
+// GtkContainer
 //-----------------------------------------------------------------------
 type ContainerLike interface {
 	WidgetLike
@@ -5960,7 +7219,7 @@ func (v *GtkContainer) SetBorderWidth(border_width uint) {
 // gtk_container_class_list_child_properties
 
 //-----------------------------------------------------------------------
-// GtkItem (done 3 out of 3 = 0%)
+// GtkItem
 //-----------------------------------------------------------------------
 type GtkItem struct {
 	GtkBin
@@ -5984,15 +7243,40 @@ func (v *GtkItem) Toggle() {
 
 
 //-----------------------------------------------------------------------
-// GtkMenuShell (done 0 out of ? = 0%)
+// GtkMenuShell
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkMisc (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_menu_shell_append
+// gtk_menu_shell_prepend
+// gtk_menu_shell_insert
+// gtk_menu_shell_deactivate
+// gtk_menu_shell_select_item
+// gtk_menu_shell_select_first
+// gtk_menu_shell_deselect
+// gtk_menu_shell_activate_item
+// gtk_menu_shell_cancel
+// gtk_menu_shell_set_take_focus
+// gtk_menu_shell_get_take_focus
 
 //-----------------------------------------------------------------------
-// GtkPaned (done 8 out of 9 = 88%)
+// GtkMisc
+//-----------------------------------------------------------------------
+
+// gtk_misc_set_alignment
+// gtk_misc_set_padding
+// gtk_misc_get_alignment
+// gtk_misc_get_padding
+
+//-----------------------------------------------------------------------
+// GtkObject
+//-----------------------------------------------------------------------
+type GtkObject struct {
+	glib.GObject
+}
+//deprecated since 2.20
+
+//-----------------------------------------------------------------------
+// GtkPaned
 //-----------------------------------------------------------------------
 type PanedLike interface {
 	ContainerLike
@@ -6034,14 +7318,7 @@ func (v *GtkPaned) GetPosition() int {
 // gtk_paned_get_handle_window //since 2.20
 
 //-----------------------------------------------------------------------
-// GtkObject (done 0 out of 0 = 100%)
-//-----------------------------------------------------------------------
-type GtkObject struct {
-	glib.GObject
-}
-
-//-----------------------------------------------------------------------
-// GtkRange (done 16 out of 30 = 53%)
+// GtkRange
 //-----------------------------------------------------------------------
 type GtkRange struct {
 	GtkWidget
@@ -6121,7 +7398,7 @@ func (v *GtkRange) SetFlippable(b bool) {
 // gtk_range_set_slider_size_fixed //since 2.20
 
 //-----------------------------------------------------------------------
-// GtkScale (done 9 out of 10 = 90%)
+// GtkScale
 //-----------------------------------------------------------------------
 type GtkPositionType int
 
@@ -6172,14 +7449,14 @@ func (v *GtkScale) ClearMarks() {
 }
 
 //-----------------------------------------------------------------------
-// GtkSeparator (done 0 out of 0 = 100%)
+// GtkSeparator
 //-----------------------------------------------------------------------
 type GtkSeparator struct {
 	GtkWidget
 }
 
 //-----------------------------------------------------------------------
-// GtkWidget (done 78 out of 167 = 46%)
+// GtkWidget
 //-----------------------------------------------------------------------
 type GtkAllocation gdk.Rectangle
 
@@ -6674,47 +7951,180 @@ func (v *GtkWidget) ModifyFontEasy(desc string) {
 }
 
 //-----------------------------------------------------------------------
-// GtkIMContext (done 0 out of ? = 0%)
+// GtkIMContext
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkPlug (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_im_context_set_client_window
+// gtk_im_context_get_preedit_string
+// gtk_im_context_filter_keypress
+// gtk_im_context_focus_in
+// gtk_im_context_focus_out
+// gtk_im_context_reset
+// gtk_im_context_set_cursor_location
+// gtk_im_context_set_use_preedit
+// gtk_im_context_set_surrounding
+// gtk_im_context_get_surrounding
+// gtk_im_context_delete_surrounding
 
 //-----------------------------------------------------------------------
-// GtkSocket (done 0 out of ? = 0%)
+// GtkPlug
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkRecentManager (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_plug_construct
+// gtk_plug_construct_for_display
+// gtk_plug_new
+// gtk_plug_new_for_display
+// gtk_plug_get_id
+// gtk_plug_get_embedded
+// gtk_plug_get_socket_window
 
 //-----------------------------------------------------------------------
-// GtkRecentChooser (done 0 out of ? = 0%)
+// GtkSocket
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkRecentChooserDialog (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_socket_new
+// gtk_socket_steal
+// gtk_socket_add_id
+// gtk_socket_get_id
+// gtk_socket_get_plug_window
 
 //-----------------------------------------------------------------------
-// GtkRecentChooserMenu (done 0 out of ? = 0%)
+// GtkRecentManager
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkRecentChooserWidget (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_recent_manager_new
+// gtk_recent_manager_get_default
+// gtk_recent_manager_get_for_screen
+// gtk_recent_manager_set_screen
+// gtk_recent_manager_add_item
+// gtk_recent_manager_add_full
+// gtk_recent_manager_remove_item
+// gtk_recent_manager_lookup_item
+// gtk_recent_manager_has_item
+// gtk_recent_manager_move_item
+// gtk_recent_manager_get_limit
+// gtk_recent_manager_set_limit
+// gtk_recent_manager_get_items
+// gtk_recent_manager_purge_items
+// gtk_recent_info_ref
+// gtk_recent_info_unref
+// gtk_recent_info_get_uri
+// gtk_recent_info_get_display_name
+// gtk_recent_info_get_description
+// gtk_recent_info_get_mime_type
+// gtk_recent_info_get_added
+// gtk_recent_info_get_modified
+// gtk_recent_info_get_visited
+// gtk_recent_info_get_private_hint
+// gtk_recent_info_get_application_info
+// gtk_recent_info_get_applications
+// gtk_recent_info_last_application
+// gtk_recent_info_get_groups
+// gtk_recent_info_has_group
+// gtk_recent_info_has_application
+// gtk_recent_info_get_icon
+// gtk_recent_info_get_short_name
+// gtk_recent_info_get_uri_display
+// gtk_recent_info_get_age
+// gtk_recent_info_is_local
+// gtk_recent_info_exists
+// gtk_recent_info_match
 
 //-----------------------------------------------------------------------
-// GtkRecentFilter (done 0 out of ? = 0%)
+// GtkRecentChooser
 //-----------------------------------------------------------------------
 
-//-----------------------------------------------------------------------
-// GtkBuildable (done 0 out of ? = 0%)
-//-----------------------------------------------------------------------
+// gtk_recent_chooser_set_show_private
+// gtk_recent_chooser_get_show_private
+// gtk_recent_chooser_set_show_not_found
+// gtk_recent_chooser_get_show_not_found
+// gtk_recent_chooser_set_show_icons
+// gtk_recent_chooser_get_show_icons
+// gtk_recent_chooser_set_select_multiple
+// gtk_recent_chooser_get_select_multiple
+// gtk_recent_chooser_set_local_only
+// gtk_recent_chooser_get_local_only
+// gtk_recent_chooser_set_limit
+// gtk_recent_chooser_get_limit
+// gtk_recent_chooser_set_show_tips
+// gtk_recent_chooser_get_show_tips
+// gtk_recent_chooser_set_show_numbers
+// gtk_recent_chooser_get_show_numbers
+// gtk_recent_chooser_set_sort_type
+// gtk_recent_chooser_get_sort_type
+// gtk_recent_chooser_set_sort_func
+// gtk_recent_chooser_set_current_uri
+// gtk_recent_chooser_get_current_uri
+// gtk_recent_chooser_get_current_item
+// gtk_recent_chooser_select_uri
+// gtk_recent_chooser_unselect_uri
+// gtk_recent_chooser_select_all
+// gtk_recent_chooser_unselect_all
+// gtk_recent_chooser_get_items
+// gtk_recent_chooser_get_uris
+// gtk_recent_chooser_add_filter
+// gtk_recent_chooser_remove_filter
+// gtk_recent_chooser_list_filters
+// gtk_recent_chooser_set_filter
+// gtk_recent_chooser_get_filter
 
 //-----------------------------------------------------------------------
-// GtkBuilder (done ? out of ? = ?%)
+// GtkRecentChooserDialog
+//-----------------------------------------------------------------------
+
+// gtk_recent_chooser_dialog_new
+// gtk_recent_chooser_dialog_new_for_manager
+
+//-----------------------------------------------------------------------
+// GtkRecentChooserMenu
+//-----------------------------------------------------------------------
+
+// gtk_recent_chooser_menu_new
+// gtk_recent_chooser_menu_new_for_manager
+// gtk_recent_chooser_menu_get_show_numbers
+// gtk_recent_chooser_menu_set_show_numbers
+
+//-----------------------------------------------------------------------
+// GtkRecentChooserWidget
+//-----------------------------------------------------------------------
+
+// gtk_recent_chooser_widget_new
+// gtk_recent_chooser_widget_new_for_manager
+
+//-----------------------------------------------------------------------
+// GtkRecentFilter
+//-----------------------------------------------------------------------
+
+// gtk_recent_filter_new
+// gtk_recent_filter_get_name
+// gtk_recent_filter_set_name
+// gtk_recent_filter_add_mime_type
+// gtk_recent_filter_add_pattern
+// gtk_recent_filter_add_pixbuf_formats
+// gtk_recent_filter_add_application
+// gtk_recent_filter_add_group
+// gtk_recent_filter_add_age
+// gtk_recent_filter_add_custom
+// gtk_recent_filter_get_needed
+// gtk_recent_filter_filter
+
+//-----------------------------------------------------------------------
+// GtkBuildable
+//-----------------------------------------------------------------------
+
+// gtk_buildable_set_name
+// gtk_buildable_get_name
+// gtk_buildable_add_child
+// gtk_buildable_set_buildable_property
+// gtk_buildable_construct_child
+// gtk_buildable_custom_tag_start
+// gtk_buildable_custom_tag_end
+// gtk_buildable_custom_finished
+// gtk_buildable_parser_finished
+// gtk_buildable_get_internal_child
+
+//-----------------------------------------------------------------------
+// GtkBuilder
 //-----------------------------------------------------------------------
 type GtkBuilder struct {
 	Builder *C.GtkBuilder
