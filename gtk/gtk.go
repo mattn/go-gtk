@@ -476,16 +476,12 @@ static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
 static GtkEditable* to_GtkEditable(GtkWidget* w) { return GTK_EDITABLE(w); }
-//static GtkTreeViewColumn* to_GtkTreeViewColumn(GtkWidget* w) { return GTK_TREE_VIEW_COLUMN(w); }
-//static GType* to_GTypePtr(void* w) { return (GType*)w; }
 static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
 static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
 static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
 static GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
-static GtkListStore* to_GtkListStoreFromTreeModel(GtkTreeModel* w) { return GTK_LIST_STORE(w); }
-//static GType to_GType(uint type) { return (GType)type; }
 static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
@@ -3860,7 +3856,7 @@ func CellRendererSpinner() *GtkCellRendererSpinner {
 }
 
 //-----------------------------------------------------------------------
-// GtkListStore
+// GtkListStore (done 15 out of 18 = 83%)
 //-----------------------------------------------------------------------
 const (
 	GTK_TYPE_CHAR    = glib.G_TYPE_CHAR
@@ -3879,6 +3875,7 @@ const (
 )
 
 type GtkListStore struct {
+	GtkTreeModel
 	ListStore *C.GtkListStore
 }
 
@@ -3888,22 +3885,17 @@ func ListStore(v ...interface{}) *GtkListStore {
 		C.set_gtype(types, C.int(n), C.int(v[n].(int)))
 	}
 	defer C.destroy_gtypes(types)
-	return &GtkListStore{
-		C.gtk_list_store_newv(C.gint(len(v)), types)}
+	cliststore := C.gtk_list_store_newv(C.gint(len(v)), types)
+	return &GtkListStore{GtkTreeModel{
+		C.to_GtkTreeModelFromListStore(cliststore)}, cliststore}
 }
-func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
-	return &GtkTreeModel{
-		C.to_GtkTreeModelFromListStore(v.ListStore)}
-}
-func (v *GtkTreeModel) ToListStore() *GtkListStore {
-	return &GtkListStore{
-		C.to_GtkListStoreFromTreeModel(v.TreeModel)}
-}
-
-//GtkListStore *gtk_list_store_new(gint n_columns, ...);
-//GtkListStore *gtk_list_store_newv (gint n_columns, GType *types);
 //void gtk_list_store_set_column_types (GtkListStore *list_store, gint n_columns, GType *types);
 
+func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
+	for r := range a {
+		v.SetValue(iter, r, a[r])
+	}
+}
 func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
@@ -3921,15 +3913,6 @@ func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 		}
 	}
 }
-func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
-	for r := range a {
-		v.SetValue(iter, r, a[r])
-	}
-}
-
-//void gtk_list_store_set_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
-//void gtk_list_store_set_valist (GtkListStore *list_store, GtkTreeIter *iter, va_list var_args);
-
 func (v *GtkListStore) Remove(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_list_store_remove(v.ListStore, &iter.TreeIter))
 }
@@ -3942,7 +3925,6 @@ func (v *GtkListStore) InsertBefore(iter *GtkTreeIter, sibling *GtkTreeIter) {
 func (v *GtkListStore) InsertAfter(iter *GtkTreeIter, sibling *GtkTreeIter) {
 	C.gtk_list_store_insert_after(v.ListStore, &iter.TreeIter, &sibling.TreeIter)
 }
-
 //void gtk_list_store_insert_with_values (GtkListStore *list_store, GtkTreeIter *iter, gint position, ...);
 //void gtk_list_store_insert_with_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint position, gint *columns, GValue *values, gint n_values);
 
@@ -3956,6 +3938,7 @@ func (v *GtkListStore) Clear() {
 	C.gtk_list_store_clear(v.ListStore)
 }
 func (v *GtkListStore) IterIsValid(iter *GtkTreeIter) bool {
+	log.Println("Warning: GtkListStore.IterIsValid: This function is slow. Only use it for debugging and/or testing purposes.")
 	return gboolean2bool(C.gtk_list_store_iter_is_valid(v.ListStore, &iter.TreeIter))
 }
 func (v *GtkListStore) Reorder(i *int) {
@@ -3966,14 +3949,29 @@ func (v *GtkListStore) Reorder(i *int) {
 func (v *GtkListStore) Swap(a *GtkTreeIter, b *GtkTreeIter) {
 	C.gtk_list_store_swap(v.ListStore, &a.TreeIter, &b.TreeIter)
 }
+func (v *GtkListStore) MoveBefore(iter *GtkTreeIter, position *GtkTreeIter) {
+	C.gtk_list_store_move_before(v.ListStore, &iter.TreeIter, &position.TreeIter)
+}
+func (v *GtkListStore) MoveAfter(iter *GtkTreeIter, position *GtkTreeIter) {
+	C.gtk_list_store_move_after(v.ListStore, &iter.TreeIter, &position.TreeIter)
+}
 
-//void gtk_list_store_move_after (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
-//void gtk_list_store_move_before (GtkListStore *store, GtkTreeIter *iter, GtkTreeIter *position);
+//TODO instead of using this methods to change between treemodel and liststore, is better to usa an interface GtkTreeModelLike
+//nb: ListStore e TreeStore sono un TreeModel (implementano GtkTreeModel!)
+/*func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
+	return &GtkTreeModel{
+		C.to_GtkTreeModelFromListStore(v.ListStore)}
+}*/
+/*func (v *GtkTreeModel) ToListStore() *GtkListStore {
+	return &GtkListStore{
+		C.to_GtkListStoreFromTreeModel(v.TreeModel)}
+}*/
 
 //-----------------------------------------------------------------------
-// GtkTreeStore
+// GtkTreeStore (done 15 out of 18 = 83%)
 //-----------------------------------------------------------------------
 type GtkTreeStore struct {
+	GtkTreeModel
 	TreeStore *C.GtkTreeStore
 }
 
@@ -3983,17 +3981,16 @@ func TreeStore(v ...interface{}) *GtkTreeStore {
 		C.set_gtype(types, C.int(n), C.int(v[n].(int)))
 	}
 	defer C.destroy_gtypes(types)
-	return &GtkTreeStore{
-		C.gtk_tree_store_newv(C.gint(len(v)), types)}
+	ctreestore := C.gtk_tree_store_newv(C.gint(len(v)), types)
+	return &GtkTreeStore{GtkTreeModel{C.to_GtkTreeModelFromTreeStore(ctreestore)}, ctreestore}
 }
-func (v *GtkTreeStore) ToTreeModel() *GtkTreeModel {
-	return &GtkTreeModel{
-		C.to_GtkTreeModelFromTreeStore(v.TreeStore)}
-}
-
-// GtkTreeStore *gtk_tree_store_newv (gint n_columns, GType *types);
 // void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types); void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
 
+func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
+	for r := range a {
+		v.SetValue(iter, r, a[r])
+	}
+}
 func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
@@ -4011,15 +4008,6 @@ func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 		}
 	}
 }
-func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
-	for r := range a {
-		v.SetValue(iter, r, a[r])
-	}
-}
-
-// void gtk_tree_store_set_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, gint *columns, GValue *values, gint n_values);
-// void gtk_tree_store_set_valist (GtkTreeStore *tree_store, GtkTreeIter *iter, va_list var_args);
-
 func (v *GtkTreeStore) Remove(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_tree_store_remove(v.TreeStore, &iter.TreeIter))
 }
@@ -4032,7 +4020,6 @@ func (v *GtkTreeStore) InsertBefore(iter *GtkTreeIter, parent *GtkTreeIter, sibl
 func (v *GtkTreeStore) InsertAfter(iter *GtkTreeIter, parent *GtkTreeIter, sibling *GtkTreeIter) {
 	C.gtk_tree_store_insert_after(v.TreeStore, &iter.TreeIter, &parent.TreeIter, &sibling.TreeIter)
 }
-
 // void gtk_tree_store_insert_with_values (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, ...);
 // void gtk_tree_store_insert_with_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, gint *columns, GValue *values, gint n_values);
 
@@ -4050,6 +4037,14 @@ func (v *GtkTreeStore) Append(iter *GtkTreeIter, parent *GtkTreeIter) {
 		C.gtk_tree_store_append(v.TreeStore, &iter.TreeIter, &parent.TreeIter)
 	}
 }
+// gtk_tree_store_is_ancestor
+
+
+
+func (v *GtkTreeStore) ToTreeModel() *GtkTreeModel {
+	return &GtkTreeModel{
+		C.to_GtkTreeModelFromTreeStore(v.TreeStore)}
+}
 func (v *GtkTreeStore) IterDepth(iter *GtkTreeIter) int {
 	return int(C.gtk_tree_store_iter_depth(v.TreeStore, &iter.TreeIter))
 }
@@ -4057,6 +4052,7 @@ func (v *GtkTreeStore) Clear() {
 	C.gtk_tree_store_clear(v.TreeStore)
 }
 func (v *GtkTreeStore) IterIsValid(iter *GtkTreeIter) bool {
+	log.Println("Warning: GtkListStore.IterIsValid: This function is slow. Only use it for debugging and/or testing purposes.")
 	return gboolean2bool(C.gtk_tree_store_iter_is_valid(v.TreeStore, &iter.TreeIter))
 }
 func (v *GtkTreeStore) Reorder(iter *GtkTreeIter, i *int) {
