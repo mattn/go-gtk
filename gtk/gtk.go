@@ -264,6 +264,12 @@ static gboolean _gtk_cell_renderer_toggle_get_activatable(GtkCellRendererToggle 
 static void _gtk_cell_renderer_toggle_set_activatable(GtkCellRendererToggle *toggle, gboolean setting) {
 	gtk_cell_renderer_toggle_set_activatable(toggle, setting);
 }
+static void _gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_toggle_size) {
+	gtk_menu_set_reserve_toggle_size(menu, reserve_toggle_size);
+}
+static gboolean _gtk_menu_get_reserve_toggle_size(GtkMenu *menu) {
+	return gtk_menu_get_reserve_toggle_size(menu);
+}
 void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
 	gtk_widget_set_has_window(widget, has_window);
 }
@@ -311,6 +317,11 @@ static gboolean _gtk_cell_renderer_toggle_get_activatable(GtkCellRendererToggle 
 	return 0;
 }
 static void _gtk_cell_renderer_toggle_set_activatable(GtkCellRendererToggle *toggle, gboolean setting) {
+}
+static void _gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_toggle_size) {
+}
+static gboolean _gtk_menu_get_reserve_toggle_size(GtkMenu *menu) {
+	return 0;
 }
 void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
 }
@@ -4279,31 +4290,94 @@ func (v *GtkComboBoxEntry) SetTextColumn(text_column int) {
 }
 
 //-----------------------------------------------------------------------
-// GtkMenu
+// GtkMenu (done 11 out of 25 = 44%)
 //-----------------------------------------------------------------------
 type GtkMenu struct {
 	GtkContainer
+	//TODO GtkMenuShell
 }
 
 func Menu() *GtkMenu {
-	return &GtkMenu{GtkContainer{GtkWidget{
-		C.gtk_menu_new()}}}
+	return &GtkMenu{GtkContainer{GtkWidget{C.gtk_menu_new()}}}
 }
+// void gtk_menu_set_screen (GtkMenu *menu, GdkScreen *screen);
+
+//TODO remove when GtkMenuShell is done
 func (v *GtkMenu) Append(child WidgetLike) {
 	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
+//TODO remove when GtkMenuShell is done
 func (v *GtkMenu) Prepend(child WidgetLike) {
 	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
+//TODO remove when GtkMenuShell is done
 func (v *GtkMenu) Insert(child WidgetLike, position int) {
 	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToNative(), C.gint(position))
 }
+// void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
+// void gtk_menu_attach(GtkMenu *menu, GtkWidget *child, guint left_attach, guint right_attach, guint top_attach, guint bottom_attach);
+
+func (v *GtkMenu) Popup(parent_menu_shell, parent_menu_item WidgetLike, f GtkMenuPositionFunc, data interface{}, button uint, active_item uint) {
+	var pms, pmi *C.GtkWidget
+	if parent_menu_shell != nil {
+		pms = parent_menu_shell.ToNative()
+	}
+	if parent_menu_item != nil {
+		pmi = parent_menu_item.ToNative()
+	}
+	C._gtk_menu_popup(v.Widget, pms, pmi, unsafe.Pointer(&GtkMenuPositionFuncInfo{v, f, data}), C.guint(button), C.guint32(active_item))
+}
+// void gtk_menu_set_accel_group (GtkMenu *menu, GtkAccelGroup *accel_group);
+// GtkAccelGroup* gtk_menu_get_accel_group (GtkMenu *menu);
+// void gtk_menu_set_accel_path(GtkMenu *menu, const gchar *accel_path);
+// const gchar* gtk_menu_get_accel_path(GtkMenu *menu);
+// void gtk_menu_set_title(GtkMenu *menu, const gchar *title);
+// G_CONST_RETURN gchar *gtk_menu_get_title(GtkMenu *menu);
+// void gtk_menu_set_monitor(GtkMenu *menu, gint monitor_num);
+// gint gtk_menu_get_monitor(GtkMenu *menu);
+
+func (v *GtkMenu) GetTearoffState() bool {
+	return gboolean2bool(C.gtk_menu_get_tearoff_state(C.to_GtkMenu(v.Widget)))
+}
+func (v *GtkMenu) SetReserveToggleSize(b bool) {
+	panic_if_version_older(2, 18, 0, "gtk_menu_set_reserve_toggle_size()")
+	C._gtk_menu_set_reserve_toggle_size(C.to_GtkMenu(v.Widget), bool2gboolean(b))
+}
+func (v *GtkMenu) GetReserveToggleSize() bool {
+	panic_if_version_older(2, 18, 0, "gtk_menu_get_reserve_toggle_size()")
+	return gboolean2bool(C._gtk_menu_get_reserve_toggle_size(C.to_GtkMenu(v.Widget)))
+}
+func (v *GtkMenu) Popdown() {
+	C.gtk_menu_popdown(C.to_GtkMenu(v.Widget))
+}
+func (v *GtkMenu) Reposition() {
+	C.gtk_menu_reposition(C.to_GtkMenu(v.Widget))
+}
+func (v *GtkMenu) GetActive() *GtkWidget {
+	return &GtkWidget{C.gtk_menu_get_active(C.to_GtkMenu(v.Widget))}
+}
+// void gtk_menu_set_active (GtkMenu *menu, guint index_);
+
+func (v *GtkMenu) SetTearoffState(b bool) {
+	C.gtk_menu_set_tearoff_state(C.to_GtkMenu(v.Widget), bool2gboolean(b))
+}
+// void gtk_menu_attach_to_widget (GtkMenu *menu, GtkWidget *attach_widget, GtkMenuDetachFunc detacher);
+
+func (v *GtkMenu) Detach() {
+	C.gtk_menu_detach(C.to_GtkMenu(v.Widget))
+}
+func (v *GtkMenu) GetAttachWidget() *GtkWidget {
+	return &GtkWidget{C.gtk_menu_get_attach_widget(C.to_GtkMenu(v.Widget))}
+}
+// GList* gtk_menu_get_for_attach_widget(GtkWidget *widget);
+
 type GtkMenuPositionFunc func(menu *GtkMenu, px, py *int, push_in *bool, data interface{})
 type GtkMenuPositionFuncInfo struct {
 	menu *GtkMenu
-	f GtkMenuPositionFunc
+	f    GtkMenuPositionFunc
 	data interface{}
 }
+
 //export _go_gtk_menu_position_func
 func _go_gtk_menu_position_func(pgmpfi unsafe.Pointer) {
 	gmpfi := (*C._gtk_menu_position_func_info)(pgmpfi)
@@ -4322,64 +4396,9 @@ func _go_gtk_menu_position_func(pgmpfi unsafe.Pointer) {
 	gmpfi.y = C.gint(y)
 	gmpfi.push_in = bool2gboolean(push_in)
 }
-func (v *GtkMenu) Popup(parent_menu_shell, parent_menu_item WidgetLike, f GtkMenuPositionFunc, data interface{}, button uint, active_item uint) {
-	var pms, pmi *C.GtkWidget
-	if parent_menu_shell != nil {
-		pms = parent_menu_shell.ToNative()
-	}
-	if parent_menu_item != nil {
-		pmi = parent_menu_item.ToNative()
-	}
-	C._gtk_menu_popup(v.Widget, pms, pmi, unsafe.Pointer(&GtkMenuPositionFuncInfo{ v, f, data }), C.guint(button), C.guint32(active_item))
-}
-func (v *GtkMenu) Reposition() {
-	C.gtk_menu_reposition(C.to_GtkMenu(v.Widget))
-}
-func (v *GtkMenu) Popdown() {
-	C.gtk_menu_popdown(C.to_GtkMenu(v.Widget))
-}
-func (v *GtkMenu) GetActive() *GtkWidget {
-	return &GtkWidget{C.gtk_menu_get_active(C.to_GtkMenu(v.Widget))}
-}
-
-// void gtk_menu_set_active (GtkMenu *menu, guint index_);
-// void gtk_menu_set_accel_group (GtkMenu *menu, GtkAccelGroup *accel_group);
-// GtkAccelGroup* gtk_menu_get_accel_group (GtkMenu *menu);
-// void gtk_menu_set_accel_path(GtkMenu *menu, const gchar *accel_path);
-// const gchar* gtk_menu_get_accel_path(GtkMenu *menu);
-// void gtk_menu_attach_to_widget (GtkMenu *menu, GtkWidget *attach_widget, GtkMenuDetachFunc detacher);
-
-func (v *GtkMenu) Detach() {
-	C.gtk_menu_detach(C.to_GtkMenu(v.Widget))
-}
-func (v *GtkMenu) GetAttachWidget() *GtkWidget {
-	return &GtkWidget{C.gtk_menu_get_attach_widget(C.to_GtkMenu(v.Widget))}
-}
-func (v *GtkMenu) GetTearoffState() bool {
-	return gboolean2bool(C.gtk_menu_get_tearoff_state(C.to_GtkMenu(v.Widget)))
-}
-func (v *GtkMenu) SetTearoffState(b bool) {
-	C.gtk_menu_set_tearoff_state(C.to_GtkMenu(v.Widget), bool2gboolean(b))
-}
-
-// void gtk_menu_set_title(GtkMenu *menu, const gchar *title);
-// G_CONST_RETURN gchar *gtk_menu_get_title(GtkMenu *menu);
-// void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
-// void gtk_menu_set_screen (GtkMenu *menu, GdkScreen *screen);
-// void gtk_menu_attach(GtkMenu *menu, GtkWidget *child, guint left_attach, guint right_attach, guint top_attach, guint bottom_attach);
-// void gtk_menu_set_monitor(GtkMenu *menu, gint monitor_num);
-// gint gtk_menu_get_monitor(GtkMenu *menu);
-// GList* gtk_menu_get_for_attach_widget(GtkWidget *widget);
-
-func (v *GtkMenu) GetReserveToggleSize() bool {
-	return gboolean2bool(C.gtk_menu_get_reserve_toggle_size(C.to_GtkMenu(v.Widget)))
-}
-func (v *GtkMenu) SetReserveToggleSize(b bool) {
-	C.gtk_menu_set_reserve_toggle_size(C.to_GtkMenu(v.Widget), bool2gboolean(b))
-}
 
 //-----------------------------------------------------------------------
-// GtkMenuBar
+// GtkMenuBar (done 5 out of 5 = 100%)
 //-----------------------------------------------------------------------
 type GtkPackDirection int
 
@@ -4395,34 +4414,35 @@ type GtkMenuBar struct {
 }
 
 func MenuBar() *GtkMenuBar {
-	return &GtkMenuBar{GtkWidget{
-		C.gtk_menu_bar_new()}}
-}
-func (v *GtkMenuBar) GetPackDirection() GtkPackDirection {
-	return GtkPackDirection(C.gtk_menu_bar_get_pack_direction(C.to_GtkMenuBar(v.Widget)))
+	return &GtkMenuBar{GtkWidget{C.gtk_menu_bar_new()}}
 }
 func (v *GtkMenuBar) SetPackDirection(pack_dir GtkPackDirection) {
 	C.gtk_menu_bar_set_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir))
 }
-func (v *GtkMenuBar) GetChildPackDirection() GtkPackDirection {
-	return GtkPackDirection(C.gtk_menu_bar_get_child_pack_direction(C.to_GtkMenuBar(v.Widget)))
+func (v *GtkMenuBar) GetPackDirection() GtkPackDirection {
+	return GtkPackDirection(C.gtk_menu_bar_get_pack_direction(C.to_GtkMenuBar(v.Widget)))
 }
 func (v *GtkMenuBar) SetChildPackDirection(pack_dir GtkPackDirection) {
 	C.gtk_menu_bar_set_child_pack_direction(C.to_GtkMenuBar(v.Widget), C.GtkPackDirection(pack_dir))
 }
+func (v *GtkMenuBar) GetChildPackDirection() GtkPackDirection {
+	return GtkPackDirection(C.gtk_menu_bar_get_child_pack_direction(C.to_GtkMenuBar(v.Widget)))
+}
+//TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
 func (v *GtkMenuBar) Append(child WidgetLike) {
 	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
+//TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
 func (v *GtkMenuBar) Prepend(child WidgetLike) {
 	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.Widget), child.ToNative())
 }
+//TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
 func (v *GtkMenuBar) Insert(child WidgetLike, position int) {
 	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.Widget), child.ToNative(), C.gint(position))
 }
-// FINISH
 
 //-----------------------------------------------------------------------
-// GtkMenuItem
+// GtkMenuItem (done 14 out of 18 = 77%)
 //-----------------------------------------------------------------------
 type GtkMenuItem struct {
 	GtkItem
@@ -4444,15 +4464,35 @@ func MenuItemWithMnemonic(label string) *GtkMenuItem {
 	return &GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_menu_item_new_with_mnemonic(C.to_gcharptr(ptr))}}}}}
 }
+func (v *GtkMenuItem) SetRightJustified(b bool) {
+	C.gtk_menu_item_set_right_justified(C.to_GtkMenuItem(v.Widget), bool2gboolean(b))
+}
+func (v *GtkMenuItem) GetRightJustified() bool {
+	return gboolean2bool(C.gtk_menu_item_get_right_justified(C.to_GtkMenuItem(v.Widget)))
+}
+// G_CONST_RETURN gchar *gtk_menu_item_get_label(GtkMenuItem *menu_item);
+// void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
+
+func (v *GtkMenuItem) GetUseUnderline() bool {
+	return gboolean2bool(C.gtk_menu_item_get_use_underline(C.to_GtkMenuItem(v.Widget)))
+}
+func (v *GtkMenuItem) SetUseUnderline(setting bool) {
+	C.gtk_menu_item_set_use_underline(C.to_GtkMenuItem(v.Widget), bool2gboolean(setting))
+}
 func (v *GtkMenuItem) SetSubmenu(w WidgetLike) {
 	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.Widget), w.ToNative())
 }
 func (v *GtkMenuItem) GetSubmenu() *GtkWidget {
 	return &GtkWidget{C.gtk_menu_item_get_submenu(C.to_GtkMenuItem(v.Widget))}
 }
+//Deprecated since 2.12. Use SetSubmenu() instead.
 func (v *GtkMenuItem) RemoveSubmenu() {
+	deprecated_since(2, 12, 0, "gtk_menu_item_remove_submenu()")
 	C.gtk_menu_item_remove_submenu(C.to_GtkMenuItem(v.Widget))
 }
+// void gtk_menu_item_set_accel_path(GtkMenuItem *menu_item, const gchar *accel_path);
+// G_CONST_RETURN gchar* gtk_menu_item_get_accel_path(GtkMenuItem *menu_item);
+
 func (v *GtkMenuItem) Select() {
 	C.gtk_menu_item_select(C.to_GtkMenuItem(v.Widget))
 }
@@ -4461,12 +4501,6 @@ func (v *GtkMenuItem) Deselect() {
 }
 func (v *GtkMenuItem) Activate() {
 	C.gtk_menu_item_activate(C.to_GtkMenuItem(v.Widget))
-}
-func (v *GtkMenuItem) GetRightJustified() bool {
-	return gboolean2bool(C.gtk_menu_item_get_right_justified(C.to_GtkMenuItem(v.Widget)))
-}
-func (v *GtkMenuItem) SetRightJustified(b bool) {
-	C.gtk_menu_item_set_right_justified(C.to_GtkMenuItem(v.Widget), bool2gboolean(b))
 }
 func (v *GtkMenuItem) ToggleSizeRequest(i *int) {
 	gi := C.gint(*i)
@@ -4477,21 +4511,6 @@ func (v *GtkMenuItem) ToggleSizeAllocate(i int) {
 	C.gtk_menu_item_toggle_size_allocate(C.to_GtkMenuItem(v.Widget), C.gint(i))
 }
 
-// TODO
-// void gtk_menu_item_set_accel_path(GtkMenuItem *menu_item, const gchar *accel_path);
-// G_CONST_RETURN gchar* gtk_menu_item_get_accel_path(GtkMenuItem *menu_item);
-// void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
-// G_CONST_RETURN gchar *gtk_menu_item_get_label(GtkMenuItem *menu_item);
-
-func (v *GtkMenuItem) GetUseUnderline() bool {
-	return gboolean2bool(C.gtk_menu_item_get_use_underline(C.to_GtkMenuItem(v.Widget)))
-}
-func (v *GtkMenuItem) SetUseUnderline(setting bool) {
-	C.gtk_menu_item_set_use_underline(C.to_GtkMenuItem(v.Widget), bool2gboolean(setting))
-}
-
-// #define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
-
 //-----------------------------------------------------------------------
 // GtkImageMenuItem (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
@@ -4501,7 +4520,7 @@ func (v *GtkMenuItem) SetUseUnderline(setting bool) {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkCheckMenuItem
+// GtkCheckMenuItem (done 10 out of 10 = 100%)
 //-----------------------------------------------------------------------
 type GtkCheckMenuItem struct {
 	GtkMenuItem
@@ -4538,17 +4557,24 @@ func (v *GtkCheckMenuItem) GetInconsistent() bool {
 func (v *GtkCheckMenuItem) SetInconsistent(setting bool) {
 	C.gtk_check_menu_item_set_inconsistent(C.to_GtkCheckMenuItem(v.Widget), bool2gboolean(setting))
 }
-func (v *GtkCheckMenuItem) GetDrawAsRadio() bool {
-	return gboolean2bool(C.gtk_check_menu_item_get_draw_as_radio(C.to_GtkCheckMenuItem(v.Widget)))
-}
 func (v *GtkCheckMenuItem) SetDrawAsRadio(setting bool) {
 	C.gtk_check_menu_item_set_draw_as_radio(C.to_GtkCheckMenuItem(v.Widget), bool2gboolean(setting))
 }
-// FINISH
+func (v *GtkCheckMenuItem) GetDrawAsRadio() bool {
+	return gboolean2bool(C.gtk_check_menu_item_get_draw_as_radio(C.to_GtkCheckMenuItem(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
-// GtkSeparatorMenuItem (done 0 out of 1 = 100%)
+// GtkSeparatorMenuItem (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
+type GtkSeparatorMenuItem struct {
+	GtkMenuItem
+}
+
+func SeparatorMenuItem() *GtkSeparatorMenuItem {
+	return &GtkSeparatorMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_separator_menu_item_new()}}}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkTearoffMenuItem (done 0 out of 1 = 0%)
