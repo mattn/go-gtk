@@ -2545,7 +2545,7 @@ func (v *GtkEditable) GetEditable() bool {
 }
 
 //-----------------------------------------------------------------------
-// GtkTextIter
+// GtkTextIter (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
 type GtkTextIter struct {
 	TextIter C.GtkTextIter
@@ -2559,26 +2559,6 @@ const (
 	GTK_TEXT_SEARCH_CASE_INSENSITIVE GtkTextSearchFlags = 1 << 2
 )
 
-func (v *GtkTextIter) Assign(iter *GtkTextIter) {
-	C._gtk_text_iter_assign(&v.TextIter, &iter.TextIter)
-}
-func (v *GtkTextIter) ForwardSearch(str string, flags GtkTextSearchFlags, start *GtkTextIter, end *GtkTextIter, limit *GtkTextIter) bool {
-	cstr := C.CString(str)
-	defer C.free_string(cstr)
-	return gboolean2bool(C.gtk_text_iter_forward_search(&v.TextIter,
-		C.to_gcharptr(cstr), C.GtkTextSearchFlags(flags), &start.TextIter,
-		&end.TextIter, &limit.TextIter))
-}
-func (v *GtkTextIter) BackwardSearch(str string, flags GtkTextSearchFlags, start *GtkTextIter, end *GtkTextIter, limit *GtkTextIter) bool {
-	cstr := C.CString(str)
-	defer C.free_string(cstr)
-	return gboolean2bool(C.gtk_text_iter_backward_search(&v.TextIter,
-		C.to_gcharptr(cstr), C.GtkTextSearchFlags(flags), &start.TextIter,
-		&end.TextIter, &limit.TextIter))
-}
-func (v *GtkTextIter) ForwardChar() bool {
-	return gboolean2bool(C.gtk_text_iter_forward_char(&v.TextIter))
-}
 func (v *GtkTextIter) GetBuffer() *GtkTextBuffer {
 	return &GtkTextBuffer{
 		C.gtk_text_iter_get_buffer(&v.TextIter)}
@@ -2602,11 +2582,11 @@ func (v *GtkTextIter) GetLineOffset() int {
 func (v *GtkTextIter) GetLineIndex() int {
 	return int(C.gtk_text_iter_get_line_index(&v.TextIter))
 }
-func (v *GtkTextIter) GetVisibleLineOffset() int {
-	return int(C.gtk_text_iter_get_visible_line_offset(&v.TextIter))
-}
 func (v *GtkTextIter) GetVisibleLineIndex() int {
 	return int(C.gtk_text_iter_get_visible_line_index(&v.TextIter))
+}
+func (v *GtkTextIter) GetVisibleLineOffset() int {
+	return int(C.gtk_text_iter_get_visible_line_offset(&v.TextIter))
 }
 func (v *GtkTextIter) GetChar() int {
 	return int(C.gtk_text_iter_get_char(&v.TextIter))
@@ -2627,15 +2607,13 @@ func (v *GtkTextIter) GetVisibleSlice(end *GtkTextIter) string {
 func (v *GtkTextIter) GetVisibleText(end *GtkTextIter) string {
 	return C.GoString(C.to_charptr(C.gtk_text_iter_get_visible_text(&v.TextIter, &end.TextIter)))
 }
+// gtk_text_iter_get_pixbuf
+
 func (v *GtkTextIter) GetMarks() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_text_iter_get_marks(&v.TextIter)))
 }
-
-// TODO
-// gtk_text_iter_get_pixbuf
-// gtk_text_iter_get_marks
-// gtk_text_iter_get_child_anchor
 // gtk_text_iter_get_toggled_tags
+// gtk_text_iter_get_child_anchor
 // gtk_text_iter_begins_tag
 // gtk_text_iter_ends_tag
 // gtk_text_iter_toggles_tag
@@ -2646,11 +2624,11 @@ func (v *GtkTextIter) GetMarks() *glib.SList {
 // gtk_text_iter_starts_word
 // gtk_text_iter_ends_word
 // gtk_text_iter_inside_word
+// gtk_text_iter_starts_line
+// gtk_text_iter_ends_line
 // gtk_text_iter_starts_sentence
 // gtk_text_iter_ends_sentence
 // gtk_text_iter_inside_sentence
-// gtk_text_iter_starts_line
-// gtk_text_iter_ends_line
 // gtk_text_iter_is_cursor_position
 // gtk_text_iter_get_chars_in_line
 // gtk_text_iter_get_bytes_in_line
@@ -2658,7 +2636,10 @@ func (v *GtkTextIter) GetMarks() *glib.SList {
 // gtk_text_iter_get_language
 // gtk_text_iter_is_end
 // gtk_text_iter_is_start
-// gtk_text_iter_forward_char
+
+func (v *GtkTextIter) ForwardChar() bool {
+	return gboolean2bool(C.gtk_text_iter_forward_char(&v.TextIter))
+}
 // gtk_text_iter_backward_char
 // gtk_text_iter_forward_chars
 // gtk_text_iter_backward_chars
@@ -2666,48 +2647,65 @@ func (v *GtkTextIter) GetMarks() *glib.SList {
 // gtk_text_iter_backward_line
 // gtk_text_iter_forward_lines
 // gtk_text_iter_backward_lines
-// gtk_text_iter_forward_word_end
-// gtk_text_iter_backward_word_start
 // gtk_text_iter_forward_word_ends
 // gtk_text_iter_backward_word_starts
-// gtk_text_iter_forward_visible_line
-// gtk_text_iter_backward_visible_line
-// gtk_text_iter_forward_visible_lines
-// gtk_text_iter_backward_visible_lines
-// gtk_text_iter_forward_visible_word_end
-// gtk_text_iter_backward_visible_word_start
-// gtk_text_iter_forward_visible_word_ends
-// gtk_text_iter_backward_visible_word_starts
-// gtk_text_iter_forward_sentence_end
-// gtk_text_iter_backward_sentence_start
-// gtk_text_iter_forward_sentence_ends
-// gtk_text_iter_backward_sentence_starts
+// gtk_text_iter_forward_word_end
+// gtk_text_iter_backward_word_start
 // gtk_text_iter_forward_cursor_position
 // gtk_text_iter_backward_cursor_position
 // gtk_text_iter_forward_cursor_positions
 // gtk_text_iter_backward_cursor_positions
+// gtk_text_iter_backward_sentence_start
+// gtk_text_iter_backward_sentence_starts
+// gtk_text_iter_forward_sentence_end
+// gtk_text_iter_forward_sentence_ends
+// gtk_text_iter_forward_visible_word_ends
+// gtk_text_iter_backward_visible_word_starts
+// gtk_text_iter_forward_visible_word_end
+// gtk_text_iter_backward_visible_word_start
 // gtk_text_iter_forward_visible_cursor_position
 // gtk_text_iter_backward_visible_cursor_position
 // gtk_text_iter_forward_visible_cursor_positions
 // gtk_text_iter_backward_visible_cursor_positions
+// gtk_text_iter_forward_visible_line
+// gtk_text_iter_backward_visible_line
+// gtk_text_iter_forward_visible_lines
+// gtk_text_iter_backward_visible_lines
 // gtk_text_iter_set_offset
 // gtk_text_iter_set_line
 // gtk_text_iter_set_line_offset
 // gtk_text_iter_set_line_index
+// gtk_text_iter_set_visible_line_index
+// gtk_text_iter_set_visible_line_offset
 // gtk_text_iter_forward_to_end
 // gtk_text_iter_forward_to_line_end
-// gtk_text_iter_set_visible_line_offset
-// gtk_text_iter_set_visible_line_index
 // gtk_text_iter_forward_to_tag_toggle
 // gtk_text_iter_backward_to_tag_toggle
 // gtk_text_iter_forward_find_char
 // gtk_text_iter_backward_find_char
-// gtk_text_iter_forward_search
-// gtk_text_iter_backward_search
+
+func (v *GtkTextIter) ForwardSearch(str string, flags GtkTextSearchFlags, start *GtkTextIter, end *GtkTextIter, limit *GtkTextIter) bool {
+	cstr := C.CString(str)
+	defer C.free_string(cstr)
+	return gboolean2bool(C.gtk_text_iter_forward_search(&v.TextIter,
+		C.to_gcharptr(cstr), C.GtkTextSearchFlags(flags), &start.TextIter,
+		&end.TextIter, &limit.TextIter))
+}
+func (v *GtkTextIter) BackwardSearch(str string, flags GtkTextSearchFlags, start *GtkTextIter, end *GtkTextIter, limit *GtkTextIter) bool {
+	cstr := C.CString(str)
+	defer C.free_string(cstr)
+	return gboolean2bool(C.gtk_text_iter_backward_search(&v.TextIter,
+		C.to_gcharptr(cstr), C.GtkTextSearchFlags(flags), &start.TextIter,
+		&end.TextIter, &limit.TextIter))
+}
 // gtk_text_iter_equal
 // gtk_text_iter_compare
 // gtk_text_iter_in_range
 // gtk_text_iter_order
+
+func (v *GtkTextIter) Assign(iter *GtkTextIter) {
+	C._gtk_text_iter_assign(&v.TextIter, &iter.TextIter)
+}
 
 //-----------------------------------------------------------------------
 // GtkTextMark (done 0 out of ? = 0%)
