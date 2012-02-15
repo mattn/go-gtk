@@ -4727,7 +4727,7 @@ func SeparatorMenuItem() *GtkSeparatorMenuItem {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkFileChooser
+// GtkFileChooser (done 13 out of 58 = 22%)
 //-----------------------------------------------------------------------
 type GtkFileChooserAction int
 
@@ -4748,12 +4748,22 @@ func (v *GtkFileChooser) SetAction(action GtkFileChooserAction) {
 func (v *GtkFileChooser) GetAction() GtkFileChooserAction {
 	return GtkFileChooserAction(C.gtk_file_chooser_get_action(v.w))
 }
-func (v *GtkFileChooser) GetLocalOnly() bool {
-	return gboolean2bool(C.gtk_file_chooser_get_local_only(v.w))
-}
 func (v *GtkFileChooser) SetLocalOnly(b bool) {
 	C.gtk_file_chooser_set_local_only(v.w, bool2gboolean(b))
 }
+func (v *GtkFileChooser) GetLocalOnly() bool {
+	return gboolean2bool(C.gtk_file_chooser_get_local_only(v.w))
+}
+// void gtk_file_chooser_set_select_multiple(GtkFileChooser* chooser, gboolean select_multiple);
+// gboolean gtk_file_chooser_get_select_multiple(GtkFileChooser* chooser);
+// void gtk_file_chooser_set_show_hidden(GtkFileChooser* chooser, gboolean show_hidden);
+// gboolean gtk_file_chooser_get_show_hidden(GtkFileChooser* chooser);
+// void gtk_file_chooser_set_do_overwrite_confirmation(GtkFileChooser* chooser, gboolean do_overwrite_confirmation);
+// gboolean gtk_file_chooser_get_do_overwrite_confirmation(GtkFileChooser* chooser);
+// void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders); //since 2.18
+// gboolean gtk_file_chooser_get_create_folders(GtkFileChooser* chooser); //since 2.18
+// void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);
+
 func (v *GtkFileChooser) GetFilename() string {
 	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_filename(v.w)))
 }
@@ -4762,25 +4772,43 @@ func (v *GtkFileChooser) SetFilename(filename string) {
 	defer C.free_string(ptr)
 	C.gtk_file_chooser_set_filename(v.w, ptr)
 }
-func (v *GtkFileChooser) GetCurrentFolder() string {
-	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_current_folder(v.w)))
-}
+// gboolean gtk_file_chooser_select_filename(GtkFileChooser* chooser, const char* filename);
+// void gtk_file_chooser_unselect_filename(GtkFileChooser* chooser, const char* filename);
+// void gtk_file_chooser_select_all(GtkFileChooser* chooser);
+// void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
+// GSList*  gtk_file_chooser_get_filenames(GtkFileChooser* chooser);
+
 func (v *GtkFileChooser) SetCurrentFolder(f string) bool {
 	cf := C.CString(f)
 	defer C.free_string(cf)
 	return gboolean2bool(C.gtk_file_chooser_set_current_folder(v.w, C.to_gcharptr(cf)))
 }
+func (v *GtkFileChooser) GetCurrentFolder() string {
+	return C.GoString(C.to_charptr(C.gtk_file_chooser_get_current_folder(v.w)))
+}
+// gchar*  gtk_file_chooser_get_uri(GtkFileChooser* chooser);
+// gboolean gtk_file_chooser_set_uri(GtkFileChooser* chooser, const char* uri);
+// gboolean gtk_file_chooser_select_uri(GtkFileChooser* chooser, const char* uri);
+// void gtk_file_chooser_unselect_uri(GtkFileChooser* chooser, const char* uri);
+// GSList*  gtk_file_chooser_get_uris(GtkFileChooser* chooser);
+// gboolean gtk_file_chooser_set_current_folder_uri(GtkFileChooser* chooser, const gchar* uri);
+// gchar*  gtk_file_chooser_get_current_folder_uri(GtkFileChooser* chooser);
+// void gtk_file_chooser_set_preview_widget(GtkFileChooser* chooser, GtkWidget* preview_widget);
+// GtkWidget* gtk_file_chooser_get_preview_widget(GtkFileChooser* chooser);
+// void gtk_file_chooser_set_preview_widget_active(GtkFileChooser* chooser, gboolean active);
+// gboolean gtk_file_chooser_get_preview_widget_active(GtkFileChooser* chooser);
+// void gtk_file_chooser_set_use_preview_label(GtkFileChooser* chooser, gboolean use_label);
+// gboolean gtk_file_chooser_get_use_preview_label(GtkFileChooser* chooser);
+// char* gtk_file_chooser_get_preview_filename(GtkFileChooser* chooser);
+// char* gtk_file_chooser_get_preview_uri(GtkFileChooser* chooser);
+// void gtk_file_chooser_set_extra_widget(GtkFileChooser* chooser, GtkWidget* extra_widget);
+// GtkWidget* gtk_file_chooser_get_extra_widget(GtkFileChooser* chooser);
+
 func (v *GtkFileChooser) AddFilter(filter *GtkFileFilter) {
 	C.gtk_file_chooser_add_filter(v.w, filter.FileFilter)
 }
 func (v *GtkFileChooser) RemoveFilter(filter *GtkFileFilter) {
 	C.gtk_file_chooser_remove_filter(v.w, filter.FileFilter)
-}
-func (v *GtkFileChooser) SetFilter(filter *GtkFileFilter) {
-	C.gtk_file_chooser_set_filter(v.w, filter.FileFilter)
-}
-func (v *GtkFileChooser) GetFilter() *GtkFileFilter {
-	return &GtkFileFilter{C.gtk_file_chooser_get_filter(v.w)}
 }
 func (v *GtkFileChooser) ListFilters() []*GtkFileFilter {
 	c_list := C.gtk_file_chooser_list_filters(v.w)
@@ -4792,73 +4820,43 @@ func (v *GtkFileChooser) ListFilters() []*GtkFileFilter {
 	}
 	return ret
 }
-
-
-// TODO
-// void gtk_file_chooser_set_action(GtkFileChooser* chooser, GtkFileChooserAction action);
-// GtkFileChooserAction gtk_file_chooser_get_action(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_select_multiple(GtkFileChooser* chooser, gboolean select_multiple);
-// gboolean gtk_file_chooser_get_select_multiple(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_show_hidden(GtkFileChooser* chooser, gboolean show_hidden);
-// gboolean gtk_file_chooser_get_show_hidden(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_do_overwrite_confirmation(GtkFileChooser* chooser, gboolean do_overwrite_confirmation);
-// gboolean gtk_file_chooser_get_do_overwrite_confirmation(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders);
-// gboolean gtk_file_chooser_get_create_folders(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);
-// gboolean gtk_file_chooser_select_filename(GtkFileChooser* chooser, const char* filename);
-// void gtk_file_chooser_unselect_filename(GtkFileChooser* chooser, const char* filename);
-// void gtk_file_chooser_select_all(GtkFileChooser* chooser);
-// void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
-// GSList*  gtk_file_chooser_get_filenames(GtkFileChooser* chooser);
-// gchar*  gtk_file_chooser_get_uri(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_uri(GtkFileChooser* chooser, const char* uri);
-// gboolean gtk_file_chooser_select_uri(GtkFileChooser* chooser, const char* uri);
-// void gtk_file_chooser_unselect_uri(GtkFileChooser* chooser, const char* uri);
-// GSList*  gtk_file_chooser_get_uris(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_current_folder_uri(GtkFileChooser* chooser, const gchar* uri);
-// gchar*  gtk_file_chooser_get_current_folder_uri(GtkFileChooser* chooser);
-// GFile*  gtk_file_chooser_get_file(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_file(GtkFileChooser* chooser, GFile* file, GError* *error);
-// gboolean gtk_file_chooser_select_file(GtkFileChooser* chooser, GFile* file, GError* *error);
-// void gtk_file_chooser_unselect_file(GtkFileChooser* chooser, GFile* file);
-// GSList*  gtk_file_chooser_get_files(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_current_folder_file(GtkFileChooser* chooser, GFile* file, GError* *error);
-// GFile*  gtk_file_chooser_get_current_folder_file(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_preview_widget(GtkFileChooser* chooser, GtkWidget* preview_widget);
-// GtkWidget* gtk_file_chooser_get_preview_widget(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_preview_widget_active(GtkFileChooser* chooser, gboolean active);
-// gboolean gtk_file_chooser_get_preview_widget_active(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_use_preview_label(GtkFileChooser* chooser, gboolean use_label);
-// gboolean gtk_file_chooser_get_use_preview_label(GtkFileChooser* chooser);
-// char* gtk_file_chooser_get_preview_filename(GtkFileChooser* chooser);
-// char* gtk_file_chooser_get_preview_uri(GtkFileChooser* chooser);
-// GFile* gtk_file_chooser_get_preview_file(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_extra_widget(GtkFileChooser* chooser, GtkWidget* extra_widget);
-// GtkWidget* gtk_file_chooser_get_extra_widget(GtkFileChooser* chooser);
-
+func (v *GtkFileChooser) SetFilter(filter *GtkFileFilter) {
+	C.gtk_file_chooser_set_filter(v.w, filter.FileFilter)
+}
+func (v *GtkFileChooser) GetFilter() *GtkFileFilter {
+	return &GtkFileFilter{C.gtk_file_chooser_get_filter(v.w)}
+}
 // gboolean gtk_file_chooser_add_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // gboolean gtk_file_chooser_remove_shortcut_folder(GtkFileChooser* chooser, const char* folder, GError* *error);
 // GSList* gtk_file_chooser_list_shortcut_folders(GtkFileChooser* chooser);
 // gboolean gtk_file_chooser_add_shortcut_folder_uri(GtkFileChooser* chooser, const char* uri, GError* *error);
 // gboolean gtk_file_chooser_remove_shortcut_folder_uri(GtkFileChooser* chooser, const char* uri, GError* *error);
 // GSList* gtk_file_chooser_list_shortcut_folder_uris(GtkFileChooser* chooser);
+// GFile*  gtk_file_chooser_get_current_folder_file(GtkFileChooser* chooser);
+// GFile*  gtk_file_chooser_get_file(GtkFileChooser* chooser);
+// GSList*  gtk_file_chooser_get_files(GtkFileChooser* chooser);
+// GFile* gtk_file_chooser_get_preview_file(GtkFileChooser* chooser);
+// gboolean gtk_file_chooser_select_file(GtkFileChooser* chooser, GFile* file, GError* *error);
+// gboolean gtk_file_chooser_set_current_folder_file(GtkFileChooser* chooser, GFile* file, GError* *error);
+// gboolean gtk_file_chooser_set_file(GtkFileChooser* chooser, GFile* file, GError* *error);
+// void gtk_file_chooser_unselect_file(GtkFileChooser* chooser, GFile* file);
 
 //-----------------------------------------------------------------------
 // GtkFileChooserButton (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkFileChooserDialog
+// GtkFileChooserDialog (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
-
 type GtkFileChooserDialog struct {
 	GtkDialog
 	GtkFileChooser
 }
 
-//The number of arguments bound to the final variadic parameter must be even: couples of string-int (button text - button action)
 func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkFileChooserAction, button_text string, button_action int, buttons ...interface{}) *GtkFileChooserDialog {
+	if len(buttons)%2 != 0 {
+		panic("Error calling gtk.FileChooserDialog: variadic parameter must be even (couples of string-int (button label - button response)")
+	}
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button_text)
@@ -4871,16 +4869,16 @@ func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkF
 			C.int(button_action),
 			C.to_gcharptr(pbutton))}
 	ret := &GtkFileChooserDialog{
-			GtkDialog{GtkWindow{GtkBin{GtkContainer{widget}}}},
-			GtkFileChooser{C.to_GtkFileChooser(widget.Widget)}}
+		GtkDialog{GtkWindow{GtkBin{GtkContainer{widget}}}},
+		GtkFileChooser{C.to_GtkFileChooser(widget.Widget)}}
 	for i := 0; i < len(buttons)/2; i++ {
 		b_text, ok := buttons[2*i].(string)
 		if !ok {
-			panic("error calling gtk.FileChooserDialog, button text must be a string")
+			panic("Error calling gtk.FileChooserDialog: button text must be a string")
 		}
 		b_action, ok := buttons[2*i+1].(int)
 		if !ok {
-			panic("error calling gtk.FileChooserDialog, button action must be an int")
+			panic("Error calling gtk.FileChooserDialog: button response must be an int")
 		}
 		ret.AddButton(b_text, b_action)
 	}
@@ -4888,17 +4886,15 @@ func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkF
 }
 
 //-----------------------------------------------------------------------
-// GtkFileChooserWidget
+// GtkFileChooserWidget (done 0 out of 1 = 0%)
 //-----------------------------------------------------------------------
-
 type GtkFileChooserWidget struct {
 	GtkWidget
 	GtkFileChooser
 }
 
-
 //-----------------------------------------------------------------------
-// GtkFileFilter
+// GtkFileFilter (done 5 out of 7 = 71%)
 //-----------------------------------------------------------------------
 type GtkFileFilter struct {
 	FileFilter *C.GtkFileFilter
@@ -4907,31 +4903,28 @@ type GtkFileFilter struct {
 func FileFilter() *GtkFileFilter {
 	return &GtkFileFilter{C.gtk_file_filter_new()}
 }
-
 func (v *GtkFileFilter) SetName(name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 	C.gtk_file_filter_set_name(v.FileFilter, C.to_gcharptr(ptr))
 }
-
 func (v *GtkFileFilter) GetName() string {
 	return C.GoString(C.to_charptr(C.gtk_file_filter_get_name(v.FileFilter)))
 }
-
 func (v *GtkFileFilter) AddMimeType(mimetype string) {
 	ptr := C.CString(mimetype)
 	defer C.free_string(ptr)
 	C.gtk_file_filter_add_mime_type(v.FileFilter, C.to_gcharptr(ptr))
 }
-
 func (v *GtkFileFilter) AddPattern(pattern string) {
 	ptr := C.CString(pattern)
 	defer C.free_string(ptr)
 	C.gtk_file_filter_add_pattern(v.FileFilter, C.to_gcharptr(ptr))
 }
-
 //void gtk_file_filter_add_pixbuf_formats (GtkFileFilter *filter);
 //void gtk_file_filter_add_custom (GtkFileFilter *filter, GtkFileFilterFlags needed, GtkFileFilterFunc func, gpointer data, GDestroyNotify notify);
+// gtk_file_filter_get_needed  //for use in the implementation of GtkFileChooser
+// gtk_file_filter_filter  //for use in the implementation of GtkFileChooser
 
 //-----------------------------------------------------------------------
 // GtkFontButton
