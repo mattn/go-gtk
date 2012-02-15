@@ -4927,7 +4927,7 @@ func (v *GtkFileFilter) AddPattern(pattern string) {
 // gtk_file_filter_filter  //for use in the implementation of GtkFileChooser
 
 //-----------------------------------------------------------------------
-// GtkFontButton
+// GtkFontButton (done 10 out of 14 = 71%)
 //-----------------------------------------------------------------------
 type GtkFontButton struct {
 	GtkButton
@@ -4943,42 +4943,47 @@ func FontButtonWithFont(fontname string) *GtkFontButton {
 	return &GtkFontButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_font_button_new_with_font(C.to_gcharptr(ptr))}}}}}
 }
-func (v *GtkFontButton) GetTitle() string {
-	return C.GoString(C.to_charptr(C.gtk_font_button_get_title(C.to_GtkFontButton(v.Widget))))
+func (v *GtkFontButton) SetFontName(fontname string) {
+	ptr := C.CString(fontname)
+	defer C.free_string(ptr)
+	C.gtk_font_button_set_font_name(C.to_GtkFontButton(v.Widget), C.to_gcharptr(ptr))
+}
+func (v *GtkFontButton) GetFontName() string {
+	return C.GoString(C.to_charptr(C.gtk_font_button_get_font_name(C.to_GtkFontButton(v.Widget))))
+}
+// gtk_font_button_set_show_style
+// gtk_font_button_get_show_style
+
+func (v *GtkFontButton) SetShowSize(show_size bool) {
+	C.gtk_font_button_set_show_size(C.to_GtkFontButton(v.Widget), bool2gboolean(show_size))
+}
+func (v *GtkFontButton) GetShowSize() bool {
+	return gboolean2bool(C.gtk_font_button_get_show_size(C.to_GtkFontButton(v.Widget)))
+}
+// gtk_font_button_set_use_font
+// gtk_font_button_get_use_font
+
+func (v *GtkFontButton) SetUseSize(use_size bool) {
+	C.gtk_font_button_set_use_size(C.to_GtkFontButton(v.Widget), bool2gboolean(use_size))
+}
+func (v *GtkFontButton) GetUseSize() bool {
+	return gboolean2bool(C.gtk_font_button_get_use_size(C.to_GtkFontButton(v.Widget)))
 }
 func (v *GtkFontButton) SetTitle(title string) {
 	ptr := C.CString(title)
 	defer C.free_string(ptr)
 	C.gtk_font_button_set_title(C.to_GtkFontButton(v.Widget), C.to_gcharptr(ptr))
 }
-func (v *GtkFontButton) GetUseSize() bool {
-	return gboolean2bool(C.gtk_font_button_get_use_size(C.to_GtkFontButton(v.Widget)))
+func (v *GtkFontButton) GetTitle() string {
+	return C.GoString(C.to_charptr(C.gtk_font_button_get_title(C.to_GtkFontButton(v.Widget))))
 }
-func (v *GtkFontButton) SetUseSize(use_size bool) {
-	C.gtk_font_button_set_use_size(C.to_GtkFontButton(v.Widget), bool2gboolean(use_size))
-}
-func (v *GtkFontButton) GetFontName() string {
-	return C.GoString(C.to_charptr(C.gtk_font_button_get_font_name(C.to_GtkFontButton(v.Widget))))
-}
-func (v *GtkFontButton) SetFontName(fontname string) {
-	ptr := C.CString(fontname)
-	defer C.free_string(ptr)
-	C.gtk_font_button_set_font_name(C.to_GtkFontButton(v.Widget), C.to_gcharptr(ptr))
-}
-func (v *GtkFontButton) GetShowSize() bool {
-	return gboolean2bool(C.gtk_font_button_get_show_size(C.to_GtkFontButton(v.Widget)))
-}
-func (v *GtkFontButton) SetShowSize(show_size bool) {
-	C.gtk_font_button_set_show_size(C.to_GtkFontButton(v.Widget), bool2gboolean(show_size))
-}
-// FINISH
 
 //-----------------------------------------------------------------------
 // GtkFontSelection (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkFontSelectionDialog
+// GtkFontSelectionDialog (done 3 out of 8 = 37%)
 //-----------------------------------------------------------------------
 type GtkFontSelectionDialog struct {
 	GtkDialog
@@ -4990,23 +4995,26 @@ func FontSelectionDialog(title string) *GtkFontSelectionDialog {
 	return &GtkFontSelectionDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_font_selection_dialog_new(C.to_gcharptr(ptitle))}}}}}}
 }
-
+func (v *GtkFontSelectionDialog) GetFontName() string {
+	return C.GoString(C.to_charptr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.Widget))))
+}
 func (v *GtkFontSelectionDialog) SetFontName(font string) {
 	pfont := C.CString(font)
 	defer C.free_string(pfont)
 	C.gtk_font_selection_dialog_set_font_name(C.to_GtkFontSelectionDialog(v.Widget), C.to_gcharptr(pfont))
 }
-
-func (v *GtkFontSelectionDialog) GetFontName() string {
-	return C.GoString(C.to_charptr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.Widget))))
-}
+// gtk_font_selection_dialog_get_preview_text
+// gtk_font_selection_dialog_set_preview_text
+// gtk_font_selection_dialog_get_cancel_button
+// gtk_font_selection_dialog_get_ok_button
+// gtk_font_selection_dialog_get_font_selection //since 2.22
 
 //-----------------------------------------------------------------------
 // GtkInputDialog (done 0 out of ? = 0%) //deprecated in 2.20
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkAlignment
+// GtkAlignment (done 4 out of 4 = 100%)
 //-----------------------------------------------------------------------
 type GtkAlignment struct {
 	GtkBin
@@ -5031,14 +5039,13 @@ func (v *GtkAlignment) GetPadding() (padding_top uint, padding_bottom uint, padd
 	padding_right = uint(cpadding_right)
 	return
 }
-// FINISH
 
 //-----------------------------------------------------------------------
 // GtkAspectFrame (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkHBox
+// GtkHBox (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
 type GtkHBox struct {
 	GtkBox
@@ -5048,10 +5055,9 @@ func HBox(homogeneous bool, spacing uint) *GtkHBox {
 	return &GtkHBox{GtkBox{GtkContainer{GtkWidget{
 		C.gtk_hbox_new(bool2gboolean(homogeneous), C.gint(spacing))}}}}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
-// GtkVBox
+// GtkVBox (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
 type GtkVBox struct {
 	GtkBox
@@ -5061,7 +5067,6 @@ func VBox(homogeneous bool, spacing uint) *GtkVBox {
 	return &GtkVBox{GtkBox{GtkContainer{GtkWidget{
 		C.gtk_vbox_new(bool2gboolean(homogeneous), C.gint(spacing))}}}}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
 // GtkHButtonBox (done 0 out of ? = 0%)
@@ -5072,7 +5077,7 @@ func VBox(homogeneous bool, spacing uint) *GtkVBox {
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
-// GtkFixed
+// GtkFixed (done 3 out of 3 = 100%)
 //-----------------------------------------------------------------------
 type GtkFixed struct {
 	GtkContainer
@@ -5087,16 +5092,22 @@ func (v *GtkFixed) Put(w WidgetLike, x, y int) {
 func (v *GtkFixed) Move(w WidgetLike, x, y int) {
 	C.gtk_fixed_move(C.to_GtkFixed(v.Widget), w.ToNative(), C.gint(x), C.gint(y))
 }
+
+//Deprecated since 2.20. Use GtkWidget.GetHasWindow() instead.
+/*GtkFixed gets GetHasWindow() from anonymous field so this method can be commented out.
 func (v *GtkFixed) GetHasWindow() bool {
+	deprecated_since(2,20,0,"gtk_fixed_get_has_window()")
 	return gboolean2bool(C.gtk_fixed_get_has_window(C.to_GtkFixed(v.Widget)))
-}
+}*/
+//Deprecated since 2.20. Use GtkWidget.SetHasWindow() instead.
+/*GtkFixed gets SetHasWindow() from anonymous field so this method can be commented out.
 func (v *GtkFixed) SetHasWindow(has_window bool) {
+	deprecated_since(2,20,0,"gtk_fixed_set_has_window()")
 	C.gtk_fixed_set_has_window(C.to_GtkFixed(v.Widget), bool2gboolean(has_window))
-}
-// FINISH
+}*/
 
 //-----------------------------------------------------------------------
-// GtkHPaned
+// GtkHPaned (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
 type GtkHPaned struct {
 	GtkPaned
@@ -5106,10 +5117,9 @@ func HPaned() *GtkHPaned {
 	return &GtkHPaned{GtkPaned{GtkContainer{GtkWidget{
 		C.gtk_hpaned_new()}}}}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
-// GtkHPaned
+// GtkVPaned (done 1 out of 1 = 100%)
 //-----------------------------------------------------------------------
 type GtkVPaned struct {
 	GtkPaned
@@ -5119,7 +5129,6 @@ func VPaned() *GtkVPaned {
 	return &GtkVPaned{GtkPaned{GtkContainer{GtkWidget{
 		C.gtk_vpaned_new()}}}}
 }
-// FINISH
 
 //-----------------------------------------------------------------------
 // GtkLayout (done 0 out of ? = 0%)
