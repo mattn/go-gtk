@@ -270,46 +270,74 @@ static void _gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_to
 static gboolean _gtk_menu_get_reserve_toggle_size(GtkMenu *menu) {
 	return gtk_menu_get_reserve_toggle_size(menu);
 }
-void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
+static void _gtk_widget_get_allocation(GtkWidget *widget, GtkAllocation *allocation) {
+	gtk_widget_get_allocation(widget, allocation);
+}
+static void _gtk_widget_set_allocation(GtkWidget *widget, const GtkAllocation *allocation) {
+	gtk_widget_set_allocation(widget, allocation);
+}
+static gboolean _gtk_widget_get_app_paintable(GtkWidget *widget) {
+	return gtk_widget_get_app_paintable(widget);
+}
+static gboolean _gtk_widget_get_can_default(GtkWidget *widget) {
+	return gtk_widget_get_can_default(widget);
+}
+static void _gtk_widget_set_can_default(GtkWidget *widget, gboolean can_default) {
+	gtk_widget_set_can_default(widget, can_default);
+}
+static gboolean _gtk_widget_get_can_focus(GtkWidget *widget) {
+	return gtk_widget_get_can_focus(widget);
+}
+static void _gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus) {
+	gtk_widget_set_can_focus(widget, can_focus);
+}
+static gboolean _gtk_widget_get_double_buffered(GtkWidget *widget) {
+	return gtk_widget_get_double_buffered(widget);
+}
+static gboolean _gtk_widget_get_has_window(GtkWidget *widget) {
+	return gtk_widget_get_has_window(widget);
+}
+
+static void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
 	gtk_widget_set_has_window(widget, has_window);
 }
-gboolean _gtk_widget_get_sensitive(GtkWidget *widget) {
+static gboolean _gtk_widget_get_sensitive(GtkWidget *widget) {
 	return gtk_widget_get_sensitive(widget);
 }
-gboolean _gtk_widget_is_sensitive(GtkWidget *widget) {
+static gboolean _gtk_widget_is_sensitive(GtkWidget *widget) {
 	return gtk_widget_is_sensitive(widget);
 }
-GtkStateType _gtk_widget_get_state(GtkWidget *widget) {
+static GtkStateType _gtk_widget_get_state(GtkWidget *widget) {
 	return gtk_widget_get_state(widget);
 }
-gboolean _gtk_widget_get_visible(GtkWidget *widget) {
+static gboolean _gtk_widget_get_visible(GtkWidget *widget) {
 	return gtk_widget_get_visible(widget);
 }
-void _gtk_widget_set_visible(GtkWidget *widget, gboolean visible) {
+static void _gtk_widget_set_visible(GtkWidget *widget, gboolean visible) {
 	gtk_widget_set_visible(widget, visible);
 }
-gboolean _gtk_widget_has_default(GtkWidget *widget) {
+static gboolean _gtk_widget_has_default(GtkWidget *widget) {
 	return gtk_widget_has_default(widget);
 }
-gboolean _gtk_widget_has_focus(GtkWidget *widget) {
+static gboolean _gtk_widget_has_focus(GtkWidget *widget) {
 	return gtk_widget_has_focus(widget);
 }
-gboolean _gtk_widget_has_grab(GtkWidget *widget) {
+static gboolean _gtk_widget_has_grab(GtkWidget *widget) {
 	return gtk_widget_has_grab(widget);
 }
-gboolean _gtk_widget_is_drawable(GtkWidget *widget) {
+static gboolean _gtk_widget_is_drawable(GtkWidget *widget) {
 	return gtk_widget_is_drawable(widget);
 }
-gboolean _gtk_widget_is_toplevel(GtkWidget *widget) {
+static gboolean _gtk_widget_is_toplevel(GtkWidget *widget) {
 	return gtk_widget_is_toplevel(widget);
 }
-void _gtk_widget_set_window(GtkWidget *widget, GdkWindow *window) {
+static void _gtk_widget_set_window(GtkWidget *widget, GdkWindow *window) {
 	gtk_widget_set_window(widget, window);
 }
-void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receives_default) {
+static void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receives_default) {
 	gtk_widget_set_receives_default(widget, receives_default);
 }
-gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
+static gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
 	return gtk_widget_get_receives_default(widget);
 }
 #else //!GTK_CHECK_VERSION(2,18,0)
@@ -323,42 +351,65 @@ static void _gtk_menu_set_reserve_toggle_size(GtkMenu *menu, gboolean reserve_to
 static gboolean _gtk_menu_get_reserve_toggle_size(GtkMenu *menu) {
 	return 0;
 }
-void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
+static void _gtk_widget_get_allocation(GtkWidget *widget, GtkAllocation *allocation) {
 }
-gboolean _gtk_widget_get_sensitive(GtkWidget *widget) {
+static void _gtk_widget_set_allocation(GtkWidget *widget, const GtkAllocation *allocation) {
+}
+static gboolean _gtk_widget_get_app_paintable(GtkWidget *widget) {
 	return 0;
 }
-gboolean _gtk_widget_is_sensitive(GtkWidget *widget) {
+static gboolean _gtk_widget_get_can_default(GtkWidget *widget) {
 	return 0;
 }
-GtkStateType _gtk_widget_get_state(GtkWidget *widget) {
+static void _gtk_widget_set_can_default(GtkWidget *widget, gboolean can_default) {
+}
+static gboolean _gtk_widget_get_can_focus(GtkWidget *widget) {
 	return 0;
 }
-gboolean _gtk_widget_get_visible(GtkWidget *widget) {
+static void _gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus) {
+}
+static gboolean _gtk_widget_get_double_buffered(GtkWidget *widget) {
 	return 0;
 }
-void _gtk_widget_set_visible(GtkWidget *widget, gboolean visible) {
-}
-gboolean _gtk_widget_has_default(GtkWidget *widget) {
+static gboolean _gtk_widget_get_has_window(GtkWidget *widget) {
 	return 0;
 }
-gboolean _gtk_widget_has_focus(GtkWidget *widget) {
+static void _gtk_widget_set_has_window(GtkWidget *widget, gboolean has_window) {
+}
+static gboolean _gtk_widget_get_sensitive(GtkWidget *widget) {
+	return 0;
+}
+static gboolean _gtk_widget_is_sensitive(GtkWidget *widget) {
+	return 0;
+}
+static GtkStateType _gtk_widget_get_state(GtkWidget *widget) {
+	return 0;
+}
+static gboolean _gtk_widget_get_visible(GtkWidget *widget) {
+	return 0;
+}
+static void _gtk_widget_set_visible(GtkWidget *widget, gboolean visible) {
+}
+static gboolean _gtk_widget_has_default(GtkWidget *widget) {
+	return 0;
+}
+static gboolean _gtk_widget_has_focus(GtkWidget *widget) {
 	return 0:
 }
-gboolean _gtk_widget_has_grab(GtkWidget *widget) {
+static gboolean _gtk_widget_has_grab(GtkWidget *widget) {
 	return 0;
 }
-gboolean _gtk_widget_is_drawable(GtkWidget *widget) {
+static gboolean _gtk_widget_is_drawable(GtkWidget *widget) {
 	return 0:
 }
-gboolean _gtk_widget_is_toplevel(GtkWidget *widget) {
+static gboolean _gtk_widget_is_toplevel(GtkWidget *widget) {
 	return 0;
 }
-void _gtk_widget_set_window(GtkWidget *widget, GdkWindow *window) {
+static void _gtk_widget_set_window(GtkWidget *widget, GdkWindow *window) {
 }
-void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receives_default) {
+static void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receives_default) {
 }
-gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
+static gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
 	return 0;
 }
 #endif //GTK_CHECK_VERSION(2,18,0)
@@ -6060,9 +6111,27 @@ type GtkSeparator struct {
 }
 
 //-----------------------------------------------------------------------
-// GtkWidget
+// GtkWidget (done 78 out of 167 = 46%)
 //-----------------------------------------------------------------------
 type GtkAllocation gdk.Rectangle
+
+type GtkAccelFlags int
+
+const (
+	GTK_ACCEL_VISIBLE GtkAccelFlags = 1 << 0
+	GTK_ACCEL_LOCKED  GtkAccelFlags = 1 << 1
+	GTK_ACCEL_MASK    GtkAccelFlags = 0x07
+)
+
+type GtkStateType int
+
+const (
+	GTK_STATE_NORMAL      GtkStateType = 0
+	GTK_STATE_ACTIVE      GtkStateType = 1
+	GTK_STATE_PRELIGHT    GtkStateType = 2
+	GTK_STATE_SELECTED    GtkStateType = 3
+	GTK_STATE_INSENSITIVE GtkStateType = 4
+)
 
 type WidgetLike interface {
 	ToNative() *C.GtkWidget
@@ -6082,10 +6151,10 @@ type GtkWidget struct {
 	Widget *C.GtkWidget
 }
 
-func WidgetFromUnsafe(w unsafe.Pointer) *GtkWidget {
-	return &GtkWidget{C.to_GtkWidget(w)}
+func WidgetFromNative(p unsafe.Pointer) *GtkWidget {
+	return &GtkWidget{C.to_GtkWidget(p)}
 }
-
+//TODO GtkWidget will have GObject as anonymous field.
 func WidgetFromObject(object *glib.GObject) *GtkWidget {
 	return &GtkWidget{
 		C.to_GtkWidget(unsafe.Pointer(object.Object))}
@@ -6096,24 +6165,6 @@ func (v *GtkWidget) ToNative() *C.GtkWidget {
 	}
 	return v.Widget
 }
-func (v *GtkWidget) Hide() {
-	C.gtk_widget_hide(v.Widget)
-}
-func (v *GtkWidget) HideAll() {
-	C.gtk_widget_hide_all(v.Widget)
-}
-func (v *GtkWidget) Show() {
-	C.gtk_widget_show(v.Widget)
-}
-func (v *GtkWidget) ShowAll() {
-	C.gtk_widget_show_all(v.Widget)
-}
-func (v *GtkWidget) ShowNow() {
-	C.gtk_widget_show_now(v.Widget)
-}
-func (v *GtkWidget) Destroy() {
-	C.gtk_widget_destroy(v.Widget)
-}
 func (v *GtkWidget) Connect(s string, f interface{}, datas ...interface{}) {
 	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Connect(s, f, datas...)
 }
@@ -6123,38 +6174,43 @@ func (v *GtkWidget) StopEmission(s string) {
 func (v *GtkWidget) Emit(s string) {
 	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Emit(s)
 }
-func (v *GtkWidget) GetTopLevel() *GtkWidget {
-	return &GtkWidget{
-		C.gtk_widget_get_toplevel(v.Widget)}
-}
-func (v *GtkWidget) GetTopLevelAsWindow() *GtkWindow {
-	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_widget_get_toplevel(v.Widget)}}}}
-}
-func (v *GtkWidget) HideOnDelete() {
-	C._gtk_widget_hide_on_delete(v.Widget)
-}
 
-// TODO
-// gtk_widget_destroyed
+// gtk_widget_new
 
+//Deprecated since 2.12. Use g_object_ref() instead. //TODO gobject
 func (v *GtkWidget) Ref() {
+	deprecated_since(2, 12, 0, "gtk_widget_ref()")
 	C.gtk_widget_ref(v.Widget)
 }
+//Deprecated since 2.12. Use g_object_ref() instead. //TODO gobject
 func (v *GtkWidget) Unref() {
+	deprecated_since(2, 12, 0, "gtk_widget_unref()")
 	C.gtk_widget_unref(v.Widget)
 }
-
-// gtk_widget_set
+func (v *GtkWidget) Destroy() {
+	C.gtk_widget_destroy(v.Widget)
+}
+// gtk_widget_destroyed
 
 func (v *GtkWidget) Unparent() {
 	C.gtk_widget_unparent(v.Widget)
 }
-func (v *GtkWidget) GetNoShowAll() bool {
-	return gboolean2bool(C.gtk_widget_get_no_show_all(v.Widget))
+func (v *GtkWidget) Show() {
+	C.gtk_widget_show(v.Widget)
 }
-func (v *GtkWidget) SetNoShowAll(setting bool) {
-	C.gtk_widget_set_no_show_all(v.Widget, bool2gboolean(setting))
+func (v *GtkWidget) ShowNow() {
+	C.gtk_widget_show_now(v.Widget)
+}
+func (v *GtkWidget) Hide() {
+	C.gtk_widget_hide(v.Widget)
+}
+func (v *GtkWidget) ShowAll() {
+	C.gtk_widget_show_all(v.Widget)
+}
+//Deprecated since 2.24. Use Hide() instead.
+func (v *GtkWidget) HideAll() {
+	deprecated_since(2, 24, 0, "gtk_widget_hide_all()")
+	C.gtk_widget_hide_all(v.Widget)
 }
 func (v *GtkWidget) Map() {
 	C.gtk_widget_map(v.Widget)
@@ -6171,41 +6227,21 @@ func (v *GtkWidget) Unrealize() {
 func (v *GtkWidget) QueueDraw() {
 	C.gtk_widget_queue_draw(v.Widget)
 }
-
-// gtk_widget_queue_draw_area
-
-func (v *GtkWidget) QueueClear() {
-	C.gtk_widget_queue_clear(v.Widget)
-}
-
-// gtk_widget_queue_clear_area
-
 func (v *GtkWidget) QueueResize() {
 	C.gtk_widget_queue_resize(v.Widget)
 }
 func (v *GtkWidget) QueueResizeNoRedraw() {
 	C.gtk_widget_queue_resize_no_redraw(v.Widget)
 }
-// gtk_widget_draw
 // gtk_widget_size_request
-// gtk_widget_size_allocate
 // gtk_widget_get_child_requisition
-
-// GtkAccelFlags
-type GtkAccelFlags int
-
-const (
-	GTK_ACCEL_VISIBLE GtkAccelFlags = 1 << 0
-	GTK_ACCEL_LOCKED  GtkAccelFlags = 1 << 1
-	GTK_ACCEL_MASK    GtkAccelFlags = 0x07
-)
+// gtk_widget_size_allocate
 
 func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint, mods gdk.GdkModifierType, flags GtkAccelFlags) {
 	csignal := C.CString(signal)
 	defer C.free_string(csignal)
 	C.gtk_widget_add_accelerator(v.Widget, C.to_gcharptr(csignal), group.AccelGroup, C.guint(key), C.GdkModifierType(mods), C.GtkAccelFlags(flags))
 }
-
 // gtk_widget_remove_accelerator
 // gtk_widget_set_accel_path
 // gtk_widget_list_accel_closures
@@ -6213,243 +6249,108 @@ func (v *GtkWidget) AddAccelerator(signal string, group *GtkAccelGroup, key uint
 func (v *GtkWidget) CanActivateAccel(signal_id uint) bool {
 	return gboolean2bool(C.gtk_widget_can_activate_accel(v.Widget, C.guint(signal_id)))
 }
-func (v *GtkWidget) MnemonicActivate(group_cycling bool) bool {
-	return gboolean2bool(C.gtk_widget_mnemonic_activate(v.Widget, bool2gboolean(group_cycling)))
-}
-
 // gtk_widget_event
-// gtk_widget_send_expose
 
 func (v *GtkWidget) Activate() {
 	C.gtk_widget_activate(v.Widget)
 }
-
-// gtk_widget_set_scroll_adjustments
-
 func (v *GtkWidget) Reparent(parent WidgetLike) {
 	C.gtk_widget_reparent(v.Widget, parent.ToNative())
 }
-
 // gtk_widget_intersect
-// gtk_widget_region_intersect
 
-func (v *GtkWidget) GetCanFocus() bool {
-	return gboolean2bool(C.gtk_widget_get_can_focus(v.Widget))
-}
-func (v *GtkWidget) SetCanFocus(setting bool) {
-	C.gtk_widget_set_can_focus(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) HasFocus() bool {
-	return gboolean2bool(C.gtk_widget_has_focus(v.Widget))
-}
 func (v *GtkWidget) IsFocus() bool {
 	return gboolean2bool(C.gtk_widget_is_focus(v.Widget))
 }
 func (v *GtkWidget) GrabFocus() {
 	C.gtk_widget_grab_focus(v.Widget)
 }
-func (v *GtkWidget) GetCanDefault() bool {
-	return gboolean2bool(C.gtk_widget_get_can_default(v.Widget))
-}
-func (v *GtkWidget) SetCanDefault(setting bool) {
-	C.gtk_widget_set_can_default(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) GetHasDefault() bool {
-	return gboolean2bool(C.gtk_widget_has_default(v.Widget))
-}
 func (v *GtkWidget) GrabDefault() {
 	C.gtk_widget_grab_default(v.Widget)
-}
-func (v *GtkWidget) GetReceivesDefault() bool {
-	return gboolean2bool(C.gtk_widget_get_receives_default(v.Widget))
-}
-func (v *GtkWidget) SetReceivesDefault(setting bool) {
-	C.gtk_widget_set_receives_default(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) HasGrab() bool {
-	return gboolean2bool(C.gtk_widget_has_grab(v.Widget))
-}
-func (v *GtkWindow) GetName() string {
-	return C.GoString(C.to_charptr(C.gtk_widget_get_name(v.Widget)))
 }
 func (v *GtkWindow) SetName(name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 	C.gtk_widget_set_name(v.Widget, C.to_gcharptr(ptr))
 }
-
-// GtkStateType
-type GtkStateType int
-
-const (
-  GTK_STATE_NORMAL GtkStateType = 0
-  GTK_STATE_ACTIVE GtkStateType = 1
-  GTK_STATE_PRELIGHT GtkStateType = 2
-  GTK_STATE_SELECTED GtkStateType = 3
-  GTK_STATE_INSENSITIVE GtkStateType = 4
-)
-
-func (v *GtkWidget) GetState() GtkStateType {
-	return GtkStateType(C.gtk_widget_get_state(v.Widget))
+func (v *GtkWindow) GetName() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_name(v.Widget)))
 }
 func (v *GtkWidget) SetState(state GtkStateType) {
 	C.gtk_widget_set_state(v.Widget, C.GtkStateType(state))
 }
-func (v *GtkWidget) GetSensitive() bool {
-	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget))
-}
 func (v *GtkWidget) SetSensitive(setting bool) {
 	C.gtk_widget_set_sensitive(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) IsSensitive() bool {
-	return gboolean2bool(C.gtk_widget_get_sensitive(v.Widget))
-}
-func (v *GtkWidget) GetVisible() bool {
-	return gboolean2bool(C.gtk_widget_get_visible(v.Widget))
-}
-func (v *GtkWidget) SetVisible(setting bool) {
-	C.gtk_widget_set_visible(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) GetHasWindow() bool {
-	return gboolean2bool(C.gtk_widget_get_has_window(v.Widget))
-}
-func (v *GtkWidget) SetHasWindow(setting bool) {
-	C.gtk_widget_set_has_window(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) IsToplevel() bool {
-	return gboolean2bool(C.gtk_widget_is_toplevel(v.Widget))
-}
-func (v *GtkWidget) IsDrawable() bool {
-	return gboolean2bool(C.gtk_widget_is_drawable(v.Widget))
-}
-func (v *GtkWidget) GetAppPrintable() bool {
-	return gboolean2bool(C.gtk_widget_get_app_paintable(v.Widget))
-}
-func (v *GtkWidget) SetAppPrintable(setting bool) {
-	C.gtk_widget_set_app_paintable(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) GetDoubleBuffered() bool {
-	return gboolean2bool(C.gtk_widget_get_double_buffered(v.Widget))
-}
-func (v *GtkWidget) SetDoubleBuffered(setting bool) {
-	C.gtk_widget_set_double_buffered(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) SetRedrawOnAllocate(setting bool) {
-	C.gtk_widget_set_redraw_on_allocate(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) GetParent() *GtkWidget {
-	return &GtkWidget{
-		C.gtk_widget_get_parent(v.Widget)}
 }
 func (v *GtkWidget) SetParent(parent WidgetLike) {
 	C.gtk_widget_set_parent(v.Widget, parent.ToNative())
 }
-func (v *GtkWidget) GetParentWindow() *gdk.GdkWindow {
-	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)))
-}
 func (v *GtkWidget) SetParentWindow(parent *gdk.GdkWindow) {
 	C.gtk_widget_set_parent_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(parent.Window)))
 }
-func (v *GtkWidget) GetChildVisible() bool {
-	return gboolean2bool(C.gtk_widget_get_child_visible(v.Widget))
+func (v *GtkWidget) GetParentWindow() *gdk.GdkWindow {
+	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_parent_window(v.Widget)))
 }
-func (v *GtkWidget) SetChildVisible(setting bool) {
-	C.gtk_widget_set_child_visible(v.Widget, bool2gboolean(setting))
-}
-func (v *GtkWidget) GetWindow() *gdk.GdkWindow {
-	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_window(v.Widget)))
-}
-func (v *GtkWidget) SetWindow(window *gdk.GdkWindow) {
-	C.gtk_widget_set_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(window.Window)))
-}
-func (v *GtkWidget) GetAllocation(allocation *GtkAllocation) {
-	var _allocation C.GtkAllocation
-	C.gtk_widget_get_allocation(v.Widget, &_allocation)
-	allocation.X = int(_allocation.x)
-	allocation.Y = int(_allocation.y)
-	allocation.Width = int(_allocation.width)
-	allocation.Height = int(_allocation.height)
-}
-func (v *GtkWidget) SetAllocation(allocation *GtkAllocation) {
-	var _allocation C.GtkAllocation
-	_allocation.x = C.gint(allocation.X)
-	_allocation.y = C.gint(allocation.Y)
-	_allocation.width = C.gint(allocation.Width)
-	_allocation.height = C.gint(allocation.Height)
-	C.gtk_widget_set_allocation(v.Widget, &_allocation)
-}
-
-// gtk_widget_child_focus
-// gtk_widget_keynav_failed
-// gtk_widget_error_bell
-
-func (v *GtkWidget) SetSizeRequest(width int, height int) {
-	C.gtk_widget_set_size_request(v.Widget, C.gint(width), C.gint(height))
-}
-func (v *GtkWidget) GetSizeRequest(width *int, height *int) {
-	var w, h C.gint
-	C.gtk_widget_get_size_request(v.Widget, &w, &h)
-	*width = int(w)
-	*height = int(h)
-}
+//Deprecated since 2.2, use SetSizeRequest() instead
 func (v *GtkWidget) SetUSize(width int, height int) {
+	deprecated_since(2, 2, 0, "gtk_widget_set_usize()")
 	C.gtk_widget_set_usize(v.Widget, C.gint(width), C.gint(height))
 }
-
-// gtk_widget_set_uposition
-
 func (v *GtkWidget) SetEvents(events int) {
 	C.gtk_widget_set_events(v.Widget, C.gint(events))
 }
 func (v *GtkWidget) AddEvents(events int) {
 	C.gtk_widget_add_events(v.Widget, C.gint(events))
 }
-
 // gtk_widget_set_extension_events
 // gtk_widget_get_extension_events
+
+func (v *GtkWidget) GetTopLevel() *GtkWidget {
+	return &GtkWidget{
+		C.gtk_widget_get_toplevel(v.Widget)}
+}
 // gtk_widget_get_ancestor
 // gtk_widget_get_colormap
-// gtk_widget_get_visual
-// gtk_widget_get_screen
-// gtk_widget_has_screen
-// gtk_widget_get_display
-// gtk_widget_get_root_window
-
-func (v *GtkWidget) GetSettings() *GtkSettings {
-	return &GtkSettings{C.gtk_widget_get_settings(v.Widget)}
-}
-
-// gtk_widget_get_clipboard
-// gtk_widget_get_snapshot
-// gtk_widget_get_accessible
 // gtk_widget_set_colormap
+// gtk_widget_get_visual
 // gtk_widget_get_events
 // gtk_widget_get_pointer
 // gtk_widget_is_ancestor
 // gtk_widget_translate_coordinates
-// gtk_widget_hide_on_delete
+
+func (v *GtkWidget) HideOnDelete() {
+	C._gtk_widget_hide_on_delete(v.Widget)
+}
 // gtk_widget_set_style
 // gtk_widget_ensure_style
 // gtk_widget_get_style
+// gtk_widget_reset_rc_styles
+// gtk_widget_push_colormap
+// gtk_widget_pop_colormap
+// gtk_widget_set_default_colormap
+// gtk_widget_get_default_style
+// gtk_widget_get_default_colormap
+// gtk_widget_get_default_visual
+// gtk_widget_set_direction
+// gtk_widget_get_direction
+// gtk_widget_set_default_direction
+// gtk_widget_get_default_direction
+// gtk_widget_shape_combine_mask
+// gtk_widget_input_shape_combine_mask
+// gtk_widget_path
+// gtk_widget_class_path
+// gtk_widget_get_composite_name
 // gtk_widget_modify_style
 // gtk_widget_get_modifier_style
 // gtk_widget_modify_fg
 // gtk_widget_modify_bg
 // gtk_widget_modify_text
 // gtk_widget_modify_base
-// gtk_widget_modify_cursor
 // gtk_widget_modify_font
-
-func (v *GtkWidget) ModifyFontEasy(desc string) {
-	pdesc := C.CString(desc)
-	defer C.free_string(pdesc)
-	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc))
-}
-
+// gtk_widget_modify_cursor
 // gtk_widget_create_pango_context
 // gtk_widget_get_pango_context
 // gtk_widget_create_pango_layout
-// gtk_widget_render_icon
 
 func (v *GtkWidget) RenderIcon(stock_id string, size GtkIconSize, detail string) *gdkpixbuf.GdkPixbuf {
 	pstock_id := C.CString(stock_id)
@@ -6459,61 +6360,91 @@ func (v *GtkWidget) RenderIcon(stock_id string, size GtkIconSize, detail string)
 	return &gdkpixbuf.GdkPixbuf{
 		C.gtk_widget_render_icon(v.Widget, C.to_gcharptr(pstock_id), C.GtkIconSize(size), C.to_gcharptr(pdetail))}
 }
-
-// gtk_widget_set_composite_name
-// gtk_widget_get_composite_name
-// gtk_widget_reset_rc_styles
-// gtk_widget_push_colormap
-// gtk_widget_push_composite_child
 // gtk_widget_pop_composite_child
-// gtk_widget_pop_colormap
+// gtk_widget_push_composite_child
+
+//Deprecated since 2.2. Use QueueDraw() instead.
+func (v *GtkWidget) QueueClear() {
+	deprecated_since(2, 2, 0, "gtk_widget_queue_clear()")
+	C.gtk_widget_queue_clear(v.Widget)
+}
+// gtk_widget_queue_draw_area
+
+func (v *GtkWidget) SetAppPrintable(setting bool) {
+	C.gtk_widget_set_app_paintable(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) SetDoubleBuffered(setting bool) {
+	C.gtk_widget_set_double_buffered(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) SetRedrawOnAllocate(setting bool) {
+	C.gtk_widget_set_redraw_on_allocate(v.Widget, bool2gboolean(setting))
+}
+// gtk_widget_set_composite_name
+// gtk_widget_set_scroll_adjustments
+
+func (v *GtkWidget) MnemonicActivate(group_cycling bool) bool {
+	return gboolean2bool(C.gtk_widget_mnemonic_activate(v.Widget, bool2gboolean(group_cycling)))
+}
 // gtk_widget_class_install_style_property
 // gtk_widget_class_install_style_property_parser
 // gtk_widget_class_find_style_property
 // gtk_widget_class_list_style_properties
+// gtk_widget_region_intersect
+// gtk_widget_send_expose
+// gtk_widget_send_focus_change //since 2.22
+// gtk_widget_style_get
 // gtk_widget_style_get_property
 // gtk_widget_style_get_valist
-// gtk_widget_style_get
-// gtk_widget_set_default_colormap
-// gtk_widget_get_default_style
-// gtk_widget_get_default_colormap
-// gtk_widget_get_default_visual
-// gtk_widget_set_direction
-// gtk_widget_get_direction
-// gtk_widget_set_default_direction
-// gtk_widget_get_default_direction
+// gtk_widget_style_attach //since 2.20
+// gtk_widget_get_accessible
+// gtk_widget_child_focus
+// gtk_widget_child_notify
+// gtk_widget_freeze_child_notify
 
-func (v *GtkWidget) IsComposited() bool {
-	return gboolean2bool(C.gtk_widget_is_composited(v.Widget))
+func (v *GtkWidget) GetChildVisible() bool {
+	return gboolean2bool(C.gtk_widget_get_child_visible(v.Widget))
 }
+func (v *GtkWidget) GetParent() *GtkWidget {
+	return &GtkWidget{C.gtk_widget_get_parent(v.Widget)}
+}
+func (v *GtkWidget) GetSettings() *GtkSettings {
+	return &GtkSettings{C.gtk_widget_get_settings(v.Widget)}
+}
+// gtk_widget_get_clipboard
+// gtk_widget_get_display
+// gtk_widget_get_root_window
+// gtk_widget_get_screen
+// gtk_widget_has_screen
 
-// gtk_widget_shape_combine_mask
-// gtk_widget_input_shape_combine_mask
-// gtk_widget_reset_shapes
-// gtk_widget_path
-// gtk_widget_class_path
+//TODO go can have multiple return, adapt the function!
+func (v *GtkWidget) GetSizeRequest(width *int, height *int) {
+	var w, h C.gint
+	C.gtk_widget_get_size_request(v.Widget, &w, &h)
+	*width = int(w)
+	*height = int(h)
+}
+func (v *GtkWidget) SetChildVisible(setting bool) {
+	C.gtk_widget_set_child_visible(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) SetSizeRequest(width int, height int) {
+	C.gtk_widget_set_size_request(v.Widget, C.gint(width), C.gint(height))
+}
+func (v *GtkWidget) SetNoShowAll(setting bool) {
+	C.gtk_widget_set_no_show_all(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) GetNoShowAll() bool {
+	return gboolean2bool(C.gtk_widget_get_no_show_all(v.Widget))
+}
 // gtk_widget_list_mnemonic_labels
 // gtk_widget_add_mnemonic_label
 // gtk_widget_remove_mnemonic_label
 
-func (v *GtkWidget) SetTooltipWindow(w *GtkWindow) {
-	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToNative()))
+func (v *GtkWidget) IsComposited() bool {
+	return gboolean2bool(C.gtk_widget_is_composited(v.Widget))
 }
-func (v *GtkWidget) GetTooltipWindow() *GtkWindow {
-	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.Widget)))}}}}
-}
+// gtk_widget_error_bell
+// gtk_widget_keynav_failed
 
-// gtk_widget_trigger_tooltip_query
-
-func (v *GtkWidget) GetTooltipText() string {
-	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_text(v.Widget)))
-}
-func (v *GtkWidget) SetTooltipText(text string) {
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	C.gtk_widget_set_tooltip_text(v.Widget, C.to_gcharptr(ptr))
-}
 func (v *GtkWidget) GetTooltipMarkup() string {
 	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_markup(v.Widget)))
 }
@@ -6522,21 +6453,157 @@ func (v *GtkWidget) SetTooltipMarkup(markup string) {
 	defer C.free_string(ptr)
 	C.gtk_widget_set_tooltip_markup(v.Widget, C.to_gcharptr(ptr))
 }
+func (v *GtkWidget) GetTooltipText() string {
+	return C.GoString(C.to_charptr(C.gtk_widget_get_tooltip_text(v.Widget)))
+}
+func (v *GtkWidget) SetTooltipText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_widget_set_tooltip_text(v.Widget, C.to_gcharptr(ptr))
+}
+func (v *GtkWidget) GetTooltipWindow() *GtkWindow {
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.Widget)))}}}}
+}
+func (v *GtkWidget) SetTooltipWindow(w *GtkWindow) {
+	C.gtk_widget_set_tooltip_window(v.Widget, C.to_GtkWindow(w.ToNative()))
+}
 func (v *GtkWidget) GetHasTooltip() bool {
 	return gboolean2bool(C.gtk_widget_get_has_tooltip(v.Widget))
 }
 func (v *GtkWidget) SetHasTooltip(setting bool) {
 	C.gtk_widget_set_has_tooltip(v.Widget, bool2gboolean(setting))
 }
+// gtk_widget_trigger_tooltip_query
+// gtk_widget_get_snapshot
 
-// gtk_requisition_get_type
+func (v *GtkWidget) GetWindow() *gdk.GdkWindow {
+	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_window(v.Widget)))
+}
+//TODO get should return something (this function mechanism is not intuitive)
+func (v *GtkWidget) GetAllocation(allocation *GtkAllocation) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_allocation()")
+	var _allocation C.GtkAllocation
+	C._gtk_widget_get_allocation(v.Widget, &_allocation)
+	allocation.X = int(_allocation.x)
+	allocation.Y = int(_allocation.y)
+	allocation.Width = int(_allocation.width)
+	allocation.Height = int(_allocation.height)
+}
+func (v *GtkWidget) SetAllocation(allocation *GtkAllocation) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_set_allocation()")
+	var _allocation C.GtkAllocation
+	_allocation.x = C.gint(allocation.X)
+	_allocation.y = C.gint(allocation.Y)
+	_allocation.width = C.gint(allocation.Width)
+	_allocation.height = C.gint(allocation.Height)
+	C._gtk_widget_set_allocation(v.Widget, &_allocation)
+}
+func (v *GtkWidget) GetAppPaintable() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_app_paintable()")
+	return gboolean2bool(C._gtk_widget_get_app_paintable(v.Widget))
+}
+func (v *GtkWidget) GetCanDefault() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_can_default()")
+	return gboolean2bool(C._gtk_widget_get_can_default(v.Widget))
+}
+func (v *GtkWidget) SetCanDefault(setting bool) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_set_can_default()")
+	C._gtk_widget_set_can_default(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) GetCanFocus() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_can_focus()")
+	return gboolean2bool(C._gtk_widget_get_can_focus(v.Widget))
+}
+func (v *GtkWidget) SetCanFocus(setting bool) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_set_can_focus()")
+	C._gtk_widget_set_can_focus(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) GetDoubleBuffered() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_double_buffered()")
+	return gboolean2bool(C._gtk_widget_get_double_buffered(v.Widget))
+}
+func (v *GtkWidget) GetHasWindow() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_has_window()")
+	return gboolean2bool(C._gtk_widget_get_has_window(v.Widget))
+}
+func (v *GtkWidget) SetHasWindow(setting bool) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_set_has_window()")
+	C._gtk_widget_set_has_window(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) GetSensitive() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_sensitive()")
+	return gboolean2bool(C._gtk_widget_get_sensitive(v.Widget))
+}
+func (v *GtkWidget) IsSensitive() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_is_sensitive()")
+	return gboolean2bool(C._gtk_widget_is_sensitive(v.Widget))
+}
+func (v *GtkWidget) GetState() GtkStateType {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_state()")
+	return GtkStateType(C._gtk_widget_get_state(v.Widget))
+}
+func (v *GtkWidget) GetVisible() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_visible()")
+	return gboolean2bool(C._gtk_widget_get_visible(v.Widget))
+}
+func (v *GtkWidget) SetVisible(setting bool) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_set_visible()")
+	C._gtk_widget_set_visible(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) HasDefault() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_has_default()")
+	return gboolean2bool(C._gtk_widget_has_default(v.Widget))
+}
+func (v *GtkWidget) HasFocus() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_has_focus()")
+	return gboolean2bool(C._gtk_widget_has_focus(v.Widget))
+}
+func (v *GtkWidget) HasGrab() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_has_grab()")
+	return gboolean2bool(C._gtk_widget_has_grab(v.Widget))
+}
+// gtk_widget_has_rc_style //since 2.20
+
+func (v *GtkWidget) IsDrawable() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_is_drawable()")
+	return gboolean2bool(C._gtk_widget_is_drawable(v.Widget))
+}
+func (v *GtkWidget) IsToplevel() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_is_toplevel()")
+	return gboolean2bool(C._gtk_widget_is_toplevel(v.Widget))
+}
+func (v *GtkWidget) SetWindow(window *gdk.GdkWindow) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_set_window()")
+	C._gtk_widget_set_window(v.Widget, C.to_GdkWindow(unsafe.Pointer(window.Window)))
+}
+func (v *GtkWidget) SetReceivesDefault(setting bool) {
+	panic_if_version_older(2, 18, 0, "gtk_widget_set_receives_default()")
+	C._gtk_widget_set_receives_default(v.Widget, bool2gboolean(setting))
+}
+func (v *GtkWidget) GetReceivesDefault() bool {
+	panic_if_version_older(2, 18, 0, "gtk_widget_get_receives_default()")
+	return gboolean2bool(C._gtk_widget_get_receives_default(v.Widget))
+}
+// gtk_widget_set_realized //since 2.20
+// gtk_widget_get_realized //since 2.20
+// gtk_widget_set_mapped //since 2.20
+// gtk_widget_get_mapped //since 2.20
+// gtk_widget_get_requisition //since 2.20
 // gtk_requisition_copy
 // gtk_requisition_free
 
-func WidgetFromNative(p unsafe.Pointer) *GtkWidget {
-	return &GtkWidget{C.to_GtkWidget(p)}
-}
+//Convenience functions
 
+func (v *GtkWidget) GetTopLevelAsWindow() *GtkWindow {
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_widget_get_toplevel(v.Widget)}}}}
+}
+func (v *GtkWidget) ModifyFontEasy(desc string) {
+	pdesc := C.CString(desc)
+	defer C.free_string(pdesc)
+	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc))
+}
 //-----------------------------------------------------------------------
 // GtkIMContext (done 0 out of ? = 0%)
 //-----------------------------------------------------------------------

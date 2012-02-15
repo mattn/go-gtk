@@ -91,11 +91,11 @@ type GtkSourceView struct {
 
 func SourceView() *GtkSourceView {
 	return &GtkSourceView{gtk.GtkTextView{gtk.GtkContainer{
-		*gtk.WidgetFromUnsafe(unsafe.Pointer(C.gtk_source_view_new()))}}}
+		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new()))}}}
 }
 func SourceViewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
 	return &GtkSourceView{gtk.GtkTextView{gtk.GtkContainer{
-		*gtk.WidgetFromUnsafe(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.SourceBuffer)))}}}
+		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.SourceBuffer)))}}}
 }
 func (v *GtkSourceView) ToNativeSourceView() *C.GtkSourceView {
 	return C.to_GtkSourceView(unsafe.Pointer(v.Widget))
