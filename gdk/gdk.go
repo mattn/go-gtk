@@ -15,9 +15,15 @@ static void free_string(char* s) { free(s); }
 static GdkDragContext* to_GtkDragContext(void* l) {
 	return (GdkDragContext*)l;
 }
+
+static void* _gdk_display_get_default() {
+	return (void*) gdk_display_get_default();
+}
+
 static GdkWindow* to_GdkWindow(void* w) {
 	return GDK_WINDOW(w);
 }
+
 static void _g_thread_init(GThreadFunctions *vtable) {
 #ifdef	G_THREADS_ENABLED
 	g_thread_init(vtable);
@@ -81,6 +87,15 @@ func ThreadsEnter() {
 func ThreadsLeave() {
 	C.gdk_threads_leave()
 }
+
+//-----------------------------------------------------------------------
+// GdkSelection
+//-----------------------------------------------------------------------
+const (
+	GDK_SELECTION_PRIMARY GdkAtom = GdkAtom(uintptr(1))
+	GDK_SELECTION_SECONDARY GdkAtom = GdkAtom(uintptr(2))
+	GDK_SELECTION_CLIPBOARD GdkAtom = GdkAtom(uintptr(69))
+)
 
 //-----------------------------------------------------------------------
 // GdkCursor
@@ -2848,4 +2863,20 @@ type GdkDragContext struct {
 
 func DragContextFromNative(l unsafe.Pointer) *GdkDragContext {
 	return &GdkDragContext{C.to_GtkDragContext(l)}
+}
+
+//-----------------------------------------------------------------------
+// GdkAtom
+//-----------------------------------------------------------------------
+type GdkAtom uintptr
+
+//-----------------------------------------------------------------------
+// GdkDisplay
+//-----------------------------------------------------------------------
+type GdkDisplay struct {
+	Display unsafe.Pointer
+}
+
+func DisplayGetDefault() *GdkDisplay {
+	return &GdkDisplay{C._gdk_display_get_default()}
 }

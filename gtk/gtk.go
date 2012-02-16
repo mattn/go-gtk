@@ -24,15 +24,19 @@ static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
 }
 
-int _gtk_selection_data_get_length(void* selection_data) {
+static GtkClipboard* _gtk_clipboard_get_for_display(void* display, void* selection) {
+	return gtk_clipboard_get_for_display((GdkDisplay*)display, (GdkAtom)selection);
+}
+
+static int _gtk_selection_data_get_length(void* selection_data) {
 	return (int) gtk_selection_data_get_length((GtkSelectionData*)selection_data);
 }
 
-void* _gtk_selection_data_get_data(void* selection_data) {
+static void* _gtk_selection_data_get_data(void* selection_data) {
 	return (char*) gtk_selection_data_get_data((GtkSelectionData*)selection_data);
 }
 
-char* _gtk_selection_data_get_text(void* selection_data) {
+static char* _gtk_selection_data_get_text(void* selection_data) {
 	return (char*) gtk_selection_data_get_text((GtkSelectionData*)selection_data);
 }
 
@@ -540,6 +544,7 @@ static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
 static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
 static inline char* to_charptr(const gchar* s) { return (char*)s; }
 static inline char* to_charptr_guchar(const guchar* s) { return (char*)s; }
+static inline char* to_charptr_voidp(const void* s) { return (char*)s; }
 static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 static inline void free_string(char* s) { free(s); }
 
@@ -756,15 +761,48 @@ func AccelGroup() *GtkAccelGroup {
 //-----------------------------------------------------------------------
 // GtkClipboard
 //-----------------------------------------------------------------------
+type GtkClipboard struct {
+	Clipboard *C.GtkClipboard
+}
+
+func ClipboardGetForDisplay(display *gdk.GdkDisplay, selection gdk.GdkAtom) *GtkClipboard {
+	var cdisplay unsafe.Pointer
+	if display != nil {
+		cdisplay = display.Display
+	}
+	return &GtkClipboard{
+		C._gtk_clipboard_get_for_display(cdisplay, unsafe.Pointer(selection))}
+}
+
+func (v *GtkClipboard) Clear() {
+	C.gtk_clipboard_clear(v.Clipboard)
+}
+
+func (v *GtkClipboard) SetText(text string) {
+	ptr := C.to_charptr_voidp(unsafe.Pointer(&([]byte(text))[0]))
+	C.gtk_clipboard_set_text(v.Clipboard, C.to_gcharptr(ptr), C.gint(-1))
+}
+
+func (v *GtkClipboard) SetImage(pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_clipboard_set_image(v.Clipboard, pixbuf.Pixbuf)
+}
+
+func (v *GtkClipboard) Store() {
+	C.gtk_clipboard_store(v.Clipboard)
+}
+
+func (v *GtkClipboard) WaitForText() string {
+	return C.GoString(C.to_charptr(C.gtk_clipboard_wait_for_text(v.Clipboard)))
+}
+
+func (v *GtkClipboard) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.Clipboard)))).Connect(s, f, datas...)
+}
 
 // gtk_clipboard_get
-// gtk_clipboard_get_for_display
-// gtk_clipboard_get_display
 // gtk_clipboard_set_with_data
 // gtk_clipboard_set_with_owner
 // gtk_clipboard_get_owner
-// gtk_clipboard_clear
-// gtk_clipboard_set_text
 // gtk_clipboard_set_image
 // gtk_clipboard_request_contents
 // gtk_clipboard_request_text
@@ -784,7 +822,6 @@ func AccelGroup() *GtkAccelGroup {
 // gtk_clipboard_wait_for_targets
 // gtk_clipboard_wait_is_target_available
 // gtk_clipboard_set_can_store
-// gtk_clipboard_store
 
 //-----------------------------------------------------------------------
 // Drag and Drop
@@ -3327,26 +3364,26 @@ func (v *GtkTextBuffer) GetTagTable() *GtkTextTagTable {
 func (v *GtkTextBuffer) Insert(iter *GtkTextIter, text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	len := C.strlen(ptr)
-	C.gtk_text_buffer_insert(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len))
+	l := C.strlen(ptr)
+	C.gtk_text_buffer_insert(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(l))
 }
 func (v *GtkTextBuffer) InsertAtCursor(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	len := C.strlen(ptr)
-	C.gtk_text_buffer_insert_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
+	l := C.strlen(ptr)
+	C.gtk_text_buffer_insert_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(l))
 }
 func (v *GtkTextBuffer) InsertInteractive(iter *GtkTextIter, text string, default_editable bool) bool {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	len := C.strlen(ptr)
-	return gboolean2bool(C.gtk_text_buffer_insert_interactive(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
+	l := C.strlen(ptr)
+	return gboolean2bool(C.gtk_text_buffer_insert_interactive(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(l), bool2gboolean(default_editable)))
 }
 func (v *GtkTextBuffer) InsertInteractiveAtCursor(text string, default_editable bool) bool {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	len := C.strlen(ptr)
-	return gboolean2bool(C.gtk_text_buffer_insert_interactive_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len), bool2gboolean(default_editable)))
+	l := C.strlen(ptr)
+	return gboolean2bool(C.gtk_text_buffer_insert_interactive_at_cursor(v.TextBuffer, C.to_gcharptr(ptr), C.gint(l), bool2gboolean(default_editable)))
 }
 func (v *GtkTextBuffer) InsertRange(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter) {
 	C.gtk_text_buffer_insert_range(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter)
@@ -3357,8 +3394,8 @@ func (v *GtkTextBuffer) InsertRangeInteractive(iter *GtkTextIter, start *GtkText
 func (v *GtkTextBuffer) InsertWithTag(iter *GtkTextIter, text string, tag *GtkTextTag) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	len := C.strlen(ptr)
-	C._gtk_text_buffer_insert_with_tag(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(len), tag.TextTag)
+	l := C.strlen(ptr)
+	C._gtk_text_buffer_insert_with_tag(v.TextBuffer, &iter.TextIter, C.to_gcharptr(ptr), C.gint(l), tag.TextTag)
 }
 //func (v GtkTextBuffer) InsertWithTags(iter *GtkTextIter, start *GtkTextIter, end *GtkTextIter, default_editable bool) bool {
 //	return gboolean2bool(C._gtk_text_buffer_insert_range_interactive(v.TextBuffer, &iter.TextIter, &start.TextIter, &end.TextIter, bool2gboolean(default_editable)));
@@ -3377,8 +3414,8 @@ func (v *GtkTextBuffer) Backspace(iter *GtkTextIter, interactive bool, default_e
 func (v *GtkTextBuffer) SetText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
-	len := C.strlen(ptr)
-	C.gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(ptr), C.gint(len))
+	l := C.strlen(ptr)
+	C.gtk_text_buffer_set_text(v.TextBuffer, C.to_gcharptr(ptr), C.gint(l))
 }
 func (v *GtkTextBuffer) GetText(start *GtkTextIter, end *GtkTextIter, include_hidden_chars bool) string {
 	pchar := C.to_charptr(C.gtk_text_buffer_get_text(v.TextBuffer, &start.TextIter, &end.TextIter, bool2gboolean(include_hidden_chars)))
