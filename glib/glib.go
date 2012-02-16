@@ -485,7 +485,7 @@ func FilenameFromUri(uri string) (filename string, hostname string, err error) {
 	defer C.free_string(str)
 	var gerror *C.GError
 	var ptr *C.gchar
-	filename = C.GoString(C.to_charptr(C.g_filename_from_uri_utf8(C.to_gcharptr(str), &ptr, &gerror)))
+	filename = C.GoString(C.to_charptr(C.g_filename_from_uri(C.to_gcharptr(str), &ptr, &gerror)))
 	if unsafe.Pointer(gerror) != nil {
 		err = ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
@@ -504,7 +504,7 @@ func FilenameToUri(filename string, hostname string) (uri string, err error) {
 	phostname := C.CString(hostname)
 	defer C.free_string(phostname)
 	var gerror *C.GError
-	uri = C.GoString(C.to_charptr(C.g_filename_to_uri_utf8(C.to_gcharptr(pfilename), C.to_gcharptr(phostname), &gerror)))
+	uri = C.GoString(C.to_charptr(C.g_filename_to_uri(C.to_gcharptr(pfilename), C.to_gcharptr(phostname), &gerror)))
 	if unsafe.Pointer(gerror) != nil {
 		err = ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
