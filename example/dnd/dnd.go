@@ -5,6 +5,7 @@ import (
 	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
+	"strings"
 	"unsafe"
 )
 
@@ -34,13 +35,17 @@ func main() {
 		sdata := gtk.SelectionDataFromNative(unsafe.Pointer(ctx.Args(3)))
 		if sdata != nil {
 			a := (*[2000]uint8)(sdata.GetData())
-			filename, _, _ := glib.FilenameFromUri(string(a[0:sdata.GetLength()-1]))
+			files := strings.Split(string(a[0:sdata.GetLength()-1]), "\n")
+			for i := range files {
+				filename, _, _ := glib.FilenameFromUri(files[i])
+				files[i] = filename
+			}
 			dialog := gtk.MessageDialog(
 				window,
 				gtk.GTK_DIALOG_MODAL,
 				gtk.GTK_MESSAGE_INFO,
 				gtk.GTK_BUTTONS_OK,
-				filename)
+				strings.Join(files, "\n"))
 			dialog.SetTitle("D&D")
 			dialog.Response(func() {
 				dialog.Destroy()
