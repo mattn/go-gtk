@@ -54,11 +54,11 @@ type GtkSourceBuffer struct {
 
 func SourceBuffer() *GtkSourceBuffer {
 	v := C.gtk_source_buffer_new(nil)
-	return &GtkSourceBuffer{v, gtk.GtkTextBuffer{unsafe.Pointer(v)}}
+	return &GtkSourceBuffer{v, gtk.TextBufferFromPointer(unsafe.Pointer(v))}
 }
 func SourceBufferWithLanguage(lang *GtkSourceLanguage) *GtkSourceBuffer {
 	v := C.gtk_source_buffer_new_with_language(lang.SourceLanguage)
-	return &GtkSourceBuffer{v, gtk.GtkTextBuffer{unsafe.Pointer(v)}}
+	return &GtkSourceBuffer{v, gtk.TextBufferFromPointer(unsafe.Pointer(v))}
 }
 func (v *GtkSourceBuffer) GetNativeBuffer() unsafe.Pointer {
 	return unsafe.Pointer(v.SourceBuffer)
@@ -91,11 +91,11 @@ type GtkSourceView struct {
 
 func SourceView() *GtkSourceView {
 	return &GtkSourceView{gtk.GtkTextView{gtk.GtkContainer{
-		*gtk.WidgetFromUnsafe(unsafe.Pointer(C.gtk_source_view_new()))}}}
+		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new()))}}}
 }
 func SourceViewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
 	return &GtkSourceView{gtk.GtkTextView{gtk.GtkContainer{
-		*gtk.WidgetFromUnsafe(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.SourceBuffer)))}}}
+		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.SourceBuffer)))}}}
 }
 func (v *GtkSourceView) ToNativeSourceView() *C.GtkSourceView {
 	return C.to_GtkSourceView(unsafe.Pointer(v.Widget))
