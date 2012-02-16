@@ -119,8 +119,8 @@ GOAL:
     GtkCellLayout                 :   0% (  0/  9)
     GtkCellRenderer               : 100% (  2/  2)
     GtkCellEditable               :   0% (  0/  3)
-    GtkCellRendererAccel          :   0% (  0/  1)
-    GtkCellRendererCombo          :   0% (  0/  1)
+    GtkCellRendererAccel          : 100% (  1/  1)
+    GtkCellRendererCombo          : 100% (  1/  1)
     GtkCellRendererPixbuf         : 100% (  1/  1)
     GtkCellRendererProgress       : 100% (  1/  1)
     GtkCellRendererSpin           : 100% (  1/  1)
@@ -234,5 +234,5 @@ GOAL:
     GtkRecentChooserWidget        :   0% (  0/  2)
     GtkRecentFilter               :   0% (  0/ 12)
     GtkBuildable                  :   0% (  0/ 10)
-
-    Total progress :                 29% (896/3046)
+    
+    Total progress :                 29% (898/3046)

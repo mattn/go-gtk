@@ -3976,7 +3976,7 @@ func TreeViewColumnWithAttributes2(title string, cell CellRendererLike, attribut
 		if !ok {
 			log.Panic("Error calling gtk.TreeViewColumnWithAttributes: attributes column must be an int")
 		}
-		C.gtk_tree_view_column_add_attribute(ret.TreeViewColumn, 
+		C.gtk_tree_view_column_add_attribute(ret.TreeViewColumn,
 			cell.ToGtkCellRenderer(), C.to_gcharptr(ptrAttribute), C.gint(column))
 	}
 	return ret
@@ -4434,14 +4434,27 @@ func (v *GtkCellRenderer) Connect(s string, f interface{}, datas ...interface{})
 //-----------------------------------------------------------------------
 // GtkCellRendererAccel
 //-----------------------------------------------------------------------
+type GtkCellRendererAccel struct {
+	GtkCellRenderer
+}
 
-// gtk_cell_renderer_accel_new
+func CellRendererAccel() *GtkCellRendererAccel {
+	return &GtkCellRendererAccel{GtkCellRenderer{
+		C.gtk_cell_renderer_accel_new(), nil}}
+}
+
 
 //-----------------------------------------------------------------------
 // GtkCellRendererCombo
 //-----------------------------------------------------------------------
+type GtkCellRendererCombo struct {
+	GtkCellRenderer
+}
 
-// gtk_cell_renderer_combo_new
+func CellRendererCombo() *GtkCellRendererCombo {
+	return &GtkCellRendererCombo{GtkCellRenderer{
+		C.gtk_cell_renderer_combo_new(), nil}}
+}
 
 //-----------------------------------------------------------------------
 // GtkCellRendererPixbuf
