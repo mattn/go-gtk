@@ -12,6 +12,9 @@ static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
 static void free_string(char* s) { free(s); }
 
+static GdkDragContext* to_GtkDragContext(void* l) {
+	return (GdkDragContext*)l;
+}
 static GdkWindow* to_GdkWindow(void* w) {
 	return GDK_WINDOW(w);
 }
@@ -443,6 +446,17 @@ const (
 	GDK_SUBSTRUCTURE_MASK        GdkEventMask = 1 << 20
 	GDK_SCROLL_MASK              GdkEventMask = 1 << 21
 	GDK_ALL_EVENTS_MASK          GdkEventMask = 0x3FFFFE
+)
+
+type GdkDragAction int
+
+const (
+	GDK_ACTION_DEFAULT GdkDragAction = 1 << 0
+	GDK_ACTION_COPY    GdkDragAction = 1 << 1
+	GDK_ACTION_MOVE    GdkDragAction = 1 << 2
+	GDK_ACTION_LINK    GdkDragAction = 1 << 3
+	GDK_ACTION_PRIVATE GdkDragAction = 1 << 4
+	GDK_ACTION_ASK     GdkDragAction = 1 << 5
 )
 
 type GdkWindow struct {
@@ -2826,4 +2840,12 @@ type EventOwnerChange struct {
 
 type EventGrabBroken struct {
 	// TODO
+}
+
+type GdkDragContext struct {
+	DragContext *C.GdkDragContext
+}
+
+func DragContextFromNative(l unsafe.Pointer) *GdkDragContext {
+	return &GdkDragContext{C.to_GtkDragContext(l)}
 }

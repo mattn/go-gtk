@@ -24,6 +24,22 @@ static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
 }
 
+int _gtk_selection_data_get_length(void* selection_data) {
+	return (int) gtk_selection_data_get_length((GtkSelectionData*)selection_data);
+}
+
+void* _gtk_selection_data_get_data(void* selection_data) {
+	return (char*) gtk_selection_data_get_data((GtkSelectionData*)selection_data);
+}
+
+char* _gtk_selection_data_get_text(void* selection_data) {
+	return (char*) gtk_selection_data_get_text((GtkSelectionData*)selection_data);
+}
+
+static void _gtk_drag_finish(void *context, gboolean success, gboolean del, guint32 time_) {
+	gtk_drag_finish((GdkDragContext*) context, success, del, time_);
+}
+
 static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, gchar *message) {
 	return gtk_message_dialog_new(
 			GTK_WINDOW(parent),
@@ -514,6 +530,7 @@ static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
 static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
 static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
 static inline char* to_charptr(const gchar* s) { return (char*)s; }
+static inline char* to_charptr_guchar(const guchar* s) { return (char*)s; }
 static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 static inline void free_string(char* s) { free(s); }
 
@@ -762,8 +779,53 @@ func AccelGroup() *GtkAccelGroup {
 //-----------------------------------------------------------------------
 // Drag and Drop
 //-----------------------------------------------------------------------
+type GtkDestDefaults int
 
-// gtk_drag_dest_set
+const (
+	GTK_DEST_DEFAULT_MOTION    GtkDestDefaults = 1 << 0 /* respond to "drag_motion" */
+	GTK_DEST_DEFAULT_HIGHLIGHT GtkDestDefaults = 1 << 1 /* auto-highlight */
+	GTK_DEST_DEFAULT_DROP      GtkDestDefaults = 1 << 2 /* respond to "drag_drop" */
+	GTK_DEST_DEFAULT_ALL       GtkDestDefaults = 0x07
+)
+
+type GtkTargetEntry struct {
+	Target string
+	Flags uint
+	Info uint
+}
+
+func (v *GtkWidget) DragDestSet(flags GtkDestDefaults, targets []GtkTargetEntry, actions gdk.GdkDragAction) {
+	ctargets := make([]C.GtkTargetEntry, len(targets))
+	for i, target := range targets {
+		ptr := C.CString(target.Target)
+		defer C.free_string(ptr)
+		ctargets[i].target = C.to_gcharptr(ptr)
+		ctargets[i].flags = C.guint(target.Flags)
+		ctargets[i].info = C.guint(target.Info)
+	}
+	C.gtk_drag_dest_set(v.Widget, C.GtkDestDefaults(flags), &ctargets[0], C.gint(len(targets)), C.GdkDragAction(actions))
+}
+
+func (v *GtkWidget) DragSourceSet(start_button_mask gdk.GdkModifierType, targets []GtkTargetEntry, actions gdk.GdkDragAction) {
+	ctargets := make([]C.GtkTargetEntry, len(targets))
+	for i, target := range targets {
+		ptr := C.CString(target.Target)
+		defer C.free_string(ptr)
+		ctargets[i].target = C.to_gcharptr(ptr)
+		ctargets[i].flags = C.guint(target.Flags)
+		ctargets[i].info = C.guint(target.Info)
+	}
+	C.gtk_drag_source_set(v.Widget, C.GdkModifierType(start_button_mask), &ctargets[0], C.gint(len(targets)), C.GdkDragAction(actions))
+}
+
+func (v *GtkWidget) DragFinish(context *gdk.GdkDragContext, success bool, del bool, time uint) {
+	C._gtk_drag_finish(unsafe.Pointer(context.DragContext), bool2gboolean(success), bool2gboolean(del), C.guint32(time))
+}
+
+func (v *GtkWidget) DragDestAddUriTargets() {
+	C.gtk_drag_dest_add_uri_targets(v.Widget)
+}
+
 // gtk_drag_dest_set_proxy
 // gtk_drag_dest_unset
 // gtk_drag_dest_find_target
@@ -771,10 +833,8 @@ func AccelGroup() *GtkAccelGroup {
 // gtk_drag_dest_set_target_list
 // gtk_drag_dest_add_text_targets
 // gtk_drag_dest_add_image_targets
-// gtk_drag_dest_add_uri_targets
 // gtk_drag_dest_set_track_motion
 // gtk_drag_dest_get_track_motion
-// gtk_drag_finish
 // gtk_drag_get_data
 // gtk_drag_get_source_widget
 // gtk_drag_highlight
@@ -788,7 +848,6 @@ func AccelGroup() *GtkAccelGroup {
 // gtk_drag_set_icon_default
 // gtk_drag_set_default_icon
 // gtk_drag_check_threshold
-// gtk_drag_source_set
 // gtk_drag_source_set_icon
 // gtk_drag_source_set_icon_pixbuf
 // gtk_drag_source_set_icon_stock
@@ -798,7 +857,6 @@ func AccelGroup() *GtkAccelGroup {
 // gtk_drag_source_get_target_list
 // gtk_drag_source_add_text_targets
 // gtk_drag_source_add_image_targets
-// gtk_drag_source_add_uri_targets
 
 //-----------------------------------------------------------------------
 // GtkIconTheme
@@ -1190,6 +1248,26 @@ func (s *GtkSettings) SetDoubleProperty(name string, v_double float64, origin st
 // Selections
 //-----------------------------------------------------------------------
 
+type GtkSelectionData struct {
+	SelectionData unsafe.Pointer
+}
+
+func SelectionDataFromNative(l unsafe.Pointer) *GtkSelectionData {
+	return &GtkSelectionData{l}
+}
+
+func (v *GtkSelectionData) GetLength() int {
+	return int(C._gtk_selection_data_get_length(v.SelectionData))
+}
+
+func (v *GtkSelectionData) GetData() unsafe.Pointer {
+	return unsafe.Pointer(C._gtk_selection_data_get_data(v.SelectionData))
+}
+
+func (v *GtkSelectionData) GetText() string {
+	return C.GoString(C._gtk_selection_data_get_text(v.SelectionData))
+}
+
 // gtk_target_list_new
 // gtk_target_list_ref
 // gtk_target_list_unref
@@ -1211,7 +1289,6 @@ func (s *GtkSettings) SetDoubleProperty(name string, v_double float64, origin st
 // gtk_selection_convert
 // gtk_selection_data_set
 // gtk_selection_data_set_text
-// gtk_selection_data_get_text
 // gtk_selection_data_set_pixbuf
 // gtk_selection_data_get_pixbuf
 // gtk_selection_data_set_uris
@@ -1222,8 +1299,6 @@ func (s *GtkSettings) SetDoubleProperty(name string, v_double float64, origin st
 // gtk_selection_data_targets_include_uri
 // gtk_selection_data_targets_include_rich_text
 // gtk_selection_data_get_selection
-// gtk_selection_data_get_data
-// gtk_selection_data_get_length
 // gtk_selection_data_get_data_type
 // gtk_selection_data_get_display
 // gtk_selection_data_get_format

@@ -373,6 +373,10 @@ type Error struct {
 	GError *C.GError
 }
 
+func (v *Error) Error() string {
+	return v.Message()
+}
+
 func (v *Error) Message() string {
 	if unsafe.Pointer(v.GError) == nil || unsafe.Pointer(v.GError.message) == nil {
 		return ""
@@ -476,7 +480,40 @@ func Utf8Validate(str []byte, len int, bar **byte) bool {
 		C.int(len), unsafe.Pointer(bar)))
 }
 
-func LocaleToUtf8(opsysstring []byte) (ret string, bytes_read int, bytes_written int, error *Error) {
+func FilenameFromUri(uri string) (filename string, hostname string, err error) {
+	str := C.CString(uri)
+	defer C.free_string(str)
+	var gerror *C.GError
+	var ptr *C.gchar
+	filename = C.GoString(C.to_charptr(C.g_filename_from_uri_utf8(C.to_gcharptr(str), &ptr, &gerror)))
+	if unsafe.Pointer(gerror) != nil {
+		err = ErrorFromNative(unsafe.Pointer(gerror))
+	} else {
+		err = nil
+	}
+	hostname = ""
+	if ptr != nil {
+		hostname = C.GoString(C.to_charptr(ptr))
+	}
+	return
+}
+
+func FilenameToUri(filename string, hostname string) (uri string, err error) {
+	pfilename := C.CString(filename)
+	defer C.free_string(pfilename)
+	phostname := C.CString(hostname)
+	defer C.free_string(phostname)
+	var gerror *C.GError
+	uri = C.GoString(C.to_charptr(C.g_filename_to_uri_utf8(C.to_gcharptr(pfilename), C.to_gcharptr(phostname), &gerror)))
+	if unsafe.Pointer(gerror) != nil {
+		err = ErrorFromNative(unsafe.Pointer(gerror))
+	} else {
+		err = nil
+	}
+	return
+}
+
+func LocaleToUtf8(opsysstring []byte) (ret string, bytes_read int, bytes_written int, err *Error) {
 	var gerror *C.GError
 	var cbytes_read, cbytes_written C.int
 	str := C._g_locale_to_utf8(unsafe.Pointer(&opsysstring[0]), C.int(len(opsysstring)), &cbytes_read, &cbytes_written, &gerror)
@@ -489,14 +526,14 @@ func LocaleToUtf8(opsysstring []byte) (ret string, bytes_read int, bytes_written
 	bytes_read = int(cbytes_read)
 	bytes_written = int(cbytes_written)
 	if unsafe.Pointer(gerror) != nil {
-		error = ErrorFromNative(unsafe.Pointer(gerror))
+		err = ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
-		error = nil
+		err = nil
 	}
 	return
 }
 
-func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_written int, error *Error) {
+func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_written int, err *Error) {
 	var gerror *C.GError
 	var cbytes_read, cbytes_written C.int
 	src := C.CString(utf8string)
@@ -511,9 +548,9 @@ func LocaleFromUtf8(utf8string string) (ret []byte, bytes_read int, bytes_writte
 	bytes_read = int(cbytes_read)
 	bytes_written = int(cbytes_written)
 	if unsafe.Pointer(gerror) != nil {
-		error = ErrorFromNative(unsafe.Pointer(gerror))
+		err = ErrorFromNative(unsafe.Pointer(gerror))
 	} else {
-		error = nil
+		err = nil
 	}
 	return
 }
