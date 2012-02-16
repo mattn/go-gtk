@@ -49,6 +49,15 @@ static GtkWidget* _gtk_message_dialog_new(GtkWidget* parent, GtkDialogFlags flag
 			message, NULL);
 }
 
+static GtkWidget* _gtk_message_dialog_new_with_markup(GtkWidget* parent, GtkDialogFlags flags, GtkMessageType type, GtkButtonsType buttons, gchar *message) {
+	return gtk_message_dialog_new_with_markup(
+			GTK_WINDOW(parent),
+			flags,
+			type,
+			buttons,
+			message, NULL);
+}
+
 static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
 		GtkWidget* parent, int file_chooser_action, int action, const gchar* button) {
 	return gtk_file_chooser_dialog_new(
@@ -548,6 +557,7 @@ static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w)
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
 static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
 static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
+static GtkMessageDialog* to_GtkMessageDialog(GtkWidget* w) { return GTK_MESSAGE_DIALOG(w); }
 
 #if GTK_CHECK_VERSION(2,24,0)
 static GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
@@ -1473,6 +1483,7 @@ type GtkMessageDialog struct {
 	GtkDialog
 }
 
+// TODO should be variadic function
 func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, message string) *GtkMessageDialog {
 	ptr := C.CString(message)
 	defer C.free_string(ptr)
@@ -1485,10 +1496,27 @@ func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, but
 			C.to_gcharptr(ptr))}}}}}}
 }
 
-// gtk_message_dialog_new_with_markup
-// gtk_message_dialog_set_markup
-// gtk_message_dialog_set_image
-// gtk_message_dialog_get_image
+// TODO should be variadic function
+func MessageDialogWithMarkup(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, message string) *GtkMessageDialog {
+	ptr := C.CString(message)
+	defer C.free_string(ptr)
+	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C._gtk_message_dialog_new_with_markup(
+			parent.ToNative(),
+			C.GtkDialogFlags(flag),
+			C.GtkMessageType(t),
+			C.GtkButtonsType(buttons),
+			C.to_gcharptr(ptr))}}}}}}
+}
+
+func (v *GtkMessageDialog) SetImage(image WidgetLike) {
+	C.gtk_message_dialog_set_image(C.to_GtkMessageDialog(v.Widget), image.ToNative())
+}
+
+func (v *GtkMessageDialog) GetImage() *GtkImage {
+	return &GtkImage{GtkWidget{C.gtk_message_dialog_get_image(C.to_GtkMessageDialog(v.Widget))}}
+}
+
 // gtk_message_dialog_get_message_area //since 2.22
 // gtk_message_dialog_format_secondary_text
 // gtk_message_dialog_format_secondary_markup
