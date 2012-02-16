@@ -69,7 +69,7 @@ GOAL:
     Testing                       :   0% (  0/ 16)
     Filesystem Utilities          :   0% (  0/  7)
     GtkDialog                     :  45% (  9/ 20)
-    GtkMessageDialog              :  12% (  1/  8)
+    GtkMessageDialog              :  57% (  4/  7)
     GtkWindow                     :  23% ( 24/102)
     GtkWindowGroup                :   0% (  0/  5)
     GtkAboutDialog                :  90% ( 29/ 32)
@@ -235,4 +235,4 @@ GOAL:
     GtkRecentFilter               :   0% (  0/ 12)
     GtkBuildable                  :   0% (  0/ 10)
     
-    Total progress :                 29% (898/3046)
+    Total progress :                 29% (901/3045)
