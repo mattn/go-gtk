@@ -1399,7 +1399,6 @@ func (v *GtkSelectionData) GetText() string {
 //-----------------------------------------------------------------------
 // Filesystem Utilities
 //-----------------------------------------------------------------------
-
 // gtk_mount_operation_new
 // gtk_mount_operation_is_showing
 // gtk_mount_operation_set_parent
@@ -2617,6 +2616,10 @@ func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data i
 }
 func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
 	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.StatusIcon)))).Connect(s, f, datas...)
+}
+
+func PrintContextFromNative(l unsafe.Pointer) *GtkPrintContext {
+	return &GtkPrintContext{(*C.GtkPrintContext)(l)}
 }
 
 //GIcon *gtk_status_icon_get_gicon (GtkStatusIcon *status_icon);
@@ -6895,7 +6898,58 @@ func (v *GtkScrolledWindow) GetShadowType() GtkShadowType {
 // GtkPrintOperation
 //-----------------------------------------------------------------------
 
-// gtk_print_operation_new
+type GtkPrintOperation struct {
+	PrintOperation *C.GtkPrintOperation
+}
+
+type GtkPrintOperationResult int
+
+const (
+	GTK_PRINT_OPERATION_RESULT_ERROR GtkPrintOperationResult = 0
+	GTK_PRINT_OPERATION_RESULT_APPLY GtkPrintOperationResult = 1
+	GTK_PRINT_OPERATION_RESULT_CANCEL GtkPrintOperationResult = 2
+	GTK_PRINT_OPERATION_RESULT_IN_PROGRESS GtkPrintOperationResult = 3
+)
+
+type GtkPrintOperationAction int
+
+const (
+	GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG GtkPrintOperationAction = 0
+	GTK_PRINT_OPERATION_ACTION_PRINT GtkPrintOperationAction = 1
+	GTK_PRINT_OPERATION_ACTION_PREVIEW GtkPrintOperationAction = 2
+	GTK_PRINT_OPERATION_ACTION_EXPOR GtkPrintOperationAction = 3
+)
+
+func PrintOperation() *GtkPrintOperation {
+	return &GtkPrintOperation{C.gtk_print_operation_new()}
+}
+
+func (v *GtkPrintOperation) Run(action GtkPrintOperationAction, parent *GtkWindow) (result GtkPrintOperationResult, err error) {
+	var gerror *C.GError
+	ret := GtkPrintOperationResult(
+		C.gtk_print_operation_run(
+			v.PrintOperation,
+			C.GtkPrintOperationAction(action),
+			C.to_GtkWindow(parent.Widget),
+			&gerror))
+	if gerror != nil {
+		err = glib.ErrorFromNative(unsafe.Pointer(gerror))
+	}
+	return GtkPrintOperationResult(ret), err
+}
+
+func (v *GtkPrintOperation) Cancel() {
+	C.gtk_print_operation_cancel(v.PrintOperation)
+}
+
+func (v *GtkPrintOperation) IsFinished() bool {
+	return gboolean2bool(C.gtk_print_operation_is_finished(v.PrintOperation))
+}
+
+func (v *GtkPrintOperation) Connect(s string, f interface{}, datas ...interface{}) {
+	glib.ObjectFromNative(unsafe.Pointer(v.PrintOperation)).Connect(s, f, datas...)
+}
+
 // gtk_print_operation_set_allow_async
 // gtk_print_operation_get_error
 // gtk_print_operation_set_default_page_setup
@@ -6912,13 +6966,10 @@ func (v *GtkScrolledWindow) GetShadowType() GtkShadowType {
 // gtk_print_operation_set_show_progress
 // gtk_print_operation_set_track_print_status
 // gtk_print_operation_set_custom_tab_label
-// gtk_print_operation_run
-// gtk_print_operation_cancel
 // gtk_print_operation_draw_page_finish
 // gtk_print_operation_set_defer_drawing
 // gtk_print_operation_get_status
 // gtk_print_operation_get_status_string
-// gtk_print_operation_is_finished
 // gtk_print_operation_set_support_selection
 // gtk_print_operation_get_support_selection
 // gtk_print_operation_set_has_selection
@@ -6934,9 +6985,18 @@ func (v *GtkScrolledWindow) GetShadowType() GtkShadowType {
 //-----------------------------------------------------------------------
 // GtkPrintContext
 //-----------------------------------------------------------------------
+type GtkPrintContext struct{
+	PrintContext *C.GtkPrintContext
+}
 
-// gtk_print_context_get_cairo_context
-// gtk_print_context_set_cairo_context
+func (v *GtkPrintContext) GetCairoContext() *C.cairo_t {
+	return C.gtk_print_context_get_cairo_context(v.PrintContext);
+}
+
+func (v *GtkPrintContext) SetCairoContext(cairo *C.cairo_t, dpi_x float64, dpi_y float64) {
+	C.gtk_print_context_set_cairo_context(v.PrintContext, cairo, C.double(dpi_x), C.double(dpi_y));
+}
+
 // gtk_print_context_get_page_setup
 // gtk_print_context_get_width
 // gtk_print_context_get_height
