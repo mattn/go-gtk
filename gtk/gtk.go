@@ -2544,10 +2544,10 @@ func (v *GtkStatusIcon) SetHasTooltip(setting bool) {
 	C.gtk_status_icon_set_has_tooltip(v.StatusIcon, bool2gboolean(setting))
 }
 func (v *GtkStatusIcon) GetVisible() bool {
-	return gboolean2bool(C._gtk_status_icon_get_visible(v.StatusIcon))
+	return gboolean2bool(C.gtk_status_icon_get_visible(v.StatusIcon))
 }
 func (v *GtkStatusIcon) SetVisible(setting bool) {
-	C._gtk_status_icon_set_visible(v.StatusIcon, bool2gboolean(setting))
+	C.gtk_status_icon_set_visible(v.StatusIcon, bool2gboolean(setting))
 }
 func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data interface{}) {
 	x := C.gint(*px)
