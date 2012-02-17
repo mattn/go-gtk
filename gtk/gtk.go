@@ -2528,20 +2528,36 @@ func (v *GtkStatusIcon) GetStock() string {
 func (v *GtkStatusIcon) GetIconName() string {
 	return C.GoString(C.to_charptr(C.gtk_status_icon_get_icon_name(v.StatusIcon)))
 }
-func (v *GtkStatusIcon) SetText(text string) {
+func (v *GtkStatusIcon) SetName(name string) {
+	panic_if_version_older(2, 20, 0, "gtk_status_icon_set_name()")
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_status_icon_set_name(v.StatusIcon, C.to_gcharptr(ptr))
+}
+func (v *GtkStatusIcon) SetTitle(title string) {
+	panic_if_version_older(2, 18, 0, "gtk_status_icon_set_title()")
+	ptr := C.CString(title)
+	defer C.free_string(ptr)
+	C.gtk_status_icon_set_title(v.StatusIcon, C.to_gcharptr(ptr))
+}
+func (v *GtkStatusIcon) GetTitle() string {
+	panic_if_version_older(2, 18, 0, "gtk_status_icon_get_title()")
+	return C.GoString(C.to_charptr(C.gtk_status_icon_get_title(v.StatusIcon)))
+}
+func (v *GtkStatusIcon) SetTooltipText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_status_icon_set_tooltip_text(v.StatusIcon, C.to_gcharptr(ptr))
 }
-func (v *GtkStatusIcon) GetText() string {
+func (v *GtkStatusIcon) GetTooltipText() string {
 	return C.GoString(C.to_charptr(C.gtk_status_icon_get_tooltip_text(v.StatusIcon)))
 }
-func (v *GtkStatusIcon) SetMarkup(markup string) {
+func (v *GtkStatusIcon) SetTooltipMarkup(markup string) {
 	ptr := C.CString(markup)
 	defer C.free_string(ptr)
 	C.gtk_status_icon_set_tooltip_markup(v.StatusIcon, C.to_gcharptr(ptr))
 }
-func (v *GtkStatusIcon) GetMarkup() string {
+func (v *GtkStatusIcon) GetTooltipMarkup() string {
 	return C.GoString(C.to_charptr(C.gtk_status_icon_get_tooltip_markup(v.StatusIcon)))
 }
 func (v *GtkStatusIcon) GetHasTooltip() bool {
@@ -2577,9 +2593,6 @@ func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
 //gint gtk_status_icon_get_size (GtkStatusIcon *status_icon);
 //void gtk_status_icon_set_screen (GtkStatusIcon *status_icon, GdkScreen *screen);
 //GdkScreen *gtk_status_icon_get_screen (GtkStatusIcon *status_icon);
-// gtk_status_icon_set_title //since 2.18
-// gtk_status_icon_get_title //since 2.18
-// gtk_status_icon_set_name //since 2.20
 // gtk_status_icon_set_blinking //deprecated since 2.22
 // gtk_status_icon_get_blinking //deprecated since 2.22
 // gtk_status_icon_is_embedded
