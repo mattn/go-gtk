@@ -2521,26 +2521,34 @@ func (v *GtkStatusIcon) GetStock() string {
 func (v *GtkStatusIcon) GetIconName() string {
 	return C.GoString(C.to_charptr(C.gtk_status_icon_get_icon_name(v.StatusIcon)))
 }
-//GIcon *gtk_status_icon_get_gicon (GtkStatusIcon *status_icon);
-
-//gint gtk_status_icon_get_size (GtkStatusIcon *status_icon);
-//void gtk_status_icon_set_screen (GtkStatusIcon *status_icon, GdkScreen *screen);
-//GdkScreen *gtk_status_icon_get_screen (GtkStatusIcon *status_icon);
-// gtk_status_icon_set_tooltip_text
-// gtk_status_icon_get_tooltip_text
-// gtk_status_icon_set_tooltip_markup
-// gtk_status_icon_get_tooltip_markup
-// gtk_status_icon_set_has_tooltip
-// gtk_status_icon_get_has_tooltip
-// gtk_status_icon_set_title //since 2.18
-
-// gtk_status_icon_get_title //since 2.18
-// gtk_status_icon_set_name //since 2.20
-// gtk_status_icon_set_visible
-// gtk_status_icon_get_visible
-// gtk_status_icon_set_blinking //deprecated since 2.22
-// gtk_status_icon_get_blinking //deprecated since 2.22
-// gtk_status_icon_is_embedded
+func (v *GtkStatusIcon) SetText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_status_icon_set_tooltip_text(v.StatusIcon, C.to_gcharptr(ptr))
+}
+func (v *GtkStatusIcon) GetText() string {
+	return C.GoString(C.to_charptr(C.gtk_status_icon_get_tooltip_text(v.StatusIcon)))
+}
+func (v *GtkStatusIcon) SetMarkup(markup string) {
+	ptr := C.CString(markup)
+	defer C.free_string(ptr)
+	C.gtk_status_icon_set_tooltip_markup(v.StatusIcon, C.to_gcharptr(ptr))
+}
+func (v *GtkStatusIcon) GetMarkup() string {
+	return C.GoString(C.to_charptr(C.gtk_status_icon_get_tooltip_markup(v.StatusIcon)))
+}
+func (v *GtkStatusIcon) GetHasTooltip() bool {
+	return gboolean2bool(C.gtk_status_icon_get_has_tooltip(v.StatusIcon))
+}
+func (v *GtkStatusIcon) SetHasTooltip(setting bool) {
+	C.gtk_status_icon_set_has_tooltip(v.StatusIcon, bool2gboolean(setting))
+}
+func (v *GtkStatusIcon) GetVisible() bool {
+	return gboolean2bool(C._gtk_status_icon_get_visible(v.StatusIcon))
+}
+func (v *GtkStatusIcon) SetVisible(setting bool) {
+	C._gtk_status_icon_set_visible(v.StatusIcon, bool2gboolean(setting))
+}
 func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data interface{}) {
 	x := C.gint(*px)
 	y := C.gint(*py)
@@ -2554,13 +2562,22 @@ func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data i
 	*py = int(y)
 	*push_in = gboolean2bool(pi)
 }
-
-// gtk_status_icon_get_geometry
-// gtk_status_icon_get_x11_window_id
-
 func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
 	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.StatusIcon)))).Connect(s, f, datas...)
 }
+
+//GIcon *gtk_status_icon_get_gicon (GtkStatusIcon *status_icon);
+//gint gtk_status_icon_get_size (GtkStatusIcon *status_icon);
+//void gtk_status_icon_set_screen (GtkStatusIcon *status_icon, GdkScreen *screen);
+//GdkScreen *gtk_status_icon_get_screen (GtkStatusIcon *status_icon);
+// gtk_status_icon_set_title //since 2.18
+// gtk_status_icon_get_title //since 2.18
+// gtk_status_icon_set_name //since 2.20
+// gtk_status_icon_set_blinking //deprecated since 2.22
+// gtk_status_icon_get_blinking //deprecated since 2.22
+// gtk_status_icon_is_embedded
+// gtk_status_icon_get_geometry
+// gtk_status_icon_get_x11_window_id
 
 //-----------------------------------------------------------------------
 // GtkSpinner
