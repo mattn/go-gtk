@@ -619,6 +619,7 @@ import (
 	"github.com/mattn/go-gtk/pango"
 	"log"
 	"reflect"
+	"strings"
 	"unsafe"
 )
 
@@ -1524,8 +1525,8 @@ type GtkMessageDialog struct {
 }
 
 // TODO should be variadic function
-func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, message string) *GtkMessageDialog {
-	ptr := C.CString(message)
+func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, format string, args ...interface{}) *GtkMessageDialog {
+	ptr := C.CString(strings.Replace(fmt.Sprintf(format, args...), "%", "%%", -1))
 	defer C.free_string(ptr)
 	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_message_dialog_new(
