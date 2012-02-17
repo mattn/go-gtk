@@ -2268,8 +2268,9 @@ func LabelWithMnemonic(label string) *GtkLabel {
 func (v *GtkLabel) SelectRegion(start_offset int, end_offset int) {
 	C.gtk_label_select_region(C.to_GtkLabel(v.Widget), C.gint(start_offset), C.gint(end_offset))
 }
-// gtk_label_set_mnemonic_widget
-
+func (v *GtkLabel) SetMnemonicWidget(widget WidgetLike) {
+	C.gtk_label_set_mnemonic_widget(C.to_GtkLabel(v.Widget), widget.ToNative())
+}
 func (v *GtkLabel) SetSelectable(setting bool) {
 	C.gtk_label_set_selectable(C.to_GtkLabel(v.Widget), bool2gboolean(setting))
 }
@@ -2302,7 +2303,9 @@ func (v *GtkLabel) GetLineWrap() bool {
 func (v *GtkLabel) GetLineWrapMode() pango.PangoWrapMode {
 	return pango.PangoWrapMode(C.gtk_label_get_line_wrap_mode(C.to_GtkLabel(v.Widget)))
 }
-// gtk_label_get_mnemonic_widget
+func (v *GtkLabel) GetMnemonicWidget() *GtkWidget {
+	return &GtkWidget{C.gtk_label_get_mnemonic_widget(C.to_GtkLabel(v.Widget))}
+}
 func (v *GtkLabel) GetSelectionBounds(start *int, end *int) {
 	var cstart, cend C.gint
 	C.gtk_label_get_selection_bounds(C.to_GtkLabel(v.Widget), &cstart, &cend)
