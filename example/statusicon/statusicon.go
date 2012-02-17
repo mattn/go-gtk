@@ -25,5 +25,14 @@ func main() {
 		nm.Popup(nil, nil, gtk.GtkStatusIconPositionMenu, si, uint(cbx.Args(0)), uint(cbx.Args(1)))
 	})
 
+	println(`
+Can you see statusicon in systray?
+If you don't see it and if you use 'unity', try following.
+
+# gsettings set com.canonical.Unity.Panel systray-whitelist \
+  "$(gsettings get com.canonical.Unity.Panel systray-whitelist \|
+  sed -e "s/]$/, 'go-gtk-statusicon-example']/")"
+`)
+
 	gtk.Main()
 }
