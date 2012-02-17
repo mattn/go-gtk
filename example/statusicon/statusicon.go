@@ -9,6 +9,8 @@ import (
 func main() {
 	gtk.Init(&os.Args)
 
+	glib.SetApplicationName("go-gtk-statusicon-example")
+
 	mi := gtk.MenuItemWithLabel("Popup!")
 	mi.Connect("activate", func() {
 		gtk.MainQuit()
@@ -18,6 +20,7 @@ func main() {
 	nm.ShowAll()
 
 	si := gtk.StatusIconFromStock(gtk.GTK_STOCK_FILE)
+	si.SetTitle("StatusIcon Example")
 	si.Connect("popup-menu", func(cbx *glib.CallbackContext) {
 		nm.Popup(nil, nil, gtk.GtkStatusIconPositionMenu, si, uint(cbx.Args(0)), uint(cbx.Args(1)))
 	})
