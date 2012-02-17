@@ -9,12 +9,12 @@ import (
 func main() {
 	gtk.Init(&os.Args)
 
-	callback.Init()
-
 	builder := gtk.Builder()
 	builder.AddFromFile("hello.ui")
 	builder.ConnectSignals(nil)
 	obj := builder.GetObject("window1")
+
+	callback.Init(builder)
 
 	window := gtk.WidgetFromObject(obj)
 	window.Show()
