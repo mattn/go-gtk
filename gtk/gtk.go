@@ -2735,7 +2735,7 @@ func RadioButtonWithMnemonic(group *glib.SList, label string) *GtkRadioButton {
 			C.gtk_radio_button_new_with_mnemonic(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}}}
 	}
 	return &GtkRadioButton{GtkCheckButton{GtkToggleButton{GtkButton{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_radio_button_new_with_label(nil, C.to_gcharptr(ptr))}}}}}}}
+		C.gtk_radio_button_new_with_mnemonic(nil, C.to_gcharptr(ptr))}}}}}}}
 }
 func RadioButtonWithMnemonicFromWidget(w *GtkRadioButton, label string) *GtkRadioButton {
 	ptr := C.CString(label)
