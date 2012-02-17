@@ -611,13 +611,16 @@ static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); 
 */
 // #cgo pkg-config: gtk+-2.0
 import "C"
-import "github.com/mattn/go-gtk/glib"
-import "github.com/mattn/go-gtk/gdk"
-import "github.com/mattn/go-gtk/gdkpixbuf"
-import "github.com/mattn/go-gtk/pango"
-import "log"
-import "unsafe"
-import "reflect"
+import (
+	"fmt"
+	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/gdkpixbuf"
+	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/pango"
+	"log"
+	"reflect"
+	"unsafe"
+)
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -1533,23 +1536,26 @@ func MessageDialog(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, but
 			C.to_gcharptr(ptr))}}}}}}
 }
 
-// TODO should be variadic function
-func MessageDialogWithMarkup(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, message string) *GtkMessageDialog {
-	ptr := C.CString(message)
-	defer C.free_string(ptr)
-	return &GtkMessageDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
+func MessageDialogWithMarkup(parent *GtkWindow, flag GtkDialogFlags, t GtkMessageType, buttons GtkButtonsType, format string, args ...interface{}) *GtkMessageDialog {
+	r := &GtkMessageDialog{GtkDialog{GtkWindow{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_message_dialog_new_with_markup(
 			parent.ToNative(),
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(buttons),
-			C.to_gcharptr(ptr))}}}}}}
+			nil)}}}}}}
+	r.SetMarkup(fmt.Sprintf(format, args...))
+	return r
 }
 
+func (v *GtkMessageDialog) SetMarkup(markup string) {
+	ptr := C.CString(markup)
+	defer C.free_string(ptr)
+	C.gtk_message_dialog_set_markup(C.to_GtkMessageDialog(v.Widget), C.to_gcharptr(ptr))
+}
 func (v *GtkMessageDialog) SetImage(image WidgetLike) {
 	C.gtk_message_dialog_set_image(C.to_GtkMessageDialog(v.Widget), image.ToNative())
 }
-
 func (v *GtkMessageDialog) GetImage() *GtkImage {
 	return &GtkImage{GtkWidget{C.gtk_message_dialog_get_image(C.to_GtkMessageDialog(v.Widget))}}
 }
