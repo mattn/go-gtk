@@ -2233,7 +2233,9 @@ func (v *GtkLabel) SetText(label string) {
 	C.gtk_label_set_text(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
 
-// gtk_label_set_attributes
+func (v *GtkLabel) SetMnemonicWidget(widget WidgetLike) {
+  C.gtk_label_set_mnemonic_widget(C.to_GtkLabel(v.Widget), widget.ToNative())
+}
 
 func (v *GtkLabel) SetMarkup(markup string) {
 	ptr := C.CString(markup)
@@ -2241,7 +2243,9 @@ func (v *GtkLabel) SetMarkup(markup string) {
 	C.gtk_label_set_markup(C.to_GtkLabel(v.Widget), C.to_gcharptr(ptr))
 }
 
-// gtk_label_set_markup_with_mnemonic
+func (v *GtkLabel) GetMnemonicWidget() *GtkWidget {
+  return &GtkWidget{C.gtk_label_get_mnemonic_widget(C.to_GtkLabel(v.Widget))}
+}
 
 func (v *GtkLabel) SetPattern(pattern string) {
 	ptr := C.CString(pattern)
