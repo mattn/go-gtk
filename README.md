@@ -52,7 +52,7 @@ GOAL:
 (output of tools/gogtkinfo)
 
     Main Loop and Events          :  24% (  6/ 25)
-    GtkAccelGroup                 :   5% (  1/ 19)
+    GtkAccelGroup                 :  10% (  2/ 19)
     GtkAccelMap                   :   0% (  0/ 14)
     GtkClipboard                  :  23% (  7/ 30)
     Drag and Drop                 :  11% (  4/ 35)
@@ -83,7 +83,7 @@ GOAL:
     GtkInfoBar                    : 100% ( 12/ 12)
     GtkStatusIcon                 :  68% ( 26/ 38)
     GtkSpinner                    :   0% (  0/  3)
-    GtkButton                     :  51% ( 14/ 27)
+    GtkButton                     :  55% ( 15/ 27)
     GtkCheckButton                : 100% (  3/  3)
     GtkRadioButton                : 100% (  8/  8)
     GtkToggleButton               : 100% (  9/  9)
@@ -235,4 +235,4 @@ GOAL:
     GtkRecentFilter               :   0% (  0/ 12)
     GtkBuildable                  :   0% (  0/ 10)
 
-    Total progress :                 31% (951/3055)
+    Total progress :                 31% (953/3055)
