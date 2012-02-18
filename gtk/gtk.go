@@ -2844,8 +2844,12 @@ func ButtonWithLabel(label string) *GtkButton {
 	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_button_new_with_label(C.to_gcharptr(ptr))}}}}
 }
-
-// gtk_button_new_with_mnemonic
+func ButtonWithMnemonic(label string) *GtkButton {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
+}
 // gtk_button_new_from_stock
 // gtk_button_pressed //deprecated since 2.20
 // gtk_button_released //deprecated since 2.20
