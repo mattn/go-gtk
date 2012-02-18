@@ -845,7 +845,10 @@ func AccelGroup() *GtkAccelGroup {
 // gtk_accelerator_name
 // gtk_accelerator_get_label
 // gtk_accelerator_set_default_mod_mask
-// gtk_accelerator_get_default_mod_mask
+
+func AcceleratorGetDefaultModMask() uint {
+	return uint(C.gtk_accelerator_get_default_mod_mask())
+}
 
 //-----------------------------------------------------------------------
 // GtkAccelMap
