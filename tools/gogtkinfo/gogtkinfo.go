@@ -21,7 +21,7 @@ func main() {
 	flag.Parse()
 	fname := flag.Arg(0)
 	if fname == "" {
-		fmt.Println("Usage: gogtkinfo [-a] file")
+		fmt.Println("Usage: gogtkinfo [-ag] file")
 		return
 	}
 	file, err := os.Open(fname)
@@ -31,44 +31,51 @@ func main() {
 	}
 	defer file.Close()
 	rd := bufio.NewReader(file)
-	var currentSection string
+	var currentSection, sectionAlertName string
 	var cDone, cTodo, p, tDone, tTodo int
-	var sectionAlert bool
+	var sectionAlert, falseAlarm bool
 	for {
-		line, isPrefix, err := rd.ReadLine()
-		if err != nil {
-			break
-		}
-		if isPrefix {
-			return
-		}
-		l := string(line)
-		if strings.HasPrefix(l, "//---------------") {
-			sectionAlert = true
-		} else if sectionAlert {
-			if strings.HasPrefix(l, "//") && len(l) > 3 {
-				sectionName := strings.TrimSpace(l[2:len(l)])
-				if sectionName == "" {
-					continue
-				}
-				if currentSection != "" {
-					cTot := cDone + cTodo
-					if cTot == 0 {
-						p = 100
-					} else {
-						p = 100 * cDone / cTot
-					}
-					s := fmt.Sprintf("%-30s: %3d%% (%3d/%3d)\n", currentSection, p, cDone, cTot)
-					list = append(list, s)
-				}
-				currentSection = sectionName
-				tDone += cDone
-				tTodo += cTodo
-				cDone = 0
-				cTodo = 0
-			} else {
-				sectionAlert = false
+		var l string
+		if falseAlarm {
+			falseAlarm = false
+		} else {
+			line, isPrefix, err := rd.ReadLine()
+			if err != nil {
+				break
 			}
+			if isPrefix {
+				return
+			}
+			l = string(line)
+		}
+		if strings.HasPrefix(l, "//---------------") {
+			if sectionAlertName == "" {
+				sectionAlert = true
+			} else {
+				if currentSection != "" {
+				cTot := cDone + cTodo
+				if cTot == 0 {
+					p = 100
+				} else {
+					p = 100 * cDone / cTot
+				}
+				s := fmt.Sprintf("%-30s: %3d%% (%3d/%3d)\n", currentSection, p, cDone, cTot)
+				list = append(list, s)
+			}
+			currentSection = sectionAlertName
+			tDone += cDone
+			tTodo += cTodo
+			cDone = 0
+			cTodo = 0
+			sectionAlertName = ""
+			}
+		} else if sectionAlert {
+			if strings.HasPrefix(l, "//") && len(l) > 3 && !strings.Contains(l, "gtk_") {
+				sectionAlertName = strings.TrimSpace(l[2:len(l)])
+			} else {
+				falseAlarm = true
+			}
+			sectionAlert = false
 		} else if strings.HasPrefix(l, "func") {
 			cDone++
 		} else if strings.HasPrefix(l, "//") && strings.Contains(l, "gtk_") {
