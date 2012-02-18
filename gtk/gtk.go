@@ -3136,39 +3136,11 @@ func (v *GtkEntry) SetText(text string) {
 	defer C.free_string(ptr)
 	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
 }
-
-//Deprecated since 2.0. Use GtkEditable.InsertText() instead.
-func (v *GtkEntry) AppendText(text string) {
-	deprecated_since(2, 0, 0, "gtk_entry_append_text()")
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	C.gtk_entry_append_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
-}
-
-//Deprecated since 2.0. Use GtkEditable.InsertText() instead.
-func (v *GtkEntry) PrependText(text string) {
-	deprecated_since(2, 0, 0, "gtk_entry_prepend_text()")
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	C.gtk_entry_prepend_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
-}
-
-//Deprecated since 2.0. Use GtkEditable.SetPosition() instead.
-func (v *GtkEntry) SetPosition(position int) {
-	deprecated_since(2, 0, 0, "gtk_entry_set_position()")
-	C.gtk_entry_set_position(C.to_GtkEntry(v.Widget), C.gint(position))
-}
 func (v *GtkEntry) GetText() string {
 	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
 }
 func (v *GtkEntry) GetTextLength() int {
 	return int(C.gtk_entry_get_text_length(C.to_GtkEntry(v.Widget)))
-}
-
-//Deprecated since 2.0. Use GtkEditable.SelectRegion() instead.
-func (v *GtkEntry) SelectRegion(start, end int) {
-	deprecated_since(2, 0, 0, "gtk_entry_select_region()")
-	C.gtk_entry_select_region(C.to_GtkEntry(v.Widget), C.gint(start), C.gint(end))
 }
 func (v *GtkEntry) SetVisibility(setting bool) {
 	C.gtk_entry_set_visibility(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
@@ -3178,12 +3150,6 @@ func (v *GtkEntry) SetInvisibleChar(ch uint8) {
 }
 func (v *GtkEntry) UnsetInvisibleChar() {
 	C.gtk_entry_unset_invisible_char(C.to_GtkEntry(v.Widget))
-}
-
-//Deprecated since 2.0. Use GtkEditable.SetEditable() instead.
-func (v *GtkEntry) SetEditable(setting bool) {
-	deprecated_since(2, 0, 0, "gtk_entry_set_editable()")
-	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkEntry) SetMaxLength(i int) {
 	C.gtk_entry_set_max_length(C.to_GtkEntry(v.Widget), C.gint(i))
