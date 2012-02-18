@@ -404,6 +404,42 @@ static GtkWidget* _gtk_info_bar_get_action_area(GtkInfoBar *info_bar) {
 static GtkWidget* _gtk_info_bar_get_content_area(GtkInfoBar *info_bar) {
 	return gtk_info_bar_get_content_area(info_bar);
 }
+static GtkWidget* _gtk_entry_new_with_buffer(GtkEntryBuffer *buffer) {
+	return gtk_entry_new_with_buffer(buffer);
+}
+static GtkEntryBuffer* _gtk_entry_get_buffer(GtkEntry *entry) {
+	return gtk_entry_get_buffer(entry);
+}
+static void _gtk_entry_set_buffer(GtkEntry *entry,  GtkEntryBuffer *buffer) {
+	gtk_entry_set_buffer(entry, buffer);
+}
+static GtkEntryBuffer* _gtk_entry_buffer_new(const gchar *initial_chars, gint n_initial_chars) {
+	return gtk_entry_buffer_new(initial_chars, n_initial_chars);
+}
+static const gchar* _gtk_entry_buffer_get_text(GtkEntryBuffer *buffer) {
+	return gtk_entry_buffer_get_text(buffer);
+}
+static void _gtk_entry_buffer_set_text(GtkEntryBuffer *buffer, const gchar *chars, gint n_chars) {
+	gtk_entry_buffer_set_text(buffer, chars, n_chars);
+}
+//static gsize _gtk_entry_buffer_get_bytes(GtkEntryBuffer *buffer) {
+//	return gtk_entry_buffer_get_bytes(buffer);
+//}
+static guint _gtk_entry_buffer_get_length(GtkEntryBuffer *buffer) {
+	return gtk_entry_buffer_get_length(buffer);
+}
+static gint _gtk_entry_buffer_get_max_length(GtkEntryBuffer *buffer) {
+	return gtk_entry_buffer_get_max_length(buffer);
+}
+static void _gtk_entry_buffer_set_max_length(GtkEntryBuffer *buffer, gint max_length) {
+	gtk_entry_buffer_set_max_length(buffer, max_length);
+}
+static guint _gtk_entry_buffer_insert_text(GtkEntryBuffer *buffer, guint position, const gchar *chars, gint n_chars) {
+	return gtk_entry_buffer_insert_text(buffer, position, chars, n_chars);
+}
+static guint _gtk_entry_buffer_delete_text(GtkEntryBuffer *buffer, guint position, gint n_chars) {
+	return gtk_entry_buffer_delete_text(buffer, position, n_chars);
+}
 #else //!GTK_CHECK_VERSION(2,18,0)
 static gboolean _gtk_cell_renderer_toggle_get_activatable(GtkCellRendererToggle *toggle) {
 	return 0;
@@ -505,6 +541,39 @@ static GtkWidget* _gtk_info_bar_get_action_area(GtkInfoBar *info_bar) {
 }
 static GtkWidget* _gtk_info_bar_get_content_area(GtkInfoBar *info_bar) {
 	return NULL;
+}
+static GtkWidget* _gtk_entry_new_with_buffer(GtkEntryBuffer *buffer) {
+	return NULL;
+}
+static GtkEntryBuffer* _gtk_entry_get_buffer(GtkEntry *entry) {
+	return NULL;
+}
+static void _gtk_entry_set_buffer(GtkEntry *entry,  GtkEntryBuffer *buffer) {
+}
+static GtkEntryBuffer* _gtk_entry_buffer_new(const gchar *initial_chars, gint n_initial_chars) {
+	return NULL;
+}
+static const gchar* _gtk_entry_buffer_get_text(GtkEntryBuffer *buffer) {
+	return NULL;
+}
+static void _gtk_entry_buffer_set_text(GtkEntryBuffer *buffer, const gchar *chars, gint n_chars) {
+}
+//static gsize _gtk_entry_buffer_get_bytes(GtkEntryBuffer *buffer) {
+//	return 0;
+//}
+static guint _gtk_entry_buffer_get_length(GtkEntryBuffer *buffer) {
+	return 0;
+}
+static gint _gtk_entry_buffer_get_max_length(GtkEntryBuffer *buffer) {
+	return 0;
+}
+static void _gtk_entry_buffer_set_max_length(GtkEntryBuffer *buffer, gint max_length) {
+}
+static guint _gtk_entry_buffer_insert_text(GtkEntryBuffer *buffer, guint position, const gchar *chars, gint n_chars) {
+	return 0;
+}
+static guint _gtk_entry_buffer_delete_text(GtkEntryBuffer *buffer, guint position, gint n_chars) {
+	return 0;
 }
 #endif //GTK_CHECK_VERSION(2,18,0)
 
@@ -3112,25 +3181,19 @@ func Entry() *GtkEntry {
 	widget := GtkWidget{C.gtk_entry_new()}
 	return &GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}
 }
-
-//func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry { //since 2.18 TODO
-//	return &GtkEntry{GtkWidget{
-//		C.gtk_entry_new_with_buffer(C.to_GtkTextbuffer.TextBuffer)}}
-//}
-//Deprecated since 2.0. Use SetMaxLength() instead.
-func EntryWithMaxLength(i int) *GtkEntry {
-	deprecated_since(2, 0, 0, "gtk_entry_new_with_max_length()")
-	widget := GtkWidget{C.gtk_entry_new_with_max_length(C.gint(i))}
+func EntryWithBuffer(buffer *GtkEntryBuffer) *GtkEntry {
+	panic_if_version_older_auto(2, 18, 0)
+	widget := GtkWidget{C._gtk_entry_new_with_buffer(buffer.EntryBuffer)}
 	return &GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}
 }
-
-//func (v *GtkEntry) GetBuffer() *GtkTextBuffer { //since 2.18 TODO
-//	return &GtkTextBuffer{
-//		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
-//}
-//func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) { //since 2.18 TODO
-//	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), C.to_GtkTextBuffer(buffer.TextBuffer))
-//}
+func (v *GtkEntry) GetBuffer() *GtkEntryBuffer {
+	panic_if_version_older_auto(2, 18, 0)
+	return &GtkEntryBuffer{C._gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
+}
+func (v *GtkEntry) SetBuffer(buffer *GtkEntryBuffer) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), buffer.EntryBuffer)
+}
 func (v *GtkEntry) SetText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
@@ -3239,16 +3302,65 @@ func (v *GtkEntry) GetVisibility() bool {
 //-----------------------------------------------------------------------
 // GtkEntryBuffer
 //-----------------------------------------------------------------------
+type GtkEntryBuffer struct {
+	EntryBuffer *C.GtkEntryBuffer
+}
 
-// gtk_entry_buffer_new //since 2.18
-// gtk_entry_buffer_get_text //since 2.18
-// gtk_entry_buffer_set_text //since 2.18
+func EntryBuffer(initialText string) *GtkEntryBuffer {
+	panic_if_version_older_auto(2, 18, 0)
+	if len(initialText) == 0 {
+		return &GtkEntryBuffer{C._gtk_entry_buffer_new(nil, C.gint(-1))}
+	}
+	ptr := C.CString(initialText)
+	defer C.free_string(ptr)
+	return &GtkEntryBuffer{
+		C._gtk_entry_buffer_new(C.to_gcharptr(ptr), C.gint(len(initialText)))}
+}
+func (v *GtkEntryBuffer) GetText() string {
+	panic_if_version_older_auto(2, 18, 0)
+	return C.GoString(C.to_charptr(C._gtk_entry_buffer_get_text(v.EntryBuffer)))
+}
+func (v *GtkEntryBuffer) SetText(text string) {
+	panic_if_version_older_auto(2, 18, 0)
+	if len(text) == 0 {
+		C._gtk_entry_buffer_set_text(v.EntryBuffer, nil, C.gint(-1))
+	}
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C._gtk_entry_buffer_set_text(v.EntryBuffer,
+		C.to_gcharptr(ptr), C.gint(len(text)))
+}
 // gtk_entry_buffer_get_bytes //since 2.18
-// gtk_entry_buffer_get_length //since 2.18
-// gtk_entry_buffer_get_max_length //since 2.18
-// gtk_entry_buffer_set_max_length //since 2.18
-// gtk_entry_buffer_insert_text //since 2.18
-// gtk_entry_buffer_delete_text //since 2.18
+/*func (v *GtkEntryBuffer) GetBytes() ? {
+	panic_if_version_older_auto(2, 18, 0)
+	//TODO(any) what is the equivalent type for gsize in go?
+	return ?(C._gtk_entry_buffer_get_bytes(v.EntryBuffer))
+}*/
+
+func (v *GtkEntryBuffer) GetLength() uint {
+	panic_if_version_older_auto(2, 18, 0)
+	return uint(C._gtk_entry_buffer_get_length(v.EntryBuffer))
+}
+func (v *GtkEntryBuffer) GetMaxLength() int {
+	panic_if_version_older_auto(2, 18, 0)
+	return int(C._gtk_entry_buffer_get_max_length(v.EntryBuffer))
+}
+func (v *GtkEntryBuffer) SetMaxLength(maxLength int) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_entry_buffer_set_max_length(v.EntryBuffer, C.gint(maxLength))
+}
+func (v *GtkEntryBuffer) InsertText(position uint, text string) uint {
+	panic_if_version_older_auto(2, 18, 0)
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	return uint(C._gtk_entry_buffer_insert_text(v.EntryBuffer,
+		C.guint(position), C.to_gcharptr(ptr), C.gint(len(text))))
+}
+func (v *GtkEntryBuffer) DeleteText(position uint, nChars int) uint {
+	panic_if_version_older_auto(2, 18, 0)
+	return uint(C._gtk_entry_buffer_delete_text(v.EntryBuffer,
+		C.guint(position), C.gint(nChars)))
+}
 // gtk_entry_buffer_emit_deleted_text //since 2.18
 // gtk_entry_buffer_emit_inserted_text //since 2.18
 
