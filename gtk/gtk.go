@@ -3264,9 +3264,13 @@ func (v *GtkEntry) GetMaxLength() int {
 func (v *GtkEntry) GetVisibility() bool {
 	return gboolean2bool(C.gtk_entry_get_visibility(C.to_GtkEntry(v.Widget)))
 }
+func (v *GtkEntry) SetCompletion(completion *GtkEntryCompletion) {
+	C.gtk_entry_set_completion(C.to_GtkEntry(v.Widget), completion.EntryCompletion)
+}
+func (v *GtkEntry) GetCompletion() *GtkEntryCompletion {
+	return &GtkEntryCompletion{C.gtk_entry_get_completion(C.to_GtkEntry(v.Widget))}
+}
 
-// gtk_entry_set_completion
-// gtk_entry_get_completion
 // gtk_entry_set_cursor_hadjustment
 // gtk_entry_get_cursor_hadjustment
 // gtk_entry_set_progress_fraction
@@ -3368,31 +3372,97 @@ func (v *GtkEntryBuffer) DeleteText(position uint, nChars int) uint {
 // GtkEntryCompletion
 //-----------------------------------------------------------------------
 
-// gtk_entry_completion_new
-// gtk_entry_completion_get_entry
-// gtk_entry_completion_set_model
-// gtk_entry_completion_get_model
+type GtkEntryCompletion struct {
+	EntryCompletion *C.GtkEntryCompletion
+}
+
+func EntryCompletion() *GtkEntryCompletion {
+	return &GtkEntryCompletion{C.gtk_entry_completion_new()}
+}
+func (v *GtkEntryCompletion) GetEntry() *GtkWidget {
+	return &GtkWidget{C.gtk_entry_completion_get_entry(v.EntryCompletion)}
+}
+func (v *GtkEntryCompletion) SetModel(model *GtkTreeModel) {
+	C.gtk_entry_completion_set_model(v.EntryCompletion, model.TreeModel)
+}
+func (v *GtkEntryCompletion) GetModel() *GtkTreeModel {
+	return &GtkTreeModel{C.gtk_entry_completion_get_model(v.EntryCompletion)}
+}
+
+type GtkEntryCompletionMatchFunc func(completion *GtkEntryCompletion, key string, iter *GtkTreeIter, data interface{})
 // gtk_entry_completion_set_match_func
-// gtk_entry_completion_set_minimum_key_length
-// gtk_entry_completion_get_minimum_key_length
-// gtk_entry_completion_complete
-// gtk_entry_completion_get_completion_prefix
-// gtk_entry_completion_insert_prefix
-// gtk_entry_completion_insert_action_text
-// gtk_entry_completion_insert_action_markup
-// gtk_entry_completion_delete_action
-// gtk_entry_completion_set_text_column
-// gtk_entry_completion_get_text_column
-// gtk_entry_completion_set_inline_completion
-// gtk_entry_completion_get_inline_completion
-// gtk_entry_completion_set_inline_selection
-// gtk_entry_completion_get_inline_selection
-// gtk_entry_completion_set_popup_completion
-// gtk_entry_completion_get_popup_completion
-// gtk_entry_completion_set_popup_set_width
-// gtk_entry_completion_get_popup_set_width
-// gtk_entry_completion_set_popup_single_match
-// gtk_entry_completion_get_popup_single_match
+
+func (v *GtkEntryCompletion) SetMinimumKeyLength(length int) {
+	C.gtk_entry_completion_set_minimum_key_length(v.EntryCompletion, C.gint(length))
+}
+func (v *GtkEntryCompletion) GetMinimumKeyLength() int {
+	return int(C.gtk_entry_completion_get_minimum_key_length(v.EntryCompletion))
+}
+func (v *GtkEntryCompletion) Complete() {
+	C.gtk_entry_completion_complete(v.EntryCompletion)
+}
+func (v *GtkEntryCompletion) GetCompletionPrefix() string {
+	return C.GoString(C.to_charptr(C.gtk_entry_completion_get_completion_prefix(v.EntryCompletion)))
+}
+func (v *GtkEntryCompletion) InsertPrefix() {
+	C.gtk_entry_completion_insert_prefix(v.EntryCompletion)
+}
+func (v *GtkEntryCompletion) InsertActionText(index int, text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_entry_completion_insert_action_text(
+		v.EntryCompletion, C.gint(index), C.to_gcharptr(ptr))
+}
+func (v *GtkEntryCompletion) InsertActionMarkup(index int, markup string) {
+	ptr := C.CString(markup)
+	defer C.free_string(ptr)
+	C.gtk_entry_completion_insert_action_markup(
+		v.EntryCompletion, C.gint(index), C.to_gcharptr(ptr))
+}
+func (v *GtkEntryCompletion) DeleteAction(index int) {
+	C.gtk_entry_completion_delete_action(v.EntryCompletion, C.gint(index))
+}
+func (v *GtkEntryCompletion) SetTextColumn(column int) {
+	C.gtk_entry_completion_set_text_column(v.EntryCompletion, C.gint(column))
+}
+func (v *GtkEntryCompletion) GetTextColumn() int {
+	return int(C.gtk_entry_completion_get_text_column(v.EntryCompletion))
+}
+func (v *GtkEntryCompletion) SetInlineCompletion(inlineCompletion bool) {
+	C.gtk_entry_completion_set_inline_completion(v.EntryCompletion,
+		bool2gboolean(inlineCompletion))
+}
+func (v *GtkEntryCompletion) GetInlineCompletion() bool {
+	return gboolean2bool(C.gtk_entry_completion_get_inline_completion(v.EntryCompletion))
+}
+func (v *GtkEntryCompletion) SetInlineSelection(inlineSelection bool) {
+	C.gtk_entry_completion_set_inline_selection(v.EntryCompletion,
+		bool2gboolean(inlineSelection))
+}
+func (v *GtkEntryCompletion) GetInlineSelection() bool {
+	return gboolean2bool(C.gtk_entry_completion_get_inline_selection(v.EntryCompletion))
+}
+func (v *GtkEntryCompletion) SetPopupCompletion(popupCompletion bool) {
+	C.gtk_entry_completion_set_popup_completion(v.EntryCompletion,
+		bool2gboolean(popupCompletion))
+}
+func (v *GtkEntryCompletion) GetPopupCompletion() bool {
+	return gboolean2bool(C.gtk_entry_completion_get_popup_completion(v.EntryCompletion))
+}
+func (v *GtkEntryCompletion) SetPopupSetWidth(popupSetWidth bool) {
+	C.gtk_entry_completion_set_popup_set_width(v.EntryCompletion,
+		bool2gboolean(popupSetWidth))
+}
+func (v *GtkEntryCompletion) GetPopupSetWidth() bool {
+	return gboolean2bool(C.gtk_entry_completion_get_popup_set_width(v.EntryCompletion))
+}
+func (v *GtkEntryCompletion) SetPopupSingleMatch(popupSingleMatch bool) {
+	C.gtk_entry_completion_set_popup_single_match(v.EntryCompletion,
+		bool2gboolean(popupSingleMatch))
+}
+func (v *GtkEntryCompletion) GetPopupSingleMatch() bool {
+	return gboolean2bool(C.gtk_entry_completion_get_popup_single_match(v.EntryCompletion))
+}
 
 //-----------------------------------------------------------------------
 // GtkHScale
