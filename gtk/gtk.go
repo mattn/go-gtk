@@ -374,6 +374,72 @@ static void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receive
 static gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
 	return gtk_widget_get_receives_default(widget);
 }
+static GtkWidget* _gtk_info_bar_new() {
+	return gtk_info_bar_new();
+}
+static void _gtk_info_bar_add_action_widget(GtkInfoBar *info_bar, GtkWidget *child, gint response_id) {
+	gtk_info_bar_add_action_widget(info_bar, child, response_id);
+}
+static GtkWidget* _gtk_info_bar_add_button(GtkInfoBar *info_bar, const gchar *button_text, gint response_id) {
+	return gtk_info_bar_add_button(info_bar, button_text, response_id);
+}
+static void _gtk_info_bar_set_response_sensitive(GtkInfoBar *info_bar, gint response_id, gboolean setting) {
+	gtk_info_bar_set_response_sensitive(info_bar, response_id, setting);
+}
+static void _gtk_info_bar_set_default_response(GtkInfoBar *info_bar, gint response_id) {
+	gtk_info_bar_set_default_response(info_bar, response_id);
+}
+static void _gtk_info_bar_response(GtkInfoBar *info_bar, gint response_id) {
+	gtk_info_bar_response(info_bar, response_id);
+}
+static void _gtk_info_bar_set_message_type(GtkInfoBar *info_bar, GtkMessageType message_type) {
+	gtk_info_bar_set_message_type(info_bar, message_type);
+}
+static GtkMessageType _gtk_info_bar_get_message_type(GtkInfoBar *info_bar) {
+	return gtk_info_bar_get_message_type(info_bar);
+}
+static GtkWidget* _gtk_info_bar_get_action_area(GtkInfoBar *info_bar) {
+	return gtk_info_bar_get_action_area(info_bar);
+}
+static GtkWidget* _gtk_info_bar_get_content_area(GtkInfoBar *info_bar) {
+	return gtk_info_bar_get_content_area(info_bar);
+}
+static GtkWidget* _gtk_entry_new_with_buffer(GtkEntryBuffer *buffer) {
+	return gtk_entry_new_with_buffer(buffer);
+}
+static GtkEntryBuffer* _gtk_entry_get_buffer(GtkEntry *entry) {
+	return gtk_entry_get_buffer(entry);
+}
+static void _gtk_entry_set_buffer(GtkEntry *entry,  GtkEntryBuffer *buffer) {
+	gtk_entry_set_buffer(entry, buffer);
+}
+static GtkEntryBuffer* _gtk_entry_buffer_new(const gchar *initial_chars, gint n_initial_chars) {
+	return gtk_entry_buffer_new(initial_chars, n_initial_chars);
+}
+static const gchar* _gtk_entry_buffer_get_text(GtkEntryBuffer *buffer) {
+	return gtk_entry_buffer_get_text(buffer);
+}
+static void _gtk_entry_buffer_set_text(GtkEntryBuffer *buffer, const gchar *chars, gint n_chars) {
+	gtk_entry_buffer_set_text(buffer, chars, n_chars);
+}
+//static gsize _gtk_entry_buffer_get_bytes(GtkEntryBuffer *buffer) {
+//	return gtk_entry_buffer_get_bytes(buffer);
+//}
+static guint _gtk_entry_buffer_get_length(GtkEntryBuffer *buffer) {
+	return gtk_entry_buffer_get_length(buffer);
+}
+static gint _gtk_entry_buffer_get_max_length(GtkEntryBuffer *buffer) {
+	return gtk_entry_buffer_get_max_length(buffer);
+}
+static void _gtk_entry_buffer_set_max_length(GtkEntryBuffer *buffer, gint max_length) {
+	gtk_entry_buffer_set_max_length(buffer, max_length);
+}
+static guint _gtk_entry_buffer_insert_text(GtkEntryBuffer *buffer, guint position, const gchar *chars, gint n_chars) {
+	return gtk_entry_buffer_insert_text(buffer, position, chars, n_chars);
+}
+static guint _gtk_entry_buffer_delete_text(GtkEntryBuffer *buffer, guint position, gint n_chars) {
+	return gtk_entry_buffer_delete_text(buffer, position, n_chars);
+}
 #else //!GTK_CHECK_VERSION(2,18,0)
 static gboolean _gtk_cell_renderer_toggle_get_activatable(GtkCellRendererToggle *toggle) {
 	return 0;
@@ -449,6 +515,64 @@ static void _gtk_widget_set_window(GtkWidget *widget, GdkWindow *window) {
 static void _gtk_widget_set_receives_default(GtkWidget *widget, gboolean receives_default) {
 }
 static gboolean _gtk_widget_get_receives_default(GtkWidget *widget) {
+	return 0;
+}
+static GtkWidget* _gtk_info_bar_new() {
+	return NULL;
+}
+static void _gtk_info_bar_add_action_widget(GtkInfoBar *info_bar, GtkWidget *child, gint response_id) {
+}
+static GtkWidget* _gtk_info_bar_add_button(GtkInfoBar *info_bar, const gchar *button_text, gint response_id) {
+	return NULL;
+}
+static void _gtk_info_bar_set_response_sensitive(GtkInfoBar *info_bar, gint response_id, gboolean setting) {
+}
+static void _gtk_info_bar_set_default_response(GtkInfoBar *info_bar, gint response_id) {
+}
+static void _gtk_info_bar_response(GtkInfoBar *info_bar, gint response_id) {
+}
+static void _gtk_info_bar_set_message_type(GtkInfoBar *info_bar, GtkMessageType message_type) {
+}
+static GtkMessageType _gtk_info_bar_get_message_type(GtkInfoBar *info_bar) {
+	return 0;
+}
+static GtkWidget* _gtk_info_bar_get_action_area(GtkInfoBar *info_bar) {
+	return NULL;
+}
+static GtkWidget* _gtk_info_bar_get_content_area(GtkInfoBar *info_bar) {
+	return NULL;
+}
+static GtkWidget* _gtk_entry_new_with_buffer(GtkEntryBuffer *buffer) {
+	return NULL;
+}
+static GtkEntryBuffer* _gtk_entry_get_buffer(GtkEntry *entry) {
+	return NULL;
+}
+static void _gtk_entry_set_buffer(GtkEntry *entry,  GtkEntryBuffer *buffer) {
+}
+static GtkEntryBuffer* _gtk_entry_buffer_new(const gchar *initial_chars, gint n_initial_chars) {
+	return NULL;
+}
+static const gchar* _gtk_entry_buffer_get_text(GtkEntryBuffer *buffer) {
+	return NULL;
+}
+static void _gtk_entry_buffer_set_text(GtkEntryBuffer *buffer, const gchar *chars, gint n_chars) {
+}
+//static gsize _gtk_entry_buffer_get_bytes(GtkEntryBuffer *buffer) {
+//	return 0;
+//}
+static guint _gtk_entry_buffer_get_length(GtkEntryBuffer *buffer) {
+	return 0;
+}
+static gint _gtk_entry_buffer_get_max_length(GtkEntryBuffer *buffer) {
+	return 0;
+}
+static void _gtk_entry_buffer_set_max_length(GtkEntryBuffer *buffer, gint max_length) {
+}
+static guint _gtk_entry_buffer_insert_text(GtkEntryBuffer *buffer, guint position, const gchar *chars, gint n_chars) {
+	return 0;
+}
+static guint _gtk_entry_buffer_delete_text(GtkEntryBuffer *buffer, guint position, gint n_chars) {
 	return 0;
 }
 #endif //GTK_CHECK_VERSION(2,18,0)
@@ -572,6 +696,7 @@ static GtkWidget* to_GtkComboBoxText(GtkWidget* w) { return w; }
 
 static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
+static GtkInfoBar* to_GtkInfoBar(GtkWidget* w) { return GTK_INFO_BAR(w); }
 static GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
 static GtkBox* to_GtkBox(GtkWidget* w) { return GTK_BOX(w); }
 static GtkPaned* to_GtkPaned(GtkWidget* w) { return GTK_PANED(w); }
@@ -619,6 +744,7 @@ import (
 	"github.com/mattn/go-gtk/pango"
 	"log"
 	"reflect"
+	"runtime"
 	"strings"
 	"unsafe"
 )
@@ -635,14 +761,60 @@ func gboolean2bool(b C.gboolean) bool {
 	}
 	return false
 }
+
 func panic_if_version_older(major int, minor int, micro int, function string) {
 	if C._check_version(C.int(major), C.int(minor), C.int(micro)) == 0 {
 		log.Panicf("%s is not provided on your GTK, version %d.%d is required\n", function, major, minor)
 	}
 }
+
+func panic_if_version_older_auto(major, minor, micro int) {
+	if C._check_version(C.int(major), C.int(minor), C.int(micro)) != 0 {
+		return
+	}
+	formatStr := "%s is not provided on your GTK, version %d.%d is required\n"
+	if pc, _, _, ok := runtime.Caller(1); ok {
+		log.Panicf(formatStr, runtime.FuncForPC(pc).Name(), major, minor)
+	} else {
+		log.Panicf("GTK version %d.%d is required (unknown caller, see stack)\n",
+			major, minor)
+	}
+	
+}
+
 func deprecated_since(major int, minor int, micro int, function string) {
 	if C._check_version(C.int(major), C.int(minor), C.int(micro)) != 0 {
 		log.Printf("\nWarning: %s is deprecated since gtk %d.%d\n", function, major, minor)
+	}
+}
+
+func variadicButtonsToArrays(buttons []interface{}) ([]string, []int) {
+	if len(buttons)%2 != 0 {
+		argumentPanic("variadic parameter must be even (couples of string-int (button label - button response)")
+	}
+	text := make([]string, len(buttons)/2)
+	res := make([]int, len(buttons)/2)
+	for i := 0; i < len(text); i++ {
+		btext, ok := buttons[2*i].(string)
+		if !ok {
+			argumentPanic("button text must be a string")
+	}
+		bresponse, ok := buttons[2*i+1].(int)
+		if !ok {
+			argumentPanic("button response must be an int")
+		}
+		text[i] = btext
+		res[i] = bresponse
+	}
+	return text, res
+}
+
+func argumentPanic(message string) {
+	if pc, _, _, ok := runtime.Caller(2); ok {
+		log.Panicf("Arguments error: %s : %s\n",
+			runtime.FuncForPC(pc).Name(), message)
+	} else {
+		log.Panicln("Arguments error: (unknown caller, see stack):", message)
 	}
 }
 
@@ -742,7 +914,10 @@ func AccelGroup() *GtkAccelGroup {
 // gtk_accelerator_name
 // gtk_accelerator_get_label
 // gtk_accelerator_set_default_mod_mask
-// gtk_accelerator_get_default_mod_mask
+
+func AcceleratorGetDefaultModMask() uint {
+	return uint(C.gtk_accelerator_get_default_mod_mask())
+}
 
 //-----------------------------------------------------------------------
 // GtkAccelMap
@@ -2473,21 +2648,85 @@ func (v *GtkStatusbar) GetHasResizeGrip() bool {
 //-----------------------------------------------------------------------
 // GtkInfoBar
 //-----------------------------------------------------------------------
+type GtkInfoBar struct {
+	GtkHBox
+}
 
-//since 2.18
+func InfoBar() *GtkInfoBar {
+	panic_if_version_older_auto(2, 18, 0)
+	return &GtkInfoBar{GtkHBox{GtkBox{GtkContainer{GtkWidget{
+		C._gtk_info_bar_new()}}}}}
+}
 
-// gtk_info_bar_new
-// gtk_info_bar_new_with_buttons
-// gtk_info_bar_add_action_widget
-// gtk_info_bar_add_button
-// gtk_info_bar_add_buttons
-// gtk_info_bar_response_sensitive
-// gtk_info_bar_default_response
-// gtk_info_bar_response
-// gtk_info_bar_set_message_type
-// gtk_info_bar_get_message_type
-// gtk_info_bar_get_action_area
-// gtk_info_bar_get_content_area
+func InfoBarWithButtons(buttons ...interface{}) *GtkInfoBar {
+	panic_if_version_older_auto(2, 18, 0)
+	infobar := InfoBar()
+	text, res := variadicButtonsToArrays(buttons)
+	for i := range text {
+		infobar.AddButton(text[i], res[i])
+	}
+	return infobar
+}
+
+func (v *GtkInfoBar) AddActionWidget(child WidgetLike, responseId int) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_info_bar_add_action_widget(C.to_GtkInfoBar(v.Widget),
+		child.ToNative(), C.gint(responseId))
+}
+
+func (v *GtkInfoBar) AddButton(buttonText string, responseId int) *GtkWidget {
+	panic_if_version_older_auto(2, 18, 0)
+	ptr := C.CString(buttonText)
+	defer C.free_string(ptr)
+	return &GtkWidget{C._gtk_info_bar_add_button(C.to_GtkInfoBar(v.Widget),
+		C.to_gcharptr(ptr), C.gint(responseId))}
+}
+
+func (v *GtkInfoBar) AddButtons(buttons ...interface{}) {
+	panic_if_version_older_auto(2, 18, 0)
+	text, res := variadicButtonsToArrays(buttons)
+	for i := range text {
+		v.AddButton(text[i], res[i])
+	}
+}
+
+func (v *GtkInfoBar) SetResponseSensitive(responseId int, setting bool) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_info_bar_set_response_sensitive(C.to_GtkInfoBar(v.Widget),
+		C.gint(responseId), bool2gboolean(setting))
+}
+
+func (v *GtkInfoBar) SetDefaultResponse(responseId int) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_info_bar_set_default_response(C.to_GtkInfoBar(v.Widget),
+		C.gint(responseId))
+}
+
+func (v *GtkInfoBar) Response(responseId int) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_info_bar_response(C.to_GtkInfoBar(v.Widget), C.gint(responseId))
+}
+
+func (v *GtkInfoBar) SetMessageType(messageType GtkMessageType) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_info_bar_set_message_type(C.to_GtkInfoBar(v.Widget),
+		C.GtkMessageType(messageType))
+}
+
+func (v *GtkInfoBar) GetMessageType() GtkMessageType {
+	panic_if_version_older_auto(2, 18, 0)
+	return GtkMessageType(C._gtk_info_bar_get_message_type(C.to_GtkInfoBar(v.Widget)))
+}
+
+func (v *GtkInfoBar) GetActionArea() *GtkWidget {
+	panic_if_version_older_auto(2, 18, 0)
+	return &GtkWidget{C._gtk_info_bar_get_action_area(C.to_GtkInfoBar(v.Widget))}
+}
+ 
+func (v *GtkInfoBar) GetContentArea() *GtkWidget {
+	panic_if_version_older_auto(2, 18, 0)
+	return &GtkWidget{C._gtk_info_bar_get_content_area(C.to_GtkInfoBar(v.Widget))}
+}
 
 //-----------------------------------------------------------------------
 // GtkStatusIcon
@@ -2677,8 +2916,12 @@ func ButtonWithLabel(label string) *GtkButton {
 	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_button_new_with_label(C.to_gcharptr(ptr))}}}}
 }
-
-// gtk_button_new_with_mnemonic
+func ButtonWithMnemonic(label string) *GtkButton {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
+}
 // gtk_button_new_from_stock
 // gtk_button_pressed //deprecated since 2.20
 // gtk_button_released //deprecated since 2.20
@@ -2938,63 +3181,29 @@ func Entry() *GtkEntry {
 	widget := GtkWidget{C.gtk_entry_new()}
 	return &GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}
 }
-
-//func EntryWithBuffer(buffer *GtkTextBuffer) *GtkEntry { //since 2.18 TODO
-//	return &GtkEntry{GtkWidget{
-//		C.gtk_entry_new_with_buffer(C.to_GtkTextbuffer.TextBuffer)}}
-//}
-//Deprecated since 2.0. Use SetMaxLength() instead.
-func EntryWithMaxLength(i int) *GtkEntry {
-	deprecated_since(2, 0, 0, "gtk_entry_new_with_max_length()")
-	widget := GtkWidget{C.gtk_entry_new_with_max_length(C.gint(i))}
+func EntryWithBuffer(buffer *GtkEntryBuffer) *GtkEntry {
+	panic_if_version_older_auto(2, 18, 0)
+	widget := GtkWidget{C._gtk_entry_new_with_buffer(buffer.EntryBuffer)}
 	return &GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}
 }
-
-//func (v *GtkEntry) GetBuffer() *GtkTextBuffer { //since 2.18 TODO
-//	return &GtkTextBuffer{
-//		C.gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
-//}
-//func (v *GtkEntry) SetBuffer(buffer *GtkTextBuffer) { //since 2.18 TODO
-//	C.gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), C.to_GtkTextBuffer(buffer.TextBuffer))
-//}
+func (v *GtkEntry) GetBuffer() *GtkEntryBuffer {
+	panic_if_version_older_auto(2, 18, 0)
+	return &GtkEntryBuffer{C._gtk_entry_get_buffer(C.to_GtkEntry(v.Widget))}
+}
+func (v *GtkEntry) SetBuffer(buffer *GtkEntryBuffer) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_entry_set_buffer(C.to_GtkEntry(v.Widget), buffer.EntryBuffer)
+}
 func (v *GtkEntry) SetText(text string) {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C.gtk_entry_set_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
-}
-
-//Deprecated since 2.0. Use GtkEditable.InsertText() instead.
-func (v *GtkEntry) AppendText(text string) {
-	deprecated_since(2, 0, 0, "gtk_entry_append_text()")
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	C.gtk_entry_append_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
-}
-
-//Deprecated since 2.0. Use GtkEditable.InsertText() instead.
-func (v *GtkEntry) PrependText(text string) {
-	deprecated_since(2, 0, 0, "gtk_entry_prepend_text()")
-	ptr := C.CString(text)
-	defer C.free_string(ptr)
-	C.gtk_entry_prepend_text(C.to_GtkEntry(v.Widget), C.to_gcharptr(ptr))
-}
-
-//Deprecated since 2.0. Use GtkEditable.SetPosition() instead.
-func (v *GtkEntry) SetPosition(position int) {
-	deprecated_since(2, 0, 0, "gtk_entry_set_position()")
-	C.gtk_entry_set_position(C.to_GtkEntry(v.Widget), C.gint(position))
 }
 func (v *GtkEntry) GetText() string {
 	return C.GoString(C.to_charptr(C.gtk_entry_get_text(C.to_GtkEntry(v.Widget))))
 }
 func (v *GtkEntry) GetTextLength() int {
 	return int(C.gtk_entry_get_text_length(C.to_GtkEntry(v.Widget)))
-}
-
-//Deprecated since 2.0. Use GtkEditable.SelectRegion() instead.
-func (v *GtkEntry) SelectRegion(start, end int) {
-	deprecated_since(2, 0, 0, "gtk_entry_select_region()")
-	C.gtk_entry_select_region(C.to_GtkEntry(v.Widget), C.gint(start), C.gint(end))
 }
 func (v *GtkEntry) SetVisibility(setting bool) {
 	C.gtk_entry_set_visibility(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
@@ -3004,12 +3213,6 @@ func (v *GtkEntry) SetInvisibleChar(ch uint8) {
 }
 func (v *GtkEntry) UnsetInvisibleChar() {
 	C.gtk_entry_unset_invisible_char(C.to_GtkEntry(v.Widget))
-}
-
-//Deprecated since 2.0. Use GtkEditable.SetEditable() instead.
-func (v *GtkEntry) SetEditable(setting bool) {
-	deprecated_since(2, 0, 0, "gtk_entry_set_editable()")
-	C.gtk_entry_set_editable(C.to_GtkEntry(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkEntry) SetMaxLength(i int) {
 	C.gtk_entry_set_max_length(C.to_GtkEntry(v.Widget), C.gint(i))
@@ -3099,16 +3302,65 @@ func (v *GtkEntry) GetVisibility() bool {
 //-----------------------------------------------------------------------
 // GtkEntryBuffer
 //-----------------------------------------------------------------------
+type GtkEntryBuffer struct {
+	EntryBuffer *C.GtkEntryBuffer
+}
 
-// gtk_entry_buffer_new //since 2.18
-// gtk_entry_buffer_get_text //since 2.18
-// gtk_entry_buffer_set_text //since 2.18
+func EntryBuffer(initialText string) *GtkEntryBuffer {
+	panic_if_version_older_auto(2, 18, 0)
+	if len(initialText) == 0 {
+		return &GtkEntryBuffer{C._gtk_entry_buffer_new(nil, C.gint(-1))}
+	}
+	ptr := C.CString(initialText)
+	defer C.free_string(ptr)
+	return &GtkEntryBuffer{
+		C._gtk_entry_buffer_new(C.to_gcharptr(ptr), C.gint(len(initialText)))}
+}
+func (v *GtkEntryBuffer) GetText() string {
+	panic_if_version_older_auto(2, 18, 0)
+	return C.GoString(C.to_charptr(C._gtk_entry_buffer_get_text(v.EntryBuffer)))
+}
+func (v *GtkEntryBuffer) SetText(text string) {
+	panic_if_version_older_auto(2, 18, 0)
+	if len(text) == 0 {
+		C._gtk_entry_buffer_set_text(v.EntryBuffer, nil, C.gint(-1))
+	}
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C._gtk_entry_buffer_set_text(v.EntryBuffer,
+		C.to_gcharptr(ptr), C.gint(len(text)))
+}
 // gtk_entry_buffer_get_bytes //since 2.18
-// gtk_entry_buffer_get_length //since 2.18
-// gtk_entry_buffer_get_max_length //since 2.18
-// gtk_entry_buffer_set_max_length //since 2.18
-// gtk_entry_buffer_insert_text //since 2.18
-// gtk_entry_buffer_delete_text //since 2.18
+/*func (v *GtkEntryBuffer) GetBytes() ? {
+	panic_if_version_older_auto(2, 18, 0)
+	//TODO(any) what is the equivalent type for gsize in go?
+	return ?(C._gtk_entry_buffer_get_bytes(v.EntryBuffer))
+}*/
+
+func (v *GtkEntryBuffer) GetLength() uint {
+	panic_if_version_older_auto(2, 18, 0)
+	return uint(C._gtk_entry_buffer_get_length(v.EntryBuffer))
+}
+func (v *GtkEntryBuffer) GetMaxLength() int {
+	panic_if_version_older_auto(2, 18, 0)
+	return int(C._gtk_entry_buffer_get_max_length(v.EntryBuffer))
+}
+func (v *GtkEntryBuffer) SetMaxLength(maxLength int) {
+	panic_if_version_older_auto(2, 18, 0)
+	C._gtk_entry_buffer_set_max_length(v.EntryBuffer, C.gint(maxLength))
+}
+func (v *GtkEntryBuffer) InsertText(position uint, text string) uint {
+	panic_if_version_older_auto(2, 18, 0)
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	return uint(C._gtk_entry_buffer_insert_text(v.EntryBuffer,
+		C.guint(position), C.to_gcharptr(ptr), C.gint(len(text))))
+}
+func (v *GtkEntryBuffer) DeleteText(position uint, nChars int) uint {
+	panic_if_version_older_auto(2, 18, 0)
+	return uint(C._gtk_entry_buffer_delete_text(v.EntryBuffer,
+		C.guint(position), C.gint(nChars)))
+}
 // gtk_entry_buffer_emit_deleted_text //since 2.18
 // gtk_entry_buffer_emit_inserted_text //since 2.18
 
@@ -6048,9 +6300,6 @@ type GtkFileChooserDialog struct {
 }
 
 func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkFileChooserAction, button_text string, button_action int, buttons ...interface{}) *GtkFileChooserDialog {
-	if len(buttons)%2 != 0 {
-		panic("Error calling gtk.FileChooserDialog: variadic parameter must be even (couples of string-int (button label - button response)")
-	}
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button_text)
@@ -6065,16 +6314,9 @@ func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkF
 	ret := &GtkFileChooserDialog{
 		GtkDialog{GtkWindow{GtkBin{GtkContainer{widget}}}},
 		GtkFileChooser{C.to_GtkFileChooser(widget.Widget)}}
-	for i := 0; i < len(buttons)/2; i++ {
-		b_text, ok := buttons[2*i].(string)
-		if !ok {
-			panic("Error calling gtk.FileChooserDialog: button text must be a string")
-		}
-		b_action, ok := buttons[2*i+1].(int)
-		if !ok {
-			panic("Error calling gtk.FileChooserDialog: button response must be an int")
-		}
-		ret.AddButton(b_text, b_action)
+	text, res := variadicButtonsToArrays(buttons)
+	for i := range text {
+		ret.AddButton(text[i], res[i])
 	}
 	return ret
 }
