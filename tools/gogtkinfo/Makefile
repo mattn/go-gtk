@@ -1,7 +1,6 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=treeview
-GOFILES=\
-	treeview.go\
-
+TARG=gogtkinfo
+GOFILES= gogtkinfo.go
+ 
 include $(GOROOT)/src/Make.cmd

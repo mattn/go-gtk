@@ -1,7 +1,7 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=treeview
+TARG=dnd
 GOFILES=\
-	treeview.go\
+	dnd.go\
 
 include $(GOROOT)/src/Make.cmd

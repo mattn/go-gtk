@@ -1,7 +1,7 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=treeview
+TARG=clipboard
 GOFILES=\
-	treeview.go\
+	clipboard.go\
 
 include $(GOROOT)/src/Make.cmd

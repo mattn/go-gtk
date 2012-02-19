@@ -1,7 +1,7 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=treeview
+TARG=twitterstream
 GOFILES=\
-	treeview.go\
+	twitterstream.go\
 
 include $(GOROOT)/src/Make.cmd
