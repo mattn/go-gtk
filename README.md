@@ -90,9 +90,9 @@ GOAL:
     GtkLinkButton                 :  75% (  6/  8)
     GtkScaleButton                :   0% (  0/  9)
     GtkVolumeButton               :   0% (  0/  1)
-    GtkEntry                      :  36% ( 25/ 69)
-    GtkEntryBuffer                :   0% (  0/ 11)
-    GtkEntryCompletion            :   0% (  0/ 25)
+    GtkEntry                      :  38% ( 24/ 63)
+    GtkEntryBuffer                :  72% (  8/ 11)
+    GtkEntryCompletion            :  96% ( 24/ 25)
     GtkHScale                     : 100% (  2/  2)
     GtkVScale                     : 100% (  2/  2)
     GtkSpinButton                 :   0% (  0/ 25)
@@ -235,4 +235,4 @@ GOAL:
     GtkRecentFilter               :   0% (  0/ 12)
     GtkBuildable                  :   0% (  0/ 10)
 
-    Total progress :                 31% (953/3055)
+    Total progress :                 32% (984/3052)
