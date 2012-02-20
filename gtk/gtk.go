@@ -4813,29 +4813,43 @@ func IconView() *GtkIconView {
 	return &GtkIconView{GtkContainer{GtkWidget{
 		C.gtk_icon_view_new()}}}
 }
-func IconViewWithModel(model *GtkTreeModel) *GtkIconView {
+func IconViewWithModel(model GtkTreeModelLike) *GtkIconView {
+	var tm *C.GtkTreeModel
+	if model != nil {
+		tm = model.cTreeModel()
+	}
 	return &GtkIconView{GtkContainer{GtkWidget{
-		C.gtk_icon_view_new_with_model(model.TreeModel)}}}
+		C.gtk_icon_view_new_with_model(tm)}}}
 }
 func (v *GtkIconView) GetModel() *GtkTreeModel {
 	return &GtkTreeModel{
 		C.gtk_icon_view_get_model(C.to_GtkIconView(v.Widget))}
 }
-func (v *GtkIconView) SetModel(model *GtkTreeModel) {
-	C.gtk_icon_view_set_model(C.to_GtkIconView(v.Widget), model.TreeModel)
+func (v *GtkIconView) SetModel(model GtkTreeModelLike) {
+	var tm *C.GtkTreeModel
+	if model != nil {
+		tm = model.cTreeModel()
+	}
+	C.gtk_icon_view_set_model(C.to_GtkIconView(v.Widget), tm)
 }
 func (v *GtkIconView) GetTextColumn() int {
-	deprecated_since(2, 24, 0, "gtk_icon_view_get_text_column()")
 	return int(C.gtk_icon_view_get_text_column(C.to_GtkIconView(v.Widget)))
 }
 func (v *GtkIconView) SetTextColumn(text_column int) {
-	deprecated_since(2, 24, 0, "gtk_icon_view_set_text_column()")
 	C.gtk_icon_view_set_text_column(C.to_GtkIconView(v.Widget), C.gint(text_column))
 }
-// gtk_icon_view_set_markup_column
-// gtk_icon_view_get_markup_column
-// gtk_icon_view_set_pixbuf_column
-// gtk_icon_view_get_pixbuf_column
+func (v *GtkIconView) GetMarkupColumn() int {
+	return int(C.gtk_icon_view_get_markup_column(C.to_GtkIconView(v.Widget)))
+}
+func (v *GtkIconView) SetMarkupColumn(markup_column int) {
+	C.gtk_icon_view_set_markup_column(C.to_GtkIconView(v.Widget), C.gint(markup_column))
+}
+func (v *GtkIconView) GetPixbufColumn() int {
+	return int(C.gtk_icon_view_get_pixbuf_column(C.to_GtkIconView(v.Widget)))
+}
+func (v *GtkIconView) SetPixbufColumn(pixbuf_column int) {
+	C.gtk_icon_view_set_pixbuf_column(C.to_GtkIconView(v.Widget), C.gint(pixbuf_column))
+}
 // gtk_icon_view_get_path_at_pos
 // gtk_icon_view_get_item_at_pos
 // gtk_icon_view_convert_widget_to_bin_window_coords
