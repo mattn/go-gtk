@@ -112,7 +112,7 @@ GOAL:
     GtkTreeView                   :  14% ( 14/ 97)
     GtkTreeView drag-and-drop     :   0% (  0/  7)
     GtkCellView                   :   0% (  0/ 11)
-    GtkIconView                   :   0% (  0/ 62)
+    GtkIconView                   :  16% ( 10/ 62)
     GtkTreeSortable               :   0% (  0/  6)
     GtkTreeModelSort              :   0% (  0/  9)
     GtkTreeModelFilter            :   0% (  0/ 11)
@@ -235,4 +235,4 @@ GOAL:
     GtkRecentFilter               :   0% (  0/ 12)
     GtkBuildable                  :   0% (  0/ 10)
 
-    Total progress :                 32% (999/3053)
+    Total progress :                 33% (1009/3053)
