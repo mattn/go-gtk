@@ -4018,15 +4018,42 @@ type GtkTextTag struct {
 	TextTag *C.GtkTextTag
 }
 
-// gtk_text_tag_new
-// gtk_text_tag_get_priority
-// gtk_text_tag_set_priority
+func TextTag(name string) *GtkTextTag {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	return &GtkTextTag{
+		C.gtk_text_tag_new(C.to_gcharptr(ptr))}
+}
+func (v *GtkTextTag) SetPriority(priority int) {
+	C.gtk_text_tag_set_priority(v.TextTag, C.gint(priority))
+}
+func (v *GtkTextTag) GetPriority() int {
+	return int(C.gtk_text_tag_get_priority(v.TextTag))
+}
 // gtk_text_tag_event
-// gtk_text_attributes_new
-// gtk_text_attributes_copy
-// gtk_text_attributes_copy_values
-// gtk_text_attributes_unref
-// gtk_text_attributes_ref
+
+//-----------------------------------------------------------------------
+// GtkTextAttributes
+//-----------------------------------------------------------------------
+type GtkAttributes struct {
+	Attributes *C.GtkAttributes
+}
+
+func TextAttributes() *GtkTextAttributes {
+	return &GtkTextAttributes{C.gtk_text_attributes_new()}
+}
+func (v *GtkTextAttributes) Copy() *GtkTextAttributes {
+	return &GtkTextAttributes{C.gtk_text_attributes_copy(v.TextAttributes)}
+}
+func (v *GtkTextAttributes) CopyValues(values *GtkTextAttributes) {
+	C.gtk_text_attributes_copy_values(v.TextAttributes, values.TextAttributes)}
+}
+func (v *GtkTextAttributes) Unref() {
+	C.gtk_text_attributes_unref(v.TextAttributes)
+}
+func (v *GtkTextAttributes) Ref() *GtkTextAttributes {
+	return &GtkTextAttributes{C.gtk_text_attributes_ref(v.TextAttributes)}
+}
 
 //-----------------------------------------------------------------------
 // GtkTextTagTable
@@ -7867,10 +7894,20 @@ func (v *GtkViewport) GetViewWindow() *GtkWindow {
 //-----------------------------------------------------------------------
 // GtkAccessible
 //-----------------------------------------------------------------------
+type GtkAccessible struct {
+	glib.GObject
+}
 
-// gtk_accessible_connect_widget_destroyed
-// gtk_accessible_get_widget
-// gtk_accessible_set_widget
+func (v *GtkAccessible) ConnectWidgetDestroyed() {
+	C.gtk_accessible_connect_widget_destroyed(
+		C.to_GtkWidget(unsafe.Pointer(object.Object)))
+}
+func (v *GtkAccessible) SetWidget(w WidgetLike) {
+	C.gtk_accessible_set_widget(v.Widget, w.ToNative())
+}
+func (v *GtkAccessible) GetWidget() *GtkWidget {
+	return &GtkWidget{C.gtk_accessible_get_widget(v.Widget)}
+}
 
 //-----------------------------------------------------------------------
 // GtkBin
