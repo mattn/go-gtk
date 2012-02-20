@@ -5866,8 +5866,14 @@ func SeparatorMenuItem() *GtkSeparatorMenuItem {
 //-----------------------------------------------------------------------
 // GtkTearoffMenuItem
 //-----------------------------------------------------------------------
+type GtkTearoffMenuItem struct {
+	GtkMenuItem
+}
 
-// gtk_tearoff_menu_item_new
+func TearoffMenuItem() *GtkTearoffMenuItem {
+	return &GtkTearoffMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_tearoff_menu_item_new()}}}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkToolShell
