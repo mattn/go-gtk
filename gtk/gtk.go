@@ -7740,16 +7740,41 @@ func (v *GtkSizeGroup) GetWidgets() *glib.SList {
 //-----------------------------------------------------------------------
 // GtkTooltip
 //-----------------------------------------------------------------------
+type GtkTooltip struct {
+	Tooltip *C.GtkTooltip
+}
 
-// gtk_tooltip_set_markup
-// gtk_tooltip_set_text
-// gtk_tooltip_set_icon
-// gtk_tooltip_set_icon_from_stock
-// gtk_tooltip_set_icon_from_icon_name
+func (v *GtkTooltip) SetMarkup(markup string) {
+	ptr := C.CString(markup)
+	defer C.free_string(ptr)
+	C.gtk_tooltip_set_markup(v.Tooltip, C.to_gcharptr(ptr))
+}
+func (v *GtkTooltip) SetText(text string) {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)
+	C.gtk_tooltip_set_text(v.Tooltip, C.to_gcharptr(ptr))
+}
+func (v *GtkTooltip) SetIcon(pixbuf *gdkpixbuf.GdkPixbuf) {
+	C.gtk_tooltip_set_icon(v.Tooltip, pixbuf.Pixbuf)
+}
+func (v *GtkTooltip) SetIconFromStock(stock_id string, size GtkIconSize) {
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	C.gtk_tooltip_set_icon_from_stock(v.Tooltip, C.to_gcharptr(ptr), C.GtkIconSize(size))
+}
+func (v *GtkTooltip) SetIconFromIconName(icon_name string, size GtkIconSize) {
+	ptr := C.CString(icon_name)
+	defer C.free_string(ptr)
+	C.gtk_tooltip_set_icon_from_icon_name(v.Tooltip, C.to_gcharptr(ptr), C.GtkIconSize(size))
+}
 // gtk_tooltip_set_icon_from_gicon
 // gtk_tooltip_set_custom
 // gtk_tooltip_trigger_tooltip_query
 // gtk_tooltip_set_tip_area
+
+func TooltipFromNative(l unsafe.Pointer) *GtkTooltip {
+	return &GtkTooltip{(*C.GtkTooltip)(l)}
+}
 
 //-----------------------------------------------------------------------
 // GtkViewport
