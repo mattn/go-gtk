@@ -208,7 +208,7 @@ GOAL:
     GtkIMContextSimple            :   0% (  0/  2)
     GtkIMMulticontext             :   0% (  0/  4)
     GtkSizeGroup                  : 100% (  8/  8)
-    GtkTooltip                    :   0% (  0/  9)
+    GtkTooltip                    :  60% (  6/ 10)
     GtkViewport                   : 100% (  9/  9)
     GtkAccessible                 :   0% (  0/  3)
     GtkBin                        : 100% (  1/  1)
@@ -235,4 +235,4 @@ GOAL:
     GtkRecentFilter               :   0% (  0/ 12)
     GtkBuildable                  :   0% (  0/ 10)
 
-    total progress :                 32% (993/3052)
+    Total progress :                 32% (999/3053)
