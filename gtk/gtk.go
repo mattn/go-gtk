@@ -712,6 +712,7 @@ static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
 static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
 static GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
 static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
+static GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
 static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
@@ -7753,16 +7754,49 @@ func (v *GtkSizeGroup) GetWidgets() *glib.SList {
 //-----------------------------------------------------------------------
 // GtkViewport
 //-----------------------------------------------------------------------
+type GtkViewport struct {
+	GtkBin
+}
 
-// gtk_viewport_new
-// gtk_viewport_get_hadjustment
-// gtk_viewport_get_vadjustment
-// gtk_viewport_set_hadjustment
-// gtk_viewport_set_vadjustment
-// gtk_viewport_set_shadow_type
-// gtk_viewport_get_shadow_type
-// gtk_viewport_get_bin_window
-// gtk_viewport_get_view_window
+func Viewport(hadjustment *GtkAdjustment, vadjustment *GtkAdjustment) *GtkViewport {
+	var had, vad *C.GtkAdjustment
+	if hadjustment != nil {
+		had = hadjustment.Adjustment
+	}
+	if vadjustment != nil {
+		vad = vadjustment.Adjustment
+	}
+	return &GtkViewport{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_viewport_new(had, vad)}}}}
+}
+func (v *GtkViewport) GetHAdjustment() *GtkAdjustment {
+	return &GtkAdjustment{
+		C.gtk_viewport_get_hadjustment(C.to_GtkViewport(v.Widget))}
+}
+func (v *GtkViewport) GetVAdjustment() *GtkAdjustment {
+	return &GtkAdjustment{
+		C.gtk_viewport_get_vadjustment(C.to_GtkViewport(v.Widget))}
+}
+func (v *GtkViewport) SetHAdjustment(hadjustment *GtkAdjustment) {
+	C.gtk_viewport_set_hadjustment(C.to_GtkViewport(v.Widget), hadjustment.Adjustment)
+}
+func (v *GtkViewport) SetVAdjustment(vadjustment *GtkAdjustment) {
+	C.gtk_viewport_set_vadjustment(C.to_GtkViewport(v.Widget), vadjustment.Adjustment)
+}
+func (v *GtkViewport) GetShadowType() GtkShadowType {
+	return GtkShadowType(C.gtk_viewport_get_shadow_type(C.to_GtkViewport(v.Widget)))
+}
+func (v *GtkViewport) SetShadowType(typ GtkShadowType) {
+	C.gtk_viewport_set_shadow_type(C.to_GtkViewport(v.Widget), C.GtkShadowType(typ))
+}
+func (v *GtkViewport) GetBinWindow() *GtkWindow {
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_viewport_get_bin_window(C.to_GtkViewport(v.Widget))))}}}}
+}
+func (v *GtkViewport) GetViewWindow() *GtkWindow {
+	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_viewport_get_view_window(C.to_GtkViewport(v.Widget))))}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkAccessible
