@@ -716,6 +716,7 @@ static GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
 static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
 static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
 static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
+static GtkIconView* to_GtkIconView(GtkWidget* w) { return GTK_ICON_VIEW(w); }
 static GtkEditable* to_GtkEditable(GtkWidget* w) { return GTK_EDITABLE(w); }
 static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
 static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
@@ -4804,13 +4805,33 @@ func (v *GtkTreeView) RowExpanded(path *GtkTreePath) bool {
 //-----------------------------------------------------------------------
 // GtkIconView
 //-----------------------------------------------------------------------
+type GtkIconView struct {
+	GtkContainer
+}
 
-// gtk_icon_view_new
-// gtk_icon_view_new_with_model
-// gtk_icon_view_set_model
-// gtk_icon_view_get_model
-// gtk_icon_view_set_text_column
-// gtk_icon_view_get_text_column
+func IconView() *GtkIconView {
+	return &GtkIconView{GtkContainer{GtkWidget{
+		C.gtk_icon_view_new()}}}
+}
+func IconViewWithModel(model *GtkTreeModel) *GtkIconView {
+	return &GtkIconView{GtkContainer{GtkWidget{
+		C.gtk_icon_view_new_with_model(model.TreeModel)}}}
+}
+func (v *GtkIconView) GetModel() *GtkTreeModel {
+	return &GtkTreeModel{
+		C.gtk_icon_view_get_model(C.to_GtkIconView(v.Widget))}
+}
+func (v *GtkIconView) SetModel(model *GtkTreeModel) {
+	C.gtk_icon_view_set_model(C.to_GtkIconView(v.Widget), model.TreeModel)
+}
+func (v *GtkIconView) GetTextColumn() int {
+	deprecated_since(2, 24, 0, "gtk_icon_view_get_text_column()")
+	return int(C.gtk_icon_view_get_text_column(C.to_GtkIconView(v.Widget)))
+}
+func (v *GtkIconView) SetTextColumn(text_column int) {
+	deprecated_since(2, 24, 0, "gtk_icon_view_set_text_column()")
+	C.gtk_icon_view_set_text_column(C.to_GtkIconView(v.Widget), C.gint(text_column))
+}
 // gtk_icon_view_set_markup_column
 // gtk_icon_view_get_markup_column
 // gtk_icon_view_set_pixbuf_column
