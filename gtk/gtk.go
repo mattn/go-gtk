@@ -440,6 +440,12 @@ static guint _gtk_entry_buffer_insert_text(GtkEntryBuffer *buffer, guint positio
 static guint _gtk_entry_buffer_delete_text(GtkEntryBuffer *buffer, guint position, gint n_chars) {
 	return gtk_entry_buffer_delete_text(buffer, position, n_chars);
 }
+static void _gtk_status_icon_set_title(GtkStatusIcon *status_icon, const gchar *title) {
+	gtk_status_icon_set_title(status_icon, title);
+}
+static const gchar* _gtk_status_icon_get_title(GtkStatusIcon *status_icon) {
+	return gtk_status_icon_get_title(status_icon);
+}
 #else //!GTK_CHECK_VERSION(2,18,0)
 static gboolean _gtk_cell_renderer_toggle_get_activatable(GtkCellRendererToggle *toggle) {
 	return 0;
@@ -575,17 +581,54 @@ static guint _gtk_entry_buffer_insert_text(GtkEntryBuffer *buffer, guint positio
 static guint _gtk_entry_buffer_delete_text(GtkEntryBuffer *buffer, guint position, gint n_chars) {
 	return 0;
 }
+static void _gtk_status_icon_set_title(GtkStatusIcon *status_icon, const gchar *title) {
+}
+static const gchar* _gtk_status_icon_get_title(GtkStatusIcon *status_icon) {
+	return NULL;
+}
 #endif //GTK_CHECK_VERSION(2,18,0)
 
 #if GTK_CHECK_VERSION(2,20,0)
 static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
 	return gtk_dialog_get_widget_for_response(dialog, id);
 }
+static GdkWindow* _gtk_viewport_get_bin_window(GtkViewport *viewport) {
+	return gtk_viewport_get_bin_window(viewport);
+}
+static void _gtk_status_icon_set_name(GtkStatusIcon *status_icon, const gchar *name) {
+	gtk_status_icon_set_name(status_icon, name);
+}
 #else //GTK_CHECK_VERSION(2,20,0)
 static GtkWidget* _gtk_dialog_get_widget_for_response(GtkDialog* dialog, gint id) {
 	return NULL;
 }
+static GdkWindow* _gtk_viewport_get_bin_window(GtkViewport *viewport) {
+	return NULL;
+}
+static void _gtk_status_icon_set_name(GtkStatusIcon *status_icon, const gchar *name) {
+}
 #endif //GTK_CHECK_VERSION(2,20,0)
+
+#if GTK_CHECK_VERSION(2,22,0)
+static GtkWidget* _gtk_accessible_get_widget(GtkAccessible *accessible) {
+	return gtk_accessible_get_widget(accessible);
+}
+static void _gtk_accessible_set_widget(GtkAccessible *accessible, GtkWidget *widget) {
+	gtk_accessible_set_widget(accessible, widget);
+}
+static GdkWindow* _gtk_viewport_get_view_window(GtkViewport *viewport) {
+	return gtk_viewport_get_view_window(viewport);
+}
+#else //GTK_CHECK_VERSION(2,22,0)
+static GtkWidget* _gtk_accessible_get_widget(GtkAccessible *accessible) {
+	return NULL;
+}
+static void _gtk_accessible_set_widget(GtkAccessible *accessible, GtkWidget *widget) {
+}
+static GdkWindow* _gtk_viewport_get_view_window(GtkViewport *viewport) {
+	return NULL;
+}
+#endif //GTK_CHECK_VERSION(2,22,0)
 
 #if GTK_CHECK_VERSION(2,24,0)
 static GtkWidget* _gtk_combo_box_new_with_entry(void) {
@@ -694,6 +737,7 @@ static GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_
 static GtkWidget* to_GtkComboBoxText(GtkWidget* w) { return w; }
 #endif
 
+static GtkAccessible* to_GtkAccessible(void* w) { return GTK_ACCESSIBLE(w); }
 static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
 static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
 static GtkInfoBar* to_GtkInfoBar(GtkWidget* w) { return GTK_INFO_BAR(w); }
@@ -2802,17 +2846,17 @@ func (v *GtkStatusIcon) SetName(name string) {
 	panic_if_version_older(2, 20, 0, "gtk_status_icon_set_name()")
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
-	C.gtk_status_icon_set_name(v.StatusIcon, C.to_gcharptr(ptr))
+	C._gtk_status_icon_set_name(v.StatusIcon, C.to_gcharptr(ptr))
 }
 func (v *GtkStatusIcon) SetTitle(title string) {
 	panic_if_version_older(2, 18, 0, "gtk_status_icon_set_title()")
 	ptr := C.CString(title)
 	defer C.free_string(ptr)
-	C.gtk_status_icon_set_title(v.StatusIcon, C.to_gcharptr(ptr))
+	C._gtk_status_icon_set_title(v.StatusIcon, C.to_gcharptr(ptr))
 }
 func (v *GtkStatusIcon) GetTitle() string {
 	panic_if_version_older(2, 18, 0, "gtk_status_icon_get_title()")
-	return C.GoString(C.to_charptr(C.gtk_status_icon_get_title(v.StatusIcon)))
+	return C.GoString(C.to_charptr(C._gtk_status_icon_get_title(v.StatusIcon)))
 }
 func (v *GtkStatusIcon) SetTooltipText(text string) {
 	ptr := C.CString(text)
@@ -4035,8 +4079,8 @@ func (v *GtkTextTag) GetPriority() int {
 //-----------------------------------------------------------------------
 // GtkTextAttributes
 //-----------------------------------------------------------------------
-type GtkAttributes struct {
-	Attributes *C.GtkAttributes
+type GtkTextAttributes struct {
+	TextAttributes *C.GtkTextAttributes
 }
 
 func TextAttributes() *GtkTextAttributes {
@@ -4046,7 +4090,7 @@ func (v *GtkTextAttributes) Copy() *GtkTextAttributes {
 	return &GtkTextAttributes{C.gtk_text_attributes_copy(v.TextAttributes)}
 }
 func (v *GtkTextAttributes) CopyValues(values *GtkTextAttributes) {
-	C.gtk_text_attributes_copy_values(v.TextAttributes, values.TextAttributes)}
+	C.gtk_text_attributes_copy_values(v.TextAttributes, values.TextAttributes)
 }
 func (v *GtkTextAttributes) Unref() {
 	C.gtk_text_attributes_unref(v.TextAttributes)
@@ -4887,8 +4931,8 @@ func (v *GtkIconView) SetPixbufColumn(pixbuf_column int) {
 // gtk_icon_view_get_selection_mode
 // gtk_icon_view_set_orientation
 // gtk_icon_view_get_orientation
-// gtk_icon_view_set_item_orientation
-// gtk_icon_view_get_item_orientation
+// gtk_icon_view_set_item_orientation //since 2.22
+// gtk_icon_view_get_item_orientation //since 2.22
 // gtk_icon_view_set_columns
 // gtk_icon_view_get_columns
 // gtk_icon_view_set_item_width
@@ -4901,8 +4945,8 @@ func (v *GtkIconView) SetPixbufColumn(pixbuf_column int) {
 // gtk_icon_view_get_column_spacing
 // gtk_icon_view_set_margin
 // gtk_icon_view_get_margin
-// gtk_icon_view_set_item_padding
-// gtk_icon_view_get_item_padding
+// gtk_icon_view_set_item_padding //since 2.18
+// gtk_icon_view_get_item_padding //since 2.18
 // gtk_icon_view_select_path
 // gtk_icon_view_unselect_path
 // gtk_icon_view_path_is_selected
@@ -4917,8 +4961,8 @@ func (v *GtkIconView) SetPixbufColumn(pixbuf_column int) {
 // gtk_icon_view_get_tooltip_context
 // gtk_icon_view_set_tooltip_column
 // gtk_icon_view_get_tooltip_column
-// gtk_icon_view_get_item_row
-// gtk_icon_view_get_item_column
+// gtk_icon_view_get_item_row //since 2.22
+// gtk_icon_view_get_item_column //since 2.22
 // gtk_icon_view_enable_model_drag_source
 // gtk_icon_view_enable_model_drag_dest
 // gtk_icon_view_unset_model_drag_source
@@ -7339,7 +7383,7 @@ func (v *GtkPrintOperation) Connect(s string, f interface{}, datas ...interface{
 // gtk_print_operation_get_print_settings
 // gtk_print_operation_set_job_name
 // gtk_print_operation_set_n_pages
-// gtk_print_operation_get_n_pages_to_print
+// gtk_print_operation_get_n_pages_to_print //since 2.18
 // gtk_print_operation_set_current_page
 // gtk_print_operation_set_use_full_page
 // gtk_print_operation_set_unit
@@ -7351,12 +7395,12 @@ func (v *GtkPrintOperation) Connect(s string, f interface{}, datas ...interface{
 // gtk_print_operation_set_defer_drawing
 // gtk_print_operation_get_status
 // gtk_print_operation_get_status_string
-// gtk_print_operation_set_support_selection
-// gtk_print_operation_get_support_selection
-// gtk_print_operation_set_has_selection
-// gtk_print_operation_get_has_selection
-// gtk_print_operation_set_embed_page_setup
-// gtk_print_operation_get_embed_page_setup
+// gtk_print_operation_set_support_selection //since 2.18
+// gtk_print_operation_get_support_selection //since 2.18
+// gtk_print_operation_set_has_selection //since 2.18
+// gtk_print_operation_get_has_selection //since 2.18
+// gtk_print_operation_set_embed_page_setup //since 2.18
+// gtk_print_operation_get_embed_page_setup //since 2.18
 // gtk_print_run_page_setup_dialog
 // gtk_print_run_page_setup_dialog_async
 // gtk_print_operation_preview_end_preview
@@ -7386,7 +7430,7 @@ func (v *GtkPrintContext) SetCairoContext(cairo *C.cairo_t, dpi_x float64, dpi_y
 // gtk_print_context_get_pango_fontmap
 // gtk_print_context_create_pango_context
 // gtk_print_context_create_pango_layout
-// gtk_print_context_get_hard_margins
+// gtk_print_context_get_hard_margins //since 2.20
 
 //-----------------------------------------------------------------------
 // GtkPrintSettings
@@ -7835,7 +7879,7 @@ func (v *GtkTooltip) SetIconFromIconName(icon_name string, size GtkIconSize) {
 	defer C.free_string(ptr)
 	C.gtk_tooltip_set_icon_from_icon_name(v.Tooltip, C.to_gcharptr(ptr), C.GtkIconSize(size))
 }
-// gtk_tooltip_set_icon_from_gicon
+// gtk_tooltip_set_icon_from_gicon //since 2.20
 // gtk_tooltip_set_custom
 // gtk_tooltip_trigger_tooltip_query
 // gtk_tooltip_set_tip_area
@@ -7883,12 +7927,14 @@ func (v *GtkViewport) SetShadowType(typ GtkShadowType) {
 	C.gtk_viewport_set_shadow_type(C.to_GtkViewport(v.Widget), C.GtkShadowType(typ))
 }
 func (v *GtkViewport) GetBinWindow() *GtkWindow {
+	panic_if_version_older_auto(2, 20, 0)
 	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_viewport_get_bin_window(C.to_GtkViewport(v.Widget))))}}}}
+		C.to_GtkWidget(unsafe.Pointer(C._gtk_viewport_get_bin_window(C.to_GtkViewport(v.Widget))))}}}}
 }
 func (v *GtkViewport) GetViewWindow() *GtkWindow {
+	panic_if_version_older_auto(2, 22, 0)
 	return &GtkWindow{GtkBin{GtkContainer{GtkWidget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_viewport_get_view_window(C.to_GtkViewport(v.Widget))))}}}}
+		C.to_GtkWidget(unsafe.Pointer(C._gtk_viewport_get_view_window(C.to_GtkViewport(v.Widget))))}}}}
 }
 
 //-----------------------------------------------------------------------
@@ -7900,13 +7946,17 @@ type GtkAccessible struct {
 
 func (v *GtkAccessible) ConnectWidgetDestroyed() {
 	C.gtk_accessible_connect_widget_destroyed(
-		C.to_GtkWidget(unsafe.Pointer(object.Object)))
+		C.to_GtkAccessible(unsafe.Pointer(v.Object)))
 }
 func (v *GtkAccessible) SetWidget(w WidgetLike) {
-	C.gtk_accessible_set_widget(v.Widget, w.ToNative())
+	panic_if_version_older_auto(2, 22, 0)
+	C._gtk_accessible_set_widget(
+		C.to_GtkAccessible(unsafe.Pointer(v.Object)), w.ToNative())
 }
 func (v *GtkAccessible) GetWidget() *GtkWidget {
-	return &GtkWidget{C.gtk_accessible_get_widget(v.Widget)}
+	panic_if_version_older_auto(2, 22, 0)
+	return &GtkWidget{C._gtk_accessible_get_widget(
+		C.to_GtkAccessible(unsafe.Pointer(v.Object)))}
 }
 
 //-----------------------------------------------------------------------
