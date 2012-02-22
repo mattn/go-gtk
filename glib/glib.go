@@ -9,6 +9,7 @@ package glib
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+typedef void* __GValue;
 static GList* to_list(void* l) {
 	return (GList*)l;
 }
@@ -48,37 +49,42 @@ static void _g_object_set_addr(gpointer object, const gchar *property_name, void
 //static void _g_object_get(gpointer object, const gchar *property_name, void* value) {
 //  g_object_get(object, property_name, value, NULL);
 //}
+static void _g_object_set_property(GObject *object, const gchar *property_name, __GValue *value) {
+	g_object_set_property(object, property_name, (const GValue *)value);
+}
 
-static void g_value_init_int(GValue* gv) { g_value_init(gv, G_TYPE_INT); }
-static void g_value_init_string(GValue* gv) { g_value_init(gv, G_TYPE_STRING); }
+static void _g_value_init_int(__GValue* gv) { g_value_init((GValue*) gv, G_TYPE_INT); }
+static int _g_value_get_int(__GValue* gv) { return g_value_get_int((GValue*)gv); }
+static void _g_value_init_string(__GValue* gv) { g_value_init((GValue*) gv, G_TYPE_STRING); }
+static const gchar* _g_value_get_string(__GValue* gv) { return g_value_get_string((GValue*)gv); }
 
-static GValue* init_gvalue_string_type() {
+static __GValue* init_gvalue_string_type() {
 	GValue* gv = g_new0(GValue, 1);
 	g_value_init(gv, G_TYPE_STRING);
-	return gv;
+	return (__GValue*)gv;
 }
-static GValue* init_gvalue_string(gchar* val) {
-	GValue* gv = init_gvalue_string_type();
-	g_value_set_string(gv, val);
+static __GValue* init_gvalue_string(gchar* val) {
+	__GValue* gv = init_gvalue_string_type();
+	g_value_set_string((GValue*)gv, val);
 	return gv;
 }
 
-static GValue* init_gvalue_int_type() {
+static __GValue* init_gvalue_int_type() {
 	GValue* gv = g_new0(GValue, 1);
 	g_value_init(gv, G_TYPE_INT);
-	return gv;
+	return (__GValue*)gv;
 }
-static GValue* init_gvalue_int(gint val) {
-	GValue* gv = init_gvalue_int_type();
-	g_value_set_int(gv, val);
+static __GValue* init_gvalue_int(gint val) {
+	__GValue* gv = init_gvalue_int_type();
+	g_value_set_int((GValue*)gv, val);
 	return gv;
 }
 
-static GValue* init_gvalue_uint(guint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UINT); g_value_set_uint(gv, val); return gv; }
-static GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return gv; }
-static GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return gv; }
-static GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return gv; }
-//static GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return gv; }
+static __GValue* init_gvalue_uint(guint val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UINT); g_value_set_uint(gv, val); return (__GValue*) gv; }
+static __GValue* init_gvalue_double(gdouble val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_DOUBLE); g_value_set_double(gv, val); return (__GValue*) gv; }
+static __GValue* init_gvalue_byte(guchar val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_UCHAR); g_value_set_uchar(gv, val); return (__GValue*) gv; }
+static __GValue* init_gvalue_bool(gboolean val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_BOOLEAN); g_value_set_boolean(gv, val); return (__GValue*) gv; }
+//static __GValue* init_gvalue_pointer(gpointer val) { GValue* gv = g_new0(GValue, 1); g_value_init(gv, G_TYPE_POINTER); g_value_set_pointer(gv, val); return (__GValue*) gv; }
 
 typedef struct {
 	char *name;
@@ -564,14 +570,14 @@ func (v *GObject) Set(name string, value interface{}) {
 func (v *GObject) SetProperty(name string, val *GValue) {
 	str := C.CString(name)
 	defer C.free_string(str)
-	C.g_object_set_property(C.to_GObject(v.Object), C.to_gcharptr(str), &val.Value)
+	C._g_object_set_property(C.to_GObject(v.Object), C.to_gcharptr(str), &val.Value)
 }
 
 //-----------------------------------------------------------------------
 // GValue
 //-----------------------------------------------------------------------
-func GValueFromNative(value interface{}) *C.GValue {
-	var gv *C.GValue
+func GValueFromNative(value interface{}) *C.__GValue {
+	var gv *C.__GValue
 
 	if _, ok := value.(WrappedObject); ok {
 		value = value.(WrappedObject).GetInternalValue()
@@ -620,7 +626,7 @@ func ValueFromNative(val interface{}) *GValue {
 }
 
 type GValue struct {
-	Value C.GValue
+	Value C.__GValue
 }
 
 const (
@@ -644,18 +650,18 @@ const (
 
 func (v *GValue) Init(t int) {
 	if t == G_TYPE_INT {
-		C.g_value_init_int(&v.Value)
+		C._g_value_init_int(&v.Value)
 	} else if t == G_TYPE_STRING {
-		C.g_value_init_string(&v.Value)
+		C._g_value_init_string(&v.Value)
 	}
 }
 
 func (v *GValue) GetString() string {
-	return C.GoString(C.to_charptr(C.g_value_get_string(&v.Value)))
+	return C.GoString(C.to_charptr(C._g_value_get_string(&v.Value)))
 }
 
 func (v *GValue) GetInt() int {
-	return int(C.g_value_get_int(&v.Value))
+	return int(C._g_value_get_int(&v.Value))
 }
 
 //-----------------------------------------------------------------------

@@ -5,7 +5,7 @@ package gtk
 
 /*
 #ifndef uintptr
-#define uintptr unsigned int*
+//#define uintptr unsigned int*
 #endif
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -19,6 +19,8 @@ package gtk
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+typedef void* __GValue;
 
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
@@ -71,6 +73,16 @@ static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
 			button,
 			action,
 			NULL);
+}
+
+static void _gtk_tree_store_set_value(GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, __GValue *value) {
+	gtk_tree_store_set_value(tree_store, iter, column, (GValue*)value);
+}
+static void _gtk_tree_model_get_value(GtkTreeModel *tree_model, GtkTreeIter *iter, gint column, __GValue *value) {
+	gtk_tree_model_get_value(tree_model, iter, column, (GValue*)value);
+}
+static void _gtk_list_store_set_value(GtkListStore *list_store, GtkTreeIter *iter, gint column, __GValue *value) {
+	gtk_list_store_set_value(list_store, iter, column, (GValue*)value);
 }
 
 static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, GtkTreeIter* iter, void* path) {
@@ -150,7 +162,7 @@ typedef struct {
 	gpointer data;
 } _gtk_menu_position_func_info;
 
-extern void _go_gtk_menu_position_func(_gtk_menu_position_func_info* gmpfi);
+extern void _go_gtk_menu_position_func(void* gmpfi);
 static void _c_gtk_menu_position_func(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data) {
 	_gtk_menu_position_func_info gmpfi;
 	gmpfi.menu = menu;
@@ -158,7 +170,7 @@ static void _c_gtk_menu_position_func(GtkMenu *menu, gint *x, gint *y, gboolean 
 	gmpfi.y = *y;
 	gmpfi.push_in = *push_in;
 	gmpfi.data = user_data;
-	_go_gtk_menu_position_func(&gmpfi);
+	_go_gtk_menu_position_func((void*)&gmpfi);
 	*x = gmpfi.x;
 	*y = gmpfi.y;
 	*push_in = gmpfi.push_in;
@@ -216,6 +228,26 @@ static void _gtk_tree_iter_assign(void* iter, void* to) {
 
 static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
   return GTK_DIALOG(w)->vbox;
+}
+
+static GdkPixbuf* _gtk_image_get_pixbuf(GtkWidget* w) {
+	return gtk_image_get_pixbuf(GTK_IMAGE(w));
+}
+
+static void _gtk_image_set_from_pixbuf(GtkWidget* w, GdkPixbuf* pixbuf) {
+	gtk_image_set_from_pixbuf(GTK_IMAGE(w), pixbuf);
+}
+
+static void _gtk_image_set_from_stock(GtkWidget* w, gchar* stock, GtkIconSize size) {
+	gtk_image_set_from_stock(GTK_IMAGE(w), stock, size);
+}
+
+static void _gtk_image_set_from_file(GtkWidget* w, const gchar* filename) {
+	return gtk_image_set_from_file(GTK_IMAGE(w), filename);
+}
+
+static void _gtk_image_clear(GtkWidget* w) {
+	gtk_image_clear(GTK_IMAGE(w));
 }
 
 //////////////////////////////////////////////
@@ -715,7 +747,7 @@ static inline char* to_charptr_voidp(const void* s) { return (char*)s; }
 static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
 static inline void free_string(char* s) { free(s); }
 
-static GValue* to_GValueptr(void* s) { return (GValue*)s; }
+static __GValue* to_GValueptr(void* s) { return (__GValue*)s; }
 static GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
 static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
 static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
@@ -768,7 +800,8 @@ static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
 static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
 static GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
-static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
+//static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
+static GtkWidget* to_GtkImage(GtkWidget* w) { return (GtkWidget*) GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
@@ -2344,7 +2377,7 @@ type GtkImage struct {
 
 func (v *GtkImage) GetPixbuf() *gdkpixbuf.GdkPixbuf {
 	return &gdkpixbuf.GdkPixbuf{
-		C.gtk_image_get_pixbuf(C.to_GtkImage(v.Widget))}
+		C._gtk_image_get_pixbuf(C.to_GtkImage(v.Widget))}
 }
 
 // gtk_image_get_pixmap
@@ -2385,14 +2418,14 @@ func ImageFromStock(stock_id string, size GtkIconSize) *GtkImage {
 func (v *GtkImage) SetFromFile(filename string) {
 	ptr := C.CString(filename)
 	defer C.free_string(ptr)
-	C.gtk_image_set_from_file(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr))
+	C._gtk_image_set_from_file(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr))
 }
 
 // gtk_image_set_from_icon_set
 // gtk_image_set_from_image
 
 func (v *GtkImage) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_image_set_from_pixbuf(C.to_GtkImage(v.Widget), pixbuf.Pixbuf)
+	C._gtk_image_set_from_pixbuf(C.to_GtkImage(v.Widget), pixbuf.Pixbuf)
 }
 
 // gtk_image_set_from_pixmap
@@ -2400,7 +2433,7 @@ func (v *GtkImage) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
 func (v *GtkImage) SetFromStock(stock_id string, size GtkIconSize) {
 	ptr := C.CString(stock_id)
 	defer C.free_string(ptr)
-	C.gtk_image_set_from_stock(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr), C.GtkIconSize(size))
+	C._gtk_image_set_from_stock(C.to_GtkImage(v.Widget), C.to_gcharptr(ptr), C.GtkIconSize(size))
 }
 
 // gtk_image_set_from_animation
@@ -2408,7 +2441,7 @@ func (v *GtkImage) SetFromStock(stock_id string, size GtkIconSize) {
 // gtk_image_set_from_gicon
 
 func (v *GtkImage) Clear() {
-	C.gtk_image_clear(C.to_GtkImage(v.Widget))
+	C._gtk_image_clear(C.to_GtkImage(v.Widget))
 }
 func Image() *GtkImage {
 	return &GtkImage{GtkWidget{
@@ -4409,7 +4442,7 @@ func (v *GtkTreeModel) GetPath(iter *GtkTreeIter) *GtkTreePath {
 	return &GtkTreePath{C._gtk_tree_model_get_path(v.TreeModel, &iter.TreeIter)}
 }
 func (v *GtkTreeModel) GetValue(iter *GtkTreeIter, col int, val *glib.GValue) {
-	C.gtk_tree_model_get_value(v.TreeModel, &iter.TreeIter, C.gint(col), C.to_GValueptr(unsafe.Pointer(&val.Value)))
+	C._gtk_tree_model_get_value(v.TreeModel, &iter.TreeIter, C.gint(col), C.to_GValueptr(unsafe.Pointer(&val.Value)))
 }
 func (v *GtkTreeModel) IterNext(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_tree_model_iter_next(v.TreeModel, &iter.TreeIter))
@@ -5221,7 +5254,7 @@ func (v *GtkListStore) Set(iter *GtkTreeIter, a ...interface{}) {
 func (v *GtkListStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
+		C._gtk_list_store_set_value(v.ListStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
 		if pv, ok := a.(*[0]uint8); ok {
 			C._gtk_list_store_set_ptr(v.ListStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(pv))
@@ -5308,7 +5341,8 @@ func TreeStore(v ...interface{}) *GtkTreeStore {
 	return &GtkTreeStore{GtkTreeModel{C.to_GtkTreeModelFromTreeStore(ctreestore)}, ctreestore}
 }
 
-// void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types); void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
+// void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types);
+// void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
 
 func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
 	for r := range a {
@@ -5318,7 +5352,7 @@ func (v *GtkTreeStore) Set(iter *GtkTreeIter, a ...interface{}) {
 func (v *GtkTreeStore) SetValue(iter *GtkTreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
+		C._gtk_tree_store_set_value(v.TreeStore, &iter.TreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
 	} else {
 		if pv, ok := a.(*[0]uint8); ok {
 			C._gtk_tree_store_set_ptr(v.TreeStore, &iter.TreeIter, C.gint(column), unsafe.Pointer(pv))
@@ -9119,5 +9153,6 @@ func (v *GtkBuilder) GetTypeFromName(type_name string) int {
 	return int(C.gtk_builder_get_type_from_name(v.Builder, ptr))
 }
 
-// gboolean gtk_builder_value_from_string (GtkBuilder *builder, GParamSpec *pspec, const gchar *string, GValue *value, GError **error);
-// gboolean gtk_builder_value_from_string_type (GtkBuilder *builder, GType type, const gchar *string, GValue *value, GError **error);
+// gtk_builder_value_from_string
+// gtk_builder_value_from_string_type
+
