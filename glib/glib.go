@@ -93,7 +93,7 @@ typedef struct {
 static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
-extern void _go_glib_callback(void* cbi);
+extern void _go_glib_callback(callback_info* cbi);
 static gboolean _callback(void *data, ...) {
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
@@ -106,7 +106,7 @@ static gboolean _callback(void *data, ...) {
 	}
 	va_end(ap);
 
-	_go_glib_callback((void*)cbi);
+	_go_glib_callback(cbi);
 
 	free(cbi->args);
 
@@ -692,8 +692,7 @@ func (c *CallbackContext) Args(n int) uintptr {
 }
 
 //export _go_glib_callback
-func _go_glib_callback(pcbi unsafe.Pointer) {
-	cbi := (*C.callback_info)(pcbi)
+func _go_glib_callback(cbi *C.callback_info) {
 	context := callback_contexts[int(cbi.func_no)]
 	rf := reflect.ValueOf(context.f)
 	t := rf.Type()
