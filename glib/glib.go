@@ -1,9 +1,6 @@
 package glib
 
 /*
-#ifndef uintptr
-//#define uintptr unsigned int*
-#endif
 #include <glib.h>
 #include <glib-object.h>
 #include <stdint.h>
