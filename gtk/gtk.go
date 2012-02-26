@@ -4,9 +4,6 @@ Go Bindings for Gtk+ 2. Support version 2.16 and later.
 package gtk
 
 /*
-#ifndef uintptr
-#define uintptr unsigned int*
-#endif
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <unistd.h>
@@ -19,6 +16,7 @@ package gtk
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "go-gtk.h"
 
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
@@ -142,15 +140,6 @@ static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter
 //	*value = gtk_range_get_value(range);
 //}
 
-typedef struct {
-	GtkMenu *menu;
-	gint x;
-	gint y;
-	gboolean push_in;
-	gpointer data;
-} _gtk_menu_position_func_info;
-
-extern void _go_gtk_menu_position_func(_gtk_menu_position_func_info* gmpfi);
 static void _c_gtk_menu_position_func(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data) {
 	_gtk_menu_position_func_info gmpfi;
 	gmpfi.menu = menu;
@@ -5709,8 +5698,7 @@ type GtkMenuPositionFuncInfo struct {
 }
 
 //export _go_gtk_menu_position_func
-func _go_gtk_menu_position_func(pgmpfi unsafe.Pointer) {
-	gmpfi := (*C._gtk_menu_position_func_info)(pgmpfi)
+func _go_gtk_menu_position_func(gmpfi *C._gtk_menu_position_func_info) {
 	if gmpfi == nil {
 		return
 	}
