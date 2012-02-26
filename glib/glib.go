@@ -2,7 +2,7 @@ package glib
 
 /*
 #ifndef uintptr
-#define uintptr unsigned int*
+//#define uintptr unsigned int*
 #endif
 #include <glib.h>
 #include <glib-object.h>
@@ -93,7 +93,7 @@ typedef struct {
 static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
-extern void _go_glib_callback(callback_info* cbi);
+extern void _go_glib_callback(void* cbi);
 static gboolean _callback(void *data, ...) {
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
@@ -106,7 +106,7 @@ static gboolean _callback(void *data, ...) {
 	}
 	va_end(ap);
 
-	_go_glib_callback(cbi);
+	_go_glib_callback((void*)cbi);
 
 	free(cbi->args);
 
