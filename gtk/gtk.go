@@ -4,9 +4,6 @@ Go Bindings for Gtk+ 2. Support version 2.16 and later.
 package gtk
 
 /*
-#ifndef uintptr
-#define uintptr unsigned int*
-#endif
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <unistd.h>
@@ -5709,8 +5706,7 @@ type GtkMenuPositionFuncInfo struct {
 }
 
 //export _go_gtk_menu_position_func
-func _go_gtk_menu_position_func(pgmpfi unsafe.Pointer) {
-	gmpfi := (*C._gtk_menu_position_func_info)(pgmpfi)
+func _go_gtk_menu_position_func(gmpfi *C._gtk_menu_position_func_info) {
 	if gmpfi == nil {
 		return
 	}
