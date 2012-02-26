@@ -16,6 +16,7 @@ package gtk
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "go-gtk.h"
 
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
@@ -139,15 +140,6 @@ static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter
 //	*value = gtk_range_get_value(range);
 //}
 
-typedef struct {
-	GtkMenu *menu;
-	gint x;
-	gint y;
-	gboolean push_in;
-	gpointer data;
-} _gtk_menu_position_func_info;
-
-extern void _go_gtk_menu_position_func(_gtk_menu_position_func_info* gmpfi);
 static void _c_gtk_menu_position_func(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data) {
 	_gtk_menu_position_func_info gmpfi;
 	gmpfi.menu = menu;
