@@ -1,29 +1,21 @@
 all:
-	cd demo && gomake
-	cd twitter && gomake
-	cd listview && gomake
-	cd treeview && gomake
-	cd notebook && gomake
-	cd thread && gomake
-	cd table && gomake
-	cd expander && gomake
-	cd drawable && gomake
-#	cd builder && gomake
-	cd sourceview && gomake
-	cd event && gomake
-	cd statusicon && gomake
-
-clean:
-	cd demo && gomake clean
-	cd twitter && gomake clean
-	cd listview && gomake clean
-	cd treeview && gomake clean
-	cd notebook && gomake clean
-	cd thread && gomake clean
-	cd table && gomake clean
-	cd expander && gomake clean
-	cd drawable && gomake clean
-#	cd builder && gomake clean
-	cd sourceview && gomake clean
-	cd event && gomake clean
-	cd statusicon && gomake clean
+	cd alignment && go build -x .
+	cd builder && go build -x .
+	cd clipboard && go build -x .
+	cd demo && go build -x .
+	cd dnd && go build -x .
+	cd drawable && go build -x .
+	cd event && go build -x .
+	cd expander && go build -x .
+	cd iconview && go build -x .
+	cd listview && go build -x .
+	cd locale && go build -x .
+	cd notebook && go build -x .
+	cd number && go build -x .
+	cd sourceview && go build -x .
+	cd statusicon && go build -x .
+	cd table && go build -x .
+	cd thread && go build -x .
+	cd treeview && go build -x .
+	cd twitter && go build -x .
+	cd twitterstream && go build -x .
