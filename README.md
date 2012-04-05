@@ -19,7 +19,7 @@ INSTALL:
 
     git clone  https://github.com/mattn/go-gtk
     cd go-gtk
-    make
+    make install
     make example
     ./example/demo/demo
 
