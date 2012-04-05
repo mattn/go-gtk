@@ -19,13 +19,13 @@ INSTALL:
 
     git clone  https://github.com/mattn/go-gtk
     cd go-gtk
-    gomake install
-    gomake example
+    make
+    make example
     ./example/demo/demo
 
   Or
 
-    goinstall github.com/mattn/go-gtk/gtk
+    go get github.com/mattn/go-gtk/gtk
 
   Don't forget, that you need the GTK-Development-Packages.
 
