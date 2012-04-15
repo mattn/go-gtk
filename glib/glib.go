@@ -727,3 +727,43 @@ func (v *GObject) Emit(s string) {
 	defer C.free_string(ptr)
 	C._g_signal_emit_by_name((C.gpointer)(v.Object), C.to_gcharptr(ptr))
 }
+
+//-----------------------------------------------------------------------
+// Main Loop
+//-----------------------------------------------------------------------
+type GMainContext struct {
+	MainContext *C.GMainContext
+}
+
+type GMainLoop struct {
+	MainLoop *C.GMainLoop
+}
+
+func MainContextNew() *GMainContext {
+	return &GMainContext{C.g_main_context_new()}
+}
+
+func (v *GMainContext) Ref() *GMainContext {
+	return &GMainContext{C.g_main_loop_ref(v.MainContext)}
+}
+
+func (v *GMainContext) Unref() {
+	C.g_main_context_unref(v.MainContext)
+}
+
+func MainContextDefault() *GMainContext {
+	return &GMainContext{C.g_main_context_default()}
+}
+
+func (v *GMainContext) Iteration(blocking bool) bool {
+	return gboolean2bool(C.g_main_context_iteration(v.MainContext, bool2gboolean(blocking)))
+}
+
+func (v *GMainContext) Pending() bool {
+	return gboolean2bool(C.g_main_context_pending(v.MainContext))
+}
+
+func (v *GMainContext) MainLoopNew(is_running bool) *GMainLoop {
+	return &GMainLoop{C.g_main_loop_new(v.MainContext, bool2gboolean(is_running))}
+}
+
