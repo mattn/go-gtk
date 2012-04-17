@@ -91,7 +91,7 @@ static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
 extern void _go_glib_callback(callback_info* cbi);
-static gboolean _callback(void *data, ...) {
+static gboolean _glib_callback(void *data, ...) {
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
 
@@ -125,11 +125,46 @@ static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
 	cbi->args = NULL;
 	cbi->target = obj;
 	cbi->args_no = query.n_params;
-	cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
 	return cbi;
 }
 static void _g_signal_emit_by_name(gpointer instance, const gchar *detailed_signal) {
 	g_signal_emit_by_name(instance, detailed_signal);
+}
+
+typedef struct {
+	int func_no;
+	gboolean ret;
+	guint id;
+} sourcefunc_info;
+
+extern void _go_glib_sourcefunc(sourcefunc_info* sfi);
+static gboolean _go_sourcefunc(void *data) {
+	sourcefunc_info *sfi = (sourcefunc_info*) data;
+
+	_go_glib_sourcefunc(sfi);
+
+	return sfi->ret;
+}
+
+static void free_sourcefunc_info(gpointer data) {
+	g_slice_free(sourcefunc_info, data);
+}
+
+static sourcefunc_info* _g_idle_add(int func_no) {
+	sourcefunc_info* sfi;
+	sfi = g_slice_new0(sourcefunc_info);
+	sfi->func_no = func_no;
+	sfi->id = g_idle_add_full(G_PRIORITY_DEFAULT_IDLE, _go_sourcefunc, sfi, free_sourcefunc_info);
+	return sfi;
+}
+
+static sourcefunc_info* _g_timeout_add(guint interval, int func_no) {
+	sourcefunc_info* sfi;
+	sfi = g_slice_new0(sourcefunc_info);
+	sfi->func_no = func_no;
+	sfi->id = g_timeout_add_full(G_PRIORITY_DEFAULT, interval, _go_sourcefunc, sfi, free_sourcefunc_info);
+	return sfi;
 }
 */
 // #cgo pkg-config: glib-2.0 gobject-2.0
@@ -138,6 +173,7 @@ import "unsafe"
 import "reflect"
 
 var callback_contexts []*CallbackContext
+var sourcefunc_contexts []*SourcefuncContext
 
 func bool2gboolean(b bool) C.gboolean {
 	if b {
@@ -763,7 +799,76 @@ func (v *GMainContext) Pending() bool {
 	return gboolean2bool(C.g_main_context_pending(v.MainContext))
 }
 
-func (v *GMainContext) MainLoopNew(is_running bool) *GMainLoop {
-	return &GMainLoop{C.g_main_loop_new(v.MainContext, bool2gboolean(is_running))}
+func MainLoopNew(context *GMainContext, is_running bool) *GMainLoop {
+	var ctx *C.GMainContext
+	if context != nil {
+		ctx = context.MainContext
+	}
+	return &GMainLoop{C.g_main_loop_new(ctx, bool2gboolean(is_running))}
 }
 
+func (v *GMainLoop) Ref() *GMainLoop {
+	return &GMainLoop{C.g_main_loop_ref(v.MainLoop)}
+}
+
+func (v *GMainLoop) Unref() {
+	C.g_main_loop_unref(v.MainLoop)
+}
+
+func (v *GMainLoop) Run() {
+	C.g_main_loop_run(v.MainLoop)
+}
+
+func (v *GMainLoop) Quit() {
+	C.g_main_loop_quit(v.MainLoop)
+}
+
+func (v *GMainLoop) IsRunning() bool {
+	return gboolean2bool(C.g_main_loop_is_running(v.MainLoop))
+}
+
+func (v *GMainLoop) GetContext() *GMainContext {
+	return &GMainContext{C.g_main_loop_get_context(v.MainLoop)}
+}
+
+type SourcefuncContext struct {
+	f      interface{}
+	sfi    unsafe.Pointer
+	data   reflect.Value
+}
+
+//export _go_glib_sourcefunc
+func _go_glib_sourcefunc(sfi *C.sourcefunc_info) {
+	context := sourcefunc_contexts[int(sfi.func_no)]
+	rf := reflect.ValueOf(context.f)
+	t := rf.Type()
+	fargs := make([]reflect.Value, t.NumIn())
+	if len(fargs) > 0 {
+		fargs[0] = reflect.ValueOf(context.data)
+	}
+	ret := rf.Call(fargs)
+	if len(ret) > 0 {
+		bret, _ := ret[0].Interface().(bool)
+		sfi.ret = bool2gboolean(bret)
+	}
+}
+
+func IdleAdd(f interface{}, datas ...interface{}) {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	ctx := &SourcefuncContext{f, nil, reflect.ValueOf(data)}
+	ctx.sfi = unsafe.Pointer(C._g_idle_add(C.int(len(sourcefunc_contexts))))
+	sourcefunc_contexts = append(sourcefunc_contexts, ctx)
+}
+
+func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	ctx := &SourcefuncContext{f, nil, reflect.ValueOf(data)}
+	ctx.sfi = unsafe.Pointer(C._g_timeout_add(C.guint(interval), C.int(len(sourcefunc_contexts))))
+	sourcefunc_contexts = append(sourcefunc_contexts, ctx)
+}
