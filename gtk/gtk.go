@@ -8879,6 +8879,10 @@ func (v *GtkWidget) ModifyFontEasy(desc string) {
 	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc))
 }
 
+func (v *GtkWidget) ModifyBG(state GtkStateType, color *gdk.GdkColor) {
+	C.gtk_widget_modify_bg(v.Widget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.Color)) )
+}
+
 //-----------------------------------------------------------------------
 // GtkIMContext
 //-----------------------------------------------------------------------
