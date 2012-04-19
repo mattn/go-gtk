@@ -918,6 +918,10 @@ func MainIterationDo(blocking bool) bool {
 	return gboolean2bool(C.gtk_main_iteration_do(bool2gboolean(blocking)))
 }
 
+func EventsPending() bool {
+	return gboolean2bool(C.gtk_events_pending())
+}
+
 // gtk_main_do_event
 // gtk_grab_add
 // gtk_grab_get_current
