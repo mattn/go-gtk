@@ -6,6 +6,7 @@ package gtk
 /*
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -1987,6 +1988,10 @@ func (v *GtkWindow) Move(x int, y int) {
 
 func (v *GtkWindow) Resize(width int, height int) {
 	C.gtk_window_resize(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
+}
+
+func (v *GtkWindow) XID() int32 {
+	return int32(C.gdk_x11_drawable_get_xid( (*C.GdkDrawable)(unsafe.Pointer(v.Widget.window)) ))
 }
 
 // gtk_window_set_default_icon_list

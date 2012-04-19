@@ -2822,7 +2822,13 @@ type EventFocus struct {
 }
 
 type EventConfigure struct {
-	// TODO
+	Type int
+	Window unsafe.Pointer
+	SendEvent uint8
+	X int
+	Y int
+	Width int
+	Height int
 }
 
 type EventProperty struct {
