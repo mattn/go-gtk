@@ -2,7 +2,9 @@ package gdk
 
 /*
 #include <gdk/gdk.h>
+#ifndef _WIN32
 #include <gdk/gdkx.h>
+#endif
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -519,10 +521,6 @@ func (v *GdkWindow) Show() {
 
 func (v *GdkWindow) Raise() {
 	C.gdk_window_raise(v.Window)
-}
-
-func (v *GdkWindow) XID() int32 {
-	return int32(C.gdk_x11_drawable_get_xid( (*C.GdkDrawable)(unsafe.Pointer(v.Window)) ))
 }
 
 //-----------------------------------------------------------------------
