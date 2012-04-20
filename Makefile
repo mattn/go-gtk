@@ -1,10 +1,10 @@
 all:
-	cd pango && go build -x .
-	cd glib && go build -x .
-	cd gdk && go build -x .
-	cd gdkpixbuf && go build -x .
-	cd gtk && go build -x .
-	cd gtksourceview && go build -x .
+	cd pango && go get -x .
+	cd glib && go get -x .
+	cd gdk && go get -x .
+	cd gdkpixbuf && go get -x .
+	cd gtk && go get -x .
+	cd gtksourceview && go get -x .
 
 install:
 	cd pango && go install -x
@@ -14,7 +14,7 @@ install:
 	cd gtk && go install -x
 	cd gtksourceview && go install -x
 
-fmt_all:
+fmt:
 	cd pango && go fmt .
 	cd glib && go fmt .
 	cd gdk && go fmt .
