@@ -2,9 +2,6 @@ package gdk
 
 /*
 #include <gdk/gdk.h>
-#ifndef _WIN32
-#include <gdk/gdkx.h>
-#endif
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
