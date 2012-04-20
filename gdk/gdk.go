@@ -2,6 +2,7 @@ package gdk
 
 /*
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -518,6 +519,10 @@ func (v *GdkWindow) Show() {
 
 func (v *GdkWindow) Raise() {
 	C.gdk_window_raise(v.Window)
+}
+
+func (v *GdkWindow) XID() int32 {
+	return int32(C.gdk_x11_drawable_get_xid( (*C.GdkDrawable)(unsafe.Pointer(v.Window)) ))
 }
 
 //-----------------------------------------------------------------------
@@ -2822,7 +2827,13 @@ type EventFocus struct {
 }
 
 type EventConfigure struct {
-	// TODO
+	Type int
+	Window unsafe.Pointer
+	SendEvent uint8
+	X int
+	Y int
+	Width int
+	Height int
 }
 
 type EventProperty struct {

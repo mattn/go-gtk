@@ -6,6 +6,7 @@ package gtk
 /*
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -915,6 +916,10 @@ func MainIteration() bool {
 }
 func MainIterationDo(blocking bool) bool {
 	return gboolean2bool(C.gtk_main_iteration_do(bool2gboolean(blocking)))
+}
+
+func EventsPending() bool {
+	return gboolean2bool(C.gtk_events_pending())
 }
 
 // gtk_main_do_event
@@ -1987,6 +1992,10 @@ func (v *GtkWindow) Move(x int, y int) {
 
 func (v *GtkWindow) Resize(width int, height int) {
 	C.gtk_window_resize(C.to_GtkWindow(v.Widget), C.gint(width), C.gint(height))
+}
+
+func (v *GtkWindow) XID() int32 {
+	return int32(C.gdk_x11_drawable_get_xid( (*C.GdkDrawable)(unsafe.Pointer(v.Widget.window)) ))
 }
 
 // gtk_window_set_default_icon_list
@@ -8872,6 +8881,10 @@ func (v *GtkWidget) ModifyFontEasy(desc string) {
 	pdesc := C.CString(desc)
 	defer C.free_string(pdesc)
 	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc))
+}
+
+func (v *GtkWidget) ModifyBG(state GtkStateType, color *gdk.GdkColor) {
+	C.gtk_widget_modify_bg(v.Widget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.Color)) )
 }
 
 //-----------------------------------------------------------------------
