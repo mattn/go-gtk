@@ -6,7 +6,11 @@ package gtk
 /*
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <gdk/gdkx.h>
+#endif
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -14,9 +18,6 @@ package gtk
 #include <string.h>
 #include <stdio.h>
 #include <pthread.h>
-#ifdef _WIN32
-#include <windows.h>
-#endif
 
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
@@ -823,7 +824,6 @@ func panic_if_version_older_auto(major, minor, micro int) {
 		log.Panicf("GTK version %d.%d is required (unknown caller, see stack)\n",
 			major, minor)
 	}
-	
 }
 
 func deprecated_since(major int, minor int, micro int, function string) {
@@ -1995,7 +1995,7 @@ func (v *GtkWindow) Resize(width int, height int) {
 }
 
 func (v *GtkWindow) XID() int32 {
-	return int32(C.gdk_x11_drawable_get_xid( (*C.GdkDrawable)(unsafe.Pointer(v.Widget.window)) ))
+	return gdk.WindowFromUnsafe(unsafe.Pointer(v.Widget.window)).GetNativeWindowID()
 }
 
 // gtk_window_set_default_icon_list
