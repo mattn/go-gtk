@@ -3010,12 +3010,20 @@ func (v *GtkButton) GetUseUnderline() bool {
 func (v *GtkButton) SetUseUnderline(setting bool) {
 	C.gtk_button_set_use_underline(C.to_GtkButton(v.Widget), bool2gboolean(setting))
 }
-
-// gtk_button_get_focus_on_click
-// gtk_button_set_focus_on_click
-// gtk_button_set_alignment
-// gtk_button_get_alignment
-
+func (v *GtkButton) GetFocusOnClick() bool {
+	return gboolean2bool(C.gtk_button_get_focus_on_click(C.to_GtkButton(v.Widget)))
+}
+func (v *GtkButton) SetFocusOnClick(setting bool) {
+	C.gtk_button_set_focus_on_click(C.to_GtkButton(v.Widget), bool2gboolean(setting))
+}
+func (v *GtkButton) SetAlignment(xalign, yalign float64) {
+	C.gtk_button_set_alignment(C.to_GtkButton(v.Widget), C.gfloat(xalign), C.gfloat(yalign) )
+}
+func (v *GtkButton) GetAlignment() (xalign, yalign float64) {
+	var xalign_,yalign_ C.gfloat
+	C.gtk_button_get_alignment(C.to_GtkButton(v.Widget), &xalign_, &yalign_ )
+	return float64(xalign_), float64(yalign_)
+}
 func (v *GtkButton) SetImage(image WidgetLike) {
 	C.gtk_button_set_image(C.to_GtkButton(v.Widget), image.ToNative())
 }
