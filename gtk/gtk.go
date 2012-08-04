@@ -721,6 +721,7 @@ static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG
 static GtkContainer* to_GtkContainer(GtkWidget* w) { return GTK_CONTAINER(w); }
 static GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER(w); }
 static GtkFontSelectionDialog* to_GtkFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
+static GtkMisc* to_GtkMisc(GtkWidget* w) { return GTK_MISC(w); }
 static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
 static GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
 static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
@@ -2495,6 +2496,9 @@ func (v *GtkLabel) SetLineWrap(setting bool) {
 }
 func (v *GtkLabel) SetUseLineWrapMode(wrap_mode pango.PangoWrapMode) {
 	C.gtk_label_set_line_wrap_mode(C.to_GtkLabel(v.Widget), C.PangoWrapMode(wrap_mode))
+}
+func (v *GtkLabel) SetAlignment(xAlign, yAlign float32) {
+	C.gtk_misc_set_alignment(C.to_GtkMisc(v.Widget), C.gfloat(xAlign), C.gfloat(yAlign))
 }
 
 // gtk_label_get_layout_offsets
