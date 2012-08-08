@@ -23,14 +23,6 @@ static void* _gdk_display_get_default() {
 static GdkWindow* to_GdkWindow(void* w) {
 	return GDK_WINDOW(w);
 }
-
-static void _g_thread_init(GThreadFunctions *vtable) {
-#if !GTK_CHECK_VERSION(2,32,0)
-#ifdef	G_THREADS_ENABLED
-	g_thread_init(vtable);
-#endif
-#endif
-}
 */
 // #cgo pkg-config: gdk-2.0 gthread-2.0
 import "C"
@@ -75,10 +67,6 @@ func Flush() {
 // Threads
 //-----------------------------------------------------------------------
 func ThreadsInit() {
-	if first {
-		first = false
-		C._g_thread_init(nil)
-	}
 	C.gdk_threads_init()
 }
 
@@ -185,10 +173,6 @@ const (
 	GDK_LAST_CURSOR         GdkCursorType = 153
 	GDK_BLANK_CURSOR        GdkCursorType = -2
 	GDK_CURSOR_IS_PIXMAP    GdkCursorType = -1
-)
-
-var (
-	first = true
 )
 
 type GdkCursor struct {
