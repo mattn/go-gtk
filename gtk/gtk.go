@@ -842,7 +842,7 @@ func variadicButtonsToArrays(buttons []interface{}) ([]string, []int) {
 		btext, ok := buttons[2*i].(string)
 		if !ok {
 			argumentPanic("button text must be a string")
-	}
+		}
 		bresponse, ok := buttons[2*i+1].(int)
 		if !ok {
 			argumentPanic("button response must be an int")
@@ -2460,7 +2460,7 @@ func (v *GtkLabel) SetText(label string) {
 }
 
 func (v *GtkLabel) SetMnemonicWidget(widget WidgetLike) {
-  C.gtk_label_set_mnemonic_widget(C.to_GtkLabel(v.Widget), widget.ToNative())
+	C.gtk_label_set_mnemonic_widget(C.to_GtkLabel(v.Widget), widget.ToNative())
 }
 
 func (v *GtkLabel) SetMarkup(markup string) {
@@ -2470,7 +2470,7 @@ func (v *GtkLabel) SetMarkup(markup string) {
 }
 
 func (v *GtkLabel) GetMnemonicWidget() *GtkWidget {
-  return &GtkWidget{C.gtk_label_get_mnemonic_widget(C.to_GtkLabel(v.Widget))}
+	return &GtkWidget{C.gtk_label_get_mnemonic_widget(C.to_GtkLabel(v.Widget))}
 }
 
 func (v *GtkLabel) SetPattern(pattern string) {
@@ -2774,7 +2774,7 @@ func (v *GtkInfoBar) GetActionArea() *GtkWidget {
 	panic_if_version_older_auto(2, 18, 0)
 	return &GtkWidget{C._gtk_info_bar_get_action_area(C.to_GtkInfoBar(v.Widget))}
 }
- 
+
 func (v *GtkInfoBar) GetContentArea() *GtkWidget {
 	panic_if_version_older_auto(2, 18, 0)
 	return &GtkWidget{C._gtk_info_bar_get_content_area(C.to_GtkInfoBar(v.Widget))}
@@ -2974,6 +2974,7 @@ func ButtonWithMnemonic(label string) *GtkButton {
 	return &GtkButton{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_button_new_with_mnemonic(C.to_gcharptr(ptr))}}}}
 }
+
 // gtk_button_new_from_stock
 // gtk_button_pressed //deprecated since 2.20
 // gtk_button_released //deprecated since 2.20
@@ -3017,11 +3018,11 @@ func (v *GtkButton) SetFocusOnClick(setting bool) {
 	C.gtk_button_set_focus_on_click(C.to_GtkButton(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkButton) SetAlignment(xalign, yalign float64) {
-	C.gtk_button_set_alignment(C.to_GtkButton(v.Widget), C.gfloat(xalign), C.gfloat(yalign) )
+	C.gtk_button_set_alignment(C.to_GtkButton(v.Widget), C.gfloat(xalign), C.gfloat(yalign))
 }
 func (v *GtkButton) GetAlignment() (xalign, yalign float64) {
-	var xalign_,yalign_ C.gfloat
-	C.gtk_button_get_alignment(C.to_GtkButton(v.Widget), &xalign_, &yalign_ )
+	var xalign_, yalign_ C.gfloat
+	C.gtk_button_get_alignment(C.to_GtkButton(v.Widget), &xalign_, &yalign_)
 	return float64(xalign_), float64(yalign_)
 }
 func (v *GtkButton) SetImage(image WidgetLike) {
@@ -3394,6 +3395,7 @@ func (v *GtkEntryBuffer) SetText(text string) {
 	C._gtk_entry_buffer_set_text(v.EntryBuffer,
 		C.to_gcharptr(ptr), C.gint(len(text)))
 }
+
 // gtk_entry_buffer_get_bytes //since 2.18
 /*func (v *GtkEntryBuffer) GetBytes() ? {
 	panic_if_version_older_auto(2, 18, 0)
@@ -3425,6 +3427,7 @@ func (v *GtkEntryBuffer) DeleteText(position uint, nChars int) uint {
 	return uint(C._gtk_entry_buffer_delete_text(v.EntryBuffer,
 		C.guint(position), C.gint(nChars)))
 }
+
 // gtk_entry_buffer_emit_deleted_text //since 2.18
 // gtk_entry_buffer_emit_inserted_text //since 2.18
 
@@ -3450,6 +3453,7 @@ func (v *GtkEntryCompletion) GetModel() *GtkTreeModel {
 }
 
 type GtkEntryCompletionMatchFunc func(completion *GtkEntryCompletion, key string, iter *GtkTreeIter, data interface{})
+
 // gtk_entry_completion_set_match_func
 
 func (v *GtkEntryCompletion) SetMinimumKeyLength(length int) {
@@ -4088,6 +4092,7 @@ func (v *GtkTextTag) SetPriority(priority int) {
 func (v *GtkTextTag) GetPriority() int {
 	return int(C.gtk_text_tag_get_priority(v.TextTag))
 }
+
 // gtk_text_tag_event
 
 //-----------------------------------------------------------------------
@@ -4935,6 +4940,7 @@ func (v *GtkIconView) GetPixbufColumn() int {
 func (v *GtkIconView) SetPixbufColumn(pixbuf_column int) {
 	C.gtk_icon_view_set_pixbuf_column(C.to_GtkIconView(v.Widget), C.gint(pixbuf_column))
 }
+
 // gtk_icon_view_get_path_at_pos
 // gtk_icon_view_get_item_at_pos
 // gtk_icon_view_convert_widget_to_bin_window_coords
@@ -6469,8 +6475,24 @@ func (v *GtkFileChooser) GetFilter() *GtkFileFilter {
 //-----------------------------------------------------------------------
 // GtkFileChooserButton
 //-----------------------------------------------------------------------
+type GtkFileChooserButton struct {
+	GtkHBox
+	GtkFileChooser
+}
 
 // gtk_file_chooser_button_new
+func FileChooserButton(title string, action GtkFileChooserAction) *GtkFileChooserButton {
+	ptitle := C.CString(title)
+	defer C.free_string(ptitle)
+	widget := GtkWidget{
+		C.gtk_file_chooser_button_new(C.to_gcharptr(ptitle), C.GtkFileChooserAction(action)),
+	}
+	return &GtkFileChooserButton{
+		GtkHBox{GtkBox{GtkContainer{widget}}},
+		GtkFileChooser{C.to_GtkFileChooser(widget.Widget)},
+	}
+}
+
 // gtk_file_chooser_button_new_with_backend
 // gtk_file_chooser_button_new_with_dialog
 // gtk_file_chooser_button_get_title
@@ -7336,9 +7358,9 @@ type GtkPrintOperation struct {
 type GtkPrintOperationResult int
 
 const (
-	GTK_PRINT_OPERATION_RESULT_ERROR GtkPrintOperationResult = 0
-	GTK_PRINT_OPERATION_RESULT_APPLY GtkPrintOperationResult = 1
-	GTK_PRINT_OPERATION_RESULT_CANCEL GtkPrintOperationResult = 2
+	GTK_PRINT_OPERATION_RESULT_ERROR       GtkPrintOperationResult = 0
+	GTK_PRINT_OPERATION_RESULT_APPLY       GtkPrintOperationResult = 1
+	GTK_PRINT_OPERATION_RESULT_CANCEL      GtkPrintOperationResult = 2
 	GTK_PRINT_OPERATION_RESULT_IN_PROGRESS GtkPrintOperationResult = 3
 )
 
@@ -7346,9 +7368,9 @@ type GtkPrintOperationAction int
 
 const (
 	GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG GtkPrintOperationAction = 0
-	GTK_PRINT_OPERATION_ACTION_PRINT GtkPrintOperationAction = 1
-	GTK_PRINT_OPERATION_ACTION_PREVIEW GtkPrintOperationAction = 2
-	GTK_PRINT_OPERATION_ACTION_EXPOR GtkPrintOperationAction = 3
+	GTK_PRINT_OPERATION_ACTION_PRINT        GtkPrintOperationAction = 1
+	GTK_PRINT_OPERATION_ACTION_PREVIEW      GtkPrintOperationAction = 2
+	GTK_PRINT_OPERATION_ACTION_EXPOR        GtkPrintOperationAction = 3
 )
 
 func PrintOperation() *GtkPrintOperation {
@@ -7416,16 +7438,16 @@ func (v *GtkPrintOperation) Connect(s string, f interface{}, datas ...interface{
 //-----------------------------------------------------------------------
 // GtkPrintContext
 //-----------------------------------------------------------------------
-type GtkPrintContext struct{
+type GtkPrintContext struct {
 	PrintContext *C.GtkPrintContext
 }
 
 func (v *GtkPrintContext) GetCairoContext() *C.cairo_t {
-	return C.gtk_print_context_get_cairo_context(v.PrintContext);
+	return C.gtk_print_context_get_cairo_context(v.PrintContext)
 }
 
 func (v *GtkPrintContext) SetCairoContext(cairo *C.cairo_t, dpi_x float64, dpi_y float64) {
-	C.gtk_print_context_set_cairo_context(v.PrintContext, cairo, C.double(dpi_x), C.double(dpi_y));
+	C.gtk_print_context_set_cairo_context(v.PrintContext, cairo, C.double(dpi_x), C.double(dpi_y))
 }
 
 // gtk_print_context_get_page_setup
@@ -7885,6 +7907,7 @@ func (v *GtkTooltip) SetIconFromIconName(icon_name string, size GtkIconSize) {
 	defer C.free_string(ptr)
 	C.gtk_tooltip_set_icon_from_icon_name(v.Tooltip, C.to_gcharptr(ptr), C.GtkIconSize(size))
 }
+
 // gtk_tooltip_set_icon_from_gicon //since 2.20
 // gtk_tooltip_set_custom
 // gtk_tooltip_trigger_tooltip_query
@@ -8885,7 +8908,7 @@ func (v *GtkWidget) ModifyFontEasy(desc string) {
 }
 
 func (v *GtkWidget) ModifyBG(state GtkStateType, color *gdk.GdkColor) {
-	C.gtk_widget_modify_bg(v.Widget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.Color)) )
+	C.gtk_widget_modify_bg(v.Widget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.Color)))
 }
 
 //-----------------------------------------------------------------------
