@@ -843,10 +843,17 @@ func variadicButtonsToArrays(buttons []interface{}) ([]string, []int) {
 		if !ok {
 			argumentPanic("button text must be a string")
 		}
-		bresponse, ok := buttons[2*i+1].(int)
-		if !ok {
-			argumentPanic("button response must be an int")
-		}
+		bresponse := func() int {
+			switch val := buttons[2*i+1].(type) {
+			case int:
+				return val
+			case GtkResponseType:
+				return int(val)
+			default:
+				argumentPanic("button response must be an int")
+			}
+			panic(nil)
+		}()
 		text[i] = btext
 		res[i] = bresponse
 	}
@@ -1673,8 +1680,8 @@ func Dialog() *GtkDialog {
 
 // gtk_dialog_new_with_buttons
 
-func (v *GtkDialog) Run() int {
-	return int(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
+func (v *GtkDialog) Run() GtkResponseType {
+	return GtkResponseType(C.gtk_dialog_run(C.to_GtkDialog(v.Widget)))
 }
 func (v *GtkDialog) Response(response interface{}, datas ...interface{}) {
 	v.Connect("response", response, datas...)
@@ -6494,7 +6501,18 @@ func FileChooserButton(title string, action GtkFileChooserAction) *GtkFileChoose
 }
 
 // gtk_file_chooser_button_new_with_backend
+
 // gtk_file_chooser_button_new_with_dialog
+func FileChooserButtonWithDialog(dialog *GtkFileChooserDialog) *GtkFileChooserButton {
+	widget := GtkWidget{
+		C.gtk_file_chooser_button_new_with_dialog(dialog.Widget),
+	}
+	return &GtkFileChooserButton{
+		GtkHBox{GtkBox{GtkContainer{widget}}},
+		GtkFileChooser{C.to_GtkFileChooser(widget.Widget)},
+	}
+}
+
 // gtk_file_chooser_button_get_title
 // gtk_file_chooser_button_set_title
 // gtk_file_chooser_button_get_width_chars
@@ -6510,7 +6528,7 @@ type GtkFileChooserDialog struct {
 	GtkFileChooser
 }
 
-func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkFileChooserAction, button_text string, button_action int, buttons ...interface{}) *GtkFileChooserDialog {
+func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkFileChooserAction, button_text string, button_action GtkResponseType, buttons ...interface{}) *GtkFileChooserDialog {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
 	pbutton := C.CString(button_text)
