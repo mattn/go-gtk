@@ -5390,7 +5390,7 @@ func (v *GtkTreeStore) Clear() {
 	C.gtk_tree_store_clear(v.TreeStore)
 }
 func (v *GtkTreeStore) IterIsValid(iter *GtkTreeIter) bool {
-	log.Println("Warning: GtkListStore.IterIsValid: This function is slow. Only use it for debugging and/or testing purposes.")
+	log.Println("Warning: GtkTreeStore.IterIsValid: This function is slow. Only use it for debugging and/or testing purposes.")
 	return gboolean2bool(C.gtk_tree_store_iter_is_valid(v.TreeStore, &iter.TreeIter))
 }
 func (v *GtkTreeStore) Reorder(iter *GtkTreeIter, i *int) {
