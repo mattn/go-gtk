@@ -40,8 +40,8 @@ func bytes2pixbuf(data []byte, typ string) *gdkpixbuf.GdkPixbuf {
 }
 
 func main() {
-	gdk.ThreadsInit()
 	gtk.Init(&os.Args)
+	gdk.ThreadsInit()
 	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("Twitter!")
 	window.Connect("destroy", gtk.MainQuit)
