@@ -5560,39 +5560,32 @@ type GtkComboBoxText struct {
 }
 
 func ComboBoxText() *GtkComboBoxText {
-	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_new()")
 	return &GtkComboBoxText{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_combo_box_text_new()}}}}}
 }
 func ComboBoxTextWithEntry() *GtkComboBoxText {
-	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_new_with_entry()")
 	return &GtkComboBoxText{GtkComboBox{GtkBin{GtkContainer{GtkWidget{
 		C._gtk_combo_box_text_new_with_entry()}}}}}
 }
 func (v *GtkComboBoxText) AppendText(text string) {
-	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_append_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C._gtk_combo_box_text_append_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkComboBoxText) InsertText(position int, text string) {
-	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_insert_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C._gtk_combo_box_text_insert_text(C.to_GtkComboBoxText(v.Widget), C.gint(position), C.to_gcharptr(ptr))
 }
 func (v *GtkComboBoxText) PrependText(text string) {
-	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_prepend_text()")
 	ptr := C.CString(text)
 	defer C.free_string(ptr)
 	C._gtk_combo_box_text_prepend_text(C.to_GtkComboBoxText(v.Widget), C.to_gcharptr(ptr))
 }
 func (v *GtkComboBoxText) Remove(position int) {
-	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_remove()")
 	C._gtk_combo_box_text_remove(C.to_GtkComboBoxText(v.Widget), C.gint(position))
 }
 func (v *GtkComboBoxText) GetActiveText() string {
-	panic_if_version_older(2, 24, 0, "gtk_combo_box_text_get_active_text()")
 	return C.GoString(C.to_charptr(C._gtk_combo_box_text_get_active_text(C.to_GtkComboBoxText(v.Widget))))
 }
 
