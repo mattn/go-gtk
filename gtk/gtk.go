@@ -777,6 +777,7 @@ static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
 static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
 static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
+static GtkRadioMenuItem* to_GtkRadioMenuItem(GtkWidget* w) { return GTK_RADIO_MENU_ITEM(w); }
 static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 */
 // #cgo pkg-config: gtk+-2.0
@@ -5885,16 +5886,47 @@ func (v *GtkMenuItem) ToggleSizeAllocate(i int) {
 //-----------------------------------------------------------------------
 // GtkRadioMenuItem
 //-----------------------------------------------------------------------
+type GtkRadioMenuItem struct {
+	GtkCheckMenuItem
+}
 
-// gtk_radio_menu_item_new
-// gtk_radio_menu_item_new_with_label
+func RadioMenuItem(group *glib.SList) *GtkRadioMenuItem {
+	if group != nil {
+	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_menu_item_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}}}
+	}
+	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_menu_item_new(nil)}}}}}}}
+}
+
+func RadioMenuItemWithLabel(group *glib.SList, label string) *GtkRadioMenuItem {
+	ptr := C.CString(label)
+	defer C.free_string(ptr)
+	if group != nil {
+	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_menu_item_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}}}
+	}
+	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+		C.gtk_radio_menu_item_new_with_label(nil, C.to_gcharptr(ptr))}}}}}}}
+}
+
 // gtk_radio_menu_item_new_with_mnemonic
 // gtk_radio_menu_item_new_from_widget
 // gtk_radio_menu_item_new_with_label_from_widget
 // gtk_radio_menu_item_new_with_mnemonic_from_widget
 // gtk_radio_menu_item_group
-// gtk_radio_menu_item_set_group
-// gtk_radio_menu_item_get_group
+
+func (v *GtkRadioMenuItem) SetGroup(group *glib.SList) {
+	if group != nil {
+		C.gtk_radio_menu_item_set_group(C.to_GtkRadioMenuItem(v.Widget), C.to_gslist(unsafe.Pointer(group)))
+	} else {
+		C.gtk_radio_menu_item_set_group(C.to_GtkRadioMenuItem(v.Widget), nil)
+	}
+}
+
+func (v *GtkRadioMenuItem) GetGroup() *glib.SList {
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_menu_item_get_group(C.to_GtkRadioMenuItem(v.Widget))))
+}
 
 //-----------------------------------------------------------------------
 // GtkCheckMenuItem
