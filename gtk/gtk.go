@@ -61,6 +61,10 @@ static GtkWidget* _gtk_message_dialog_new_with_markup(GtkWidget* parent, GtkDial
 			message, NULL);
 }
 
+static GtkWidget* _gtk_file_chooser_button_new(const gchar* title, int file_chooser_action) {
+	return gtk_file_chooser_button_new(title, file_chooser_action);
+}
+
 static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
 		GtkWidget* parent, int file_chooser_action, int action, const gchar* button) {
 	return gtk_file_chooser_dialog_new(
@@ -70,6 +74,10 @@ static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
 			button,
 			action,
 			NULL);
+}
+
+static GtkWidget* _gtk_file_chooser_widget_new(int file_chooser_action) {
+	return gtk_file_chooser_widget_new(file_chooser_action);
 }
 
 static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, GtkTreeIter* iter, void* path) {
@@ -6613,11 +6621,18 @@ func FileChooserDialog(title string, parent *GtkWindow, file_chooser_action GtkF
 // GtkFileChooserWidget
 //-----------------------------------------------------------------------
 type GtkFileChooserWidget struct {
-	GtkWidget
+	GtkVBox
 	GtkFileChooser
 }
 
-// gtk_file_chooser_widget_new
+func FileChooserWidget(file_chooser_action GtkFileChooserAction) *GtkFileChooserWidget {
+	widget := GtkWidget{C._gtk_file_chooser_widget_new(C.int(file_chooser_action))}
+	return &GtkFileChooserWidget{
+		GtkVBox{GtkBox{GtkContainer{widget}}},
+		GtkFileChooser{C.to_GtkFileChooser(widget.Widget)},
+	}
+}
+
 // gtk_file_chooser_widget_new_with_backend
 
 //-----------------------------------------------------------------------
