@@ -13,7 +13,7 @@ static guchar* to_gucharptr(void* s) { return (guchar*)s; }
 
 static void free_string(char* s) { free(s); }
 
-//static gchar* to_gcharptr(char* s) { return (gchar*)s; }
+static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
 //static void free_string(char* s) { free(s); }
 */
@@ -47,9 +47,32 @@ func PixbufFromFile(path string) (pixbuf *GdkPixbuf, err **glib.Error) {
 	return
 }
 
+func PixbufFromFileAtSize(path string, imgW int, imgH int) (pixbuf *GdkPixbuf, err **glib.Error) {
+	var error *C.GError
+	ptr := C.CString(path)
+	defer C.free_string(ptr)
+	pixbuf = &GdkPixbuf{C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(imgW), C.int(imgH), &error)}
+	if err != nil && error != nil {
+		*err = glib.ErrorFromNative(unsafe.Pointer(error))
+	}
+	return
+}
+
 func GetGdkPixbufType() int {
 	return int(C.gdk_pixbuf_get_type())
 }
+
+func GetFileInfo (path string, imgW *int, imgH *int) *GdkPixbufFormat {
+	ptr := C.CString(path)
+	defer C.free_string(ptr)
+
+	var w, h C.gint
+	format := &GdkPixbufFormat{C.gdk_pixbuf_get_file_info (C.to_gcharptr(ptr), &w, &h)}
+	*imgW = int(w)
+	*imgH = int(h)
+	return format
+}
+
 //-----------------------------------------------------------------------
 // GdkPixbufAnimation
 //-----------------------------------------------------------------------
