@@ -3672,8 +3672,7 @@ const (
 )
 
 func (v *GtkTextIter) GetBuffer() *GtkTextBuffer {
-	return &GtkTextBuffer{
-		C.gtk_text_iter_get_buffer(&v.TextIter)}
+	return newTextBuffer(C.gtk_text_iter_get_buffer(&v.TextIter))
 }
 func (v *GtkTextIter) Copy() *GtkTextIter {
 	return &GtkTextIter{
@@ -3847,17 +3846,23 @@ type TextBufferLike interface {
 
 type GtkTextBuffer struct {
 	TextBuffer *C.GtkTextBuffer
+	*glib.GObject
 }
 
+func newTextBuffer(buffer *C.GtkTextBuffer) *GtkTextBuffer {
+	return &GtkTextBuffer{
+		TextBuffer: buffer,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(buffer)),
+	}
+}
 func (v *GtkTextBuffer) GetNativeBuffer() unsafe.Pointer {
 	return unsafe.Pointer(v.TextBuffer)
 }
 func TextBufferFromPointer(v unsafe.Pointer) GtkTextBuffer {
-	return GtkTextBuffer{C.to_GtkTextBuffer(v)}
+	return *newTextBuffer(C.to_GtkTextBuffer(v))
 }
 func TextBuffer(tagtable *GtkTextTagTable) *GtkTextBuffer {
-	return &GtkTextBuffer{
-		C.gtk_text_buffer_new(tagtable.TextTagTable)}
+	return newTextBuffer(C.gtk_text_buffer_new(tagtable.TextTagTable))
 }
 func (v *GtkTextBuffer) GetLineCount() int {
 	return int(C.gtk_text_buffer_get_line_count(v.TextBuffer))
@@ -4086,11 +4091,6 @@ func (v *GtkTextBuffer) GetSelectionBounds(be, en *GtkTextIter) bool {
 // gtk_text_buffer_unregister_deserialize_format
 // gtk_text_buffer_unregister_serialize_format
 
-func (v *GtkTextBuffer) Connect(s string, f interface{}, datas ...interface{}) {
-	//glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(v.TextBuffer))).Connect(s, f, datas...)
-	glib.ObjectFromNative(unsafe.Pointer(v.TextBuffer)).Connect(s, f, datas...)
-}
-
 //-----------------------------------------------------------------------
 // GtkTextTag
 //-----------------------------------------------------------------------
@@ -4199,8 +4199,7 @@ func (v *GtkTextView) SetBuffer(b TextBufferLike) {
 	C.gtk_text_view_set_buffer(C.to_GtkTextView(v.Widget), C.to_GtkTextBuffer(b.GetNativeBuffer()))
 }
 func (v *GtkTextView) GetBuffer() *GtkTextBuffer {
-	return &GtkTextBuffer{
-		C.gtk_text_view_get_buffer(C.to_GtkTextView(v.Widget))}
+	return newTextBuffer(C.gtk_text_view_get_buffer(C.to_GtkTextView(v.Widget)))
 }
 func (v *GtkTextView) ScrollToMark(mark *GtkTextMark, wm float64, ua bool, xa float64, ya float64) {
 	C.gtk_text_view_scroll_to_mark(C.to_GtkTextView(v.Widget),
