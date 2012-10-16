@@ -1035,8 +1035,8 @@ func (v *GtkClipboard) WaitForText() string {
 	return C.GoString(C.to_charptr(C.gtk_clipboard_wait_for_text(v.Clipboard)))
 }
 
-func (v *GtkClipboard) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.Clipboard)))).Connect(s, f, datas...)
+func (v *GtkClipboard) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.Clipboard)))).Connect(s, f, datas...)
 }
 
 // gtk_clipboard_get
@@ -2923,8 +2923,8 @@ func GtkStatusIconPositionMenu(menu *GtkMenu, px, py *int, push_in *bool, data i
 	*py = int(y)
 	*push_in = gboolean2bool(pi)
 }
-func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.StatusIcon)))).Connect(s, f, datas...)
+func (v *GtkStatusIcon) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.StatusIcon)))).Connect(s, f, datas...)
 }
 
 func PrintContextFromNative(l unsafe.Pointer) *GtkPrintContext {
@@ -2997,8 +2997,8 @@ func ButtonWithMnemonic(label string) *GtkButton {
 // gtk_button_pressed //deprecated since 2.20
 // gtk_button_released //deprecated since 2.20
 
-func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) {
-	v.Connect("clicked", onclick, datas...)
+func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("clicked", onclick, datas...)
 }
 
 // gtk_button_enter //deprecated since 2.20
@@ -4498,8 +4498,8 @@ const (
 	GTK_SELECTION_EXTENDED                  = GTK_SELECTION_MULTIPLE
 )
 
-func (v *GtkTreeSelection) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(v.TreeSelection)).Connect(s, f, datas...)
+func (v *GtkTreeSelection) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(v.TreeSelection)).Connect(s, f, datas...)
 }
 
 func (v *GtkTreeSelection) SetMode(m GtkSelectionMode) {
@@ -5111,8 +5111,8 @@ func (v *GtkCellRenderer) ToGtkCellRenderer() *C.GtkCellRenderer {
 	return v.CellRenderer
 }
 
-func (v *GtkCellRenderer) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(v.CellRenderer)).Connect(s, f, datas...)
+func (v *GtkCellRenderer) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(v.CellRenderer)).Connect(s, f, datas...)
 }
 
 //-----------------------------------------------------------------------
@@ -7495,8 +7495,8 @@ func (v *GtkPrintOperation) IsFinished() bool {
 	return gboolean2bool(C.gtk_print_operation_is_finished(v.PrintOperation))
 }
 
-func (v *GtkPrintOperation) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(v.PrintOperation)).Connect(s, f, datas...)
+func (v *GtkPrintOperation) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(v.PrintOperation)).Connect(s, f, datas...)
 }
 
 // gtk_print_operation_set_allow_async
@@ -8516,7 +8516,7 @@ type WidgetLike interface {
 	ShowAll()
 	ShowNow()
 	Destroy()
-	Connect(s string, f interface{}, data ...interface{})
+	Connect(s string, f interface{}, data ...interface{}) int
 	GetTopLevel() *GtkWidget
 	GetTopLevelAsWindow() *GtkWindow
 	HideOnDelete()
@@ -8541,14 +8541,26 @@ func (v *GtkWidget) ToNative() *C.GtkWidget {
 	}
 	return v.Widget
 }
-func (v *GtkWidget) Connect(s string, f interface{}, datas ...interface{}) {
-	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Connect(s, f, datas...)
+func (v *GtkWidget) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Connect(s, f, datas...)
 }
 func (v *GtkWidget) StopEmission(s string) {
 	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).StopEmission(s)
 }
 func (v *GtkWidget) Emit(s string) {
 	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).Emit(s)
+}
+
+func (v *GtkWidget) HandlerBlock(id int) {
+	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).HandlerBlock(id)
+}
+
+func (v *GtkWidget) HandlerUnblock(id int) {
+	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).HandlerUnblock(id)
+}
+
+func (v *GtkWidget) HandlerDisconnect(id int) {
+	glib.ObjectFromNative(unsafe.Pointer(v.Widget)).HandlerDisconnect(id)
 }
 
 // gtk_widget_new

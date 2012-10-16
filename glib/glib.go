@@ -86,7 +86,7 @@ typedef struct {
 	uintptr_t* args;
 	int args_no;
 	gboolean ret;
-	guint id;
+	gulong id;
 } callback_info;
 
 static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
@@ -132,6 +132,10 @@ static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
 }
 static void _g_signal_emit_by_name(gpointer instance, const gchar *detailed_signal) {
 	g_signal_emit_by_name(instance, detailed_signal);
+}
+
+static gulong _g_signal_callback_id(callback_info* cbi) {
+	return cbi->id;
 }
 
 typedef struct {
@@ -752,7 +756,10 @@ func _go_glib_callback(cbi *C.callback_info) {
 	}
 }
 
-func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) {
+// Return the handler call_id to use with HandlerBlock, HandlerUnblock and 
+// HandlerDisconnect.
+//
+func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) int {
 	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
@@ -762,6 +769,7 @@ func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) {
 	defer C.free_string(ptr)
 	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(len(callback_contexts))))
 	callback_contexts = append(callback_contexts, ctx)
+	return len(callback_contexts) - 1
 }
 
 func (v *GObject) StopEmission(s string) {
@@ -774,6 +782,21 @@ func (v *GObject) Emit(s string) {
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
 	C._g_signal_emit_by_name((C.gpointer)(v.Object), C.to_gcharptr(ptr))
+}
+
+func (v *GObject) HandlerBlock(call_id int) {
+	c_call_id := C._g_signal_callback_id((*C.callback_info)(callback_contexts[call_id].cbi))
+	C.g_signal_handler_block((C.gpointer)(v.Object), c_call_id)
+}
+
+func (v *GObject) HandlerUnblock(call_id int) {
+	c_call_id := C._g_signal_callback_id((*C.callback_info)(callback_contexts[call_id].cbi))
+	C.g_signal_handler_unblock((C.gpointer)(v.Object), c_call_id)
+}
+
+func (v *GObject) HandlerDisconnect(call_id int) {
+	c_call_id := C._g_signal_callback_id((*C.callback_info)(callback_contexts[call_id].cbi))
+	C.g_signal_handler_disconnect((C.gpointer)(v.Object), c_call_id)
 }
 
 //-----------------------------------------------------------------------
