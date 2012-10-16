@@ -80,10 +80,6 @@ static GtkWidget* _gtk_file_chooser_widget_new(int file_chooser_action) {
 	return gtk_file_chooser_widget_new(file_chooser_action);
 }
 
-static gboolean _gtk_tree_model_get_iter(GtkTreeModel* tree_model, GtkTreeIter* iter, void* path) {
-	return gtk_tree_model_get_iter(tree_model, iter, (GtkTreePath*)path);
-}
-
 static GtkTreePath* _gtk_tree_model_get_path(GtkTreeModel* tree_model, GtkTreeIter* iter) {
 	return gtk_tree_model_get_path(tree_model, iter);
 }
@@ -4435,7 +4431,7 @@ func (v *GtkTreeModel) GetNColumns() int {
 
 // gtk_tree_model_get_column_type
 func (v *GtkTreeModel) GetIter(iter *GtkTreeIter, path *GtkTreePath) bool {
-	return gboolean2bool(C._gtk_tree_model_get_iter(v.TreeModel, &iter.TreeIter, unsafe.Pointer(&path.TreePath)))
+	return gboolean2bool(C.gtk_tree_model_get_iter(v.TreeModel, &iter.TreeIter, path.TreePath))
 }
 func (v *GtkTreeModel) GetIterFromString(iter *GtkTreeIter, path_string string) bool {
 	ptr := C.CString(path_string)
