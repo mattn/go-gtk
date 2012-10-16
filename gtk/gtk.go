@@ -4572,10 +4572,18 @@ const (
 
 type GtkTreeViewColumn struct {
 	TreeViewColumn *C.GtkTreeViewColumn
+	*glib.GObject
+}
+
+func newTreeViewColumn(column *C.GtkTreeViewColumn) *GtkTreeViewColumn {
+	return &GtkTreeViewColumn{
+		TreeViewColumn: column,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(column)),
+	}
 }
 
 func TreeViewColumn() *GtkTreeViewColumn {
-	return &GtkTreeViewColumn{C.gtk_tree_view_column_new()}
+	return newTreeViewColumn(C.gtk_tree_view_column_new())
 }
 
 //TODO test
@@ -4585,8 +4593,8 @@ func TreeViewColumnWithAttributes2(title string, cell CellRendererLike, attribut
 	}
 	ptrTitle := C.CString(title)
 	defer C.free_string(ptrTitle)
-	ret := &GtkTreeViewColumn{C._gtk_tree_view_column_new_with_attribute(
-		C.to_gcharptr(ptrTitle), cell.ToGtkCellRenderer())}
+	ret := newTreeViewColumn(C._gtk_tree_view_column_new_with_attribute(
+		C.to_gcharptr(ptrTitle), cell.ToGtkCellRenderer()))
 	for i := 0; i < len(attributes)/2; i++ {
 		attribute, ok := attributes[2*i].(string)
 		if !ok {
@@ -4606,16 +4614,16 @@ func TreeViewColumnWithAttributes2(title string, cell CellRendererLike, attribut
 func TreeViewColumnWithAttribute(title string, cell CellRendererLike) *GtkTreeViewColumn {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
-	return &GtkTreeViewColumn{
-		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer())}
+	return newTreeViewColumn(
+		C._gtk_tree_view_column_new_with_attribute(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer()))
 }
 func TreeViewColumnWithAttributes(title string, cell CellRendererLike, attribute string, column int) *GtkTreeViewColumn {
 	ptitle := C.CString(title)
 	defer C.free_string(ptitle)
 	pattribute := C.CString(attribute)
 	defer C.free_string(pattribute)
-	return &GtkTreeViewColumn{
-		C._gtk_tree_view_column_new_with_attributes(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column))}
+	return newTreeViewColumn(
+		C._gtk_tree_view_column_new_with_attributes(C.to_gcharptr(ptitle), cell.ToGtkCellRenderer(), C.to_gcharptr(pattribute), C.gint(column)))
 }
 func (v *GtkTreeViewColumn) PackStart(cell CellRendererLike, expand bool) {
 	C.gtk_tree_view_column_pack_start(v.TreeViewColumn, cell.ToGtkCellRenderer(), bool2gboolean(expand))
@@ -4781,7 +4789,7 @@ func (v *GtkTreeView) AppendColumn(column *GtkTreeViewColumn) int {
 //gint gtk_tree_view_insert_column_with_data_func (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, GtkTreeCellDataFunc func, gpointer data, GDestroyNotify dnotify);
 
 func (v *GtkTreeView) GetColumn(n int) *GtkTreeViewColumn {
-	return &GtkTreeViewColumn{C.gtk_tree_view_get_column(C.to_GtkTreeView(v.Widget), C.gint(n))}
+	return newTreeViewColumn(C.gtk_tree_view_get_column(C.to_GtkTreeView(v.Widget), C.gint(n)))
 }
 
 //GList *gtk_tree_view_get_columns (GtkTreeView *tree_view);
@@ -4817,7 +4825,7 @@ func (v *GtkTreeView) SetCursor(path *GtkTreePath, col *GtkTreeViewColumn, se bo
 func (v *GtkTreeView) GetCursor(path **GtkTreePath, focus_column **GtkTreeViewColumn) {
 	*path = &GtkTreePath{nil}
 	if nil != focus_column {
-		*focus_column = &GtkTreeViewColumn{nil}
+		*focus_column = &GtkTreeViewColumn{nil, nil}
 		C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, &(*focus_column).TreeViewColumn)
 	} else {
 		C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.Widget), &(*path).TreePath, nil)
