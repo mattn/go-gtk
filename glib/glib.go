@@ -23,6 +23,8 @@ static inline char* to_charptr(const gchar* s) { return (char*)s; }
 
 static inline char* to_charptr_from_gpointer(gpointer s) { return (char*)s; }
 
+static inline char* to_charptr_voidp(const void* s) { return (char*)s; }
+
 static inline void free_string(char* s) { free(s); }
 
 static gboolean _g_utf8_validate(void* str, int len, void* ppbar) {
@@ -691,6 +693,10 @@ func (v *GValue) GetInt() int {
 	return int(C.g_value_get_int(&v.Value))
 }
 
+func (v *GValue) GetBool() bool {
+  return gboolean2bool(C.g_value_get_boolean(&v.Value))
+}
+
 //-----------------------------------------------------------------------
 // WrappedObject
 //-----------------------------------------------------------------------
@@ -720,8 +726,14 @@ func (c *CallbackContext) Data() interface{} {
 	return c.data.Interface()
 }
 
-func (c *CallbackContext) Args(n int) uintptr {
-	return uintptr(C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n)))
+func (c *CallbackContext) Args(n int) CallbackArg {
+	return CallbackArg(C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n)))
+}
+
+type CallbackArg uintptr
+
+func (c CallbackArg) ToString() string {
+	return C.GoString(C.to_charptr_voidp(unsafe.Pointer(c)))
 }
 
 //export _go_glib_callback
