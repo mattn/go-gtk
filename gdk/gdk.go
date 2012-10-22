@@ -2725,17 +2725,17 @@ type EventAny struct {
 }
 
 type EventKey struct {
-	Type            int
+	Type            C.int
 	Window          unsafe.Pointer
 	SendEvent       int8
 	Time            uint32
-	State           uint
-	Keyval          uint
+	State           C.unsigned
+	Keyval          C.unsigned
 	Length          int
 	String          *uint8
 	HardwareKeycode uint16
 	Group           uint8
-	IsModifier      uint
+	IsModifier      C.unsigned
 }
 
 type EventButton struct {
