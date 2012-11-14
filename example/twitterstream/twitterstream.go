@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/garyburd/go-oauth/oauth"
-	"github.com/garyburd/twitterstream"
+	"github.com/mattn/twitterstream"
 	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gdkpixbuf"
 	"github.com/mattn/go-gtk/gtk"
@@ -120,6 +120,7 @@ func main() {
 				"https://stream.twitter.com/1/statuses/filter.json",
 				url.Values{"track": {"picplz,instagr"}})
 			if err != nil {
+				println(err.Error())
 				return
 			}
 			for ts.Err() == nil {
