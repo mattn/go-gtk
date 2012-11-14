@@ -61,10 +61,6 @@ static GtkWidget* _gtk_message_dialog_new_with_markup(GtkWidget* parent, GtkDial
 			message, NULL);
 }
 
-static GtkWidget* _gtk_file_chooser_button_new(const gchar* title, int file_chooser_action) {
-	return gtk_file_chooser_button_new(title, file_chooser_action);
-}
-
 static GtkWidget* _gtk_file_chooser_dialog_new(const gchar* title,
 		GtkWidget* parent, int file_chooser_action, int action, const gchar* button) {
 	return gtk_file_chooser_dialog_new(
