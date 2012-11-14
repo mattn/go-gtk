@@ -316,6 +316,7 @@ func (v List) Insert(data unsafe.Pointer, pos int) *List {
 func (v List) InsertBefore(sib List, data unsafe.Pointer) *List {
 	return &List{C.g_list_insert_before(v.GList, sib.GList, C.gpointer(data))}
 }
+
 //GList*              g_list_insert_sorted                (GList *list,
 //                                                         gpointer data,
 //                                                         GCompareFunc func);
@@ -349,6 +350,7 @@ func (v List) Copy() *List {
 func (v List) Reverse() *List {
 	return &List{C.g_list_reverse(v.GList)}
 }
+
 //GList*              g_list_sort                         (GList *list,
 //                                                         GCompareFunc compare_func);
 //gint                (*GCompareFunc)                     (gconstpointer a,
@@ -394,6 +396,7 @@ func (v List) NthPrev(n uint) *List {
 func (v List) Find(data unsafe.Pointer) *List {
 	return &List{C.g_list_find(v.GList, C.gconstpointer(data))}
 }
+
 //GList*              g_list_find_custom                  (GList *list,
 //                                                         gconstpointer data,
 //                                                         GCompareFunc func);
@@ -436,6 +439,7 @@ func (v SList) Append(data unsafe.Pointer) *SList {
 func (v SList) Prepend(data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_prepend(v.GSList, C.gpointer(data))}
 }
+
 // GSList* g_slist_insert (GSList *list, gpointer data, gint position) G_GNUC_WARN_UNUSED_RESULT;
 // GSList* g_slist_insert_sorted (GSList *list, gpointer data, GCompareFunc func) G_GNUC_WARN_UNUSED_RESULT;
 // GSList* g_slist_insert_sorted_with_data (GSList *list, gpointer data, GCompareDataFunc func, gpointer user_data) G_GNUC_WARN_UNUSED_RESULT;
@@ -469,6 +473,7 @@ func (v SList) Nth(n uint) *SList {
 func (v SList) Find(data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_find(v.GSList, C.gconstpointer(data))}
 }
+
 // GSList* g_slist_find_custom (GSList *list, gconstpointer data, GCompareFunc func);
 func (v SList) Position(llink SList) int {
 	return int(C.g_slist_position(v.GSList, llink.GSList))
@@ -491,6 +496,7 @@ func (v SList) ForEach(callback func(interface{}, interface{}), user_datas ...in
 		callback(v.Nth(n).Data(), user_data)
 	}
 }
+
 // GSList* g_slist_sort (GSList *list, GCompareFunc compare_func) G_GNUC_WARN_UNUSED_RESULT;
 // GSList* g_slist_sort_with_data (GSList *list, GCompareDataFunc compare_func, gpointer user_data) G_GNUC_WARN_UNUSED_RESULT;
 func (v SList) NthData(n uint) interface{} {
@@ -698,7 +704,7 @@ func (v *GValue) GetInt() int {
 }
 
 func (v *GValue) GetBool() bool {
-  return gboolean2bool(C.g_value_get_boolean(&v.Value))
+	return gboolean2bool(C.g_value_get_boolean(&v.Value))
 }
 
 //-----------------------------------------------------------------------
@@ -756,7 +762,7 @@ func _go_glib_callback(cbi *C.callback_info) {
 	}
 }
 
-// Return the handler call_id to use with HandlerBlock, HandlerUnblock and 
+// Return the handler call_id to use with HandlerBlock, HandlerUnblock and
 // HandlerDisconnect.
 //
 func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) int {
@@ -867,9 +873,9 @@ func (v *GMainLoop) GetContext() *GMainContext {
 }
 
 type SourcefuncContext struct {
-	f      interface{}
-	sfi    unsafe.Pointer
-	data   reflect.Value
+	f    interface{}
+	sfi  unsafe.Pointer
+	data reflect.Value
 }
 
 //export _go_glib_sourcefunc

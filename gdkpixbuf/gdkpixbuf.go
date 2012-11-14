@@ -62,12 +62,12 @@ func GetGdkPixbufType() int {
 	return int(C.gdk_pixbuf_get_type())
 }
 
-func GetFileInfo (path string, imgW *int, imgH *int) *GdkPixbufFormat {
+func GetFileInfo(path string, imgW *int, imgH *int) *GdkPixbufFormat {
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
 
 	var w, h C.gint
-	format := &GdkPixbufFormat{C.gdk_pixbuf_get_file_info (C.to_gcharptr(ptr), &w, &h)}
+	format := &GdkPixbufFormat{C.gdk_pixbuf_get_file_info(C.to_gcharptr(ptr), &w, &h)}
 	*imgW = int(w)
 	*imgH = int(h)
 	return format
@@ -134,6 +134,7 @@ func (v GdkPixbufLoader) Close() (ret bool, err *C.GError) {
 	err = error
 	return
 }
+
 //func (v GdkPixbufLoader) GetPixbufAnimation() *GdkPixbufAnimation {
 //	return &GdkPixbufAnimation {
 //		C.gdk_pixbuf_loader_get_animation(v.PixbufLoader) };
@@ -145,4 +146,5 @@ func (v GdkPixbufLoader) GetFormat() *GdkPixbufFormat {
 	return &GdkPixbufFormat{
 		C.gdk_pixbuf_loader_get_format(v.PixbufLoader)}
 }
+
 // FINISH

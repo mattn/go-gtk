@@ -40,6 +40,7 @@ func gboolean2bool(b C.gboolean) bool {
 	}
 	return false
 }
+
 //-----------------------------------------------------------------------
 // Types
 //-----------------------------------------------------------------------
@@ -82,7 +83,7 @@ func ThreadsLeave() {
 // GdkSelection
 //-----------------------------------------------------------------------
 const (
-	GDK_SELECTION_PRIMARY GdkAtom = GdkAtom(uintptr(1))
+	GDK_SELECTION_PRIMARY   GdkAtom = GdkAtom(uintptr(1))
 	GDK_SELECTION_SECONDARY GdkAtom = GdkAtom(uintptr(2))
 	GDK_SELECTION_CLIPBOARD GdkAtom = GdkAtom(uintptr(69))
 )
@@ -269,6 +270,7 @@ func (v *GdkGC) SetForeground(color *GdkColor) {
 func (v *GdkGC) SetBackground(color *GdkColor) {
 	C.gdk_gc_set_background(v.GC, &color.Color)
 }
+
 // void gdk_gc_set_font (GdkGC *gc, GdkFont *font);
 // void gdk_gc_set_function (GdkGC *gc, GdkFunction function);
 // void gdk_gc_set_fill (GdkGC *gc, GdkFill fill);
@@ -293,6 +295,7 @@ func (v *GdkGC) SetRgbFgColor(color *GdkColor) {
 func (v *GdkGC) SetRgbBgColor(color *GdkColor) {
 	C.gdk_gc_set_rgb_bg_color(v.GC, &color.Color)
 }
+
 // GdkScreen * gdk_gc_get_screen (GdkGC *gc);
 
 //-----------------------------------------------------------------------
@@ -314,6 +317,7 @@ func (v *GdkDrawable) DrawRectangle(gc *GdkGC, filled bool, x int, y int, width 
 func (v *GdkDrawable) DrawArc(gc *GdkGC, filled bool, x int, y int, width int, height int, angle1 int, angle2 int) {
 	C.gdk_draw_arc(v.Drawable, gc.GC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height), C.gint(angle1), C.gint(angle2))
 }
+
 // void gdk_draw_polygon (GdkDrawable *drawable, GdkGC *gc, gboolean filled, const GdkPoint *points, gint n_points);
 // void gdk_draw_string (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *string);
 func (v *GdkDrawable) DrawString(font *GdkFont, gc *GdkGC, x int, y int, str string) {
@@ -321,11 +325,13 @@ func (v *GdkDrawable) DrawString(font *GdkFont, gc *GdkGC, x int, y int, str str
 	defer C.free_string(ptr)
 	C.gdk_draw_string(v.Drawable, font.Font, gc.GC, C.gint(x), C.gint(y), C.to_gcharptr(ptr))
 }
+
 // void gdk_draw_text (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *text, gint text_length);
 // void gdk_draw_text_wc (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const GdkWChar *text, gint text_length);
 func (v *GdkDrawable) DrawDrawable(gc *GdkGC, src *GdkDrawable, xsrc int, ysrc int, xdest int, ydest int, width int, height int) {
 	C.gdk_draw_drawable(v.Drawable, gc.GC, src.Drawable, C.gint(xsrc), C.gint(ysrc), C.gint(xdest), C.gint(ydest), C.gint(width), C.gint(height))
 }
+
 // void gdk_draw_image (GdkDrawable *drawable, GdkGC *gc, GdkImage *image, gint xsrc, gint ysrc, gint xdest, gint ydest, gint width, gint height);
 // void gdk_draw_points (GdkDrawable *drawable, GdkGC *gc, const GdkPoint *points, gint n_points);
 // void gdk_draw_segments (GdkDrawable *drawable, GdkGC *gc, const GdkSegment *segs, gint n_segs);
@@ -517,6 +523,7 @@ func Pixmap(drawable *GdkDrawable, width int, height int, depth int) *GdkPixmap 
 	return &GdkPixmap{
 		C.gdk_pixmap_new(drawable.Drawable, C.gint(width), C.gint(height), C.gint(depth))}
 }
+
 // GdkBitmap* gdk_bitmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height);
 // GdkPixmap* gdk_pixmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height, gint depth, const GdkColor *fg, const GdkColor *bg);
 // GdkPixmap* gdk_pixmap_create_from_xpm (GdkDrawable *drawable, GdkBitmap **mask, const GdkColor *transparent_color, const gchar *filename);
@@ -2808,13 +2815,13 @@ type EventFocus struct {
 }
 
 type EventConfigure struct {
-	Type int
-	Window unsafe.Pointer
+	Type      int
+	Window    unsafe.Pointer
 	SendEvent uint8
-	X int
-	Y int
-	Width int
-	Height int
+	X         int
+	Y         int
+	Width     int
+	Height    int
 }
 
 type EventProperty struct {

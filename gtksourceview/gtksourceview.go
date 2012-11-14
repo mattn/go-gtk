@@ -259,6 +259,7 @@ func (v *GtkSourceLanguage) GetStyleIds() []string {
 	}
 	return ids
 }
+
 //FINISH
 
 //-----------------------------------------------------------------------
@@ -325,5 +326,5 @@ func (v *GtkSourceLanguageManager) GuessLanguage(filename string, contentType st
 	defer C.free_string(cfn)
 	return &GtkSourceLanguage{C.gtk_source_language_manager_guess_language(v.LanguageManager, C.to_gcharptr(cfn), nil)}
 }
-//FINISH
 
+//FINISH

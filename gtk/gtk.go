@@ -3848,7 +3848,7 @@ type GtkTextBuffer struct {
 func newTextBuffer(buffer *C.GtkTextBuffer) *GtkTextBuffer {
 	return &GtkTextBuffer{
 		TextBuffer: buffer,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(buffer)),
+		GObject:    glib.ObjectFromNative(unsafe.Pointer(buffer)),
 	}
 }
 func (v *GtkTextBuffer) GetNativeBuffer() unsafe.Pointer {
@@ -4569,7 +4569,7 @@ type GtkTreeViewColumn struct {
 func newTreeViewColumn(column *C.GtkTreeViewColumn) *GtkTreeViewColumn {
 	return &GtkTreeViewColumn{
 		TreeViewColumn: column,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(column)),
+		GObject:        glib.ObjectFromNative(unsafe.Pointer(column)),
 	}
 }
 
@@ -4690,7 +4690,7 @@ func (v *GtkTreeViewColumn) GetTitle() string {
 }
 
 func (v *GtkTreeViewColumn) SetExpand(expand bool) {
-	C.gtk_tree_view_column_set_expand (v.TreeViewColumn, bool2gboolean(expand))
+	C.gtk_tree_view_column_set_expand(v.TreeViewColumn, bool2gboolean(expand))
 }
 func (v *GtkTreeViewColumn) GetExpand() bool {
 	return gboolean2bool(C.gtk_tree_view_column_get_expand(v.TreeViewColumn))
@@ -4704,7 +4704,7 @@ func (v *GtkTreeViewColumn) GetExpand() bool {
 //gfloat gtk_tree_view_column_get_alignment (GtkTreeViewColumn *tree_column);
 
 func (v *GtkTreeViewColumn) SetReorderable(reorderable bool) {
-	C.gtk_tree_view_column_set_reorderable (v.TreeViewColumn, bool2gboolean(reorderable))
+	C.gtk_tree_view_column_set_reorderable(v.TreeViewColumn, bool2gboolean(reorderable))
 }
 func (v *GtkTreeViewColumn) GetReorderable() bool {
 	return gboolean2bool(C.gtk_tree_view_column_get_reorderable(v.TreeViewColumn))
@@ -5926,8 +5926,8 @@ type GtkRadioMenuItem struct {
 
 func RadioMenuItem(group *glib.SList) *GtkRadioMenuItem {
 	if group != nil {
-	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_radio_menu_item_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}}}
+		return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+			C.gtk_radio_menu_item_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}}}
 	}
 	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_radio_menu_item_new(nil)}}}}}}}
@@ -5937,8 +5937,8 @@ func RadioMenuItemWithLabel(group *glib.SList, label string) *GtkRadioMenuItem {
 	ptr := C.CString(label)
 	defer C.free_string(ptr)
 	if group != nil {
-	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
-		C.gtk_radio_menu_item_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}}}
+		return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
+			C.gtk_radio_menu_item_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(ptr))}}}}}}}
 	}
 	return &GtkRadioMenuItem{GtkCheckMenuItem{GtkMenuItem{GtkItem{GtkBin{GtkContainer{GtkWidget{
 		C.gtk_radio_menu_item_new_with_label(nil, C.to_gcharptr(ptr))}}}}}}}
