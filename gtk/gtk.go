@@ -2012,7 +2012,13 @@ func (v *GtkWindow) XID() int32 {
 // gtk_window_set_default_icon_name
 // gtk_window_set_icon
 // gtk_window_set_icon_list
-// gtk_window_set_icon_from_file
+
+func (v *GtkWindow) SetIconFromFile(file string) {
+	ptr := C.CString(file)
+	defer C.free_string(ptr)
+	C.gtk_window_set_icon_from_file(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr), nil) // last arg : GError **err
+}
+
 // gtk_window_set_icon_name
 // gtk_window_set_auto_startup_notification
 // gtk_window_get_opacity
@@ -4628,8 +4634,13 @@ func (v *GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string
 //gint gtk_tree_view_column_get_spacing (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_visible (GtkTreeViewColumn *tree_column, gboolean visible);
 //gboolean gtk_tree_view_column_get_visible (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_set_resizable (GtkTreeViewColumn *tree_column, gboolean resizable);
-//gboolean gtk_tree_view_column_get_resizable (GtkTreeViewColumn *tree_column);
+
+func (v *GtkTreeViewColumn) SetResizable(resizable bool) {
+	C.gtk_tree_view_column_set_resizable(v.TreeViewColumn, bool2gboolean(resizable))
+}
+func (v *GtkTreeViewColumn) GetResizable() bool {
+	return gboolean2bool(C.gtk_tree_view_column_get_resizable(v.TreeViewColumn))
+}
 
 func (v *GtkTreeViewColumn) SetSizing(s GtkTreeViewColumnSizing) {
 	C.gtk_tree_view_column_set_sizing(v.TreeViewColumn, C.GtkTreeViewColumnSizing(s))
@@ -4671,16 +4682,27 @@ func (v *GtkTreeViewColumn) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_tree_view_column_get_title(v.TreeViewColumn)))
 }
 
-//void gtk_tree_view_column_set_expand (GtkTreeViewColumn *tree_column, gboolean expand);
-//gboolean gtk_tree_view_column_get_expand (GtkTreeViewColumn *tree_column);
+func (v *GtkTreeViewColumn) SetExpand(expand bool) {
+	C.gtk_tree_view_column_set_expand (v.TreeViewColumn, bool2gboolean(expand))
+}
+func (v *GtkTreeViewColumn) GetExpand() bool {
+	return gboolean2bool(C.gtk_tree_view_column_get_expand(v.TreeViewColumn))
+}
+
 //void gtk_tree_view_column_set_clickable (GtkTreeViewColumn *tree_column, gboolean clickable);
 //gboolean gtk_tree_view_column_get_clickable (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_widget (GtkTreeViewColumn *tree_column, GtkWidget *widget);
 //GtkWidget *gtk_tree_view_column_get_widget (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_alignment (GtkTreeViewColumn *tree_column, gfloat xalign);
 //gfloat gtk_tree_view_column_get_alignment (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_set_reorderable (GtkTreeViewColumn *tree_column, gboolean reorderable);
-//gboolean gtk_tree_view_column_get_reorderable (GtkTreeViewColumn *tree_column);
+
+func (v *GtkTreeViewColumn) SetReorderable(reorderable bool) {
+	C.gtk_tree_view_column_set_reorderable (v.TreeViewColumn, bool2gboolean(reorderable))
+}
+func (v *GtkTreeViewColumn) GetReorderable() bool {
+	return gboolean2bool(C.gtk_tree_view_column_get_reorderable(v.TreeViewColumn))
+}
+
 //void gtk_tree_view_column_set_sort_column_id (GtkTreeViewColumn *tree_column, gint sort_column_id);
 //gint gtk_tree_view_column_get_sort_column_id (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_sort_indicator (GtkTreeViewColumn *tree_column, gboolean setting);
@@ -4982,7 +5004,12 @@ func (v *GtkIconView) SetPixbufColumn(pixbuf_column int) {
 // gtk_icon_view_select_all
 // gtk_icon_view_unselect_all
 // gtk_icon_view_item_activated
-// gtk_icon_view_scroll_to_path
+
+func (v *GtkIconView) ScrollToPath(path *GtkTreePath, use bool, ra float64, ca float64) {
+	C.gtk_icon_view_scroll_to_path(C.to_GtkIconView(v.Widget), path.TreePath,
+		bool2gboolean(use), C.gfloat(ra), C.gfloat(ca))
+}
+
 // gtk_icon_view_get_visible_range
 // gtk_icon_view_set_tooltip_item
 // gtk_icon_view_set_tooltip_cell
