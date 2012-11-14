@@ -66,7 +66,7 @@ func main() {
 			gdk.ThreadsEnter()
 			button.SetSensitive(false)
 			gdk.ThreadsLeave()
-			r, err := http.Get("http://twitter.com/statuses/public_timeline.json")
+			r, err := http.Get("https://api.twitter.com/1/statuses/user_timeline.json?screen_name=go_nuts")
 			if err == nil {
 				var b []byte
 				if r.ContentLength == -1 {
