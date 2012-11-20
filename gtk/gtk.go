@@ -4637,18 +4637,25 @@ func (v *GtkTreeViewColumn) AddAttribute(cell CellRendererLike, attribute string
 //void gtk_tree_view_column_set_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, ...) G_GNUC_NULL_TERMINATED;
 //void gtk_tree_view_column_set_cell_data_func (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer, GtkTreeCellDataFunc func, gpointer func_data, GDestroyNotify destroy);
 //void gtk_tree_view_column_clear_attributes (GtkTreeViewColumn *tree_column, GtkCellRenderer *cell_renderer);
-//void gtk_tree_view_column_set_spacing (GtkTreeViewColumn *tree_column, gint spacing);
-//gint gtk_tree_view_column_get_spacing (GtkTreeViewColumn *tree_column);
-//void gtk_tree_view_column_set_visible (GtkTreeViewColumn *tree_column, gboolean visible);
-//gboolean gtk_tree_view_column_get_visible (GtkTreeViewColumn *tree_column);
 
+func (v *GtkTreeViewColumn) SetSpacing(spacing int) {
+	C.gtk_tree_view_column_set_spacing(v.TreeViewColumn, C.gint(spacing))
+}
+func (v *GtkTreeViewColumn) GetSpacing() int {
+	return int(C.gtk_tree_view_column_get_spacing(v.TreeViewColumn))
+}
+func (v *GtkTreeViewColumn) SetVisible(resizable bool) {
+	C.gtk_tree_view_column_set_visible(v.TreeViewColumn, bool2gboolean(resizable))
+}
+func (v *GtkTreeViewColumn) GetVisible() bool {
+	return gboolean2bool(C.gtk_tree_view_column_get_visible (v.TreeViewColumn))
+}
 func (v *GtkTreeViewColumn) SetResizable(resizable bool) {
 	C.gtk_tree_view_column_set_resizable(v.TreeViewColumn, bool2gboolean(resizable))
 }
 func (v *GtkTreeViewColumn) GetResizable() bool {
 	return gboolean2bool(C.gtk_tree_view_column_get_resizable(v.TreeViewColumn))
 }
-
 func (v *GtkTreeViewColumn) SetSizing(s GtkTreeViewColumnSizing) {
 	C.gtk_tree_view_column_set_sizing(v.TreeViewColumn, C.GtkTreeViewColumnSizing(s))
 }
@@ -4696,8 +4703,12 @@ func (v *GtkTreeViewColumn) GetExpand() bool {
 	return gboolean2bool(C.gtk_tree_view_column_get_expand(v.TreeViewColumn))
 }
 
-//void gtk_tree_view_column_set_clickable (GtkTreeViewColumn *tree_column, gboolean clickable);
-//gboolean gtk_tree_view_column_get_clickable (GtkTreeViewColumn *tree_column);
+func (v *GtkTreeViewColumn) SetClickable(clickable bool) {
+	C.gtk_tree_view_column_set_clickable(v.TreeViewColumn, bool2gboolean(clickable))
+}
+func (v *GtkTreeViewColumn) GetClickable() bool {
+	return gboolean2bool(C.gtk_tree_view_column_get_clickable(v.TreeViewColumn))
+}
 //void gtk_tree_view_column_set_widget (GtkTreeViewColumn *tree_column, GtkWidget *widget);
 //GtkWidget *gtk_tree_view_column_get_widget (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_alignment (GtkTreeViewColumn *tree_column, gfloat xalign);
