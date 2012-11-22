@@ -19,7 +19,7 @@ static void free_string(char* s) { free(s); }
 */
 // #cgo pkg-config: gdk-pixbuf-2.0
 import "C"
-import "github.com/mattn/go-gtk/glib"
+import "github.com/agl/go-gtk/glib"
 import "unsafe"
 
 func gboolean2bool(b C.gboolean) bool {

@@ -28,7 +28,7 @@ static GtkSourceView* to_GtkSourceView(void* w) { return GTK_SOURCE_VIEW(w); }
 */
 // #cgo pkg-config: gtksourceview-2.0
 import "C"
-import "github.com/mattn/go-gtk/gtk"
+import "github.com/agl/go-gtk/gtk"
 import "unsafe"
 
 func bool2gboolean(b bool) C.gboolean {
