@@ -8021,6 +8021,7 @@ type BoxLike interface {
 	ContainerLike
 	PackStart(child WidgetLike, expand bool, fill bool, padding uint)
 	PackEnd(child WidgetLike, expand bool, fill bool, padding uint)
+	ReorderChild(child WidgetLike, position int)
 }
 type GtkBox struct {
 	GtkContainer
@@ -8056,7 +8057,7 @@ func (v *GtkBox) GetSpacing() int {
 func (v *GtkBox) SetSpacing(spacing int) {
 	C.gtk_box_set_spacing(C.to_GtkBox(v.Widget), C.gint(spacing))
 }
-func (v *GtkBox) ReorderChild(child WidgetLike, position GtkPackType) {
+func (v *GtkBox) ReorderChild(child WidgetLike, position int) {
 	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToNative(), C.gint(position))
 }
 func (v *GtkBox) QueryChildPacking(child WidgetLike, expand *bool, fill *bool, padding *uint, pack_type *GtkPackType) {
