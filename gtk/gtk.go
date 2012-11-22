@@ -8096,8 +8096,19 @@ func (v *GtkContainer) CheckResize() {
 
 // gtk_container_foreach
 
-func (v *GtkContainer) GetChildren() *glib.List {
-	return glib.ListFromNative(unsafe.Pointer(C.gtk_container_get_children(C.to_GtkContainer(v.Widget))))
+func (v *GtkContainer) GetChildren() (childWidgets []*GtkWidget) {
+	children := C.gtk_container_get_children(C.to_GtkContainer(v.Widget))
+	if children == nil {
+		return nil
+	}
+
+	list := glib.ListFromNative(unsafe.Pointer(children))
+	defer list.Free()
+
+	for n := uint(0); n < list.Length(); n++ {
+		childWidgets = append(childWidgets, WidgetFromObject(glib.ObjectFromNative(list.NthData(n).(unsafe.Pointer))))
+	}
+	return
 }
 
 // gtk_container_set_reallocate_redraws

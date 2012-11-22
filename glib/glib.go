@@ -320,7 +320,10 @@ func ListFromNative(l unsafe.Pointer) *List {
 		C.to_list(l)}
 }
 func (v List) Data() interface{} {
-	return v.GList.data
+	if v.GList.data == nil {
+		return nil
+	}
+	return unsafe.Pointer(v.GList.data)
 }
 func (v List) Append(data unsafe.Pointer) *List {
 	return &List{C.g_list_append(v.GList, C.gpointer(data))}
@@ -404,7 +407,11 @@ func (v List) Nth(n uint) *List {
 	return &List{C.g_list_nth(v.GList, C.guint(n))}
 }
 func (v List) NthData(n uint) interface{} {
-	return C.g_list_nth_data(v.GList, C.guint(n))
+	p := C.g_list_nth_data(v.GList, C.guint(n))
+	if p == nil {
+		return nil
+	}
+	return unsafe.Pointer(p)
 }
 func (v List) NthPrev(n uint) *List {
 	return &List{C.g_list_nth_prev(v.GList, C.guint(n))}
