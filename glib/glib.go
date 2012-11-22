@@ -142,6 +142,8 @@ typedef struct {
 	int func_no;
 	gboolean ret;
 	guint id;
+	GIOChannel* channel;
+	GIOCondition condition;
 } sourcefunc_info;
 
 extern void _go_glib_sourcefunc(sourcefunc_info* sfi);
@@ -153,7 +155,19 @@ static gboolean _go_sourcefunc(void *data) {
 	return sfi->ret;
 }
 
+static gboolean _go_io_sourcefunc(GIOChannel *channel, GIOCondition condition, gpointer data) {
+	sourcefunc_info *sfi = (sourcefunc_info*) data;
+	sfi->condition = condition;
+
+	_go_glib_sourcefunc(sfi);
+
+	return sfi->ret;
+}
+
 static void free_sourcefunc_info(gpointer data) {
+	sourcefunc_info* sfi = data;
+	if (sfi->channel)
+		g_io_channel_unref(sfi->channel);
 	g_slice_free(sourcefunc_info, data);
 }
 
@@ -172,6 +186,16 @@ static sourcefunc_info* _g_timeout_add(guint interval, int func_no) {
 	sfi->id = g_timeout_add_full(G_PRIORITY_DEFAULT, interval, _go_sourcefunc, sfi, free_sourcefunc_info);
 	return sfi;
 }
+
+static sourcefunc_info* _g_fd_watch(int fd, int condition, int func_no) {
+	sourcefunc_info* sfi;
+	sfi = g_slice_new0(sourcefunc_info);
+	sfi->func_no = func_no;
+	sfi->channel = g_io_channel_unix_new(fd);
+	sfi->id = g_io_add_watch_full(sfi->channel, 0, condition, _go_io_sourcefunc, sfi, free_sourcefunc_info);
+	return sfi;
+}
+
 */
 // #cgo pkg-config: glib-2.0 gobject-2.0
 import "C"
@@ -302,7 +326,10 @@ func ListFromNative(l unsafe.Pointer) *List {
 		C.to_list(l)}
 }
 func (v List) Data() interface{} {
-	return v.GList.data
+	if v.GList.data == nil {
+		return nil
+	}
+	return unsafe.Pointer(v.GList.data)
 }
 func (v List) Append(data unsafe.Pointer) *List {
 	return &List{C.g_list_append(v.GList, C.gpointer(data))}
@@ -388,7 +415,11 @@ func (v List) Nth(n uint) *List {
 	return &List{C.g_list_nth(v.GList, C.guint(n))}
 }
 func (v List) NthData(n uint) interface{} {
-	return C.g_list_nth_data(v.GList, C.guint(n))
+	p := C.g_list_nth_data(v.GList, C.guint(n))
+	if p == nil {
+		return nil
+	}
+	return unsafe.Pointer(p)
 }
 func (v List) NthPrev(n uint) *List {
 	return &List{C.g_list_nth_prev(v.GList, C.guint(n))}
@@ -884,8 +915,14 @@ func _go_glib_sourcefunc(sfi *C.sourcefunc_info) {
 	rf := reflect.ValueOf(context.f)
 	t := rf.Type()
 	fargs := make([]reflect.Value, t.NumIn())
-	if len(fargs) > 0 {
-		fargs[0] = reflect.ValueOf(context.data)
+	n := 0
+	if len(fargs) > n && sfi.channel != nil {
+		fargs[n] = reflect.ValueOf(int(sfi.condition))
+		n++
+	}
+	if len(fargs) > n {
+		fargs[n] = reflect.ValueOf(context.data)
+		n++
 	}
 	ret := rf.Call(fargs)
 	if len(ret) > 0 {
@@ -913,3 +950,25 @@ func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
 	ctx.sfi = unsafe.Pointer(C._g_timeout_add(C.guint(interval), C.int(len(sourcefunc_contexts))))
 	sourcefunc_contexts = append(sourcefunc_contexts, ctx)
 }
+
+// FdWatchAdd adds a watch on the given file descriptor. It causes f to be
+// called when one of the conditions, specified by ORing together the IO*
+// constants, is true. The resulting condition, and the optional data argument,
+// are passed as parameters to f.
+func FdWatchAdd(fd, conditions int, f interface{}, datas ...interface{}) {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	ctx := &SourcefuncContext{f, nil, reflect.ValueOf(data)}
+	ctx.sfi = unsafe.Pointer(C._g_fd_watch(C.int(fd), C.int(conditions), C.int(len(sourcefunc_contexts))))
+	sourcefunc_contexts = append(sourcefunc_contexts, ctx)
+}
+
+const (
+	IOIn = C.G_IO_IN
+	IOOut = C.G_IO_OUT
+	IOUrgent = C.G_IO_PRI
+	IOError = C.G_IO_ERR
+	IOHangUp = C.G_IO_HUP
+)

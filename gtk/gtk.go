@@ -721,6 +721,7 @@ static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG
 static GtkContainer* to_GtkContainer(GtkWidget* w) { return GTK_CONTAINER(w); }
 static GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER(w); }
 static GtkFontSelectionDialog* to_GtkFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
+static GtkMisc* to_GtkMisc(GtkWidget* w) { return GTK_MISC(w); }
 static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
 static GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
 static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
@@ -771,6 +772,7 @@ static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
+static GtkSpinner* to_GtkSpinner(GtkWidget* w) { return GTK_SPINNER(w); }
 static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
@@ -784,10 +786,10 @@ static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); 
 import "C"
 import (
 	"fmt"
-	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/pango"
+	"github.com/agl/go-gtk/gdk"
+	"github.com/agl/go-gtk/gdkpixbuf"
+	"github.com/agl/go-gtk/glib"
+	"github.com/agl/go-gtk/pango"
 	"log"
 	"reflect"
 	"runtime"
@@ -2384,7 +2386,7 @@ func ImageFromFile(filename string) *GtkImage {
 // gtk_image_new_from_icon_set
 // gtk_image_new_from_image
 
-func ImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *GtkImage {
+func ImageFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) *GtkImage {
 	return &GtkImage{GtkWidget{
 		C.gtk_image_new_from_pixbuf(pixbuf.Pixbuf)}}
 }
@@ -2433,6 +2435,10 @@ func (v *GtkImage) Clear() {
 func Image() *GtkImage {
 	return &GtkImage{GtkWidget{
 		C.gtk_image_new()}}
+}
+
+func (v *GtkImage) SetAlignment(xAlign, yAlign float32) {
+	C.gtk_misc_set_alignment(C.to_GtkMisc(v.Widget), C.gfloat(xAlign), C.gfloat(yAlign))
 }
 
 // gtk_image_set_pixel_size
@@ -2509,6 +2515,9 @@ func (v *GtkLabel) SetLineWrap(setting bool) {
 }
 func (v *GtkLabel) SetUseLineWrapMode(wrap_mode pango.PangoWrapMode) {
 	C.gtk_label_set_line_wrap_mode(C.to_GtkLabel(v.Widget), C.PangoWrapMode(wrap_mode))
+}
+func (v *GtkLabel) SetAlignment(xAlign, yAlign float32) {
+	C.gtk_misc_set_alignment(C.to_GtkMisc(v.Widget), C.gfloat(xAlign), C.gfloat(yAlign))
 }
 
 // gtk_label_get_layout_offsets
@@ -2941,9 +2950,24 @@ func PrintContextFromNative(l unsafe.Pointer) *GtkPrintContext {
 // GtkSpinner
 //-----------------------------------------------------------------------
 
-// gtk_spinner_new //since 2.20
-// gtk_spinner_start //since 2.20
-// gtk_spinner_stop //since 2.20
+type GtkSpinner struct {
+	GtkWidget
+}
+
+func Spinner() *GtkSpinner {
+	panic_if_version_older(2, 20, 0, "gtk_spinner_new()")
+	return &GtkSpinner{GtkWidget{C.gtk_spinner_new()}}
+}
+
+func (v *GtkSpinner) Start() {
+	panic_if_version_older(2, 20, 0, "gtk_spinner_start()")
+	C.gtk_spinner_start(C.to_GtkSpinner(v.Widget))
+}
+
+func (v *GtkSpinner) Stop() {
+	panic_if_version_older(2, 20, 0, "gtk_spinner_stop()")
+	C.gtk_spinner_stop(C.to_GtkSpinner(v.Widget))
+}
 
 //-----------------------------------------------------------------------
 // GtkButton
@@ -5513,8 +5537,8 @@ func (v *GtkComboBox) SetColumnSpanColumn(column_span int) {
 func (v *GtkComboBox) GetActive() int {
 	return int(C.gtk_combo_box_get_active(C.to_GtkComboBox(v.Widget)))
 }
-func (v *GtkComboBox) SetActive(width int) {
-	C.gtk_combo_box_set_active(C.to_GtkComboBox(v.Widget), C.gint(width))
+func (v *GtkComboBox) SetActive(index int) {
+	C.gtk_combo_box_set_active(C.to_GtkComboBox(v.Widget), C.gint(index))
 }
 func (v *GtkComboBox) GetActiveIter(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_combo_box_get_active_iter(C.to_GtkComboBox(v.Widget), &iter.TreeIter))
@@ -8115,6 +8139,7 @@ type BoxLike interface {
 	ContainerLike
 	PackStart(child WidgetLike, expand bool, fill bool, padding uint)
 	PackEnd(child WidgetLike, expand bool, fill bool, padding uint)
+	ReorderChild(child WidgetLike, position int)
 }
 type GtkBox struct {
 	GtkContainer
@@ -8150,7 +8175,7 @@ func (v *GtkBox) GetSpacing() int {
 func (v *GtkBox) SetSpacing(spacing int) {
 	C.gtk_box_set_spacing(C.to_GtkBox(v.Widget), C.gint(spacing))
 }
-func (v *GtkBox) ReorderChild(child WidgetLike, position GtkPackType) {
+func (v *GtkBox) ReorderChild(child WidgetLike, position int) {
 	C.gtk_box_reorder_child(C.to_GtkBox(v.Widget), child.ToNative(), C.gint(position))
 }
 func (v *GtkBox) QueryChildPacking(child WidgetLike, expand *bool, fill *bool, padding *uint, pack_type *GtkPackType) {
@@ -8210,8 +8235,19 @@ func (v *GtkContainer) CheckResize() {
 
 // gtk_container_foreach
 
-func (v *GtkContainer) GetChildren() *glib.List {
-	return glib.ListFromNative(unsafe.Pointer(C.gtk_container_get_children(C.to_GtkContainer(v.Widget))))
+func (v *GtkContainer) GetChildren() (childWidgets []*GtkWidget) {
+	children := C.gtk_container_get_children(C.to_GtkContainer(v.Widget))
+	if children == nil {
+		return nil
+	}
+
+	list := glib.ListFromNative(unsafe.Pointer(children))
+	defer list.Free()
+
+	for n := uint(0); n < list.Length(); n++ {
+		childWidgets = append(childWidgets, WidgetFromObject(glib.ObjectFromNative(list.NthData(n).(unsafe.Pointer))))
+	}
+	return
 }
 
 // gtk_container_set_reallocate_redraws
@@ -9019,6 +9055,10 @@ func (v *GtkWidget) ModifyFontEasy(desc string) {
 	pdesc := C.CString(desc)
 	defer C.free_string(pdesc)
 	C.gtk_widget_modify_font(v.Widget, C.pango_font_description_from_string(pdesc))
+}
+
+func (v *GtkWidget) ModifyFG(state GtkStateType, color *gdk.GdkColor) {
+	C.gtk_widget_modify_fg(v.Widget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.Color)) )
 }
 
 func (v *GtkWidget) ModifyBG(state GtkStateType, color *gdk.GdkColor) {
