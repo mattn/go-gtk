@@ -2372,7 +2372,7 @@ func ImageFromFile(filename string) *GtkImage {
 // gtk_image_new_from_icon_set
 // gtk_image_new_from_image
 
-func ImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *GtkImage {
+func ImageFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) *GtkImage {
 	return &GtkImage{GtkWidget{
 		C.gtk_image_new_from_pixbuf(pixbuf.Pixbuf)}}
 }
