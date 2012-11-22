@@ -5478,8 +5478,8 @@ func (v *GtkComboBox) SetColumnSpanColumn(column_span int) {
 func (v *GtkComboBox) GetActive() int {
 	return int(C.gtk_combo_box_get_active(C.to_GtkComboBox(v.Widget)))
 }
-func (v *GtkComboBox) SetActive(width int) {
-	C.gtk_combo_box_set_active(C.to_GtkComboBox(v.Widget), C.gint(width))
+func (v *GtkComboBox) SetActive(index int) {
+	C.gtk_combo_box_set_active(C.to_GtkComboBox(v.Widget), C.gint(index))
 }
 func (v *GtkComboBox) GetActiveIter(iter *GtkTreeIter) bool {
 	return gboolean2bool(C.gtk_combo_box_get_active_iter(C.to_GtkComboBox(v.Widget), &iter.TreeIter))
