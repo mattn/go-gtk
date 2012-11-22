@@ -772,6 +772,7 @@ static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
 static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
+static GtkSpinner* to_GtkSpinner(GtkWidget* w) { return GTK_SPINNER(w); }
 static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
@@ -2931,9 +2932,24 @@ func PrintContextFromNative(l unsafe.Pointer) *GtkPrintContext {
 // GtkSpinner
 //-----------------------------------------------------------------------
 
-// gtk_spinner_new //since 2.20
-// gtk_spinner_start //since 2.20
-// gtk_spinner_stop //since 2.20
+type GtkSpinner struct {
+	GtkWidget
+}
+
+func Spinner() *GtkSpinner {
+	panic_if_version_older(2, 20, 0, "gtk_spinner_new()")
+	return &GtkSpinner{GtkWidget{C.gtk_spinner_new()}}
+}
+
+func (v *GtkSpinner) Start() {
+	panic_if_version_older(2, 20, 0, "gtk_spinner_start()")
+	C.gtk_spinner_start(C.to_GtkSpinner(v.Widget))
+}
+
+func (v *GtkSpinner) Stop() {
+	panic_if_version_older(2, 20, 0, "gtk_spinner_stop()")
+	C.gtk_spinner_stop(C.to_GtkSpinner(v.Widget))
+}
 
 //-----------------------------------------------------------------------
 // GtkButton
