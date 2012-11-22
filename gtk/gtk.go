@@ -2423,6 +2423,10 @@ func Image() *GtkImage {
 		C.gtk_image_new()}}
 }
 
+func (v *GtkImage) SetAlignment(xAlign, yAlign float32) {
+	C.gtk_misc_set_alignment(C.to_GtkMisc(v.Widget), C.gfloat(xAlign), C.gfloat(yAlign))
+}
+
 // gtk_image_set_pixel_size
 // gtk_image_get_pixel_size
 
