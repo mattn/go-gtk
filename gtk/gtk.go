@@ -1909,14 +1909,28 @@ func (v *GtkWindow) Unmaximize() {
 	C.gtk_window_unmaximize(C.to_GtkWindow(v.Widget))
 }
 
-// gtk_window_fullscreen
-// gtk_window_unfullscreen
-// gtk_window_set_keep_above
-// gtk_window_set_keep_below
+func (v *GtkWindow) Fullscreen() {
+	C.gtk_window_fullscreen(C.to_GtkWindow(v.Widget))
+}
+func (v *GtkWindow) Unfullscreen() {
+	C.gtk_window_unfullscreen(C.to_GtkWindow(v.Widget))
+}
+func (v *GtkWindow) SetKeepAbove(setting bool){
+	C.gtk_window_set_keep_above(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+}
+func (v *GtkWindow) SetKeepBelow(setting bool){
+	C.gtk_window_set_keep_below(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+}
+func (v *GtkWindow) SetDecorated(setting bool){
+	C.gtk_window_set_decorated(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+}
+func (v *GtkWindow) SetDeletable(setting bool){
+	C.gtk_window_set_deletable(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+}
+
+
 // gtk_window_begin_resize_drag
 // gtk_window_begin_move_drag
-// gtk_window_set_decorated
-// gtk_window_set_deletable
 // gtk_window_set_frame_dimensions //deprecated since 2.24
 // gtk_window_set_has_frame  //deprecated since 2.24
 // gtk_window_set_mnemonic_modifier
