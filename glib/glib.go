@@ -172,6 +172,14 @@ static sourcefunc_info* _g_timeout_add(guint interval, int func_no) {
 	sfi->id = g_timeout_add_full(G_PRIORITY_DEFAULT, interval, _go_sourcefunc, sfi, free_sourcefunc_info);
 	return sfi;
 }
+
+static void _g_thread_init(GThreadFunctions *vtable) {
+#if !GLIB_CHECK_VERSION(2,32,0)
+#ifdef	G_THREADS_ENABLED
+	g_thread_init(vtable);
+#endif
+#endif
+}
 */
 // #cgo pkg-config: glib-2.0 gobject-2.0
 import "C"
@@ -919,5 +927,5 @@ func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
 //-----------------------------------------------------------------------
 func ThreadInit(a ...interface{}) {
 	// TODO: define GThreadFunctions
-	C.g_thread_init(nil)
+	C._g_thread_init(nil);
 }
