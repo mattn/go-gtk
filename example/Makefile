@@ -18,4 +18,4 @@ all:
 	cd thread && go build -x .
 	cd treeview && go build -x .
 	cd twitter && go build -x .
-	cd twitterstream && go build -x .
+	cd twitterstream && go get && go build -x .
