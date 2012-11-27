@@ -1916,16 +1916,16 @@ func (v *GtkWindow) Unfullscreen() {
 	C.gtk_window_unfullscreen(C.to_GtkWindow(v.Widget))
 }
 func (v *GtkWindow) SetKeepAbove(setting bool){
-	C.gtk_window_set_keep_above(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+	C.gtk_window_set_keep_above(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkWindow) SetKeepBelow(setting bool){
-	C.gtk_window_set_keep_below(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+	C.gtk_window_set_keep_below(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkWindow) SetDecorated(setting bool){
-	C.gtk_window_set_decorated(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+	C.gtk_window_set_decorated(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
 }
 func (v *GtkWindow) SetDeletable(setting bool){
-	C.gtk_window_set_deletable(C.to_GtkWindow(v.Widget), gboolean2bool(setting))
+	C.gtk_window_set_deletable(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
 }
 
 
