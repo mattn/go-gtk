@@ -1,12 +1,48 @@
 package main
 
 import (
-	"os"
+	"github.com/mattn/go-gtk/gdkpixbuf"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
-	"github.com/mattn/go-gtk/gdkpixbuf"
+	"os"
+	"os/exec"
 	"path"
+	"regexp"
+	"sort"
+	"strings"
 )
+
+func uniq(strings []string) (ret []string) {
+	return
+}
+
+func authors() []string {
+	if b, err := exec.Command("git", "log").Output(); err == nil {
+		lines := strings.Split(string(b), "\n")
+
+		var a []string
+		r := regexp.MustCompile(`^Author:\s*([^ <]+).*$`)
+		for _, e := range lines {
+			ms := r.FindStringSubmatch(e)
+			if ms == nil {
+				continue
+			}
+			a = append(a, ms[1])
+		}
+		sort.Strings(a)
+		var p string
+		lines = []string{}
+		for _, e := range a {
+			if p == e {
+				continue
+			}
+			lines = append(lines, e)
+			p = e
+		}
+		return lines
+	}
+	return []string{"Yasuhiro Matsumoto <mattn.jp@gmail.com>"}
+}
 
 func main() {
 	var menuitem *gtk.GtkMenuItem
@@ -285,13 +321,7 @@ func main() {
 		dialog := gtk.AboutDialog()
 		dialog.SetName("Go-Gtk Demo!")
 		dialog.SetProgramName("demo")
-		dialog.SetAuthors([]string{
-			"Yasuhiro Matsumoto <mattn.jp@gmail.com>",
-			"David Roundy <roundyd@physics.oregonstate.edu>",
-			"Mark Andrew Gerads",
-			"Tobias Kortkamp",
-			"Mikhail Trushnikov",
-			"Federico Sogaro <soggof@gmail.com>"})
+		dialog.SetAuthors(authors())
 		dir, _ := path.Split(os.Args[0])
 		imagefile := path.Join(dir, "../../data/mattn-logo.png")
 		pixbuf, _ := gdkpixbuf.PixbufFromFile(imagefile)
