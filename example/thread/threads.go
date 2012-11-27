@@ -9,7 +9,7 @@ import "runtime"
 
 func main() {
 	runtime.GOMAXPROCS(10)
-	glib.ThreadInitDefault()
+	glib.ThreadInit(nil)
 	gdk.ThreadsInit()
 	gdk.ThreadsEnter()
 	gtk.Init(nil)

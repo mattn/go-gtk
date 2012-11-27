@@ -917,7 +917,7 @@ func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
 //-----------------------------------------------------------------------
 // thread
 //-----------------------------------------------------------------------
-func ThreadInitDefault(a ...interface{}) {
+func ThreadInit(a ...interface{}) {
 	// TODO: define GThreadFunctions
 	C.g_thread_init(nil)
 }
