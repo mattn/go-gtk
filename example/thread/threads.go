@@ -1,5 +1,6 @@
 package main
 
+import "github.com/mattn/go-gtk/glib"
 import "github.com/mattn/go-gtk/gdk"
 import "github.com/mattn/go-gtk/gtk"
 import "strconv"
@@ -8,6 +9,7 @@ import "runtime"
 
 func main() {
 	runtime.GOMAXPROCS(10)
+	glib.ThreadInitDefault()
 	gdk.ThreadsInit()
 	gdk.ThreadsEnter()
 	gtk.Init(nil)

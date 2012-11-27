@@ -913,3 +913,11 @@ func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
 	ctx.sfi = unsafe.Pointer(C._g_timeout_add(C.guint(interval), C.int(len(sourcefunc_contexts))))
 	sourcefunc_contexts = append(sourcefunc_contexts, ctx)
 }
+
+//-----------------------------------------------------------------------
+// thread
+//-----------------------------------------------------------------------
+func ThreadInitDefault(a ...interface{}) {
+	// TODO: define GThreadFunctions
+	C.g_thread_init(nil)
+}
