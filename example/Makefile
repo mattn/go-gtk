@@ -3,6 +3,7 @@ all:
 	cd builder && go build -x .
 	cd clipboard && go build -x .
 	cd demo && go build -x .
+	cd widgets && go build -x .
 	cd dnd && go build -x .
 	cd drawable && go build -x .
 	cd event && go build -x .
