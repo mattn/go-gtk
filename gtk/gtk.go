@@ -723,6 +723,7 @@ static GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER
 static GtkFontSelectionDialog* to_GtkFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
 static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
 static GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
+static GtkSpinButton* to_GtkSpinButton(GtkWidget* w) { return GTK_SPIN_BUTTON(w); }
 static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
 static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w); }
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
@@ -3584,6 +3585,18 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 // GtkSpinButton
 //-----------------------------------------------------------------------
 
+type GtkSpinType int
+
+const (
+	GTK_SPIN_STEP_FORWARD       = 0
+	GTK_SPIN_STEP_BACKWARD      = 1
+	GTK_SPIN_PAGE_FORWARD       = 2
+	GTK_SPIN_PAGE_BACKWARD      = 3
+	GTK_SPIN_HOME               = 4
+	GTK_SPIN_END                = 5
+	GTK_SPIN_USER_DEFINED       = 6
+)
+
 type GtkSpinButton struct {
 	GtkEntry
 }
@@ -3596,28 +3609,59 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 	widget := GtkWidget{C.gtk_spin_button_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
 }
+
+func (v *GtkSpinButton) ValueChanged(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("value-changed", onclick, datas...)
+}
+
 // gtk_spin_button_configure
 // gtk_spin_button_set_adjustment
 // gtk_spin_button_get_adjustment
-// gtk_spin_button_set_digits
-// gtk_spin_button_set_increments
-// gtk_spin_button_set_range
-// gtk_spin_button_get_value_as_float
-// gtk_spin_button_get_value_as_int
-// gtk_spin_button_set_value
+func (v *GtkSpinButton) SetDigits(digits uint) {
+	C.gtk_spin_button_set_digits(C.to_GtkSpinButton(v.Widget), C.guint(digits))
+}
+func (v *GtkSpinButton) SetIncrements(step, page float64) {
+	C.gtk_spin_button_set_increments(C.to_GtkSpinButton(v.Widget), C.gdouble(step), C.gdouble(page))
+}
+func (v *GtkSpinButton) SetRange(min, max float64) {
+	C.gtk_spin_button_set_range(C.to_GtkSpinButton(v.Widget), C.gdouble(min), C.gdouble(max))
+}
+func (v *GtkSpinButton) GetValueAsFloat() float64 {
+	return float64(C.gtk_spin_button_get_value_as_float(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) GetValueAsInt() int {
+	return int(C.gtk_spin_button_get_value_as_int(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) SetValue(val float64) {
+	C.gtk_spin_button_set_value(C.to_GtkSpinButton(v.Widget), C.gdouble(val))
+}
 // gtk_spin_button_set_update_policy
 // gtk_spin_button_set_numeric
-// gtk_spin_button_spin
+func (v *GtkSpinButton) Spin(direction GtkSpinType, increment float64) {
+	C.gtk_spin_button_spin(C.to_GtkSpinButton(v.Widget), C.GtkSpinType(direction), C.gdouble(increment))
+}
 // gtk_spin_button_set_wrap
 // gtk_spin_button_set_snap_to_ticks
 // gtk_spin_button_update
-// gtk_spin_button_get_digits
-// gtk_spin_button_get_increments
+func (v *GtkSpinButton) GetDigits() uint {
+	return uint(C.gtk_spin_button_get_digits(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) GetIncrements() (float64, float64) {
+	var step, page C.gdouble
+	C.gtk_spin_button_get_increments(C.to_GtkSpinButton(v.Widget), &step, &page)
+	return float64(step), float64(page)
+}
 // gtk_spin_button_get_numeric
-// gtk_spin_button_get_range
+func (v *GtkSpinButton) GetRange() (float64, float64) {
+	var min, max C.gdouble
+	C.gtk_spin_button_get_range(C.to_GtkSpinButton(v.Widget), &min, &max)
+	return float64(min), float64(max)
+}
 // gtk_spin_button_get_snap_to_ticks
 // gtk_spin_button_get_update_policy
-// gtk_spin_button_get_value
+func (v *GtkSpinButton) GetValue() float64 {
+	return float64(C.gtk_spin_button_get_value(C.to_GtkSpinButton(v.Widget)))
+}
 // gtk_spin_button_get_wrap
 
 //-----------------------------------------------------------------------
