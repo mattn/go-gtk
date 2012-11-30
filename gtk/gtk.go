@@ -3585,6 +3585,18 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 // GtkSpinButton
 //-----------------------------------------------------------------------
 
+type GtkSpinType int
+
+const (
+	GTK_SPIN_STEP_FORWARD       = 0
+	GTK_SPIN_STEP_BACKWARD      = 1
+	GTK_SPIN_PAGE_FORWARD       = 2
+	GTK_SPIN_PAGE_BACKWARD      = 3
+	GTK_SPIN_HOME               = 4
+	GTK_SPIN_END                = 5
+	GTK_SPIN_USER_DEFINED       = 6
+)
+
 type GtkSpinButton struct {
 	GtkEntry
 }
@@ -3605,7 +3617,9 @@ func (v *GtkSpinButton) ValueChanged(onclick interface{}, datas ...interface{}) 
 // gtk_spin_button_configure
 // gtk_spin_button_set_adjustment
 // gtk_spin_button_get_adjustment
-// gtk_spin_button_set_digits
+func (v *GtkSpinButton) SetDigits(digits uint) {
+	C.gtk_spin_button_set_digits(C.to_GtkSpinButton(v.Widget), C.guint(digits))
+}
 func (v *GtkSpinButton) SetIncrements(step, page float64) {
 	C.gtk_spin_button_set_increments(C.to_GtkSpinButton(v.Widget), C.gdouble(step), C.gdouble(page))
 }
@@ -3623,14 +3637,26 @@ func (v *GtkSpinButton) SetValue(val float64) {
 }
 // gtk_spin_button_set_update_policy
 // gtk_spin_button_set_numeric
-// gtk_spin_button_spin
+func (v *GtkSpinButton) Spin(direction GtkSpinType, increment float64) {
+	C.gtk_spin_button_spin(C.to_GtkSpinButton(v.Widget), C.GtkSpinType(direction), C.gdouble(increment))
+}
 // gtk_spin_button_set_wrap
 // gtk_spin_button_set_snap_to_ticks
 // gtk_spin_button_update
-// gtk_spin_button_get_digits
-// gtk_spin_button_get_increments
+func (v *GtkSpinButton) GetDigits() uint {
+	return uint(C.gtk_spin_button_get_digits(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) GetIncrements() (float64, float64) {
+	var step, page C.gdouble
+	C.gtk_spin_button_get_increments(C.to_GtkSpinButton(v.Widget), &step, &page)
+	return float64(step), float64(page)
+}
 // gtk_spin_button_get_numeric
-// gtk_spin_button_get_range
+func (v *GtkSpinButton) GetRange() (float64, float64) {
+	var min, max C.gdouble
+	C.gtk_spin_button_get_range(C.to_GtkSpinButton(v.Widget), &min, &max)
+	return float64(min), float64(max)
+}
 // gtk_spin_button_get_snap_to_ticks
 // gtk_spin_button_get_update_policy
 func (v *GtkSpinButton) GetValue() float64 {

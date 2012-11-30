@@ -25,12 +25,17 @@ func main() {
 	// GtkSpinButton
 	//--------------------------------------------------------
 	spinbutton1 := gtk.SpinButtonWithRange(1.0, 10.0, 1.0)
+	spinbutton1.SetDigits(3)
+	spinbutton1.Spin(gtk.GTK_SPIN_STEP_FORWARD, 7.0)
 	box.Add(spinbutton1)
 
 	spinbutton1.ValueChanged(func() {
 		val := spinbutton1.GetValueAsInt()
 		fval := spinbutton1.GetValue()
 		println("SpinButton changed, new value: " + strconv.Itoa(val) + " | " + strconv.FormatFloat(fval, 'f', 2, 64))
+		min, max := spinbutton1.GetRange()
+		println("Range: " + strconv.FormatFloat(min, 'f', 2, 64) + " " + strconv.FormatFloat(max, 'f', 2, 64))
+		println("Digits: " + strconv.Itoa(int(spinbutton1.GetDigits())))
 	})
 
 	adjustment := gtk.Adjustment(2.0, 1.0, 8.0, 2.0, 0.0, 0.0)
