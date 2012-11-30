@@ -3585,6 +3585,13 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 // GtkSpinButton
 //-----------------------------------------------------------------------
 
+type GtkSpinButtonUpdatePolicy int
+
+const (
+	GTK_UPDATE_ALWAYS           = 0
+	GTK_UPDATE_IF_VALID         = 1
+)
+
 type GtkSpinType int
 
 const (
@@ -3601,6 +3608,7 @@ type GtkSpinButton struct {
 	GtkEntry
 }
 
+/* Constructors */
 func SpinButton(adjustment *GtkAdjustment, climb float64, digits uint) *GtkSpinButton {
 	widget := GtkWidget{C.gtk_spin_button_new(adjustment.Adjustment, C.gdouble(climb), C.guint(digits))}
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
@@ -3610,13 +3618,33 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
 }
 
+/* Event handlers */
+func (v *GtkSpinButton) ChangeValue(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("change-value", onclick, datas...)
+}
+func (v *GtkSpinButton) Input(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("input", onclick, datas...)
+}
+func (v *GtkSpinButton) Output(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("output", onclick, datas...)
+}
 func (v *GtkSpinButton) ValueChanged(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("value-changed", onclick, datas...)
 }
+func (v *GtkSpinButton) Wrapped(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("wrapped", onclick, datas...)
+}
 
-// gtk_spin_button_configure
-// gtk_spin_button_set_adjustment
-// gtk_spin_button_get_adjustment
+/* Member functions */
+func (v *GtkSpinButton) Configure(adjustment *GtkAdjustment, climb_rate float64, digits uint) {
+	C.gtk_spin_button_configure(C.to_GtkSpinButton(v.Widget), adjustment.Adjustment, C.gdouble(climb_rate), C.guint(digits))
+}
+func (v *GtkSpinButton) SetAdjustment(adjustment *GtkAdjustment) {
+	C.gtk_spin_button_set_adjustment(C.to_GtkSpinButton(v.Widget), adjustment.Adjustment)
+}
+func (v *GtkSpinButton) GetAdjustment() *GtkAdjustment {
+	return &GtkAdjustment{C.gtk_spin_button_get_adjustment(C.to_GtkSpinButton(v.Widget))}
+}
 func (v *GtkSpinButton) SetDigits(digits uint) {
 	C.gtk_spin_button_set_digits(C.to_GtkSpinButton(v.Widget), C.guint(digits))
 }
@@ -3635,14 +3663,24 @@ func (v *GtkSpinButton) GetValueAsInt() int {
 func (v *GtkSpinButton) SetValue(val float64) {
 	C.gtk_spin_button_set_value(C.to_GtkSpinButton(v.Widget), C.gdouble(val))
 }
-// gtk_spin_button_set_update_policy
-// gtk_spin_button_set_numeric
+func (v *GtkSpinButton) SetUpdatePolicy(policy GtkSpinButtonUpdatePolicy) {
+	C.gtk_spin_button_set_update_policy(C.to_GtkSpinButton(v.Widget), C.GtkSpinButtonUpdatePolicy(policy))
+}
+func (v *GtkSpinButton) SetNumeric(numeric bool) {
+	C.gtk_spin_button_set_numeric(C.to_GtkSpinButton(v.Widget), bool2gboolean(numeric))
+}
 func (v *GtkSpinButton) Spin(direction GtkSpinType, increment float64) {
 	C.gtk_spin_button_spin(C.to_GtkSpinButton(v.Widget), C.GtkSpinType(direction), C.gdouble(increment))
 }
-// gtk_spin_button_set_wrap
-// gtk_spin_button_set_snap_to_ticks
-// gtk_spin_button_update
+func (v *GtkSpinButton) SetWrap(wrap bool) {
+	C.gtk_spin_button_set_wrap(C.to_GtkSpinButton(v.Widget), bool2gboolean(wrap))
+}
+func (v *GtkSpinButton) SetSnapToTicks(snap_to_ticks bool) {
+	C.gtk_spin_button_set_snap_to_ticks(C.to_GtkSpinButton(v.Widget), bool2gboolean(snap_to_ticks))
+}
+func (v *GtkSpinButton) Update() {
+	C.gtk_spin_button_update(C.to_GtkSpinButton(v.Widget))
+}
 func (v *GtkSpinButton) GetDigits() uint {
 	return uint(C.gtk_spin_button_get_digits(C.to_GtkSpinButton(v.Widget)))
 }
@@ -3651,18 +3689,26 @@ func (v *GtkSpinButton) GetIncrements() (float64, float64) {
 	C.gtk_spin_button_get_increments(C.to_GtkSpinButton(v.Widget), &step, &page)
 	return float64(step), float64(page)
 }
-// gtk_spin_button_get_numeric
-func (v *GtkSpinButton) GetRange() (float64, float64) {
+func (v *GtkSpinButton) GetNumeric() bool {
+	return gboolean2bool(C.gtk_spin_button_get_numeric(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) GetRange() (/*min*/ float64, /*max*/ float64) {
 	var min, max C.gdouble
 	C.gtk_spin_button_get_range(C.to_GtkSpinButton(v.Widget), &min, &max)
 	return float64(min), float64(max)
 }
-// gtk_spin_button_get_snap_to_ticks
-// gtk_spin_button_get_update_policy
+func (v *GtkSpinButton) GetSnapToTicks() bool {
+	return gboolean2bool(C.gtk_spin_button_get_snap_to_ticks(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) GetUpdatePolicy() GtkSpinButtonUpdatePolicy {
+	return GtkSpinButtonUpdatePolicy(C.gtk_spin_button_get_update_policy(C.to_GtkSpinButton(v.Widget)))
+}
 func (v *GtkSpinButton) GetValue() float64 {
 	return float64(C.gtk_spin_button_get_value(C.to_GtkSpinButton(v.Widget)))
 }
-// gtk_spin_button_get_wrap
+func (v *GtkSpinButton) GetWrap() bool {
+	return gboolean2bool(C.gtk_spin_button_get_wrap(C.to_GtkSpinButton(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
 // GtkEditable
