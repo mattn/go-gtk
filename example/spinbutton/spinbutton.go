@@ -1,6 +1,6 @@
 package main
 
-import (	
+import (
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
 )
@@ -25,11 +25,11 @@ func main() {
 	//--------------------------------------------------------
 	spinbutton1 := gtk.SpinButtonWithRange(1.0, 10.0, 1.0)
 	hbox.Add(spinbutton1)
-	
+
 	adjustment := gtk.Adjustment(2.0, 1.0, 8.0, 2.0, 0.0, 0.0)
 
 	spinbutton2 := gtk.SpinButton(adjustment, 1.0, 1)
-	hbox.Add(spinbutton2)	
+	hbox.Add(spinbutton2)
 
 	//--------------------------------------------------------
 	// Event
