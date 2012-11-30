@@ -3608,6 +3608,7 @@ type GtkSpinButton struct {
 	GtkEntry
 }
 
+/* Constructors */
 func SpinButton(adjustment *GtkAdjustment, climb float64, digits uint) *GtkSpinButton {
 	widget := GtkWidget{C.gtk_spin_button_new(adjustment.Adjustment, C.gdouble(climb), C.guint(digits))}
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
@@ -3617,10 +3618,24 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
 }
 
+/* Event handlers */
+func (v *GtkSpinButton) ChangeValue(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("change-value", onclick, datas...)
+}
+func (v *GtkSpinButton) Input(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("input", onclick, datas...)
+}
+func (v *GtkSpinButton) Output(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("output", onclick, datas...)
+}
 func (v *GtkSpinButton) ValueChanged(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("value-changed", onclick, datas...)
 }
+func (v *GtkSpinButton) Wrapped(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("wrapped", onclick, datas...)
+}
 
+/* Member functions */
 func (v *GtkSpinButton) Configure(adjustment *GtkAdjustment, climb_rate float64, digits uint) {
 	C.gtk_spin_button_configure(C.to_GtkSpinButton(v.Widget), adjustment.Adjustment, C.gdouble(climb_rate), C.guint(digits))
 }
@@ -3677,7 +3692,7 @@ func (v *GtkSpinButton) GetIncrements() (float64, float64) {
 func (v *GtkSpinButton) GetNumeric() bool {
 	return gboolean2bool(C.gtk_spin_button_get_numeric(C.to_GtkSpinButton(v.Widget)))
 }
-func (v *GtkSpinButton) GetRange() (float64, float64) {
+func (v *GtkSpinButton) GetRange() (/*min*/ float64, /*max*/ float64) {
 	var min, max C.gdouble
 	C.gtk_spin_button_get_range(C.to_GtkSpinButton(v.Widget), &min, &max)
 	return float64(min), float64(max)
