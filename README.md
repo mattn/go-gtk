@@ -58,6 +58,7 @@ CONTRIBUTE AUTHORS:
   * Taru Karttunen
   * Utkan Güngördü
   * matiaslina
+  * Dag Robøle
 
 GOAL:
 -----
