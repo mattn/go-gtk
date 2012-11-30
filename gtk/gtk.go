@@ -3584,7 +3584,6 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 //-----------------------------------------------------------------------
 // GtkSpinButton
 //-----------------------------------------------------------------------
-
 type GtkSpinButtonUpdatePolicy int
 
 const (
@@ -6173,8 +6172,14 @@ func TearoffMenuItem() *GtkTearoffMenuItem {
 //-----------------------------------------------------------------------
 // GtkToolbar
 //-----------------------------------------------------------------------
+type GtkToolbar struct {
+	GtkContainer
+}
 
 // gtk_toolbar_new
+func Toolbar() *GtkToolbar {	
+	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}}
+}
 // gtk_toolbar_insert
 // gtk_toolbar_get_item_index
 // gtk_toolbar_get_n_items
