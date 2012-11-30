@@ -3584,9 +3584,19 @@ func VScaleWithRange(min float64, max float64, step float64) *GtkScale {
 // GtkSpinButton
 //-----------------------------------------------------------------------
 
+type GtkSpinButton struct {
+	GtkEntry
+}
+
+func SpinButton(adjustment *GtkAdjustment, climb float64, digits uint) *GtkSpinButton {
+	widget := GtkWidget{C.gtk_spin_button_new(adjustment.Adjustment, C.gdouble(climb), C.guint(digits))}
+	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
+}
+func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
+	widget := GtkWidget{C.gtk_spin_button_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}
+	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
+}
 // gtk_spin_button_configure
-// gtk_spin_button_new
-// gtk_spin_button_new_with_range
 // gtk_spin_button_set_adjustment
 // gtk_spin_button_get_adjustment
 // gtk_spin_button_set_digits
