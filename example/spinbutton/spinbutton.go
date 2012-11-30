@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"go-gtk/gtk"
+	"strconv"
 )
 
 func main() {
@@ -18,23 +19,31 @@ func main() {
 	//--------------------------------------------------------
 	// GtkHBox
 	//--------------------------------------------------------
-	hbox := gtk.HBox(false, 1)
+	box := gtk.VBox(false, 1)
 
 	//--------------------------------------------------------
 	// GtkSpinButton
 	//--------------------------------------------------------
 	spinbutton1 := gtk.SpinButtonWithRange(1.0, 10.0, 1.0)
-	hbox.Add(spinbutton1)
+	box.Add(spinbutton1)
+
+	spinbutton1.ValueChanged(func() {
+		val := spinbutton1.GetValueAsInt()
+		fval := spinbutton1.GetValue()
+		println("SpinButton changed, new value: " + strconv.Itoa(val) + " | " + strconv.FormatFloat(fval, 'f', 2, 64))
+	})
 
 	adjustment := gtk.Adjustment(2.0, 1.0, 8.0, 2.0, 0.0, 0.0)
-
 	spinbutton2 := gtk.SpinButton(adjustment, 1.0, 1)
-	hbox.Add(spinbutton2)
+	spinbutton2.SetRange(0.0, 20.0)
+	spinbutton2.SetValue(18.0)
+	spinbutton2.SetIncrements(2.0, 4.0)
+	box.Add(spinbutton2)
 
 	//--------------------------------------------------------
 	// Event
 	//--------------------------------------------------------
-	window.Add(hbox)
+	window.Add(box)
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()

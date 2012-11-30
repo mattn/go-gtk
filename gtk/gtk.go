@@ -723,6 +723,7 @@ static GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER
 static GtkFontSelectionDialog* to_GtkFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
 static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
 static GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
+static GtkSpinButton* to_GtkSpinButton(GtkWidget* w) { return GTK_SPIN_BUTTON(w); }
 static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
 static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w); }
 static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
@@ -3596,15 +3597,30 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 	widget := GtkWidget{C.gtk_spin_button_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
 }
+
+func (v *GtkSpinButton) ValueChanged(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("value-changed", onclick, datas...)
+}
+
 // gtk_spin_button_configure
 // gtk_spin_button_set_adjustment
 // gtk_spin_button_get_adjustment
 // gtk_spin_button_set_digits
-// gtk_spin_button_set_increments
-// gtk_spin_button_set_range
-// gtk_spin_button_get_value_as_float
-// gtk_spin_button_get_value_as_int
-// gtk_spin_button_set_value
+func (v *GtkSpinButton) SetIncrements(step, page float64) {
+	C.gtk_spin_button_set_increments(C.to_GtkSpinButton(v.Widget), C.gdouble(step), C.gdouble(page))
+}
+func (v *GtkSpinButton) SetRange(min, max float64) {
+	C.gtk_spin_button_set_range(C.to_GtkSpinButton(v.Widget), C.gdouble(min), C.gdouble(max))
+}
+func (v *GtkSpinButton) GetValueAsFloat() float64 {
+	return float64(C.gtk_spin_button_get_value_as_float(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) GetValueAsInt() int {
+	return int(C.gtk_spin_button_get_value_as_int(C.to_GtkSpinButton(v.Widget)))
+}
+func (v *GtkSpinButton) SetValue(val float64) {
+	C.gtk_spin_button_set_value(C.to_GtkSpinButton(v.Widget), C.gdouble(val))
+}
 // gtk_spin_button_set_update_policy
 // gtk_spin_button_set_numeric
 // gtk_spin_button_spin
@@ -3617,7 +3633,9 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 // gtk_spin_button_get_range
 // gtk_spin_button_get_snap_to_ticks
 // gtk_spin_button_get_update_policy
-// gtk_spin_button_get_value
+func (v *GtkSpinButton) GetValue() float64 {
+	return float64(C.gtk_spin_button_get_value(C.to_GtkSpinButton(v.Widget)))
+}
 // gtk_spin_button_get_wrap
 
 //-----------------------------------------------------------------------
