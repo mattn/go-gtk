@@ -3005,7 +3005,11 @@ func ButtonWithMnemonic(label string) *GtkButton {
 }
 
 // gtk_button_new_from_stock
-// gtk_button_pressed //deprecated since 2.20
+
+func (v *GtkButton) Pressed() {
+	deprecated_since(2, 20, 0, "gtk_button_pressed()")
+	C.gtk_button_pressed(C.to_GtkButton(v.Widget))
+}
 // gtk_button_released //deprecated since 2.20
 
 func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) int {
