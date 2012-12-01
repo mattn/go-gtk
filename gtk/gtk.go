@@ -3017,7 +3017,11 @@ func (v *GtkButton) Enter() {
 	C.gtk_button_enter(C.to_GtkButton(v.Widget))
 }
 
-// gtk_button_leave //deprecated since 2.20
+func (v *GtkButton) Leave() {
+	deprecated_since(2, 20, 0, "gtk_button_leave()")
+	C.gtk_button_leave(C.to_GtkButton(v.Widget))
+}
+
 func (v *GtkButton) GetRelief() GtkReliefStyle {
 	return GtkReliefStyle(C.gtk_button_get_relief(C.to_GtkButton(v.Widget)))
 }
