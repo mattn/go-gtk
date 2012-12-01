@@ -1898,7 +1898,11 @@ func (v *GtkWindow) Present() {
 }
 
 // gtk_window_present_with_time
-// gtk_window_iconify
+
+func (v *GtkWindow) Iconify() {
+	C.gtk_window_iconify(C.to_GtkWindow(v.Widget))
+}
+
 // gtk_window_deiconify
 // gtk_window_stick
 // gtk_window_unstick
