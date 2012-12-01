@@ -1907,7 +1907,9 @@ func (v *GtkWindow) Stick() {
 	C.gtk_window_stick(C.to_GtkWindow(v.Widget))
 }
 
-// gtk_window_unstick
+func (v *GtkWindow) Unstick() {
+	C.gtk_window_unstick(C.to_GtkWindow(v.Widget))
+}
 
 func (v *GtkWindow) Maximize() {
 	C.gtk_window_maximize(C.to_GtkWindow(v.Widget))
