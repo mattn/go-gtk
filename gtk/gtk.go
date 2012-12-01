@@ -2034,7 +2034,12 @@ func (v *GtkWindow) SetIconFromFile(file string) {
 	C.gtk_window_set_icon_from_file(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr), nil) // last arg : GError **err
 }
 
-// gtk_window_set_icon_name
+func (v *GtkWindow) SetIconName(name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_window_set_icon_name(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr))
+}
+
 // gtk_window_set_auto_startup_notification
 // gtk_window_get_opacity
 // gtk_window_set_opacity
