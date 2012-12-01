@@ -1903,7 +1903,10 @@ func (v *GtkWindow) Iconify() {
 	C.gtk_window_iconify(C.to_GtkWindow(v.Widget))
 }
 
-// gtk_window_deiconify
+func (v *GtkWindow) Deiconify() {
+	C.gtk_window_deiconify(C.to_GtkWindow(v.Widget))
+}
+
 // gtk_window_stick
 // gtk_window_unstick
 
