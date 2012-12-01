@@ -1966,7 +1966,10 @@ func (v *GtkWindow) GetDestroyWithParent() bool {
 // gtk_window_get_has_frame  //deprecated since 2.24
 // gtk_window_get_icon
 // gtk_window_get_icon_list
-// gtk_window_get_icon_name
+
+func (v *GtkWindow) GetIconName() string {
+	return C.GoString(C.to_charptr(C.gtk_window_get_icon_name(C.to_GtkWindow(v.Widget))))
+}
 // gtk_window_get_mnemonic_modifier
 
 func (v *GtkWindow) GetModal() bool {
