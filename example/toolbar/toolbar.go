@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"	
+	"go-gtk/gtk"	
 )
 
 func main() {	

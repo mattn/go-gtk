@@ -6328,12 +6328,14 @@ type GtkToolItem struct {
 func ToolButton(text string) *GtkToolItem {
 	ptr := C.CString(text)
 	defer C.free_string(ptr)	
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new(nil, C.to_gcharptr(ptr))))}}}}	
+	widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new(nil, C.to_gcharptr(ptr))))
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{widget}}}}	
 }
 func ToolButtonFromStock(stock_id string) *GtkToolItem {
 	ptr := C.CString(stock_id)
 	defer C.free_string(ptr)
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(C.to_gcharptr(ptr))))}}}}
+	widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(C.to_gcharptr(ptr))))
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{widget}}}}
 }
 // gtk_tool_button_set_label
 // gtk_tool_button_get_label
