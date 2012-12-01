@@ -755,6 +755,8 @@ static GtkMenuBar* to_GtkMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
 static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
 static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
 static GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
+static GtkToolbar* to_GtkToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
+static GtkToolItem* to_GtkToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
 static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
 static GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
 static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
@@ -6172,15 +6174,26 @@ func TearoffMenuItem() *GtkTearoffMenuItem {
 //-----------------------------------------------------------------------
 // GtkToolbar
 //-----------------------------------------------------------------------
+type GtkToolbarStyle int
+
+const (
+  GTK_TOOLBAR_ICONS        = 0
+  GTK_TOOLBAR_TEXT         = 1
+  GTK_TOOLBAR_BOTH         = 2
+  GTK_TOOLBAR_BOTH_HORIZ   = 3
+)
+
 type GtkToolbar struct {
 	GtkContainer
 }
 
-// gtk_toolbar_new
 func Toolbar() *GtkToolbar {	
 	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}}
 }
-// gtk_toolbar_insert
+
+func (v *GtkToolbar) Insert(item *GtkToolItem, pos int) {
+	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.Widget), C.gint(pos))
+}
 // gtk_toolbar_get_item_index
 // gtk_toolbar_get_n_items
 // gtk_toolbar_get_nth_item
@@ -6208,7 +6221,9 @@ func Toolbar() *GtkToolbar {
 // gtk_toolbar_append_widget
 // gtk_toolbar_prepend_widget
 // gtk_toolbar_insert_widget
-// gtk_toolbar_set_style
+func (v *GtkToolbar) SetStyle(style GtkToolbarStyle) {
+	C.gtk_toolbar_set_style(C.to_GtkToolbar(v.Widget), C.GtkToolbarStyle(style))
+}
 // gtk_toolbar_insert_stock
 // gtk_toolbar_set_icon_size
 // gtk_toolbar_remove_space
@@ -6217,7 +6232,9 @@ func Toolbar() *GtkToolbar {
 //-----------------------------------------------------------------------
 // GtkToolItem
 //-----------------------------------------------------------------------
-
+type GtkToolItem struct {
+	GtkBin
+}
 // gtk_tool_item_new
 // gtk_tool_item_set_homogeneous
 // gtk_tool_item_get_homogeneous
@@ -6308,9 +6325,16 @@ func Toolbar() *GtkToolbar {
 //-----------------------------------------------------------------------
 // GtkToolButton
 //-----------------------------------------------------------------------
-
-// gtk_tool_button_new
-// gtk_tool_button_new_from_stock
+func ToolButton(text string) *GtkToolItem {
+	ptr := C.CString(text)
+	defer C.free_string(ptr)	
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new(nil, C.to_gcharptr(ptr))))}}}}	
+}
+func ToolButtonFromStock(stock_id string) *GtkToolItem {
+	ptr := C.CString(stock_id)
+	defer C.free_string(ptr)
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(C.to_gcharptr(ptr))))}}}}
+}
 // gtk_tool_button_set_label
 // gtk_tool_button_get_label
 // gtk_tool_button_set_use_underline

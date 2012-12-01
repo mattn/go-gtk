@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"go-gtk/gtk"	
+	"github.com/mattn/go-gtk/gtk"	
 )
 
 func main() {	
@@ -20,8 +20,13 @@ func main() {
 	// GtkToolbar
 	//--------------------------------------------------------
 	toolbar := gtk.Toolbar()
-	vbox.PackStart(toolbar, false, false, 0)
-	
+	toolbar.SetStyle(gtk.GTK_TOOLBAR_ICONS)
+	vbox.PackStart(toolbar, false, false, 5)
+
+	btnnew := gtk.ToolButtonFromStock(gtk.GTK_STOCK_NEW);
+	btnclose := gtk.ToolButtonFromStock(gtk.GTK_STOCK_CLOSE);
+	toolbar.Insert(btnnew, -1)	
+	toolbar.Insert(btnclose, -1)	
 	
 	window.Add(vbox)
 	window.SetSizeRequest(600, 600)
