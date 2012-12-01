@@ -25,11 +25,22 @@ func main() {
 
 	btnnew := gtk.ToolButtonFromStock(gtk.GTK_STOCK_NEW);
 	btnclose := gtk.ToolButtonFromStock(gtk.GTK_STOCK_CLOSE);
+	btncustom := gtk.ToolButton(nil, "Custom")	
+
+	btnnew.Clicked(onToolButtonClicked)	
+	btnclose.Clicked(onToolButtonClicked)	
+	btncustom.Clicked(onToolButtonClicked)	
+
 	toolbar.Insert(btnnew, -1)	
 	toolbar.Insert(btnclose, -1)	
-	
+	toolbar.Insert(btncustom, -1)
+
 	window.Add(vbox)
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()
+}
+
+func onToolButtonClicked() {
+	println("ToolButton clicked")		
 }

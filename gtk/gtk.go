@@ -6235,6 +6235,11 @@ func (v *GtkToolbar) SetStyle(style GtkToolbarStyle) {
 type GtkToolItem struct {
 	GtkBin
 }
+
+/* Event handlers */
+func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("clicked", onclick, datas...)
+}
 // gtk_tool_item_new
 // gtk_tool_item_set_homogeneous
 // gtk_tool_item_get_homogeneous
@@ -6325,17 +6330,18 @@ type GtkToolItem struct {
 //-----------------------------------------------------------------------
 // GtkToolButton
 //-----------------------------------------------------------------------
-func ToolButton(text string) *GtkToolItem {
-	ptr := C.CString(text)
-	defer C.free_string(ptr)	
-	widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new(nil, C.to_gcharptr(ptr))))
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{widget}}}}	
+func ToolButton(icon_widget *GtkWidget, text string) *GtkToolItem {
+	p_text := C.CString(text)
+	defer C.free_string(p_text)	
+	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget))
+	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new(p_icon_widget, C.to_gcharptr(p_text))))
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}	
 }
 func ToolButtonFromStock(stock_id string) *GtkToolItem {
-	ptr := C.CString(stock_id)
-	defer C.free_string(ptr)
-	widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(C.to_gcharptr(ptr))))
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{widget}}}}
+	p_stock_id := C.CString(stock_id)
+	defer C.free_string(p_stock_id)
+	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}
 }
 // gtk_tool_button_set_label
 // gtk_tool_button_get_label
