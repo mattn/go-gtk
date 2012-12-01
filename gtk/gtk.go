@@ -3341,7 +3341,10 @@ func (v *GtkEntry) GetAlignment() float64 {
 	return float64(C.gtk_entry_get_alignment(C.to_GtkEntry(v.Widget)))
 }
 
-// gtk_entry_set_overwrite_mode
+func (v *GtkEntry) SetOverwriteMode(mode bool) {
+	C.gtk_entry_set_overwrite_mode(C.to_GtkEntry(v.Widget), bool2gboolean(mode))
+}
+
 // gtk_entry_get_overwrite_mode
 // gtk_entry_get_layout
 // gtk_entry_get_layout_offsets
