@@ -3034,8 +3034,16 @@ func (v *GtkButton) Clicked(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("clicked", onclick, datas...)
 }
 
-// gtk_button_enter //deprecated since 2.20
-// gtk_button_leave //deprecated since 2.20
+func (v *GtkButton) Enter() {
+	deprecated_since(2, 20, 0, "gtk_button_enter()")
+	C.gtk_button_enter(C.to_GtkButton(v.Widget))
+}
+
+func (v *GtkButton) Leave() {
+	deprecated_since(2, 20, 0, "gtk_button_leave()")
+	C.gtk_button_leave(C.to_GtkButton(v.Widget))
+}
+
 func (v *GtkButton) GetRelief() GtkReliefStyle {
 	return GtkReliefStyle(C.gtk_button_get_relief(C.to_GtkButton(v.Widget)))
 }
