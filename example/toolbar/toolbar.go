@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"	
+	"go-gtk/gtk"		
 )
 
 func main() {	
@@ -41,6 +41,6 @@ func main() {
 	gtk.Main()
 }
 
-func onToolButtonClicked() {
-	println("ToolButton clicked")		
+func onToolButtonClicked(args ...interface{}) {
+	println("ToolButton clicked")			
 }

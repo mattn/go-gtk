@@ -3609,7 +3609,6 @@ type GtkSpinButton struct {
 	GtkEntry
 }
 
-/* Constructors */
 func SpinButton(adjustment *GtkAdjustment, climb float64, digits uint) *GtkSpinButton {
 	widget := GtkWidget{C.gtk_spin_button_new(adjustment.Adjustment, C.gdouble(climb), C.guint(digits))}
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
@@ -3619,7 +3618,6 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
 }
 
-/* Event handlers */
 func (v *GtkSpinButton) ChangeValue(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("change-value", onclick, datas...)
 }
@@ -3636,7 +3634,6 @@ func (v *GtkSpinButton) Wrapped(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("wrapped", onclick, datas...)
 }
 
-/* Member functions */
 func (v *GtkSpinButton) Configure(adjustment *GtkAdjustment, climb_rate float64, digits uint) {
 	C.gtk_spin_button_configure(C.to_GtkSpinButton(v.Widget), adjustment.Adjustment, C.gdouble(climb_rate), C.guint(digits))
 }
@@ -6174,6 +6171,14 @@ func TearoffMenuItem() *GtkTearoffMenuItem {
 //-----------------------------------------------------------------------
 // GtkToolbar
 //-----------------------------------------------------------------------
+
+type GtkOrientation int
+
+const (
+		GTK_ORIENTATION_HORIZONTAL     = 0
+		GTK_ORIENTATION_VERTICAL       = 1
+)
+
 type GtkToolbarStyle int
 
 const (
@@ -6187,28 +6192,72 @@ type GtkToolbar struct {
 	GtkContainer
 }
 
-func Toolbar() *GtkToolbar {	
+func Toolbar() *GtkToolbar {
 	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}}
+}
+
+func (v *GtkToolbar) FocusHomeOrEnd(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("focus-home-or-end", onclick, datas...)
+}
+func (v *GtkToolbar) OrientationChanged(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("orientation-changed", onclick, datas...)
+}
+func (v *GtkToolbar) PopupContextMenu(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("popup-context-menu", onclick, datas...)
+}
+func (v *GtkToolbar) StyleChanged(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("style-changed", onclick, datas...)
 }
 
 func (v *GtkToolbar) Insert(item *GtkToolItem, pos int) {
 	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.Widget), C.gint(pos))
 }
-// gtk_toolbar_get_item_index
-// gtk_toolbar_get_n_items
-// gtk_toolbar_get_nth_item
-// gtk_toolbar_get_drop_index
-// gtk_toolbar_set_drop_highlight_item
-// gtk_toolbar_set_show_arrow
-// gtk_toolbar_set_orientation
-// gtk_toolbar_set_tooltips
-// gtk_toolbar_unset_icon_size
-// gtk_toolbar_get_show_arrow
-// gtk_toolbar_get_orientation
-// gtk_toolbar_get_style
-// gtk_toolbar_get_icon_size
-// gtk_toolbar_get_tooltips
-// gtk_toolbar_get_relief_style
+func (v *GtkToolbar) GetItemIndex(item *GtkToolItem) int {
+	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.Widget)))
+}
+func (v *GtkToolbar) GetNItems(item *GtkToolItem) int {
+	return int(C.gtk_toolbar_get_n_items(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetNthItem(n int) *GtkToolItem {
+	p_tool_item_widget  := C.to_GtkWidget(unsafe.Pointer(C.gtk_toolbar_get_nth_item(C.to_GtkToolbar(v.Widget), C.gint(n))))
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_item_widget}}}}
+}
+func (v *GtkToolbar) GetDropIndex(x, y int) int {
+	return int(C.gtk_toolbar_get_drop_index(C.to_GtkToolbar(v.Widget), C.gint(x), C.gint(y)))
+}
+func (v *GtkToolbar) SetDropHighlightItem(tool_item *GtkToolItem, index int) {
+	C.gtk_toolbar_set_drop_highlight_item(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(tool_item.Widget), C.gint(index))
+}
+func (v *GtkToolbar) SetShowArrow(show_arrow bool) {
+	C.gtk_toolbar_set_show_arrow(C.to_GtkToolbar(v.Widget), bool2gboolean(show_arrow))
+}
+func (v *GtkToolbar) SetOrientation(orientation GtkOrientation) {
+	C.gtk_toolbar_set_orientation(C.to_GtkToolbar(v.Widget), C.GtkOrientation(orientation))
+}
+func (v *GtkToolbar) SetTooltips(enable bool) {
+	C.gtk_toolbar_set_tooltips(C.to_GtkToolbar(v.Widget), bool2gboolean(enable))
+}
+func (v *GtkToolbar) UnsetIconSize() {
+	C.gtk_toolbar_unset_icon_size(C.to_GtkToolbar(v.Widget))
+}
+func (v *GtkToolbar) GetShowArrow() bool {
+	return gboolean2bool(C.gtk_toolbar_get_show_arrow(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetOrientation() GtkOrientation {
+	return GtkOrientation(C.gtk_toolbar_get_orientation(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetStyle() GtkToolbarStyle {
+	return GtkToolbarStyle(C.gtk_toolbar_get_style(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetIconSize() GtkIconSize {
+	return GtkIconSize(C.gtk_toolbar_get_icon_size(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetTooltips() bool {
+	return gboolean2bool(C.gtk_toolbar_get_tooltips(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetReliefStyle() GtkReliefStyle {
+	return GtkReliefStyle(C.gtk_toolbar_get_relief_style(C.to_GtkToolbar(v.Widget)))
+}
 // gtk_toolbar_append_item
 // gtk_toolbar_prepend_item
 // gtk_toolbar_insert_item
@@ -6225,9 +6274,13 @@ func (v *GtkToolbar) SetStyle(style GtkToolbarStyle) {
 	C.gtk_toolbar_set_style(C.to_GtkToolbar(v.Widget), C.GtkToolbarStyle(style))
 }
 // gtk_toolbar_insert_stock
-// gtk_toolbar_set_icon_size
+func (v *GtkToolbar) SetIconSize(icon_size GtkIconSize) {
+	C.gtk_toolbar_set_icon_size(C.to_GtkToolbar(v.Widget), C.GtkIconSize(icon_size))
+}
 // gtk_toolbar_remove_space
-// gtk_toolbar_unset_style
+func (v *GtkToolbar) UnsetStyle() {
+	C.gtk_toolbar_unset_style(C.to_GtkToolbar(v.Widget))
+}
 
 //-----------------------------------------------------------------------
 // GtkToolItem
@@ -6236,7 +6289,6 @@ type GtkToolItem struct {
 	GtkBin
 }
 
-/* Event handlers */
 func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("clicked", onclick, datas...)
 }
