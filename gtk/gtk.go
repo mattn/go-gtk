@@ -1900,8 +1900,6 @@ func (v *GtkWindow) Present() {
 }
 
 // gtk_window_present_with_time
-// gtk_window_iconify
-// gtk_window_deiconify
 
 func (v *GtkWindow) Stick() {
 	C.gtk_window_stick(C.to_GtkWindow(v.Widget))
@@ -1909,6 +1907,14 @@ func (v *GtkWindow) Stick() {
 
 func (v *GtkWindow) Unstick() {
 	C.gtk_window_unstick(C.to_GtkWindow(v.Widget))
+}
+
+func (v *GtkWindow) Iconify() {
+	C.gtk_window_iconify(C.to_GtkWindow(v.Widget))
+}
+
+func (v *GtkWindow) Deiconify() {
+	C.gtk_window_deiconify(C.to_GtkWindow(v.Widget))
 }
 
 func (v *GtkWindow) Maximize() {
@@ -1974,7 +1980,10 @@ func (v *GtkWindow) GetDestroyWithParent() bool {
 // gtk_window_get_has_frame  //deprecated since 2.24
 // gtk_window_get_icon
 // gtk_window_get_icon_list
-// gtk_window_get_icon_name
+
+func (v *GtkWindow) GetIconName() string {
+	return C.GoString(C.to_charptr(C.gtk_window_get_icon_name(C.to_GtkWindow(v.Widget))))
+}
 // gtk_window_get_mnemonic_modifier
 
 func (v *GtkWindow) GetModal() bool {
@@ -2042,7 +2051,12 @@ func (v *GtkWindow) SetIconFromFile(file string) {
 	C.gtk_window_set_icon_from_file(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr), nil) // last arg : GError **err
 }
 
-// gtk_window_set_icon_name
+func (v *GtkWindow) SetIconName(name string) {
+	ptr := C.CString(name)
+	defer C.free_string(ptr)
+	C.gtk_window_set_icon_name(C.to_GtkWindow(v.Widget), C.to_gcharptr(ptr))
+}
+
 // gtk_window_set_auto_startup_notification
 // gtk_window_get_opacity
 // gtk_window_set_opacity
