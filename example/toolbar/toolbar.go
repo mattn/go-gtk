@@ -23,8 +23,9 @@ func main() {
 	toolbar.SetStyle(gtk.GTK_TOOLBAR_ICONS)
 	vbox.PackStart(toolbar, false, false, 5)
 
-	btnnew := gtk.ToolButtonFromStock(gtk.GTK_STOCK_NEW);
-	btnclose := gtk.ToolButtonFromStock(gtk.GTK_STOCK_CLOSE);
+	btnnew := gtk.ToolButtonFromStock(gtk.GTK_STOCK_NEW)
+	btnclose := gtk.ToolButtonFromStock(gtk.GTK_STOCK_CLOSE)
+	separator := gtk.SeparatorToolItem()
 	btncustom := gtk.ToolButton(nil, "Custom")	
 
 	btnnew.Clicked(onToolButtonClicked)	
@@ -32,7 +33,8 @@ func main() {
 	btncustom.Clicked(onToolButtonClicked)	
 
 	toolbar.Insert(btnnew, -1)	
-	toolbar.Insert(btnclose, -1)	
+	toolbar.Insert(btnclose, -1)
+	toolbar.Insert(separator, -1)		
 	toolbar.Insert(btncustom, -1)
 
 	window.Add(vbox)

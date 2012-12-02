@@ -757,6 +757,7 @@ static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
 static GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
 static GtkToolbar* to_GtkToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
 static GtkToolItem* to_GtkToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
+static GtkSeparatorToolItem* to_GtkSeparatorToolItem(GtkWidget* w) { return GTK_SEPARATOR_TOOL_ITEM(w); }
 static GtkToolButton* to_GtkToolButton(GtkWidget* w) { return GTK_TOOL_BUTTON(w); }
 static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
 static GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
@@ -6375,14 +6376,26 @@ func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
 //-----------------------------------------------------------------------
 // GtkSeparatorToolItem
 //-----------------------------------------------------------------------
+type GtkSeparatorToolItem struct {
+	GtkToolItem
+}
 
-// gtk_separator_tool_item_new
-// gtk_separator_tool_item_set_draw
-// gtk_separator_tool_item_get_draw
+func SeparatorToolItem() *GtkToolItem {		
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}	
+}
+
+func (v *GtkSeparatorToolItem) SetDraw(draw bool) {	
+	C.gtk_separator_tool_item_set_draw(C.to_GtkSeparatorToolItem(v.Widget), bool2gboolean(draw))
+}
+func (v *GtkSeparatorToolItem) GetDraw() bool {
+	return gboolean2bool(C.gtk_separator_tool_item_get_draw(C.to_GtkSeparatorToolItem(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
 // GtkToolButton
 //-----------------------------------------------------------------------
+
 type GtkToolButton struct {
 	GtkToolItem
 }
