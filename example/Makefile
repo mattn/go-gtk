@@ -4,6 +4,7 @@ all:
 	cd clipboard && go build -x .
 	cd demo && go build -x .
 	cd spinbutton && go build -x .
+	cd toolbar && go build -x .
 	cd dnd && go build -x .
 	cd drawable && go build -x .
 	cd event && go build -x .
