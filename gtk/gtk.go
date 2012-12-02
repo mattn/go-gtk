@@ -6225,7 +6225,7 @@ func (v *GtkToolbar) GetItemIndex(item *GtkToolItem) int {
 func (v *GtkToolbar) GetNItems() int {
 	return int(C.gtk_toolbar_get_n_items(C.to_GtkToolbar(v.Widget)))
 }
-func (v *GtkToolbar) GetNthItem(n int) *GtkToolItem {
+func (v *GtkToolbar) GetNthItem(n int) *GtkToolItem { // FIXME (Generic tool items is a problem)
 	p_tool_item_widget  := C.to_GtkWidget(unsafe.Pointer(C.gtk_toolbar_get_nth_item(C.to_GtkToolbar(v.Widget), C.gint(n))))
 	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_item_widget}}}}
 }
@@ -6300,7 +6300,14 @@ type GtkToolItem struct {
 func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("clicked", onclick, datas...)
 }
-// gtk_tool_item_new
+func ToolItem() *GtkToolItem {		
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
+}
+
+func (v *GtkToolItem) ToolItem() *GtkToolItem {
+	return v
+}
 // gtk_tool_item_set_homogeneous
 // gtk_tool_item_get_homogeneous
 // gtk_tool_item_set_expand
