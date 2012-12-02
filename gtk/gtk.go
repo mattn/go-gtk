@@ -759,6 +759,7 @@ static GtkToolbar* to_GtkToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
 static GtkToolItem* to_GtkToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
 static GtkSeparatorToolItem* to_GtkSeparatorToolItem(GtkWidget* w) { return GTK_SEPARATOR_TOOL_ITEM(w); }
 static GtkToolButton* to_GtkToolButton(GtkWidget* w) { return GTK_TOOL_BUTTON(w); }
+static GtkToggleToolButton* to_GtkToggleToolButton(GtkWidget* w) { return GTK_TOGGLE_TOOL_BUTTON(w); }
 static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
 static GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
 static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
@@ -6190,6 +6191,10 @@ const (
   GTK_TOOLBAR_BOTH_HORIZ   = 3
 )
 
+type ToolItemable interface {
+	ToolItem() *GtkToolItem
+}
+
 type GtkToolbar struct {
 	GtkContainer
 }
@@ -6211,13 +6216,13 @@ func (v *GtkToolbar) StyleChanged(onclick interface{}, datas ...interface{}) int
 	return v.Connect("style-changed", onclick, datas...)
 }
 
-func (v *GtkToolbar) Insert(item *GtkToolItem, pos int) {
-	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.Widget), C.gint(pos))
+func (v *GtkToolbar) Insert(item ToolItemable, pos int) {
+	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.ToolItem().Widget), C.gint(pos))
 }
 func (v *GtkToolbar) GetItemIndex(item *GtkToolItem) int {
 	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.Widget)))
 }
-func (v *GtkToolbar) GetNItems(item *GtkToolItem) int {
+func (v *GtkToolbar) GetNItems() int {
 	return int(C.gtk_toolbar_get_n_items(C.to_GtkToolbar(v.Widget)))
 }
 func (v *GtkToolbar) GetNthItem(n int) *GtkToolItem {
@@ -6287,6 +6292,7 @@ func (v *GtkToolbar) UnsetStyle() {
 //-----------------------------------------------------------------------
 // GtkToolItem
 //-----------------------------------------------------------------------
+
 type GtkToolItem struct {
 	GtkBin
 }
@@ -6380,9 +6386,13 @@ type GtkSeparatorToolItem struct {
 	GtkToolItem
 }
 
-func SeparatorToolItem() *GtkToolItem {		
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}	
+func SeparatorToolItem() *GtkSeparatorToolItem {		
+	return &GtkSeparatorToolItem{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
+}
+
+func (v *GtkSeparatorToolItem) ToolItem() *GtkToolItem {
+	return &v.GtkToolItem
 }
 
 func (v *GtkSeparatorToolItem) SetDraw(draw bool) {	
@@ -6400,20 +6410,24 @@ type GtkToolButton struct {
 	GtkToolItem
 }
 
-func ToolButton(icon_widget *GtkWidget, text string) *GtkToolItem {
+func ToolButton(icon_widget *GtkWidget, text string) *GtkToolButton {
 	p_text := C.CString(text)
 	defer C.free_string(p_text)	
 	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget))
 	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(
 		C.gtk_tool_button_new(p_icon_widget, C.to_gcharptr(p_text))))
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}	
+	return &GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}}
 }
-func ToolButtonFromStock(stock_id string) *GtkToolItem {
+func ToolButtonFromStock(stock_id string) *GtkToolButton {
 	p_stock_id := C.CString(stock_id)
 	defer C.free_string(p_stock_id)
 	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(
 		C.gtk_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}
+	return &GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}}
+}
+
+func (v *GtkToolButton) ToolItem() *GtkToolItem {
+	return &v.GtkToolItem
 }
 
 func (v *GtkToolButton) Clicked(onclick interface{}, datas ...interface{}) int {
@@ -6482,10 +6496,31 @@ func (v *GtkToolButton) GetLabelWidget() *GtkWidget {
 // GtkToggleToolButton
 //-----------------------------------------------------------------------
 
-// gtk_toggle_tool_button_new
-// gtk_toggle_tool_button_new_from_stock
-// gtk_toggle_tool_button_set_active
-// gtk_toggle_tool_button_get_active
+type GtkToggleToolButton struct {
+	GtkToolButton
+}
+
+func ToggleToolButton() *GtkToggleToolButton {		
+	return &GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}}}
+}
+func ToggleToolButtonFromStock(stock_id string) *GtkToggleToolButton {		
+	p_stock_id := C.CString(stock_id)
+	defer C.free_string(p_stock_id)	
+	return &GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))}}}}}}
+}
+
+func (v *GtkToggleToolButton) ToolItem() *GtkToolItem {
+	return &v.GtkToolButton.GtkToolItem
+}
+
+func (v *GtkToggleToolButton) SetActive(is_active bool) {	
+	C.gtk_toggle_tool_button_set_active(C.to_GtkToggleToolButton(v.Widget), bool2gboolean(is_active))
+}
+func (v *GtkToggleToolButton) GetActive() bool {
+	return gboolean2bool(C.gtk_toggle_tool_button_get_active(C.to_GtkToggleToolButton(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
 // GtkRadioToolButton

@@ -15,6 +15,7 @@ func main() {
 	}, "")
 	
 	vbox := gtk.VBox(false, 1)
+	hbox := gtk.HBox(false, 1)
 
 	//--------------------------------------------------------
 	// GtkToolbar
@@ -37,7 +38,22 @@ func main() {
 	toolbar.Insert(separator, -1)		
 	toolbar.Insert(btncustom, -1)
 
-	window.Add(vbox)
+	toolbar2 := gtk.Toolbar()
+	toolbar2.SetOrientation(gtk.GTK_ORIENTATION_VERTICAL)
+	hbox.PackStart(toolbar2, false, false, 5)
+	btnhelp := gtk.ToolButtonFromStock(gtk.GTK_STOCK_HELP)
+	btnhelp.Clicked(onToolButtonClicked)	
+	toolbar2.Insert(btnhelp, -1)	
+
+	btntoggle := gtk.ToggleToolButton()
+	btntoggle2 := gtk.ToggleToolButtonFromStock(gtk.GTK_STOCK_ITALIC)
+	toolbar2.Insert(btntoggle, -1)	
+	toolbar2.Insert(btntoggle2, -1)	
+
+	btntoggle2.SetActive(true)
+
+	vbox.Add(hbox)
+	window.Add(vbox)	
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()
