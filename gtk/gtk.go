@@ -6315,21 +6315,48 @@ func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("clicked", onclick, datas...)
 }
 
-// gtk_tool_item_set_homogeneous
-// gtk_tool_item_get_homogeneous
-// gtk_tool_item_set_expand
-// gtk_tool_item_get_expand
-// gtk_tool_item_set_tooltip
-// gtk_tool_item_set_toolti
-
-// gtk_tool_item_get_toolbar_style
-// gtk_tool_item_get_relief_style
-// gtk_tool_item_get_text_alignment
-// gtk_tool_item_get_text_orientation
+func (v *GtkToolItem) SetHomogeneous(homogeneous bool) {	
+	C.gtk_tool_item_set_homogeneous(C.to_GtkToolItem(v.Widget), bool2gboolean(homogeneous))
+}
+func (v *GtkToolItem) GetHomogeneous() bool {
+	return gboolean2bool(C.gtk_tool_item_get_homogeneous(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) SetExpand(expand bool) {	
+	C.gtk_tool_item_set_expand(C.to_GtkToolItem(v.Widget), bool2gboolean(expand))
+}
+func (v *GtkToolItem) GetExpand() bool {
+	return gboolean2bool(C.gtk_tool_item_get_expand(C.to_GtkToolItem(v.Widget)))
+}
+/*func (v *GtkToolItem) SetTooltip(tooltips *GtkTooltips, tip_text, tip_private string) { // FIXME
+	p_tip_text := C.CString(tip_text)
+	defer C.free_string(p_tip_text)	
+	p_tip_private := C.CString(tip_private)
+	defer C.free_string(p_tip_private)	
+	C.gtk_tool_item_set_tooltip(C.to_GtkToolItem(v.Widget), tooltips.Tooltip, C.to_gcharptr(p_tip_text), C.to_gcharptr(p_tip_private))
+}*/
+func (v *GtkToolItem) SetTooltipMarkup(markup string) {	
+	p_markup := C.CString(markup)
+	defer C.free_string(p_markup)		
+	C.gtk_tool_item_set_tooltip_markup(C.to_GtkToolItem(v.Widget), C.to_gcharptr(p_markup))
+}
+func (v *GtkToolItem) GetToolbarStyle() GtkToolbarStyle {
+	return GtkToolbarStyle(C.gtk_tool_item_get_toolbar_style(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) GetReliefStyle() GtkReliefStyle {
+	return GtkReliefStyle(C.gtk_tool_item_get_relief_style(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) GetTextAlignment() float64 {
+	return float64(C.gtk_tool_item_get_text_alignment(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) GetTextOrientation() GtkOrientation {
+	return GtkOrientation(C.gtk_tool_item_get_text_orientation(C.to_GtkToolItem(v.Widget)))
+}
 // gtk_tool_item_retrieve_proxy_menu_item
 // gtk_tool_item_get_proxy_menu_item
 // gtk_tool_item_set_proxy_menu_item
-// gtk_tool_item_rebuild_menu
+func (v *GtkToolItem) RebuildMenu() {		
+	C.gtk_tool_item_rebuild_menu(C.to_GtkToolItem(v.Widget))
+}
 // gtk_tool_item_toolbar_reconfigured
 // gtk_tool_item_get_text_size_group
 
