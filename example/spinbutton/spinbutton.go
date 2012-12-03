@@ -29,7 +29,7 @@ func main() {
 	spinbutton1.Spin(gtk.GTK_SPIN_STEP_FORWARD, 7.0)
 	box.Add(spinbutton1)
 
-	spinbutton1.ValueChanged(func() {
+	spinbutton1.OnValueChanged(func() {
 		val := spinbutton1.GetValueAsInt()
 		fval := spinbutton1.GetValue()
 		println("SpinButton changed, new value: " + strconv.Itoa(val) + " | " + strconv.FormatFloat(fval, 'f', 2, 64))

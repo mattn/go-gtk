@@ -3621,19 +3621,19 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
 }
 
-func (v *GtkSpinButton) ChangeValue(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnChangeValue(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("change-value", onclick, datas...)
 }
-func (v *GtkSpinButton) Input(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnInput(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("input", onclick, datas...)
 }
-func (v *GtkSpinButton) Output(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnOutput(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("output", onclick, datas...)
 }
-func (v *GtkSpinButton) ValueChanged(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnValueChanged(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("value-changed", onclick, datas...)
 }
-func (v *GtkSpinButton) Wrapped(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnWrapped(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("wrapped", onclick, datas...)
 }
 
@@ -6200,16 +6200,16 @@ func Toolbar() *GtkToolbar {
 	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}, make(map[*C.GtkToolItem]IGtkToolItem)}
 }
 
-func (v *GtkToolbar) FocusHomeOrEnd(onclick interface{}, datas ...interface{}) int {
+func (v *GtkToolbar) OnFocusHomeOrEnd(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("focus-home-or-end", onclick, datas...)
 }
-func (v *GtkToolbar) OrientationChanged(onclick interface{}, datas ...interface{}) int {
+func (v *GtkToolbar) OnOrientationChanged(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("orientation-changed", onclick, datas...)
 }
-func (v *GtkToolbar) PopupContextMenu(onclick interface{}, datas ...interface{}) int {
+func (v *GtkToolbar) OnPopupContextMenu(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("popup-context-menu", onclick, datas...)
 }
-func (v *GtkToolbar) StyleChanged(onclick interface{}, datas ...interface{}) int {
+func (v *GtkToolbar) OnStyleChanged(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("style-changed", onclick, datas...)
 }
 
@@ -6311,8 +6311,14 @@ func (v *GtkToolItem) ToToolItem() *GtkToolItem {
 	return v
 }
 
-func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
-	return v.Connect("clicked", onclick, datas...)
+func (v *GtkToolItem) OnCreateMenuProxy(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("create-menu-proxy", onclick, datas...)
+}
+func (v *GtkToolItem) OnSetTooltip(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("set-tooltip", onclick, datas...)
+}
+func (v *GtkToolItem) OnToolbarReconfigured(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("toolbar-reconfigured", onclick, datas...)
 }
 
 func (v *GtkToolItem) SetHomogeneous(homogeneous bool) {	
@@ -6460,7 +6466,7 @@ func (v *GtkToolButton) ToToolItem() *GtkToolItem {
 	return &v.GtkToolItem
 }
 
-func (v *GtkToolButton) Clicked(onclick interface{}, datas ...interface{}) int {
+func (v *GtkToolButton) OnClicked(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("clicked", onclick, datas...)
 }
 
@@ -6543,6 +6549,10 @@ func ToggleToolButtonFromStock(stock_id string) *GtkToggleToolButton {
 
 func (v *GtkToggleToolButton) ToToolItem() *GtkToolItem {
 	return &v.GtkToolButton.GtkToolItem
+}
+
+func (v *GtkToggleToolButton) OnToggled(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("toggled", onclick, datas...)
 }
 
 func (v *GtkToggleToolButton) SetActive(is_active bool) {	

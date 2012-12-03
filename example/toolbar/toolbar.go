@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"go-gtk/gtk"		
+	"github.com/mattn/go-gtk/gtk"		
 	"fmt"
 )
 
@@ -30,9 +30,9 @@ func main() {
 	separator := gtk.SeparatorToolItem()
 	btncustom := gtk.ToolButton(nil, "Custom")	
 
-	btnnew.Clicked(onToolButtonClicked)	
-	btnclose.Clicked(onToolButtonClicked)	
-	btncustom.Clicked(onToolButtonClicked)	
+	btnnew.OnClicked(onToolButtonClicked)	
+	btnclose.OnClicked(onToolButtonClicked)	
+	btncustom.OnClicked(onToolButtonClicked)	
 
 	toolbar.Insert(btnnew, -1)	
 	toolbar.Insert(btnclose, -1)
@@ -43,7 +43,7 @@ func main() {
 	toolbar2.SetOrientation(gtk.GTK_ORIENTATION_VERTICAL)
 	hbox.PackStart(toolbar2, false, false, 5)
 	btnhelp := gtk.ToolButtonFromStock(gtk.GTK_STOCK_HELP)
-	btnhelp.Clicked(onToolButtonClicked)	
+	btnhelp.OnClicked(onToolButtonClicked)	
 	toolbar2.Insert(btnhelp, -1)	
 
 	btntoggle := gtk.ToggleToolButton()
