@@ -6214,12 +6214,12 @@ func (v *GtkToolbar) OnStyleChanged(onclick interface{}, datas ...interface{}) i
 }
 
 func (v *GtkToolbar) Insert(item IGtkToolItem, pos int) {
-	p_tool_item := C.to_GtkToolItem(item.ToToolItem().Widget)
+	p_tool_item := C.to_GtkToolItem(item.AsToolItem().Widget)
 	v.items[p_tool_item] = item
 	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), p_tool_item, C.gint(pos))
 }
 func (v *GtkToolbar) GetItemIndex(item IGtkToolItem) int {
-	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.ToToolItem().Widget)))
+	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.AsToolItem().Widget)))
 }
 func (v *GtkToolbar) GetNItems() int {
 	return int(C.gtk_toolbar_get_n_items(C.to_GtkToolbar(v.Widget)))
@@ -6235,7 +6235,7 @@ func (v *GtkToolbar) GetDropIndex(x, y int) int {
 	return int(C.gtk_toolbar_get_drop_index(C.to_GtkToolbar(v.Widget), C.gint(x), C.gint(y)))
 }
 func (v *GtkToolbar) SetDropHighlightItem(item IGtkToolItem, index int) {
-	C.gtk_toolbar_set_drop_highlight_item(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.ToToolItem().Widget), C.gint(index))
+	C.gtk_toolbar_set_drop_highlight_item(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.AsToolItem().Widget), C.gint(index))
 }
 func (v *GtkToolbar) SetShowArrow(show_arrow bool) {
 	C.gtk_toolbar_set_show_arrow(C.to_GtkToolbar(v.Widget), bool2gboolean(show_arrow))
@@ -6296,7 +6296,7 @@ func (v *GtkToolbar) UnsetStyle() {
 //-----------------------------------------------------------------------
 
 type IGtkToolItem interface {
-	ToToolItem() *GtkToolItem
+	AsToolItem() *GtkToolItem
 }
 
 type GtkToolItem struct {
@@ -6307,7 +6307,7 @@ func ToolItem() *GtkToolItem {
 	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
 }
 
-func (v *GtkToolItem) ToToolItem() *GtkToolItem {
+func (v *GtkToolItem) AsToolItem() *GtkToolItem {
 	return v
 }
 
@@ -6427,7 +6427,7 @@ func SeparatorToolItem() *GtkSeparatorToolItem {
 		C.to_GtkWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
 }
 
-func (v *GtkSeparatorToolItem) ToToolItem() *GtkToolItem {
+func (v *GtkSeparatorToolItem) AsToolItem() *GtkToolItem {
 	return &v.GtkToolItem
 }
 
@@ -6462,7 +6462,7 @@ func ToolButtonFromStock(stock_id string) *GtkToolButton {
 	return &GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}}
 }
 
-func (v *GtkToolButton) ToToolItem() *GtkToolItem {
+func (v *GtkToolButton) AsToolItem() *GtkToolItem {
 	return &v.GtkToolItem
 }
 
@@ -6547,7 +6547,7 @@ func ToggleToolButtonFromStock(stock_id string) *GtkToggleToolButton {
 		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))}}}}}}
 }
 
-func (v *GtkToggleToolButton) ToToolItem() *GtkToolItem {
+func (v *GtkToggleToolButton) AsToolItem() *GtkToolItem {
 	return &v.GtkToolButton.GtkToolItem
 }
 
