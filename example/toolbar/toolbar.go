@@ -79,7 +79,7 @@ func main() {
 		default:
 		    fmt.Printf("toolbar2: Item is of unknown type")	
 		}
-	}
+	}	
 
 	vbox.Add(hbox)
 	window.Add(vbox)	

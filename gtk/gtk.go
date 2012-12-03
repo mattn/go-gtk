@@ -6226,10 +6226,13 @@ func (v *GtkToolbar) GetNItems() int {
 }
 func (v *GtkToolbar) GetNthItem(n int) IGtkToolItem {	
 	p_tool_item := C.gtk_toolbar_get_nth_item(C.to_GtkToolbar(v.Widget), C.gint(n))
-	if _, ok := v.items[p_tool_item]; ok {
-		return v.items[p_tool_item]
+	if p_tool_item == nil {
+		panic("GtkToolbar.GetNthItem: index out of bounds")
 	}
-	return nil	
+	if _, ok := v.items[p_tool_item]; !ok {	
+		panic("GtkToolbar.GetNthItem: interface not found in map")
+	}
+	return v.items[p_tool_item]	
 }
 func (v *GtkToolbar) GetDropIndex(x, y int) int {
 	return int(C.gtk_toolbar_get_drop_index(C.to_GtkToolbar(v.Widget), C.gint(x), C.gint(y)))
