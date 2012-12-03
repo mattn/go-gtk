@@ -19,7 +19,7 @@ func main() {
 	//--------------------------------------------------------
 	// GtkHBox
 	//--------------------------------------------------------
-	box := gtk.VBox(false, 1)
+	fixed := gtk.Fixed()
 
 	//--------------------------------------------------------
 	// GtkSpinButton
@@ -27,7 +27,7 @@ func main() {
 	spinbutton1 := gtk.SpinButtonWithRange(1.0, 10.0, 1.0)
 	spinbutton1.SetDigits(3)
 	spinbutton1.Spin(gtk.GTK_SPIN_STEP_FORWARD, 7.0)
-	box.Add(spinbutton1)
+	fixed.Put(spinbutton1, 40, 50)
 
 	spinbutton1.OnValueChanged(func() {
 		val := spinbutton1.GetValueAsInt()
@@ -43,12 +43,12 @@ func main() {
 	spinbutton2.SetRange(0.0, 20.0)
 	spinbutton2.SetValue(18.0)
 	spinbutton2.SetIncrements(2.0, 4.0)
-	box.Add(spinbutton2)
+	fixed.Put(spinbutton2, 150, 50)
 
 	//--------------------------------------------------------
 	// Event
 	//--------------------------------------------------------
-	window.Add(box)
+	window.Add(fixed)
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()
