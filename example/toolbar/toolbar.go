@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/mattn/go-gtk/glib"
 	"go-gtk/gtk"		
+	"fmt"
 )
 
 func main() {	
@@ -48,9 +49,37 @@ func main() {
 	btntoggle := gtk.ToggleToolButton()
 	btntoggle2 := gtk.ToggleToolButtonFromStock(gtk.GTK_STOCK_ITALIC)
 	toolbar2.Insert(btntoggle, -1)	
-	toolbar2.Insert(btntoggle2, -1)	
+	toolbar2.Insert(btntoggle2, -1)		
 
-	btntoggle2.SetActive(true)
+	for i := 0; i < toolbar.GetNItems(); i++ {
+		gti := toolbar.GetNthItem(i)
+		switch gti.(type) {
+		case *gtk.GtkToolButton:
+		    fmt.Printf("toolbar[%d] is a *gtk.GtkToolButton\n", i)		    
+		case *gtk.GtkToggleToolButton:
+		    fmt.Printf("toolbar[%d] is a *gtk.GtkToggleToolButton\n", i)	
+		    gti.(*gtk.GtkToggleToolButton).SetActive(true)
+		case *gtk.GtkSeparatorToolItem:
+		    fmt.Printf("toolbar[%d] is a *gtk.GtkSeparatorToolItem\n", i)		    
+		default:
+		    fmt.Printf("toolbar: Item is of unknown type")	
+		}
+	}
+
+	for i := 0; i < toolbar2.GetNItems(); i++ {
+		gti := toolbar2.GetNthItem(i)
+		switch gti.(type) {
+		case *gtk.GtkToolButton:
+		    fmt.Printf("toolbar2[%d] is a *gtk.GtkToolButton\n", i)		    
+		case *gtk.GtkToggleToolButton:
+		    fmt.Printf("toolbar2[%d] is a *gtk.GtkToggleToolButton\n", i)	
+		    gti.(*gtk.GtkToggleToolButton).SetActive(true)
+		case *gtk.GtkSeparatorToolItem:
+		    fmt.Printf("toolbar2[%d] is a *gtk.GtkSeparatorToolItem\n", i)		    
+		default:
+		    fmt.Printf("toolbar2: Item is of unknown type")	
+		}
+	}
 
 	vbox.Add(hbox)
 	window.Add(vbox)	

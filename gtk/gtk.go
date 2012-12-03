@@ -6191,16 +6191,13 @@ const (
   GTK_TOOLBAR_BOTH_HORIZ   = 3
 )
 
-type ToolItemable interface {
-	ToolItem() *GtkToolItem
-}
-
 type GtkToolbar struct {
 	GtkContainer
+	items map[*C.GtkToolItem]IGtkToolItem
 }
 
 func Toolbar() *GtkToolbar {
-	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}}
+	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}, make(map[*C.GtkToolItem]IGtkToolItem)}
 }
 
 func (v *GtkToolbar) FocusHomeOrEnd(onclick interface{}, datas ...interface{}) int {
@@ -6216,24 +6213,29 @@ func (v *GtkToolbar) StyleChanged(onclick interface{}, datas ...interface{}) int
 	return v.Connect("style-changed", onclick, datas...)
 }
 
-func (v *GtkToolbar) Insert(item ToolItemable, pos int) {
-	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.ToolItem().Widget), C.gint(pos))
+func (v *GtkToolbar) Insert(item IGtkToolItem, pos int) {
+	p_tool_item := C.to_GtkToolItem(item.ToToolItem().Widget)
+	v.items[p_tool_item] = item
+	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), p_tool_item, C.gint(pos))
 }
-func (v *GtkToolbar) GetItemIndex(item *GtkToolItem) int {
-	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.Widget)))
+func (v *GtkToolbar) GetItemIndex(item IGtkToolItem) int {
+	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.ToToolItem().Widget)))
 }
 func (v *GtkToolbar) GetNItems() int {
 	return int(C.gtk_toolbar_get_n_items(C.to_GtkToolbar(v.Widget)))
 }
-func (v *GtkToolbar) GetNthItem(n int) *GtkToolItem { // FIXME (Generic tool items is a problem)
-	p_tool_item_widget  := C.to_GtkWidget(unsafe.Pointer(C.gtk_toolbar_get_nth_item(C.to_GtkToolbar(v.Widget), C.gint(n))))
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_item_widget}}}}
+func (v *GtkToolbar) GetNthItem(n int) IGtkToolItem {	
+	p_tool_item := C.gtk_toolbar_get_nth_item(C.to_GtkToolbar(v.Widget), C.gint(n))
+	if _, ok := v.items[p_tool_item]; ok {
+		return v.items[p_tool_item]
+	}
+	return nil	
 }
 func (v *GtkToolbar) GetDropIndex(x, y int) int {
 	return int(C.gtk_toolbar_get_drop_index(C.to_GtkToolbar(v.Widget), C.gint(x), C.gint(y)))
 }
-func (v *GtkToolbar) SetDropHighlightItem(tool_item *GtkToolItem, index int) {
-	C.gtk_toolbar_set_drop_highlight_item(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(tool_item.Widget), C.gint(index))
+func (v *GtkToolbar) SetDropHighlightItem(item IGtkToolItem, index int) {
+	C.gtk_toolbar_set_drop_highlight_item(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.ToToolItem().Widget), C.gint(index))
 }
 func (v *GtkToolbar) SetShowArrow(show_arrow bool) {
 	C.gtk_toolbar_set_show_arrow(C.to_GtkToolbar(v.Widget), bool2gboolean(show_arrow))
@@ -6293,16 +6295,19 @@ func (v *GtkToolbar) UnsetStyle() {
 // GtkToolItem
 //-----------------------------------------------------------------------
 
+type IGtkToolItem interface {
+	ToToolItem() *GtkToolItem
+}
+
 type GtkToolItem struct {
 	GtkBin
 }
 
 func ToolItem() *GtkToolItem {		
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
 }
 
-func (v *GtkToolItem) ToolItem() *GtkToolItem {
+func (v *GtkToolItem) ToToolItem() *GtkToolItem {
 	return v
 }
 
@@ -6315,19 +6320,8 @@ func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
 // gtk_tool_item_set_expand
 // gtk_tool_item_get_expand
 // gtk_tool_item_set_tooltip
-// gtk_tool_item_set_tooltip_text
-// gtk_tool_item_set_tooltip_markup
-// gtk_tool_item_set_use_drag_window
-// gtk_tool_item_get_use_drag_window
-// gtk_tool_item_set_visible_horizontal
-// gtk_tool_item_get_visible_horizontal
-// gtk_tool_item_set_visible_vertical
-// gtk_tool_item_get_visible_vertical
-// gtk_tool_item_set_is_important
-// gtk_tool_item_get_is_important
-// gtk_tool_item_get_ellipsize_mode
-// gtk_tool_item_get_icon_size
-// gtk_tool_item_get_orientation
+// gtk_tool_item_set_toolti
+
 // gtk_tool_item_get_toolbar_style
 // gtk_tool_item_get_relief_style
 // gtk_tool_item_get_text_alignment
@@ -6400,7 +6394,7 @@ func SeparatorToolItem() *GtkSeparatorToolItem {
 		C.to_GtkWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
 }
 
-func (v *GtkSeparatorToolItem) ToolItem() *GtkToolItem {
+func (v *GtkSeparatorToolItem) ToToolItem() *GtkToolItem {
 	return &v.GtkToolItem
 }
 
@@ -6435,7 +6429,7 @@ func ToolButtonFromStock(stock_id string) *GtkToolButton {
 	return &GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}}
 }
 
-func (v *GtkToolButton) ToolItem() *GtkToolItem {
+func (v *GtkToolButton) ToToolItem() *GtkToolItem {
 	return &v.GtkToolItem
 }
 
@@ -6477,18 +6471,18 @@ func (v *GtkToolButton) SetIconWidget(icon_widget *GtkWidget) {
 	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget.Widget))
 	C.gtk_tool_button_set_icon_widget(C.to_GtkToolButton(v.Widget), p_icon_widget)
 }
-func (v *GtkToolButton) GetIconWidget() *GtkWidget {
+/*func (v *GtkToolButton) GetIconWidget() *GtkWidget { // FIXME
 	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
 		C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.Widget))))}	
-}
+}*/
 func (v *GtkToolButton) SetLabelWidget(label_widget *GtkWidget) {
 	p_label_widget := C.to_GtkWidget(unsafe.Pointer(label_widget.Widget))
 	C.gtk_tool_button_set_label_widget(C.to_GtkToolButton(v.Widget), p_label_widget)
 }
-func (v *GtkToolButton) GetLabelWidget() *GtkWidget {
+/*func (v *GtkToolButton) GetLabelWidget() *GtkWidget { // FIXME
 	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
 		C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.Widget))))}	
-}
+}*/
 //-----------------------------------------------------------------------
 // GtkMenuToolButton
 //-----------------------------------------------------------------------
@@ -6520,7 +6514,7 @@ func ToggleToolButtonFromStock(stock_id string) *GtkToggleToolButton {
 		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))}}}}}}
 }
 
-func (v *GtkToggleToolButton) ToolItem() *GtkToolItem {
+func (v *GtkToggleToolButton) ToToolItem() *GtkToolItem {
 	return &v.GtkToolButton.GtkToolItem
 }
 
