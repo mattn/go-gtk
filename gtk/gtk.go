@@ -6297,9 +6297,6 @@ type GtkToolItem struct {
 	GtkBin
 }
 
-func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
-	return v.Connect("clicked", onclick, datas...)
-}
 func ToolItem() *GtkToolItem {		
 	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{
 		C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
@@ -6308,6 +6305,11 @@ func ToolItem() *GtkToolItem {
 func (v *GtkToolItem) ToolItem() *GtkToolItem {
 	return v
 }
+
+func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("clicked", onclick, datas...)
+}
+
 // gtk_tool_item_set_homogeneous
 // gtk_tool_item_get_homogeneous
 // gtk_tool_item_set_expand
