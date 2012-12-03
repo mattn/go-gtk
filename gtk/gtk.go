@@ -757,6 +757,9 @@ static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
 static GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
 static GtkToolbar* to_GtkToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
 static GtkToolItem* to_GtkToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
+static GtkSeparatorToolItem* to_GtkSeparatorToolItem(GtkWidget* w) { return GTK_SEPARATOR_TOOL_ITEM(w); }
+static GtkToolButton* to_GtkToolButton(GtkWidget* w) { return GTK_TOOL_BUTTON(w); }
+static GtkToggleToolButton* to_GtkToggleToolButton(GtkWidget* w) { return GTK_TOGGLE_TOOL_BUTTON(w); }
 static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
 static GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
 static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
@@ -3651,7 +3654,6 @@ type GtkSpinButton struct {
 	GtkEntry
 }
 
-/* Constructors */
 func SpinButton(adjustment *GtkAdjustment, climb float64, digits uint) *GtkSpinButton {
 	widget := GtkWidget{C.gtk_spin_button_new(adjustment.Adjustment, C.gdouble(climb), C.guint(digits))}
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
@@ -3661,24 +3663,22 @@ func SpinButtonWithRange(min, max, step float64) *GtkSpinButton {
 	return &GtkSpinButton{GtkEntry{widget, GtkEditable{C.to_GtkEditable(widget.Widget)}}}
 }
 
-/* Event handlers */
-func (v *GtkSpinButton) ChangeValue(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnChangeValue(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("change-value", onclick, datas...)
 }
-func (v *GtkSpinButton) Input(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnInput(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("input", onclick, datas...)
 }
-func (v *GtkSpinButton) Output(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnOutput(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("output", onclick, datas...)
 }
-func (v *GtkSpinButton) ValueChanged(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnValueChanged(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("value-changed", onclick, datas...)
 }
-func (v *GtkSpinButton) Wrapped(onclick interface{}, datas ...interface{}) int {
+func (v *GtkSpinButton) OnWrapped(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("wrapped", onclick, datas...)
 }
 
-/* Member functions */
 func (v *GtkSpinButton) Configure(adjustment *GtkAdjustment, climb_rate float64, digits uint) {
 	C.gtk_spin_button_configure(C.to_GtkSpinButton(v.Widget), adjustment.Adjustment, C.gdouble(climb_rate), C.guint(digits))
 }
@@ -6216,41 +6216,102 @@ func TearoffMenuItem() *GtkTearoffMenuItem {
 //-----------------------------------------------------------------------
 // GtkToolbar
 //-----------------------------------------------------------------------
+
+type GtkOrientation int
+
+const (
+	GTK_ORIENTATION_HORIZONTAL     = 0
+	GTK_ORIENTATION_VERTICAL       = 1
+)
+
 type GtkToolbarStyle int
 
 const (
-  GTK_TOOLBAR_ICONS        = 0
-  GTK_TOOLBAR_TEXT         = 1
-  GTK_TOOLBAR_BOTH         = 2
-  GTK_TOOLBAR_BOTH_HORIZ   = 3
+	GTK_TOOLBAR_ICONS        = 0
+	GTK_TOOLBAR_TEXT         = 1
+	GTK_TOOLBAR_BOTH         = 2
+	GTK_TOOLBAR_BOTH_HORIZ   = 3
 )
 
 type GtkToolbar struct {
 	GtkContainer
+	items map[*C.GtkToolItem]IGtkToolItem
 }
 
-func Toolbar() *GtkToolbar {	
-	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}}
+func Toolbar() *GtkToolbar {
+	return &GtkToolbar{GtkContainer{GtkWidget{C.gtk_toolbar_new()}}, make(map[*C.GtkToolItem]IGtkToolItem)}
 }
 
-func (v *GtkToolbar) Insert(item *GtkToolItem, pos int) {
-	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.Widget), C.gint(pos))
+func (v *GtkToolbar) OnFocusHomeOrEnd(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("focus-home-or-end", onclick, datas...)
 }
-// gtk_toolbar_get_item_index
-// gtk_toolbar_get_n_items
-// gtk_toolbar_get_nth_item
-// gtk_toolbar_get_drop_index
-// gtk_toolbar_set_drop_highlight_item
-// gtk_toolbar_set_show_arrow
-// gtk_toolbar_set_orientation
-// gtk_toolbar_set_tooltips
-// gtk_toolbar_unset_icon_size
-// gtk_toolbar_get_show_arrow
-// gtk_toolbar_get_orientation
-// gtk_toolbar_get_style
-// gtk_toolbar_get_icon_size
-// gtk_toolbar_get_tooltips
-// gtk_toolbar_get_relief_style
+func (v *GtkToolbar) OnOrientationChanged(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("orientation-changed", onclick, datas...)
+}
+func (v *GtkToolbar) OnPopupContextMenu(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("popup-context-menu", onclick, datas...)
+}
+func (v *GtkToolbar) OnStyleChanged(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("style-changed", onclick, datas...)
+}
+
+func (v *GtkToolbar) Insert(item IGtkToolItem, pos int) {
+	p_tool_item := C.to_GtkToolItem(item.AsToolItem().Widget)
+	v.items[p_tool_item] = item
+	C.gtk_toolbar_insert(C.to_GtkToolbar(v.Widget), p_tool_item, C.gint(pos))
+}
+func (v *GtkToolbar) GetItemIndex(item IGtkToolItem) int {
+	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.AsToolItem().Widget)))
+}
+func (v *GtkToolbar) GetNItems() int {
+	return int(C.gtk_toolbar_get_n_items(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetNthItem(n int) IGtkToolItem {	
+	p_tool_item := C.gtk_toolbar_get_nth_item(C.to_GtkToolbar(v.Widget), C.gint(n))
+	if p_tool_item == nil {
+		panic("GtkToolbar.GetNthItem: index out of bounds")
+	}
+	if _, ok := v.items[p_tool_item]; !ok {	
+		panic("GtkToolbar.GetNthItem: interface not found in map")
+	}
+	return v.items[p_tool_item]	
+}
+func (v *GtkToolbar) GetDropIndex(x, y int) int {
+	return int(C.gtk_toolbar_get_drop_index(C.to_GtkToolbar(v.Widget), C.gint(x), C.gint(y)))
+}
+func (v *GtkToolbar) SetDropHighlightItem(item IGtkToolItem, index int) {
+	C.gtk_toolbar_set_drop_highlight_item(C.to_GtkToolbar(v.Widget), C.to_GtkToolItem(item.AsToolItem().Widget), C.gint(index))
+}
+func (v *GtkToolbar) SetShowArrow(show_arrow bool) {
+	C.gtk_toolbar_set_show_arrow(C.to_GtkToolbar(v.Widget), bool2gboolean(show_arrow))
+}
+func (v *GtkToolbar) SetOrientation(orientation GtkOrientation) {
+	C.gtk_toolbar_set_orientation(C.to_GtkToolbar(v.Widget), C.GtkOrientation(orientation))
+}
+func (v *GtkToolbar) SetTooltips(enable bool) {
+	C.gtk_toolbar_set_tooltips(C.to_GtkToolbar(v.Widget), bool2gboolean(enable))
+}
+func (v *GtkToolbar) UnsetIconSize() {
+	C.gtk_toolbar_unset_icon_size(C.to_GtkToolbar(v.Widget))
+}
+func (v *GtkToolbar) GetShowArrow() bool {
+	return gboolean2bool(C.gtk_toolbar_get_show_arrow(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetOrientation() GtkOrientation {
+	return GtkOrientation(C.gtk_toolbar_get_orientation(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetStyle() GtkToolbarStyle {
+	return GtkToolbarStyle(C.gtk_toolbar_get_style(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetIconSize() GtkIconSize {
+	return GtkIconSize(C.gtk_toolbar_get_icon_size(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetTooltips() bool {
+	return gboolean2bool(C.gtk_toolbar_get_tooltips(C.to_GtkToolbar(v.Widget)))
+}
+func (v *GtkToolbar) GetReliefStyle() GtkReliefStyle {
+	return GtkReliefStyle(C.gtk_toolbar_get_relief_style(C.to_GtkToolbar(v.Widget)))
+}
 // gtk_toolbar_append_item
 // gtk_toolbar_prepend_item
 // gtk_toolbar_insert_item
@@ -6267,48 +6328,86 @@ func (v *GtkToolbar) SetStyle(style GtkToolbarStyle) {
 	C.gtk_toolbar_set_style(C.to_GtkToolbar(v.Widget), C.GtkToolbarStyle(style))
 }
 // gtk_toolbar_insert_stock
-// gtk_toolbar_set_icon_size
+func (v *GtkToolbar) SetIconSize(icon_size GtkIconSize) {
+	C.gtk_toolbar_set_icon_size(C.to_GtkToolbar(v.Widget), C.GtkIconSize(icon_size))
+}
 // gtk_toolbar_remove_space
-// gtk_toolbar_unset_style
+func (v *GtkToolbar) UnsetStyle() {
+	C.gtk_toolbar_unset_style(C.to_GtkToolbar(v.Widget))
+}
 
 //-----------------------------------------------------------------------
 // GtkToolItem
 //-----------------------------------------------------------------------
+
+type IGtkToolItem interface {
+	AsToolItem() *GtkToolItem
+}
+
 type GtkToolItem struct {
 	GtkBin
 }
 
-/* Event handlers */
-func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
-	return v.Connect("clicked", onclick, datas...)
+func ToolItem() *GtkToolItem {		
+	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
 }
-// gtk_tool_item_new
-// gtk_tool_item_set_homogeneous
-// gtk_tool_item_get_homogeneous
-// gtk_tool_item_set_expand
-// gtk_tool_item_get_expand
-// gtk_tool_item_set_tooltip
-// gtk_tool_item_set_tooltip_text
-// gtk_tool_item_set_tooltip_markup
-// gtk_tool_item_set_use_drag_window
-// gtk_tool_item_get_use_drag_window
-// gtk_tool_item_set_visible_horizontal
-// gtk_tool_item_get_visible_horizontal
-// gtk_tool_item_set_visible_vertical
-// gtk_tool_item_get_visible_vertical
-// gtk_tool_item_set_is_important
-// gtk_tool_item_get_is_important
-// gtk_tool_item_get_ellipsize_mode
-// gtk_tool_item_get_icon_size
-// gtk_tool_item_get_orientation
-// gtk_tool_item_get_toolbar_style
-// gtk_tool_item_get_relief_style
-// gtk_tool_item_get_text_alignment
-// gtk_tool_item_get_text_orientation
+
+func (v *GtkToolItem) AsToolItem() *GtkToolItem {
+	return v
+}
+
+func (v *GtkToolItem) OnCreateMenuProxy(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("create-menu-proxy", onclick, datas...)
+}
+func (v *GtkToolItem) OnSetTooltip(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("set-tooltip", onclick, datas...)
+}
+func (v *GtkToolItem) OnToolbarReconfigured(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("toolbar-reconfigured", onclick, datas...)
+}
+
+func (v *GtkToolItem) SetHomogeneous(homogeneous bool) {	
+	C.gtk_tool_item_set_homogeneous(C.to_GtkToolItem(v.Widget), bool2gboolean(homogeneous))
+}
+func (v *GtkToolItem) GetHomogeneous() bool {
+	return gboolean2bool(C.gtk_tool_item_get_homogeneous(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) SetExpand(expand bool) {	
+	C.gtk_tool_item_set_expand(C.to_GtkToolItem(v.Widget), bool2gboolean(expand))
+}
+func (v *GtkToolItem) GetExpand() bool {
+	return gboolean2bool(C.gtk_tool_item_get_expand(C.to_GtkToolItem(v.Widget)))
+}
+/*func (v *GtkToolItem) SetTooltip(tooltips *GtkTooltips, tip_text, tip_private string) { // FIXME
+	p_tip_text := C.CString(tip_text)
+	defer C.free_string(p_tip_text)	
+	p_tip_private := C.CString(tip_private)
+	defer C.free_string(p_tip_private)	
+	C.gtk_tool_item_set_tooltip(C.to_GtkToolItem(v.Widget), tooltips.Tooltip, C.to_gcharptr(p_tip_text), C.to_gcharptr(p_tip_private))
+}*/
+func (v *GtkToolItem) SetTooltipMarkup(markup string) {	
+	p_markup := C.CString(markup)
+	defer C.free_string(p_markup)		
+	C.gtk_tool_item_set_tooltip_markup(C.to_GtkToolItem(v.Widget), C.to_gcharptr(p_markup))
+}
+func (v *GtkToolItem) GetToolbarStyle() GtkToolbarStyle {
+	return GtkToolbarStyle(C.gtk_tool_item_get_toolbar_style(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) GetReliefStyle() GtkReliefStyle {
+	return GtkReliefStyle(C.gtk_tool_item_get_relief_style(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) GetTextAlignment() float64 {
+	return float64(C.gtk_tool_item_get_text_alignment(C.to_GtkToolItem(v.Widget)))
+}
+func (v *GtkToolItem) GetTextOrientation() GtkOrientation {
+	return GtkOrientation(C.gtk_tool_item_get_text_orientation(C.to_GtkToolItem(v.Widget)))
+}
 // gtk_tool_item_retrieve_proxy_menu_item
 // gtk_tool_item_get_proxy_menu_item
 // gtk_tool_item_set_proxy_menu_item
-// gtk_tool_item_rebuild_menu
+func (v *GtkToolItem) RebuildMenu() {		
+	C.gtk_tool_item_rebuild_menu(C.to_GtkToolItem(v.Widget))
+}
 // gtk_tool_item_toolbar_reconfigured
 // gtk_tool_item_get_text_size_group
 
@@ -6364,40 +6463,104 @@ func (v *GtkToolItem) Clicked(onclick interface{}, datas ...interface{}) int {
 //-----------------------------------------------------------------------
 // GtkSeparatorToolItem
 //-----------------------------------------------------------------------
+type GtkSeparatorToolItem struct {
+	GtkToolItem
+}
 
-// gtk_separator_tool_item_new
-// gtk_separator_tool_item_set_draw
-// gtk_separator_tool_item_get_draw
+func SeparatorToolItem() *GtkSeparatorToolItem {		
+	return &GtkSeparatorToolItem{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
+}
+
+func (v *GtkSeparatorToolItem) AsToolItem() *GtkToolItem {
+	return &v.GtkToolItem
+}
+
+func (v *GtkSeparatorToolItem) SetDraw(draw bool) {	
+	C.gtk_separator_tool_item_set_draw(C.to_GtkSeparatorToolItem(v.Widget), bool2gboolean(draw))
+}
+func (v *GtkSeparatorToolItem) GetDraw() bool {
+	return gboolean2bool(C.gtk_separator_tool_item_get_draw(C.to_GtkSeparatorToolItem(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
 // GtkToolButton
 //-----------------------------------------------------------------------
-func ToolButton(icon_widget *GtkWidget, text string) *GtkToolItem {
+
+type GtkToolButton struct {
+	GtkToolItem
+}
+
+func ToolButton(icon_widget *GtkWidget, text string) *GtkToolButton {
 	p_text := C.CString(text)
 	defer C.free_string(p_text)	
 	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget))
-	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new(p_icon_widget, C.to_gcharptr(p_text))))
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}	
+	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(
+		C.gtk_tool_button_new(p_icon_widget, C.to_gcharptr(p_text))))
+	return &GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}}
 }
-func ToolButtonFromStock(stock_id string) *GtkToolItem {
+func ToolButtonFromStock(stock_id string) *GtkToolButton {
 	p_stock_id := C.CString(stock_id)
 	defer C.free_string(p_stock_id)
-	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))
-	return &GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}
+	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(
+		C.gtk_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))
+	return &GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{p_tool_button_widget}}}}}
 }
-// gtk_tool_button_set_label
-// gtk_tool_button_get_label
-// gtk_tool_button_set_use_underline
-// gtk_tool_button_get_use_underline
-// gtk_tool_button_set_stock_id
-// gtk_tool_button_get_stock_id
-// gtk_tool_button_set_icon_name
-// gtk_tool_button_get_icon_name
-// gtk_tool_button_set_icon_widget
-// gtk_tool_button_get_icon_widget
-// gtk_tool_button_set_label_widget
-// gtk_tool_button_get_label_widget
 
+func (v *GtkToolButton) AsToolItem() *GtkToolItem {
+	return &v.GtkToolItem
+}
+
+func (v *GtkToolButton) OnClicked(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("clicked", onclick, datas...)
+}
+
+func (v *GtkToolButton) SetLabel(label string) {
+	p_label := C.CString(label)
+	defer C.free_string(p_label)	
+	C.gtk_tool_button_set_label(C.to_GtkToolButton(v.Widget), C.to_gcharptr(p_label))
+}
+func (v *GtkToolButton) GetLabel() string {
+	return C.GoString(C.to_charptr(C.gtk_tool_button_get_label(C.to_GtkToolButton(v.Widget))))
+}
+func (v *GtkToolButton) SetUseUnderline(use_underline bool) {	
+	C.gtk_tool_button_set_use_underline(C.to_GtkToolButton(v.Widget), bool2gboolean(use_underline))
+}
+func (v *GtkToolButton) GetUseUnderline() bool {
+	return gboolean2bool(C.gtk_tool_button_get_use_underline(C.to_GtkToolButton(v.Widget)))
+}
+func (v *GtkToolButton) SetStockId(stock_id string) {
+	p_stock_id := C.CString(stock_id)
+	defer C.free_string(p_stock_id)	
+	C.gtk_tool_button_set_stock_id(C.to_GtkToolButton(v.Widget), C.to_gcharptr(p_stock_id))
+}
+func (v *GtkToolButton) GetStockId() string {
+	return C.GoString(C.to_charptr(C.gtk_tool_button_get_stock_id(C.to_GtkToolButton(v.Widget))))
+}
+func (v *GtkToolButton) SetIconName(icon_name string) {
+	p_icon_name := C.CString(icon_name)
+	defer C.free_string(p_icon_name)	
+	C.gtk_tool_button_set_icon_name(C.to_GtkToolButton(v.Widget), C.to_gcharptr(p_icon_name))
+}
+func (v *GtkToolButton) GetIconName() string {
+	return C.GoString(C.to_charptr(C.gtk_tool_button_get_icon_name(C.to_GtkToolButton(v.Widget))))
+}
+func (v *GtkToolButton) SetIconWidget(icon_widget *GtkWidget) {
+	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget.Widget))
+	C.gtk_tool_button_set_icon_widget(C.to_GtkToolButton(v.Widget), p_icon_widget)
+}
+/*func (v *GtkToolButton) GetIconWidget() *GtkWidget { // FIXME - Wasting memory by creating GtkWidgets
+	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
+		C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.Widget))))}	
+}*/
+func (v *GtkToolButton) SetLabelWidget(label_widget *GtkWidget) {
+	p_label_widget := C.to_GtkWidget(unsafe.Pointer(label_widget.Widget))
+	C.gtk_tool_button_set_label_widget(C.to_GtkToolButton(v.Widget), p_label_widget)
+}
+/*func (v *GtkToolButton) GetLabelWidget() *GtkWidget { // FIXME - Wasting memory by creating GtkWidgets
+	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
+		C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.Widget))))}	
+}*/
 //-----------------------------------------------------------------------
 // GtkMenuToolButton
 //-----------------------------------------------------------------------
@@ -6414,17 +6577,56 @@ func ToolButtonFromStock(stock_id string) *GtkToolItem {
 // GtkToggleToolButton
 //-----------------------------------------------------------------------
 
-// gtk_toggle_tool_button_new
-// gtk_toggle_tool_button_new_from_stock
-// gtk_toggle_tool_button_set_active
-// gtk_toggle_tool_button_get_active
+type GtkToggleToolButton struct {
+	GtkToolButton
+}
+
+func ToggleToolButton() *GtkToggleToolButton {		
+	return &GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}}}
+}
+func ToggleToolButtonFromStock(stock_id string) *GtkToggleToolButton {		
+	p_stock_id := C.CString(stock_id)
+	defer C.free_string(p_stock_id)	
+	return &GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(C.to_gcharptr(p_stock_id))))}}}}}}
+}
+
+func (v *GtkToggleToolButton) AsToolItem() *GtkToolItem {
+	return &v.GtkToolButton.GtkToolItem
+}
+
+func (v *GtkToggleToolButton) OnToggled(onclick interface{}, datas ...interface{}) int {
+	return v.Connect("toggled", onclick, datas...)
+}
+
+func (v *GtkToggleToolButton) SetActive(is_active bool) {	
+	C.gtk_toggle_tool_button_set_active(C.to_GtkToggleToolButton(v.Widget), bool2gboolean(is_active))
+}
+func (v *GtkToggleToolButton) GetActive() bool {
+	return gboolean2bool(C.gtk_toggle_tool_button_get_active(C.to_GtkToggleToolButton(v.Widget)))
+}
 
 //-----------------------------------------------------------------------
 // GtkRadioToolButton
 //-----------------------------------------------------------------------
 
-// gtk_radio_tool_button_new
-// gtk_radio_tool_button_new_from_stock
+type GtkRadioToolButton struct {
+	GtkToggleToolButton
+}
+
+func RadioToolButton(group *glib.SList) *GtkRadioToolButton {		
+	return &GtkRadioToolButton{GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(
+			C.to_gslist(unsafe.Pointer(group.ToSList())))))}}}}}}}
+}
+func RadioToolButtonFromStock(group *glib.SList, stock_id string) *GtkRadioToolButton {		
+	p_stock_id := C.CString(stock_id)
+	defer C.free_string(p_stock_id)	
+	return &GtkRadioToolButton{GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
+			C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(p_stock_id))))}}}}}}}
+}
 // gtk_radio_tool_button_new_from_widget
 // gtk_radio_tool_button_new_with_stock_from_widget
 // gtk_radio_tool_button_get_group
