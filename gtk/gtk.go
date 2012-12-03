@@ -6178,17 +6178,17 @@ func TearoffMenuItem() *GtkTearoffMenuItem {
 type GtkOrientation int
 
 const (
-		GTK_ORIENTATION_HORIZONTAL     = 0
-		GTK_ORIENTATION_VERTICAL       = 1
+	GTK_ORIENTATION_HORIZONTAL     = 0
+	GTK_ORIENTATION_VERTICAL       = 1
 )
 
 type GtkToolbarStyle int
 
 const (
-  GTK_TOOLBAR_ICONS        = 0
-  GTK_TOOLBAR_TEXT         = 1
-  GTK_TOOLBAR_BOTH         = 2
-  GTK_TOOLBAR_BOTH_HORIZ   = 3
+	GTK_TOOLBAR_ICONS        = 0
+	GTK_TOOLBAR_TEXT         = 1
+	GTK_TOOLBAR_BOTH         = 2
+	GTK_TOOLBAR_BOTH_HORIZ   = 3
 )
 
 type GtkToolbar struct {
@@ -6471,7 +6471,7 @@ func (v *GtkToolButton) SetIconWidget(icon_widget *GtkWidget) {
 	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget.Widget))
 	C.gtk_tool_button_set_icon_widget(C.to_GtkToolButton(v.Widget), p_icon_widget)
 }
-/*func (v *GtkToolButton) GetIconWidget() *GtkWidget { // FIXME
+/*func (v *GtkToolButton) GetIconWidget() *GtkWidget { // FIXME - Wasting memory by creating GtkWidgets
 	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
 		C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.Widget))))}	
 }*/
@@ -6479,7 +6479,7 @@ func (v *GtkToolButton) SetLabelWidget(label_widget *GtkWidget) {
 	p_label_widget := C.to_GtkWidget(unsafe.Pointer(label_widget.Widget))
 	C.gtk_tool_button_set_label_widget(C.to_GtkToolButton(v.Widget), p_label_widget)
 }
-/*func (v *GtkToolButton) GetLabelWidget() *GtkWidget { // FIXME
+/*func (v *GtkToolButton) GetLabelWidget() *GtkWidget { // FIXME - Wasting memory by creating GtkWidgets
 	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
 		C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.Widget))))}	
 }*/
@@ -6529,8 +6529,22 @@ func (v *GtkToggleToolButton) GetActive() bool {
 // GtkRadioToolButton
 //-----------------------------------------------------------------------
 
-// gtk_radio_tool_button_new
-// gtk_radio_tool_button_new_from_stock
+type GtkRadioToolButton struct {
+	GtkToggleToolButton
+}
+
+func RadioToolButton(group *glib.SList) *GtkRadioToolButton {		
+	return &GtkRadioToolButton{GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(
+			C.to_gslist(unsafe.Pointer(group.ToSList())))))}}}}}}}
+}
+func RadioToolButtonFromStock(group *glib.SList, stock_id string) *GtkRadioToolButton {		
+	p_stock_id := C.CString(stock_id)
+	defer C.free_string(p_stock_id)	
+	return &GtkRadioToolButton{GtkToggleToolButton{GtkToolButton{GtkToolItem{GtkBin{GtkContainer{GtkWidget{
+		C.to_GtkWidget(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
+			C.to_gslist(unsafe.Pointer(group.ToSList())), C.to_gcharptr(p_stock_id))))}}}}}}}
+}
 // gtk_radio_tool_button_new_from_widget
 // gtk_radio_tool_button_new_with_stock_from_widget
 // gtk_radio_tool_button_get_group
