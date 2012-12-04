@@ -27,6 +27,8 @@ static inline char* to_charptr_voidp(const void* s) { return (char*)s; }
 
 static inline void free_string(char* s) { free(s); }
 
+static inline gchar* next_string(gchar* s) { return (gchar*)(s + strlen(s) + 1); }
+
 static gboolean _g_utf8_validate(void* str, int len, void* ppbar) {
 	return g_utf8_validate((const gchar*)str, (gssize)len, (const gchar**)ppbar);
 }
@@ -262,21 +264,26 @@ func GetUserSpecialDir(directory UserDirectory) string {
 //-----------------------------------------------------------------------
 // System Information
 //-----------------------------------------------------------------------
-// TODO: fix this and fill these in
-/*
-func GetSystemDataDirs() []string {
-	dirs := C.g_get_system_data_dirs()
-	result := make([]string, 5)
+func getStringList(ar **C.gchar) []string {
+	result := make([]string, 0)
 	for i := 0; ; i++ {
-		d := C.GoString(C.to_charptr(&dirs[i]))
-		if d == nil {
+		str := C.GoString(C.to_charptr(*ar))
+		if str == "" {
 			break
 		}
-		result = append(result, d)
+		result = append(result, str)
+		*ar = C.next_string(*ar)
 	}
 	return result
 }
-*/
+
+func GetSystemDataDirs() []string {
+	return getStringList(C.g_get_system_data_dirs())
+}
+
+func GetConfigDataDirs() []string {
+	return getStringList(C.g_get_config_data_dirs())
+}
 
 //-----------------------------------------------------------------------
 // String Convert
@@ -992,3 +999,4 @@ func ThreadInit(a ...interface{}) {
 	// TODO: define GThreadFunctions
 	C._g_thread_init(nil);
 }
+
