@@ -216,6 +216,69 @@ func SetApplicationName(name string) {
 }
 
 //-----------------------------------------------------------------------
+// User Information
+//-----------------------------------------------------------------------
+func GetUserName() string {
+	return C.GoString(C.to_charptr(C.g_get_user_name()))
+}
+
+func GetRealName() string {
+	return C.GoString(C.to_charptr(C.g_get_real_name()))
+}
+
+func GetUserCacheDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_cache_dir()))
+}
+
+func GetUserDataDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_data_dir()))
+}
+
+func GetUserConfigDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_config_dir()))
+}
+
+func GetUserRuntimeDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_runtime_dir()))
+}
+
+type UserDirectory C.GUserDirectory
+const (
+	UserDirectoryDesktop UserDirectory     = C.G_USER_DIRECTORY_DESKTOP
+	UserDirectoryDocuments UserDirectory   = C.G_USER_DIRECTORY_DOCUMENTS
+	UserDirectoryDownload UserDirectory    = C.G_USER_DIRECTORY_DOWNLOAD
+	UserDirectoryMusic UserDirectory       = C.G_USER_DIRECTORY_MUSIC
+	UserDirectoryPictures UserDirectory    = C.G_USER_DIRECTORY_PICTURES
+	UserDirectoryPublicShare UserDirectory = C.G_USER_DIRECTORY_PUBLIC_SHARE
+	UserDirectoryTemplates UserDirectory   = C.G_USER_DIRECTORY_TEMPLATES
+	UserDirectoryVideos UserDirectory      = C.G_USER_DIRECTORY_VIDEOS
+)
+
+func GetUserSpecialDir(directory UserDirectory) string {
+	result := C.g_get_user_special_dir(C.GUserDirectory(directory))
+	return C.GoString(C.to_charptr(result))
+}
+
+//-----------------------------------------------------------------------
+// System Information
+//-----------------------------------------------------------------------
+// TODO: fix this and fill these in
+/*
+func GetSystemDataDirs() []string {
+	dirs := C.g_get_system_data_dirs()
+	result := make([]string, 5)
+	for i := 0; ; i++ {
+		d := C.GoString(C.to_charptr(&dirs[i]))
+		if d == nil {
+			break
+		}
+		result = append(result, d)
+	}
+	return result
+}
+*/
+
+//-----------------------------------------------------------------------
 // String Convert
 //-----------------------------------------------------------------------
 func Utf8Validate(str []byte, len int, bar **byte) bool {
