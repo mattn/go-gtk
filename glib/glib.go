@@ -27,6 +27,8 @@ static inline char* to_charptr_voidp(const void* s) { return (char*)s; }
 
 static inline void free_string(char* s) { free(s); }
 
+static inline gchar* next_string(gchar* s) { return (gchar*)(s + strlen(s) + 1); }
+
 static gboolean _g_utf8_validate(void* str, int len, void* ppbar) {
 	return g_utf8_validate((const gchar*)str, (gssize)len, (const gchar**)ppbar);
 }
@@ -202,6 +204,20 @@ func gboolean2bool(b C.gboolean) bool {
 	return false
 }
 
+// converts a C string array to a Go string slice
+func toSlice(ar **C.gchar) []string {
+	result := make([]string, 0)
+	for i := 0; ; i++ {
+		str := C.GoString(C.to_charptr(*ar))
+		if str == "" {
+			break
+		}
+		result = append(result, str)
+		*ar = C.next_string(*ar)
+	}
+	return result
+}
+
 func GPtrToString(p interface{}) string {
 	return C.GoString(C.to_charptr_from_gpointer(p.(C.gpointer)))
 }
@@ -209,10 +225,100 @@ func GPtrToString(p interface{}) string {
 //-----------------------------------------------------------------------
 // Application
 //-----------------------------------------------------------------------
+func GetApplicationName() string {
+	return C.GoString(C.to_charptr(C.g_get_application_name()))
+}
+
 func SetApplicationName(name string) {
 	str := C.CString(name)
 	defer C.free_string(str)
 	C.g_set_application_name(C.to_gcharptr(str))
+}
+
+func GetPrgName() string {
+	return C.GoString(C.to_charptr(C.g_get_prgname()))
+}
+
+func SetPrgname(name string) {
+	str := C.CString(name)
+	defer C.free_string(str)
+	C.g_set_prgname(C.to_gcharptr(str))
+}
+
+//-----------------------------------------------------------------------
+// User Information
+//-----------------------------------------------------------------------
+func GetUserName() string {
+	return C.GoString(C.to_charptr(C.g_get_user_name()))
+}
+
+func GetRealName() string {
+	return C.GoString(C.to_charptr(C.g_get_real_name()))
+}
+
+func GetUserCacheDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_cache_dir()))
+}
+
+func GetUserDataDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_data_dir()))
+}
+
+func GetUserConfigDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_config_dir()))
+}
+
+func GetUserRuntimeDir() string {
+	return C.GoString(C.to_charptr(C.g_get_user_runtime_dir()))
+}
+
+type UserDirectory C.GUserDirectory
+
+const (
+	UserDirectoryDesktop     UserDirectory = C.G_USER_DIRECTORY_DESKTOP
+	UserDirectoryDocuments   UserDirectory = C.G_USER_DIRECTORY_DOCUMENTS
+	UserDirectoryDownload    UserDirectory = C.G_USER_DIRECTORY_DOWNLOAD
+	UserDirectoryMusic       UserDirectory = C.G_USER_DIRECTORY_MUSIC
+	UserDirectoryPictures    UserDirectory = C.G_USER_DIRECTORY_PICTURES
+	UserDirectoryPublicShare UserDirectory = C.G_USER_DIRECTORY_PUBLIC_SHARE
+	UserDirectoryTemplates   UserDirectory = C.G_USER_DIRECTORY_TEMPLATES
+	UserDirectoryVideos      UserDirectory = C.G_USER_DIRECTORY_VIDEOS
+)
+
+func GetUserSpecialDir(directory UserDirectory) string {
+	result := C.g_get_user_special_dir(C.GUserDirectory(directory))
+	return C.GoString(C.to_charptr(result))
+}
+
+func ReloadUserSpecialDirsCache() {
+	C.g_reload_user_special_dirs_cache()
+}
+
+//-----------------------------------------------------------------------
+// System Information
+//-----------------------------------------------------------------------
+func GetSystemDataDirs() []string {
+	return toSlice(C.g_get_system_data_dirs())
+}
+
+func GetSystemConfigDirs() []string {
+	return toSlice(C.g_get_system_config_dirs())
+}
+
+func GetHostName() string {
+	return C.GoString(C.to_charptr(C.g_get_host_name()))
+}
+
+func GetHomeDir() string {
+	return C.GoString(C.to_charptr(C.g_get_home_dir()))
+}
+
+func GetTmpDir() string {
+	return C.GoString(C.to_charptr(C.g_get_tmp_dir()))
+}
+
+func GetCurrentDir() string {
+	return C.GoString(C.to_charptr(C.g_get_current_dir()))
 }
 
 //-----------------------------------------------------------------------
@@ -927,5 +1033,5 @@ func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
 //-----------------------------------------------------------------------
 func ThreadInit(a ...interface{}) {
 	// TODO: define GThreadFunctions
-	C._g_thread_init(nil);
+	C._g_thread_init(nil)
 }
