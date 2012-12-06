@@ -3298,11 +3298,12 @@ func (v *GtkLinkButton) SetVisited(visited bool) {
 //-----------------------------------------------------------------------
 // GtkEntry
 //-----------------------------------------------------------------------
-type TextInputLike interface {
+/*type TextInputLike interface {
 	WidgetLike
 	GetText() string
 	SetText(label string)
-}
+}*/
+
 type GtkEntry struct {
 	GtkWidget
 	GtkEditable
@@ -3404,8 +3405,14 @@ func (v *GtkEntry) GetVisibility() bool {
 func (v *GtkEntry) SetCompletion(completion *GtkEntryCompletion) {
 	C.gtk_entry_set_completion(C.to_GtkEntry(v.Widget), completion.EntryCompletion)
 }
+var g_GtkEntry_GtkEntryCompletion *GtkEntryCompletion
 func (v *GtkEntry) GetCompletion() *GtkEntryCompletion {
-	return &GtkEntryCompletion{C.gtk_entry_get_completion(C.to_GtkEntry(v.Widget))}
+	if g_GtkEntry_GtkEntryCompletion == nil {
+		g_GtkEntry_GtkEntryCompletion = &GtkEntryCompletion{C.gtk_entry_get_completion(C.to_GtkEntry(v.Widget))}
+	} else {
+		g_GtkEntry_GtkEntryCompletion.EntryCompletion = C.gtk_entry_get_completion(C.to_GtkEntry(v.Widget))
+	}
+	return g_GtkEntry_GtkEntryCompletion
 }
 
 // gtk_entry_set_cursor_hadjustment
@@ -6488,7 +6495,7 @@ func (v *GtkSeparatorToolItem) GetDraw() bool {
 //-----------------------------------------------------------------------
 
 type GtkToolButton struct {
-	GtkToolItem
+	GtkToolItem	
 }
 
 func ToolButton(icon_widget *GtkWidget, text string) *GtkToolButton {
@@ -6549,18 +6556,30 @@ func (v *GtkToolButton) SetIconWidget(icon_widget *GtkWidget) {
 	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget.Widget))
 	C.gtk_tool_button_set_icon_widget(C.to_GtkToolButton(v.Widget), p_icon_widget)
 }
-/*func (v *GtkToolButton) GetIconWidget() *GtkWidget { // FIXME - Wasting memory by creating GtkWidgets
-	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
-		C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.Widget))))}	
-}*/
+var g_GtkToolButton_GtkIconWidget *GtkWidget
+func (v *GtkToolButton) GetIconWidget() *GtkWidget {
+	if g_GtkToolButton_GtkIconWidget == nil {
+		g_GtkToolButton_GtkIconWidget = &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
+			C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.Widget))))}	
+	} else {
+		g_GtkToolButton_GtkIconWidget.Widget = C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.Widget))
+	}
+	return g_GtkToolButton_GtkIconWidget
+}
 func (v *GtkToolButton) SetLabelWidget(label_widget *GtkWidget) {
 	p_label_widget := C.to_GtkWidget(unsafe.Pointer(label_widget.Widget))
 	C.gtk_tool_button_set_label_widget(C.to_GtkToolButton(v.Widget), p_label_widget)
 }
-/*func (v *GtkToolButton) GetLabelWidget() *GtkWidget { // FIXME - Wasting memory by creating GtkWidgets
-	return &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
-		C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.Widget))))}	
-}*/
+var g_GtkToolButton_GtkLabelWidget *GtkWidget
+func (v *GtkToolButton) GetLabelWidget() *GtkWidget {
+	if g_GtkToolButton_GtkIconWidget == nil {
+		g_GtkToolButton_GtkLabelWidget = &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
+			C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.Widget))))}	
+	} else {
+		g_GtkToolButton_GtkLabelWidget.Widget = C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.Widget))
+	}
+	return g_GtkToolButton_GtkLabelWidget
+}
 //-----------------------------------------------------------------------
 // GtkMenuToolButton
 //-----------------------------------------------------------------------

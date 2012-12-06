@@ -70,7 +70,7 @@ func main() {
 		gti := toolbar2.GetNthItem(i)
 		switch gti.(type) {
 		case *gtk.GtkToolButton:
-		    fmt.Printf("toolbar2[%d] is a *gtk.GtkToolButton\n", i)		    
+		    fmt.Printf("toolbar2[%d] is a *gtk.GtkToolButton\n", i)		    		    
 		case *gtk.GtkToggleToolButton:
 		    fmt.Printf("toolbar2[%d] is a *gtk.GtkToggleToolButton\n", i)	
 		    gti.(*gtk.GtkToggleToolButton).SetActive(true)
@@ -79,7 +79,7 @@ func main() {
 		default:
 		    fmt.Printf("toolbar2: Item is of unknown type")	
 		}
-	}	
+	}		
 
 	vbox.Add(hbox)
 	window.Add(vbox)	
