@@ -5794,7 +5794,7 @@ func (v *GtkToolButton) SetLabelWidget(label_widget *GtkWidget) {
 }
 var g_GtkToolButton_GtkLabelWidget *GtkWidget
 func (v *GtkToolButton) GetLabelWidget() *GtkWidget {
-	if g_GtkToolButton_GtkIconWidget == nil {
+	if g_GtkToolButton_GtkLabelWidget == nil {
 		g_GtkToolButton_GtkLabelWidget = &GtkWidget{C.to_GtkWidget(unsafe.Pointer(
 			C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.Widget))))}	
 	} else {
