@@ -2012,8 +2012,11 @@ func (v *GtkWindow) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.Widget))))
 }
 
+func (v *GtkWindow) GetTypeHint() gdk.GdkWindowTypeHint {
+	return gdk.GdkWindowTypeHint(C.gtk_window_get_type_hint(C.to_GtkWindow(v.Widget)))
+}
+
 // gtk_window_get_transient_for
-// gtk_window_get_type_hint
 // gtk_window_get_skip_taskbar_hint
 // gtk_window_get_skip_pager_hint
 // gtk_window_get_urgency_hint
