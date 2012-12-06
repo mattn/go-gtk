@@ -1163,14 +1163,15 @@ func (v *GtkWindow) SetDecorated(setting bool){
 func (v *GtkWindow) SetDeletable(setting bool){
 	C.gtk_window_set_deletable(C.to_GtkWindow(v.Widget), bool2gboolean(setting))
 }
-
+func (v *GtkWindow) SetTypeHint(hint gdk.GdkWindowTypeHint) {
+	C.gtk_window_set_type_hint(C.to_GtkWindow(v.Widget), C.GdkWindowTypeHint(hint))
+}
 
 // gtk_window_begin_resize_drag
 // gtk_window_begin_move_drag
 // gtk_window_set_frame_dimensions //deprecated since 2.24
 // gtk_window_set_has_frame  //deprecated since 2.24
 // gtk_window_set_mnemonic_modifier
-// gtk_window_set_type_hint
 // gtk_window_set_skip_taskbar_hint
 // gtk_window_set_skip_pager_hint
 // gtk_window_set_urgency_hint
@@ -1229,8 +1230,11 @@ func (v *GtkWindow) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.Widget))))
 }
 
+func (v *GtkWindow) GetTypeHint() gdk.GdkWindowTypeHint {
+	return gdk.GdkWindowTypeHint(C.gtk_window_get_type_hint(C.to_GtkWindow(v.Widget)))
+}
+
 // gtk_window_get_transient_for
-// gtk_window_get_type_hint
 // gtk_window_get_skip_taskbar_hint
 // gtk_window_get_skip_pager_hint
 // gtk_window_get_urgency_hint

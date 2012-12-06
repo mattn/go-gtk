@@ -443,6 +443,25 @@ const (
 	GDK_ACTION_ASK     GdkDragAction = 1 << 5
 )
 
+type GdkWindowTypeHint int
+
+const (
+	GDK_WINDOW_TYPE_HINT_NORMAL        GdkWindowTypeHint = 0
+	GDK_WINDOW_TYPE_HINT_DIALOG        GdkWindowTypeHint = 1
+	GDK_WINDOW_TYPE_HINT_MENU          GdkWindowTypeHint = 2
+	GDK_WINDOW_TYPE_HINT_TOOLBAR       GdkWindowTypeHint = 3
+	GDK_WINDOW_TYPE_HINT_SPLASHSCREEN  GdkWindowTypeHint = 4
+	GDK_WINDOW_TYPE_HINT_UTILITY       GdkWindowTypeHint = 5
+	GDK_WINDOW_TYPE_HINT_DOCK          GdkWindowTypeHint = 6
+	GDK_WINDOW_TYPE_HINT_DESKTOP       GdkWindowTypeHint = 7
+	GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU GdkWindowTypeHint = 8
+	GDK_WINDOW_TYPE_HINT_POPUP_MENU    GdkWindowTypeHint = 9
+	GDK_WINDOW_TYPE_HINT_TOOLTIP       GdkWindowTypeHint = 10
+	GDK_WINDOW_TYPE_HINT_NOTIFICATION  GdkWindowTypeHint = 11
+	GDK_WINDOW_TYPE_HINT_COMBO         GdkWindowTypeHint = 12
+	GDK_WINDOW_TYPE_HINT_DND           GdkWindowTypeHint = 13
+)
+
 type GdkWindow struct {
 	Window *C.GdkWindow
 }
