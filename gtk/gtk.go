@@ -7391,7 +7391,7 @@ type Adjustment struct {
 
 func NewAdjustment(value, lower, upper, step_increment, page_increment, page_size float64) *Adjustment {
 	return &Adjustment{
-		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper), 
+		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper),
 			C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))}
 }
 func (v *Adjustment) GetValue() float64 {
@@ -7407,7 +7407,7 @@ func (v *Adjustment) SetValue(value float64) {
 
 func (v *Adjustment) Configure(value, lower, upper, step_increment, page_increment, page_size float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_configure()")
-	C._gtk_adjustment_configure(v.GAdjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper), 
+	C._gtk_adjustment_configure(v.GAdjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper),
 		C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size))
 }
 func (v *Adjustment) GetLower() float64 {
@@ -7722,11 +7722,11 @@ type Box struct {
 }
 
 func (v *Box) PackStart(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_start(C.to_GtkBox(v.GWidget), child.ToNative(), bool2gboolean(expand), 
+	C.gtk_box_pack_start(C.to_GtkBox(v.GWidget), child.ToNative(), bool2gboolean(expand),
 		bool2gboolean(fill), C.guint(padding))
 }
 func (v *Box) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_end(C.to_GtkBox(v.GWidget), child.ToNative(), bool2gboolean(expand), 
+	C.gtk_box_pack_end(C.to_GtkBox(v.GWidget), child.ToNative(), bool2gboolean(expand),
 		bool2gboolean(fill), C.guint(padding))
 }
 
@@ -8240,7 +8240,7 @@ func (v *Widget) QueueResizeNoRedraw() {
 func (v *Widget) AddAccelerator(signal string, group *AccelGroup, key uint, mods gdk.GdkModifierType, flags AccelFlags) {
 	csignal := C.CString(signal)
 	defer C.free_string(csignal)
-	C.gtk_widget_add_accelerator(v.GWidget, C.to_gcharptr(csignal), group.GAccelGroup, C.guint(key), 
+	C.gtk_widget_add_accelerator(v.GWidget, C.to_gcharptr(csignal), group.GAccelGroup, C.guint(key),
 		C.GdkModifierType(mods), C.GtkAccelFlags(flags))
 }
 
