@@ -2,14 +2,14 @@ package main
 
 import (
 	"os"
-	"github.com/mattn/go-gtk/gtk"
 	"github.com/mattn/go-gtk/example/builder/callback"
+	"go-gtk/example/builder/callback"
 )
 
 func main() {
 	gtk.Init(&os.Args)
 
-	builder := gtk.Builder()
+	builder := gtk.NewBuilder()
 	builder.AddFromFile("hello.ui")
 	builder.ConnectSignals(nil)
 	obj := builder.GetObject("window1")

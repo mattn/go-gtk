@@ -4,11 +4,11 @@ import "C"
 import "github.com/mattn/go-gtk/gtk"
 import "unsafe"
 
-var aboutdialog *gtk.GtkAboutDialog
+var aboutdialog *gtk.AboutDialog
 
-func Init(builder *gtk.GtkBuilder) {
-	aboutdialog = &gtk.GtkAboutDialog{
-		*(*gtk.GtkDialog)(unsafe.Pointer(&builder.GetObject("aboutdialog1").Object))}
+func Init(builder *gtk.Builder) {
+	aboutdialog = &gtk.AboutDialog{
+		*(*gtk.Dialog)(unsafe.Pointer(&builder.GetObject("aboutdialog1").Object))}
 }
 
 //export on_imagemenuitem1_activate
