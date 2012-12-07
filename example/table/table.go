@@ -2,23 +2,23 @@ package main
 
 import (
 	"os"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"fmt"
 )
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Table")
 	window.Connect("destroy", gtk.MainQuit)
 
-	swin := gtk.ScrolledWindow(nil, nil)
-	swin.SetPolicy(gtk.GTK_POLICY_AUTOMATIC, gtk.GTK_POLICY_AUTOMATIC)
+	swin := gtk.NewScrolledWindow(nil, nil)
+	swin.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
-	table := gtk.Table(5, 5, false)
+	table := gtk.NewTable(5, 5, false)
 	for y := uint(0); y < 5; y++ {
 		for x := uint(0); x < 5; x++ {
-			table.Attach(gtk.ButtonWithLabel(fmt.Sprintf("%02d:%02d", x, y)), x, x+1, y, y+1, gtk.GTK_FILL, gtk.GTK_FILL, 5, 5)
+			table.Attach(gtk.NewButtonWithLabel(fmt.Sprintf("%02d:%02d", x, y)), x, x+1, y, y+1, gtk.FILL, gtk.FILL, 5, 5)
 		}
 	}
 	swin.AddWithViewPort(table)

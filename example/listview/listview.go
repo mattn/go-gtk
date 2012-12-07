@@ -3,32 +3,32 @@ package main
 import (
 	"os"
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"github.com/mattn/go-gtk/gdkpixbuf"
 )
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Stock Icons")
 	window.Connect("destroy", gtk.MainQuit)
 
-	swin := gtk.ScrolledWindow(nil, nil)
+	swin := gtk.NewScrolledWindow(nil, nil)
 
-	store := gtk.ListStore(glib.G_TYPE_STRING, glib.G_TYPE_BOOL, gdkpixbuf.GetGdkPixbufType())
-	treeview := gtk.TreeView()
+	store := gtk.NewListStore(glib.G_TYPE_STRING, glib.G_TYPE_BOOL, gdkpixbuf.GetGdkPixbufType())
+	treeview := gtk.NewTreeView()
 	swin.Add(treeview)
 
 	treeview.SetModel(store)
-	treeview.AppendColumn(gtk.TreeViewColumnWithAttributes("name", gtk.CellRendererText(), "text", 0))
-	treeview.AppendColumn(gtk.TreeViewColumnWithAttributes("check", gtk.CellRendererToggle(), "active", 1))
-	treeview.AppendColumn(gtk.TreeViewColumnWithAttributes("icon", gtk.CellRendererPixbuf(), "pixbuf", 2))
+	treeview.AppendColumn(gtk.NewTreeViewColumnWithAttributes("name", gtk.NewCellRendererText(), "text", 0))
+	treeview.AppendColumn(gtk.NewTreeViewColumnWithAttributes("check", gtk.NewCellRendererToggle(), "active", 1))
+	treeview.AppendColumn(gtk.NewTreeViewColumnWithAttributes("icon", gtk.NewCellRendererPixbuf(), "pixbuf", 2))
 	n := 0
-	gtk.GtkStockListIDs().ForEach(func(d interface{}, v interface{}) {
+	gtk.StockListIDs().ForEach(func(d interface{}, v interface{}) {
 		id := glib.GPtrToString(d)
-		var iter gtk.GtkTreeIter
+		var iter gtk.TreeIter
 		store.Append(&iter)
-		store.Set(&iter, id, (n == 1), gtk.Image().RenderIcon(id, gtk.GTK_ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf)
+		store.Set(&iter, id, (n == 1), gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf)
 		n = 1 - n
 	})
 

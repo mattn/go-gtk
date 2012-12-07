@@ -2,15 +2,15 @@ package main
 
 import (
 	"os"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/glib"	
 	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/gtk"	
 	"unsafe"
 )
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Events")
 	window.Connect("destroy", gtk.MainQuit)
 

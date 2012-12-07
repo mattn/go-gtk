@@ -2,9 +2,9 @@ package main
 
 import (
 	"os"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/glib"	
 	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/gtk"	
 	"unsafe"
 )
 
@@ -15,13 +15,13 @@ type point struct {
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GTK DrawingArea")
 	window.Connect("destroy", gtk.MainQuit)
 
-	vbox := gtk.VBox(true, 0)
+	vbox := gtk.NewVBox(true, 0)
 	vbox.SetBorderWidth(5)
-	drawingarea := gtk.DrawingArea()
+	drawingarea := gtk.NewDrawingArea()
 
 	var p1, p2 point
 	var gdkwin *gdk.GdkWindow
@@ -34,7 +34,7 @@ func main() {
 		if pixmap != nil {
 			pixmap.Unref()
 		}
-		var allocation gtk.GtkAllocation
+		var allocation gtk.Allocation
 		drawingarea.GetAllocation(&allocation)
 		pixmap = gdk.Pixmap(drawingarea.GetWindow().GetDrawable(), allocation.Width, allocation.Height, 24)
 		gc = gdk.GC(pixmap.GetDrawable())

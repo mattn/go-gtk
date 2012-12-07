@@ -2,30 +2,30 @@ package main
 
 import (
 	"os"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"strconv"
 )
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GTK Notebook")
 	window.Connect("destroy", gtk.MainQuit)
 
-	notebook := gtk.Notebook()
+	notebook := gtk.NewNotebook()
 	for n := 1; n <= 10; n++ {
-		page := gtk.Frame("demo" + strconv.Itoa(n))
-		notebook.AppendPage(page, gtk.Label("demo"+strconv.Itoa(n)))
+		page := gtk.NewFrame("demo" + strconv.Itoa(n))
+		notebook.AppendPage(page, gtk.NewLabel("demo"+strconv.Itoa(n)))
 
-		vbox := gtk.HBox(false, 1)
+		vbox := gtk.NewHBox(false, 1)
 
-		prev := gtk.ButtonWithLabel("go prev")
+		prev := gtk.NewButtonWithLabel("go prev")
 		prev.Clicked(func() {
 			notebook.PrevPage()
 		})
 		vbox.Add(prev)
 
-		next := gtk.ButtonWithLabel("go next")
+		next := gtk.NewButtonWithLabel("go next")
 		next.Clicked(func() {
 			notebook.NextPage()
 		})

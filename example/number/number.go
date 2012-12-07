@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"os"
 	"strconv"
 	"unsafe"
@@ -11,15 +11,15 @@ import (
 func main() {
 	gtk.Init(&os.Args)
 
-	dialog := gtk.Dialog()
+	dialog := gtk.NewDialog()
 	dialog.SetTitle("number input")
 
 	vbox := dialog.GetVBox()
 
-	label := gtk.Label("Numnber:")
+	label := gtk.NewLabel("Numnber:")
 	vbox.Add(label)
 
-	input := gtk.Entry()
+	input := gtk.NewEntry()
 	input.SetEditable(true)
 	vbox.Add(input)
 
@@ -43,7 +43,7 @@ func main() {
 		}
 	})
 
-	button := gtk.ButtonWithLabel("OK")
+	button := gtk.NewButtonWithLabel("OK")
 	button.Connect("clicked", func() {
 		println(input.GetText())
 		gtk.MainQuit()
