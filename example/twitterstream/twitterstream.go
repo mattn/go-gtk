@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/garyburd/go-oauth/oauth"
-	"github.com/mattn/twitterstream"
+	"github.com/mattn/twitterstream"	
 	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -75,14 +75,14 @@ type tweet struct {
 func main() {
 	gtk.Init(&os.Args)
 	gdk.ThreadsInit()
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("Twitter!")
 	window.Connect("destroy", gtk.MainQuit)
 
-	vbox := gtk.VBox(false, 1)
+	vbox := gtk.NewVBox(false, 1)
 
-	scrolledwin := gtk.ScrolledWindow(nil, nil)
-	textview := gtk.TextView()
+	scrolledwin := gtk.NewScrolledWindow(nil, nil)
+	textview := gtk.NewTextView()
 	textview.SetEditable(false)
 	textview.SetCursorVisible(false)
 	scrolledwin.Add(textview)
@@ -92,7 +92,7 @@ func main() {
 
 	tag := buffer.CreateTag("blue", map[string]string{
 		"foreground": "#0000FF", "weight": "700"})
-	button := gtk.ButtonWithLabel("Update Timeline")
+	button := gtk.NewButtonWithLabel("Update Timeline")
 	button.SetTooltipMarkup("update <b>public timeline</b>")
 	button.Clicked(func() {
 		b, err := ioutil.ReadFile("settings.json")

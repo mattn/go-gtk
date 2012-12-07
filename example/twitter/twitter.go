@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -42,14 +42,14 @@ func bytes2pixbuf(data []byte, typ string) *gdkpixbuf.GdkPixbuf {
 func main() {
 	gtk.Init(&os.Args)
 	gdk.ThreadsInit()
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("Twitter!")
 	window.Connect("destroy", gtk.MainQuit)
 
-	vbox := gtk.VBox(false, 1)
+	vbox := gtk.NewVBox(false, 1)
 
-	scrolledwin := gtk.ScrolledWindow(nil, nil)
-	textview := gtk.TextView()
+	scrolledwin := gtk.NewScrolledWindow(nil, nil)
+	textview := gtk.NewTextView()
 	textview.SetEditable(false)
 	textview.SetCursorVisible(false)
 	scrolledwin.Add(textview)
@@ -59,7 +59,7 @@ func main() {
 
 	tag := buffer.CreateTag("blue", map[string]string{
 		"foreground": "#0000FF", "weight": "700"})
-	button := gtk.ButtonWithLabel("Update Timeline")
+	button := gtk.NewButtonWithLabel("Update Timeline")
 	button.SetTooltipMarkup("update <b>public timeline</b>")
 	button.Clicked(func() {
 		go func() {
@@ -89,7 +89,7 @@ func main() {
 				for i := 0; i < len(arr); i++ {
 					data := arr[i].(map[string]interface{})
 					icon := data["user"].(map[string]interface{})["profile_image_url"].(string)
-					var iter gtk.GtkTextIter
+					var iter gtk.TextIter
 					pixbufbytes, resp := readURL(icon)
 					gdk.ThreadsEnter()
 					buffer.GetEndIter(&iter)
