@@ -257,7 +257,7 @@ func (v *Clipboard) WaitForText() string {
 }
 
 func (v *Clipboard) Connect(s string, f interface{}, datas ...interface{}) int {
-	return glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.GClipboard)))).Connect(s, f, datas...)
+	return glib.ObjectFromNative(unsafe.Pointer(C.toGObject(unsafe.Pointer(v.GClipboard)))).Connect(s, f, datas...)
 }
 
 // gtk_clipboard_get
@@ -907,7 +907,7 @@ func NewDialog() *Dialog {
 // gtk_dialog_new_with_buttons
 
 func (v *Dialog) Run() ResponseType {
-	return ResponseType(C.gtk_dialog_run(C.to_GtkDialog(v.GWidget)))
+	return ResponseType(C.gtk_dialog_run(C.toGDialog(v.GWidget)))
 }
 func (v *Dialog) Response(response interface{}, datas ...interface{}) {
 	v.Connect("response", response, datas...)
@@ -916,7 +916,7 @@ func (v *Dialog) AddButton(button_text string, response_id int) *Button {
 	ptr := C.CString(button_text)
 	defer C.freeCstr(ptr)
 	return &Button{Bin{Container{Widget{
-		C.gtk_dialog_add_button(C.to_GtkDialog(v.GWidget), C.toGstr(ptr), C.gint(response_id))}}}}
+		C.gtk_dialog_add_button(C.toGDialog(v.GWidget), C.toGstr(ptr), C.gint(response_id))}}}}
 }
 
 // gtk_dialog_add_buttons
@@ -926,21 +926,21 @@ func (v *Dialog) AddButton(button_text string, response_id int) *Button {
 //Deprecated since 2.22.
 func (v *Dialog) SetHasSeparator(f bool) {
 	deprecated_since(2, 22, 0, "gtk_dialog_set_has_separator()")
-	C.gtk_dialog_set_has_separator(C.to_GtkDialog(v.GWidget), bool2gboolean(f))
+	C.gtk_dialog_set_has_separator(C.toGDialog(v.GWidget), bool2gboolean(f))
 }
 func (v *Dialog) SetDefaultResponse(id int) {
-	C.gtk_dialog_set_default_response(C.to_GtkDialog(v.GWidget), C.gint(id))
+	C.gtk_dialog_set_default_response(C.toGDialog(v.GWidget), C.gint(id))
 }
 
 // gtk_dialog_set_has_separator //deprecated since 2.22
 // gtk_dialog_set_response_sensitive
 
 func (v *Dialog) GetResponseForWidget(w *Widget) int {
-	return int(C.gtk_dialog_get_response_for_widget(C.to_GtkDialog(v.GWidget), w.GWidget))
+	return int(C.gtk_dialog_get_response_for_widget(C.toGDialog(v.GWidget), w.GWidget))
 }
 func (v *Dialog) GetWidgetForResponse(id int) *Widget {
 	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response()")
-	return &Widget{C._gtk_dialog_get_widget_for_response(C.to_GtkDialog(v.GWidget), C.gint(id))}
+	return &Widget{C._gtk_dialog_get_widget_for_response(C.toGDialog(v.GWidget), C.gint(id))}
 }
 
 // gtk_dialog_get_action_area
@@ -1009,13 +1009,13 @@ func NewMessageDialogWithMarkup(parent *Window, flag DialogFlags, t MessageType,
 func (v *MessageDialog) SetMarkup(markup string) {
 	ptr := C.CString(markup)
 	defer C.freeCstr(ptr)
-	C.gtk_message_dialog_set_markup(C.to_GtkMessageDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_message_dialog_set_markup(C.toGMessageDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *MessageDialog) SetImage(image WidgetLike) {
-	C.gtk_message_dialog_set_image(C.to_GtkMessageDialog(v.GWidget), image.ToNative())
+	C.gtk_message_dialog_set_image(C.toGMessageDialog(v.GWidget), image.ToNative())
 }
 func (v *MessageDialog) GetImage() *Image {
-	return &Image{Widget{C.gtk_message_dialog_get_image(C.to_GtkMessageDialog(v.GWidget))}}
+	return &Image{Widget{C.gtk_message_dialog_get_image(C.toGMessageDialog(v.GWidget))}}
 }
 
 // gtk_message_dialog_get_message_area //since 2.22
@@ -1060,19 +1060,19 @@ func NewWindow(t WindowType) *Window {
 func (v *Window) SetTitle(title string) {
 	ptr := C.CString(title)
 	defer C.freeCstr(ptr)
-	C.gtk_window_set_title(C.to_GtkWindow(v.GWidget), C.toGstr(ptr))
+	C.gtk_window_set_title(C.toGWindow(v.GWidget), C.toGstr(ptr))
 }
 
 // gtk_window_set_wmclass
 
 func (v *Window) SetResizable(resizable bool) {
-	C.gtk_window_set_resizable(C.to_GtkWindow(v.GWidget), bool2gboolean(resizable))
+	C.gtk_window_set_resizable(C.toGWindow(v.GWidget), bool2gboolean(resizable))
 }
 func (v *Window) GetResizable() bool {
-	return gboolean2bool(C.gtk_window_get_resizable(C.to_GtkWindow(v.GWidget)))
+	return gboolean2bool(C.gtk_window_get_resizable(C.toGWindow(v.GWidget)))
 }
 func (v *Window) AddAccelGroup(group *AccelGroup) {
-	C.gtk_window_add_accel_group(C.to_GtkWindow(v.GWidget), group.GAccelGroup)
+	C.gtk_window_add_accel_group(C.toGWindow(v.GWidget), group.GAccelGroup)
 }
 
 // gtk_window_remove_accel_group
@@ -1080,10 +1080,10 @@ func (v *Window) AddAccelGroup(group *AccelGroup) {
 // gtk_window_activate_default
 
 func (v *Window) SetModal(modal bool) {
-	C.gtk_window_set_modal(C.to_GtkWindow(v.GWidget), bool2gboolean(modal))
+	C.gtk_window_set_modal(C.toGWindow(v.GWidget), bool2gboolean(modal))
 }
 func (v *Window) SetDefaultSize(width int, height int) {
-	C.gtk_window_set_default_size(C.to_GtkWindow(v.GWidget), C.gint(width), C.gint(height))
+	C.gtk_window_set_default_size(C.toGWindow(v.GWidget), C.gint(width), C.gint(height))
 }
 
 // gtk_window_set_geometry_hints
@@ -1091,13 +1091,13 @@ func (v *Window) SetDefaultSize(width int, height int) {
 // gtk_window_get_gravity
 
 func (v *Window) SetPosition(position WindowPosition) {
-	C.gtk_window_set_position(C.to_GtkWindow(v.GWidget), C.GtkWindowPosition(position))
+	C.gtk_window_set_position(C.toGWindow(v.GWidget), C.GtkWindowPosition(position))
 }
 func (v *Window) SetTransientFor(parent *Window) {
-	C.gtk_window_set_transient_for(C.to_GtkWindow(v.GWidget), C.to_GtkWindow(parent.ToNative()))
+	C.gtk_window_set_transient_for(C.toGWindow(v.GWidget), C.toGWindow(parent.ToNative()))
 }
 func (v *Window) SetDestroyWithParent(setting bool) {
-	C.gtk_window_set_destroy_with_parent(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
+	C.gtk_window_set_destroy_with_parent(C.toGWindow(v.GWidget), bool2gboolean(setting))
 }
 
 // gtk_window_set_screen
@@ -1115,57 +1115,57 @@ func (v *Window) SetDestroyWithParent(setting bool) {
 // gtk_window_get_default_widget
 
 func (v *Window) SetDefault(w *Widget) {
-	C.gtk_window_set_default(C.to_GtkWindow(v.GWidget), w.GWidget)
+	C.gtk_window_set_default(C.toGWindow(v.GWidget), w.GWidget)
 }
 func (v *Window) Present() {
-	C.gtk_window_present(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_present(C.toGWindow(v.GWidget))
 }
 
 // gtk_window_present_with_time
 
 func (v *Window) Stick() {
-	C.gtk_window_stick(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_stick(C.toGWindow(v.GWidget))
 }
 
 func (v *Window) Unstick() {
-	C.gtk_window_unstick(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_unstick(C.toGWindow(v.GWidget))
 }
 
 func (v *Window) Iconify() {
-	C.gtk_window_iconify(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_iconify(C.toGWindow(v.GWidget))
 }
 
 func (v *Window) Deiconify() {
-	C.gtk_window_deiconify(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_deiconify(C.toGWindow(v.GWidget))
 }
 
 func (v *Window) Maximize() {
-	C.gtk_window_maximize(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_maximize(C.toGWindow(v.GWidget))
 }
 func (v *Window) Unmaximize() {
-	C.gtk_window_unmaximize(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_unmaximize(C.toGWindow(v.GWidget))
 }
 
 func (v *Window) Fullscreen() {
-	C.gtk_window_fullscreen(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_fullscreen(C.toGWindow(v.GWidget))
 }
 func (v *Window) Unfullscreen() {
-	C.gtk_window_unfullscreen(C.to_GtkWindow(v.GWidget))
+	C.gtk_window_unfullscreen(C.toGWindow(v.GWidget))
 }
 func (v *Window) SetKeepAbove(setting bool){
-	C.gtk_window_set_keep_above(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
+	C.gtk_window_set_keep_above(C.toGWindow(v.GWidget), bool2gboolean(setting))
 }
 func (v *Window) SetKeepBelow(setting bool){
-	C.gtk_window_set_keep_below(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
+	C.gtk_window_set_keep_below(C.toGWindow(v.GWidget), bool2gboolean(setting))
 }
 func (v *Window) SetDecorated(setting bool){
-	C.gtk_window_set_decorated(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
+	C.gtk_window_set_decorated(C.toGWindow(v.GWidget), bool2gboolean(setting))
 }
 func (v *Window) SetDeletable(setting bool){
-	C.gtk_window_set_deletable(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
+	C.gtk_window_set_deletable(C.toGWindow(v.GWidget), bool2gboolean(setting))
 }
 func (v *Window) SetTypeHint(hint gdk.WindowTypeHint) {
-	C.gtk_window_set_type_hint(C.to_GtkWindow(v.GWidget), C.GdkWindowTypeHint(hint))
+	C.gtk_window_set_type_hint(C.toGWindow(v.GWidget), C.GdkWindowTypeHint(hint))
 }
 
 // gtk_window_begin_resize_drag
@@ -1178,7 +1178,7 @@ func (v *Window) SetTypeHint(hint gdk.WindowTypeHint) {
 // gtk_window_set_urgency_hint
 
 func (v *Window) SetAcceptFocus(setting bool) {
-	C.gtk_window_set_accept_focus(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
+	C.gtk_window_set_accept_focus(C.toGWindow(v.GWidget), bool2gboolean(setting))
 }
 
 // gtk_window_set_focus_on_map
@@ -1191,12 +1191,12 @@ func (v *Window) SetAcceptFocus(setting bool) {
 
 func (v *Window) GetDefaultSize(width *int, height *int) {
 	var cwidth, cheight C.gint
-	C.gtk_window_get_default_size(C.to_GtkWindow(v.GWidget), &cwidth, &cheight)
+	C.gtk_window_get_default_size(C.toGWindow(v.GWidget), &cwidth, &cheight)
 	*width = int(cwidth)
 	*height = int(cheight)
 }
 func (v *Window) GetDestroyWithParent() bool {
-	return gboolean2bool(C.gtk_window_get_destroy_with_parent(C.to_GtkWindow(v.GWidget)))
+	return gboolean2bool(C.gtk_window_get_destroy_with_parent(C.toGWindow(v.GWidget)))
 }
 
 // gtk_window_get_frame_dimensions //deprecated since 2.24
@@ -1205,16 +1205,16 @@ func (v *Window) GetDestroyWithParent() bool {
 // gtk_window_get_icon_list
 
 func (v *Window) GetIconName() string {
-	return C.GoString(C.toCstr(C.gtk_window_get_icon_name(C.to_GtkWindow(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_window_get_icon_name(C.toGWindow(v.GWidget))))
 }
 // gtk_window_get_mnemonic_modifier
 
 func (v *Window) GetModal() bool {
-	return gboolean2bool(C.gtk_window_get_modal(C.to_GtkWindow(v.GWidget)))
+	return gboolean2bool(C.gtk_window_get_modal(C.toGWindow(v.GWidget)))
 }
 func (v *Window) GetPosition(root_x *int, root_y *int) {
 	var croot_x, croot_y C.gint
-	C.gtk_window_get_position(C.to_GtkWindow(v.GWidget), &croot_x, &croot_y)
+	C.gtk_window_get_position(C.toGWindow(v.GWidget), &croot_x, &croot_y)
 	*root_x = int(croot_x)
 	*root_y = int(croot_y)
 }
@@ -1223,16 +1223,16 @@ func (v *Window) GetPosition(root_x *int, root_y *int) {
 
 func (v *Window) GetSize(width *int, height *int) {
 	var cwidth, cheight C.gint
-	C.gtk_window_get_size(C.to_GtkWindow(v.GWidget), &cwidth, &cheight)
+	C.gtk_window_get_size(C.toGWindow(v.GWidget), &cwidth, &cheight)
 	*width = int(cwidth)
 	*height = int(cheight)
 }
 func (v *Window) GetTitle() string {
-	return C.GoString(C.toCstr(C.gtk_window_get_title(C.to_GtkWindow(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_window_get_title(C.toGWindow(v.GWidget))))
 }
 
 func (v *Window) GetTypeHint() gdk.WindowTypeHint {
-	return gdk.WindowTypeHint(C.gtk_window_get_type_hint(C.to_GtkWindow(v.GWidget)))
+	return gdk.WindowTypeHint(C.gtk_window_get_type_hint(C.toGWindow(v.GWidget)))
 }
 
 // gtk_window_get_transient_for
@@ -1241,7 +1241,7 @@ func (v *Window) GetTypeHint() gdk.WindowTypeHint {
 // gtk_window_get_urgency_hint
 
 func (v *Window) GetAcceptFocus() bool {
-	return gboolean2bool(C.gtk_window_get_accept_focus(C.to_GtkWindow(v.GWidget)))
+	return gboolean2bool(C.gtk_window_get_accept_focus(C.toGWindow(v.GWidget)))
 }
 
 // gtk_window_get_focus_on_map
@@ -1250,14 +1250,14 @@ func (v *Window) GetAcceptFocus() bool {
 // gtk_window_get_window_type //since 2.20
 
 func (v *Window) Move(x int, y int) {
-	C.gtk_window_move(C.to_GtkWindow(v.GWidget), C.gint(x), C.gint(y))
+	C.gtk_window_move(C.toGWindow(v.GWidget), C.gint(x), C.gint(y))
 }
 
 // gtk_window_parse_geometry
 // gtk_window_reshow_with_initial_size
 
 func (v *Window) Resize(width int, height int) {
-	C.gtk_window_resize(C.to_GtkWindow(v.GWidget), C.gint(width), C.gint(height))
+	C.gtk_window_resize(C.toGWindow(v.GWidget), C.gint(width), C.gint(height))
 }
 
 func (v *Window) XID() int32 {
@@ -1274,13 +1274,13 @@ func (v *Window) XID() int32 {
 func (v *Window) SetIconFromFile(file string) {
 	ptr := C.CString(file)
 	defer C.freeCstr(ptr)
-	C.gtk_window_set_icon_from_file(C.to_GtkWindow(v.GWidget), C.toGstr(ptr), nil) // last arg : GError **err
+	C.gtk_window_set_icon_from_file(C.toGWindow(v.GWidget), C.toGstr(ptr), nil) // last arg : GError **err
 }
 
 func (v *Window) SetIconName(name string) {
 	ptr := C.CString(name)
 	defer C.freeCstr(ptr)
-	C.gtk_window_set_icon_name(C.to_GtkWindow(v.GWidget), C.toGstr(ptr))
+	C.gtk_window_set_icon_name(C.toGWindow(v.GWidget), C.toGstr(ptr))
 }
 
 // gtk_window_set_auto_startup_notification
@@ -1311,70 +1311,70 @@ func NewAboutDialog() *AboutDialog {
 		C.gtk_about_dialog_new()}}}}}}
 }
 func (v *AboutDialog) GetProgramName() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_program_name(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_program_name(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetProgramName(name string) {
 	ptr := C.CString(name)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_program_name(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_program_name(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetVersion() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_version(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_version(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetVersion(version string) {
 	ptr := C.CString(version)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_version(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_version(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetCopyright() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_copyright(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_copyright(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetCopyright(copyright string) {
 	ptr := C.CString(copyright)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_copyright(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_copyright(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetComments() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_comments(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_comments(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetComments(comments string) {
 	ptr := C.CString(comments)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_comments(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_comments(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetLicense() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_license(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_license(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetLicense(license string) {
 	ptr := C.CString(license)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_license(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_license(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetWrapLicense() bool {
-	return gboolean2bool(C.gtk_about_dialog_get_wrap_license(C.to_GtkAboutDialog(v.GWidget)))
+	return gboolean2bool(C.gtk_about_dialog_get_wrap_license(C.toGAboutDialog(v.GWidget)))
 }
 func (v *AboutDialog) SetWrapLicense(wrap_license bool) {
-	C.gtk_about_dialog_set_wrap_license(C.to_GtkAboutDialog(v.GWidget), bool2gboolean(wrap_license))
+	C.gtk_about_dialog_set_wrap_license(C.toGAboutDialog(v.GWidget), bool2gboolean(wrap_license))
 }
 func (v *AboutDialog) GetWebsite() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_website(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_website(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetWebsite(website string) {
 	ptr := C.CString(website)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_website(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_website(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetWebsiteLabel() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_website_label(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_website_label(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetWebsiteLabel(website_label string) {
 	ptr := C.CString(website_label)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_website_label(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_website_label(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetAuthors() []string {
 	var authors []string
-	cauthors := C.gtk_about_dialog_get_authors(C.to_GtkAboutDialog(v.GWidget))
+	cauthors := C.gtk_about_dialog_get_authors(C.toGAboutDialog(v.GWidget))
 	for {
 		authors = append(authors, C.GoString(C.toCstr(*cauthors)))
 		cauthors = C.nextGstr(cauthors)
@@ -1392,12 +1392,12 @@ func (v *AboutDialog) SetAuthors(authors []string) {
 		C.set_string(cauthors, C.int(i), C.toGstr(ptr))
 	}
 	C.set_string(cauthors, C.int(len(authors)), nil)
-	C.gtk_about_dialog_set_authors(C.to_GtkAboutDialog(v.GWidget), cauthors)
+	C.gtk_about_dialog_set_authors(C.toGAboutDialog(v.GWidget), cauthors)
 	C.destroy_strings(cauthors)
 }
 func (v *AboutDialog) GetArtists() []string {
 	var artists []string
-	cartists := C.gtk_about_dialog_get_artists(C.to_GtkAboutDialog(v.GWidget))
+	cartists := C.gtk_about_dialog_get_artists(C.toGAboutDialog(v.GWidget))
 	for {
 		artists = append(artists, C.GoString(C.toCstr(*cartists)))
 		cartists = C.nextGstr(cartists)
@@ -1414,12 +1414,12 @@ func (v *AboutDialog) SetArtists(artists []string) {
 		defer C.freeCstr(ptr)
 		C.set_string(cartists, C.int(i), C.toGstr(ptr))
 	}
-	C.gtk_about_dialog_set_artists(C.to_GtkAboutDialog(v.GWidget), cartists)
+	C.gtk_about_dialog_set_artists(C.toGAboutDialog(v.GWidget), cartists)
 	C.destroy_strings(cartists)
 }
 func (v *AboutDialog) GetDocumenters() []string {
 	var documenters []string
-	cdocumenters := C.gtk_about_dialog_get_documenters(C.to_GtkAboutDialog(v.GWidget))
+	cdocumenters := C.gtk_about_dialog_get_documenters(C.toGAboutDialog(v.GWidget))
 	for {
 		documenters = append(documenters, C.GoString(C.toCstr(*cdocumenters)))
 		cdocumenters = C.nextGstr(cdocumenters)
@@ -1436,31 +1436,31 @@ func (v *AboutDialog) SetDocumenters(documenters []string) {
 		defer C.freeCstr(ptr)
 		C.set_string(cdocumenters, C.int(i), C.toGstr(ptr))
 	}
-	C.gtk_about_dialog_set_documenters(C.to_GtkAboutDialog(v.GWidget), cdocumenters)
+	C.gtk_about_dialog_set_documenters(C.toGAboutDialog(v.GWidget), cdocumenters)
 	C.destroy_strings(cdocumenters)
 }
 func (v *AboutDialog) GetTranslatorCredits() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_translator_credits(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_translator_credits(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetTranslatorCredits(translator_credits string) {
 	ptr := C.CString(translator_credits)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_translator_credits(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_translator_credits(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 func (v *AboutDialog) GetLogo() *gdkpixbuf.Pixbuf {
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_about_dialog_get_logo(C.to_GtkAboutDialog(v.GWidget))}
+		C.gtk_about_dialog_get_logo(C.toGAboutDialog(v.GWidget))}
 }
 func (v *AboutDialog) SetLogo(logo *gdkpixbuf.Pixbuf) {
-	C.gtk_about_dialog_set_logo(C.to_GtkAboutDialog(v.GWidget), logo.GPixbuf)
+	C.gtk_about_dialog_set_logo(C.toGAboutDialog(v.GWidget), logo.GPixbuf)
 }
 func (v *AboutDialog) GetLogoIconName() string {
-	return C.GoString(C.toCstr(C.gtk_about_dialog_get_logo_icon_name(C.to_GtkAboutDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_about_dialog_get_logo_icon_name(C.toGAboutDialog(v.GWidget))))
 }
 func (v *AboutDialog) SetLogoIconName(icon_name string) {
 	ptr := C.CString(icon_name)
 	defer C.freeCstr(ptr)
-	C.gtk_about_dialog_set_logo_icon_name(C.to_GtkAboutDialog(v.GWidget), C.toGstr(ptr))
+	C.gtk_about_dialog_set_logo_icon_name(C.toGAboutDialog(v.GWidget), C.toGstr(ptr))
 }
 
 // gtk_about_dialog_set_email_hook //deprecated since 2.24
@@ -1488,72 +1488,72 @@ func NewAssistant() *Assistant {
 	return &Assistant{Widget{C.gtk_assistant_new()}}
 }
 func (v *Assistant) GetCurrentPage() int {
-	return int(C.gtk_assistant_get_current_page(C.to_GtkAssistant(v.GWidget)))
+	return int(C.gtk_assistant_get_current_page(C.toGAssistant(v.GWidget)))
 }
 func (v *Assistant) SetCurrentPage(page_num int) {
-	C.gtk_assistant_set_current_page(C.to_GtkAssistant(v.GWidget), C.gint(page_num))
+	C.gtk_assistant_set_current_page(C.toGAssistant(v.GWidget), C.gint(page_num))
 }
 func (v *Assistant) GetNPages() int {
-	return int(C.gtk_assistant_get_n_pages(C.to_GtkAssistant(v.GWidget)))
+	return int(C.gtk_assistant_get_n_pages(C.toGAssistant(v.GWidget)))
 }
 func (v *Assistant) GetNthPage(page_num int) *Widget {
 	return &Widget{
-		C.gtk_assistant_get_nth_page(C.to_GtkAssistant(v.GWidget), C.gint(page_num))}
+		C.gtk_assistant_get_nth_page(C.toGAssistant(v.GWidget), C.gint(page_num))}
 }
 func (v *Assistant) PrependPage(page WidgetLike) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.GWidget), page.ToNative()))
+	return int(C.gtk_assistant_prepend_page(C.toGAssistant(v.GWidget), page.ToNative()))
 }
 func (v *Assistant) AppendPage(page WidgetLike) int {
-	return int(C.gtk_assistant_prepend_page(C.to_GtkAssistant(v.GWidget), page.ToNative()))
+	return int(C.gtk_assistant_prepend_page(C.toGAssistant(v.GWidget), page.ToNative()))
 }
 func (v *Assistant) InsertPage(page WidgetLike, position int) int {
-	return int(C.gtk_assistant_insert_page(C.to_GtkAssistant(v.GWidget), page.ToNative(), C.gint(position)))
+	return int(C.gtk_assistant_insert_page(C.toGAssistant(v.GWidget), page.ToNative(), C.gint(position)))
 }
 
 // void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
 
 func (v *Assistant) SetPageType(page WidgetLike, t AssistantPageType) {
-	C.gtk_assistant_set_page_type(C.to_GtkAssistant(v.GWidget), page.ToNative(), C.GtkAssistantPageType(t))
+	C.gtk_assistant_set_page_type(C.toGAssistant(v.GWidget), page.ToNative(), C.GtkAssistantPageType(t))
 }
 func (v *Assistant) GetPageType(page WidgetLike) AssistantPageType {
-	return AssistantPageType(C.gtk_assistant_get_page_type(C.to_GtkAssistant(v.GWidget), page.ToNative()))
+	return AssistantPageType(C.gtk_assistant_get_page_type(C.toGAssistant(v.GWidget), page.ToNative()))
 }
 func (v *Assistant) SetPageTitle(page WidgetLike, title string) {
 	ptr := C.CString(title)
 	defer C.freeCstr(ptr)
-	C.gtk_assistant_set_page_title(C.to_GtkAssistant(v.GWidget), page.ToNative(), C.toGstr(ptr))
+	C.gtk_assistant_set_page_title(C.toGAssistant(v.GWidget), page.ToNative(), C.toGstr(ptr))
 }
 func (v *Assistant) GetPageTitle(page WidgetLike) string {
-	return C.GoString(C.toCstr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.GWidget), page.ToNative())))
+	return C.GoString(C.toCstr(C.gtk_assistant_get_page_title(C.toGAssistant(v.GWidget), page.ToNative())))
 }
 func (v *Assistant) SetPageHeaderImage(page WidgetLike, pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.GWidget), page.ToNative(), pixbuf.GPixbuf)
+	C.gtk_assistant_set_page_header_image(C.toGAssistant(v.GWidget), page.ToNative(), pixbuf.GPixbuf)
 }
 func (v *Assistant) GetPageHeaderImage(page WidgetLike) *gdkpixbuf.Pixbuf {
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.GWidget), page.ToNative())}
+		C.gtk_assistant_get_page_header_image(C.toGAssistant(v.GWidget), page.ToNative())}
 }
 func (v *Assistant) SetPageSideImage(page WidgetLike, pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.GWidget), page.ToNative(), pixbuf.GPixbuf)
+	C.gtk_assistant_set_page_side_image(C.toGAssistant(v.GWidget), page.ToNative(), pixbuf.GPixbuf)
 }
 func (v *Assistant) GetPageSideImage(page WidgetLike) *gdkpixbuf.Pixbuf {
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.GWidget), page.ToNative())}
+		C.gtk_assistant_get_page_side_image(C.toGAssistant(v.GWidget), page.ToNative())}
 }
 func (v *Assistant) SetPageComplete(page WidgetLike, complete bool) {
-	C.gtk_assistant_set_page_complete(C.to_GtkAssistant(v.GWidget), page.ToNative(), bool2gboolean(complete))
+	C.gtk_assistant_set_page_complete(C.toGAssistant(v.GWidget), page.ToNative(), bool2gboolean(complete))
 }
 func (v *Assistant) GetPageComplete(page WidgetLike) bool {
-	return gboolean2bool(C.gtk_assistant_get_page_complete(C.to_GtkAssistant(v.GWidget), page.ToNative()))
+	return gboolean2bool(C.gtk_assistant_get_page_complete(C.toGAssistant(v.GWidget), page.ToNative()))
 }
 func (v *Assistant) AddActionWidget(child WidgetLike) {
-	C.gtk_assistant_add_action_widget(C.to_GtkAssistant(v.GWidget), child.ToNative())
+	C.gtk_assistant_add_action_widget(C.toGAssistant(v.GWidget), child.ToNative())
 }
 func (v *Assistant) RemoveActionWidget(child WidgetLike) {
-	C.gtk_assistant_remove_action_widget(C.to_GtkAssistant(v.GWidget), child.ToNative())
+	C.gtk_assistant_remove_action_widget(C.toGAssistant(v.GWidget), child.ToNative())
 }
 func (v *Assistant) UpdateButtonsState() {
-	C.gtk_assistant_update_buttons_state(C.to_GtkAssistant(v.GWidget))
+	C.gtk_assistant_update_buttons_state(C.toGAssistant(v.GWidget))
 }
 
 // gtk_assistant_commit //since 2.22
@@ -1587,16 +1587,16 @@ func NewAccelLabel(label string) *AccelLabel {
 // gtk_accel_label_set_accel_closure
 
 func (v *AccelLabel) GetAccelWidget() Widget {
-	return Widget{C.gtk_accel_label_get_accel_widget(C.to_GtkAccelLabel(v.GWidget))}
+	return Widget{C.gtk_accel_label_get_accel_widget(C.toGAccelLabel(v.GWidget))}
 }
 func (v *AccelLabel) SetAccelWidget(w WidgetLike) {
-	C.gtk_accel_label_set_accel_widget(C.to_GtkAccelLabel(v.GWidget), w.ToNative())
+	C.gtk_accel_label_set_accel_widget(C.toGAccelLabel(v.GWidget), w.ToNative())
 }
 func (v *AccelLabel) GetAccelWidth() uint {
-	return uint(C.gtk_accel_label_get_accel_width(C.to_GtkAccelLabel(v.GWidget)))
+	return uint(C.gtk_accel_label_get_accel_width(C.toGAccelLabel(v.GWidget)))
 }
 func (v *AccelLabel) Refetch() bool {
-	return gboolean2bool(C.gtk_accel_label_refetch(C.to_GtkAccelLabel(v.GWidget)))
+	return gboolean2bool(C.gtk_accel_label_refetch(C.toGAccelLabel(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -1653,20 +1653,20 @@ func NewImageFromStock(stock_id string, size IconSize) *Image {
 
 func (v *Image) GetPixbuf() *gdkpixbuf.Pixbuf {
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_image_get_pixbuf(C.to_GtkImage(v.GWidget))}
+		C.gtk_image_get_pixbuf(C.toGImage(v.GWidget))}
 }
 
 func (v *Image) SetFromFile(filename string) {
 	ptr := C.CString(filename)
 	defer C.freeCstr(ptr)
-	C.gtk_image_set_from_file(C.to_GtkImage(v.GWidget), C.toGstr(ptr))
+	C.gtk_image_set_from_file(C.toGImage(v.GWidget), C.toGstr(ptr))
 }
 
 // gtk_image_set_from_icon_set
 // gtk_image_set_from_image
 
 func (v *Image) SetFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_image_set_from_pixbuf(C.to_GtkImage(v.GWidget), pixbuf.GPixbuf)
+	C.gtk_image_set_from_pixbuf(C.toGImage(v.GWidget), pixbuf.GPixbuf)
 }
 
 // gtk_image_set_from_pixmap
@@ -1674,7 +1674,7 @@ func (v *Image) SetFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) {
 func (v *Image) SetFromStock(stock_id string, size IconSize) {
 	ptr := C.CString(stock_id)
 	defer C.freeCstr(ptr)
-	C.gtk_image_set_from_stock(C.to_GtkImage(v.GWidget), C.toGstr(ptr), C.GtkIconSize(size))
+	C.gtk_image_set_from_stock(C.toGImage(v.GWidget), C.toGstr(ptr), C.GtkIconSize(size))
 }
 
 // gtk_image_set_from_animation
@@ -1692,7 +1692,7 @@ func (v *Image) SetFromStock(stock_id string, size IconSize) {
 // gtk_image_get_storage_type
 
 func (v *Image) Clear() {
-	C.gtk_image_clear(C.to_GtkImage(v.GWidget))
+	C.gtk_image_clear(C.toGImage(v.GWidget))
 }
 
 // gtk_image_set_pixel_size
@@ -1730,55 +1730,55 @@ func NewLabel(label string) *Label {
 func (v *Label) SetText(label string) {
 	ptr := C.CString(label)
 	defer C.freeCstr(ptr)
-	C.gtk_label_set_text(C.to_GtkLabel(v.GWidget), C.toGstr(ptr))
+	C.gtk_label_set_text(C.toGLabel(v.GWidget), C.toGstr(ptr))
 }
 
 func (v *Label) SetMnemonicWidget(widget WidgetLike) {
-	C.gtk_label_set_mnemonic_widget(C.to_GtkLabel(v.GWidget), widget.ToNative())
+	C.gtk_label_set_mnemonic_widget(C.toGLabel(v.GWidget), widget.ToNative())
 }
 
 func (v *Label) SetMarkup(markup string) {
 	ptr := C.CString(markup)
 	defer C.freeCstr(ptr)
-	C.gtk_label_set_markup(C.to_GtkLabel(v.GWidget), C.toGstr(ptr))
+	C.gtk_label_set_markup(C.toGLabel(v.GWidget), C.toGstr(ptr))
 }
 
 func (v *Label) GetMnemonicWidget() *Widget {
-	return &Widget{C.gtk_label_get_mnemonic_widget(C.to_GtkLabel(v.GWidget))}
+	return &Widget{C.gtk_label_get_mnemonic_widget(C.toGLabel(v.GWidget))}
 }
 
 func (v *Label) SetPattern(pattern string) {
 	ptr := C.CString(pattern)
 	defer C.freeCstr(ptr)
-	C.gtk_label_set_pattern(C.to_GtkLabel(v.GWidget), C.toGstr(ptr))
+	C.gtk_label_set_pattern(C.toGLabel(v.GWidget), C.toGstr(ptr))
 }
 func (v *Label) SetJustify(jtype Justification) {
-	C.gtk_label_set_justify(C.to_GtkLabel(v.GWidget), C.GtkJustification(jtype))
+	C.gtk_label_set_justify(C.toGLabel(v.GWidget), C.GtkJustification(jtype))
 }
 func (v *Label) SetEllipsize(ellipsize pango.EllipsizeMode) {
-	C.gtk_label_set_ellipsize(C.to_GtkLabel(v.GWidget), C.PangoEllipsizeMode(ellipsize))
+	C.gtk_label_set_ellipsize(C.toGLabel(v.GWidget), C.PangoEllipsizeMode(ellipsize))
 }
 func (v *Label) SetWidthChars(n_chars int) {
-	C.gtk_label_set_width_chars(C.to_GtkLabel(v.GWidget), C.gint(n_chars))
+	C.gtk_label_set_width_chars(C.toGLabel(v.GWidget), C.gint(n_chars))
 }
 func (v *Label) SetMaxWidthChars(n_chars int) {
-	C.gtk_label_set_max_width_chars(C.to_GtkLabel(v.GWidget), C.gint(n_chars))
+	C.gtk_label_set_max_width_chars(C.toGLabel(v.GWidget), C.gint(n_chars))
 }
 func (v *Label) SetLineWrap(setting bool) {
-	C.gtk_label_set_line_wrap(C.to_GtkLabel(v.GWidget), bool2gboolean(setting))
+	C.gtk_label_set_line_wrap(C.toGLabel(v.GWidget), bool2gboolean(setting))
 }
 func (v *Label) SetUseLineWrapMode(wrap_mode pango.WrapMode) {
-	C.gtk_label_set_line_wrap_mode(C.to_GtkLabel(v.GWidget), C.PangoWrapMode(wrap_mode))
+	C.gtk_label_set_line_wrap_mode(C.toGLabel(v.GWidget), C.PangoWrapMode(wrap_mode))
 }
 
 // gtk_label_get_layout_offsets
 // gtk_label_get_mnemonic_keyval
 
 func (v *Label) GetSelectable() bool {
-	return gboolean2bool(C.gtk_label_get_selectable(C.to_GtkLabel(v.GWidget)))
+	return gboolean2bool(C.gtk_label_get_selectable(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetText() string {
-	return C.GoString(C.toCstr(C.gtk_label_get_text(C.to_GtkLabel(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_label_get_text(C.toGLabel(v.GWidget))))
 }
 func LabelWithMnemonic(label string) *Label {
 	ptr := C.CString(label)
@@ -1786,94 +1786,94 @@ func LabelWithMnemonic(label string) *Label {
 	return &Label{Widget{C.gtk_label_new_with_mnemonic(C.toGstr(ptr))}}
 }
 func (v *Label) SelectRegion(start_offset int, end_offset int) {
-	C.gtk_label_select_region(C.to_GtkLabel(v.GWidget), C.gint(start_offset), C.gint(end_offset))
+	C.gtk_label_select_region(C.toGLabel(v.GWidget), C.gint(start_offset), C.gint(end_offset))
 }
 
 // gtk_label_set_mnemonic_widget
 
 func (v *Label) SetSelectable(setting bool) {
-	C.gtk_label_set_selectable(C.to_GtkLabel(v.GWidget), bool2gboolean(setting))
+	C.gtk_label_set_selectable(C.toGLabel(v.GWidget), bool2gboolean(setting))
 }
 func (v *Label) SetTextWithMnemonic(str string) {
 	ptr := C.CString(str)
 	defer C.freeCstr(ptr)
-	C.gtk_label_set_text_with_mnemonic(C.to_GtkLabel(v.GWidget), C.toGstr(ptr))
+	C.gtk_label_set_text_with_mnemonic(C.toGLabel(v.GWidget), C.toGstr(ptr))
 }
 
 // gtk_label_get_attributes
 func (v *Label) GetJustify() Justification {
-	return Justification(C.gtk_label_get_justify(C.to_GtkLabel(v.GWidget)))
+	return Justification(C.gtk_label_get_justify(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetEllipsize() pango.EllipsizeMode {
-	return pango.EllipsizeMode(C.gtk_label_get_ellipsize(C.to_GtkLabel(v.GWidget)))
+	return pango.EllipsizeMode(C.gtk_label_get_ellipsize(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetWidthChars() int {
-	return int(C.gtk_label_get_width_chars(C.to_GtkLabel(v.GWidget)))
+	return int(C.gtk_label_get_width_chars(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetMaxWidthChars() int {
-	return int(C.gtk_label_get_max_width_chars(C.to_GtkLabel(v.GWidget)))
+	return int(C.gtk_label_get_max_width_chars(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetLabel() string {
-	return C.GoString(C.toCstr(C.gtk_label_get_label(C.to_GtkLabel(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_label_get_label(C.toGLabel(v.GWidget))))
 }
 
 // gtk_label_get_layout
 
 func (v *Label) GetLineWrap() bool {
-	return gboolean2bool(C.gtk_label_get_line_wrap(C.to_GtkLabel(v.GWidget)))
+	return gboolean2bool(C.gtk_label_get_line_wrap(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetLineWrapMode() pango.WrapMode {
-	return pango.WrapMode(C.gtk_label_get_line_wrap_mode(C.to_GtkLabel(v.GWidget)))
+	return pango.WrapMode(C.gtk_label_get_line_wrap_mode(C.toGLabel(v.GWidget)))
 }
 
 // gtk_label_get_mnemonic_widget
 func (v *Label) GetSelectionBounds(start *int, end *int) {
 	var cstart, cend C.gint
-	C.gtk_label_get_selection_bounds(C.to_GtkLabel(v.GWidget), &cstart, &cend)
+	C.gtk_label_get_selection_bounds(C.toGLabel(v.GWidget), &cstart, &cend)
 	*start = int(cstart)
 	*end = int(cend)
 }
 func (v *Label) GetUseMarkup() bool {
-	return gboolean2bool(C.gtk_label_get_use_markup(C.to_GtkLabel(v.GWidget)))
+	return gboolean2bool(C.gtk_label_get_use_markup(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetUseUnderline() bool {
-	return gboolean2bool(C.gtk_label_get_use_underline(C.to_GtkLabel(v.GWidget)))
+	return gboolean2bool(C.gtk_label_get_use_underline(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetSingleLineMode() bool {
-	return gboolean2bool(C.gtk_label_get_single_line_mode(C.to_GtkLabel(v.GWidget)))
+	return gboolean2bool(C.gtk_label_get_single_line_mode(C.toGLabel(v.GWidget)))
 }
 func (v *Label) GetAngle() float64 {
-	r := C.gtk_label_get_angle(C.to_GtkLabel(v.GWidget))
+	r := C.gtk_label_get_angle(C.toGLabel(v.GWidget))
 	return float64(r)
 }
 func (v *Label) SetLabel(label string) {
 	ptr := C.CString(label)
 	defer C.freeCstr(ptr)
-	C.gtk_label_set_label(C.to_GtkLabel(v.GWidget), C.toGstr(ptr))
+	C.gtk_label_set_label(C.toGLabel(v.GWidget), C.toGstr(ptr))
 }
 func (v *Label) SetUseMarkup(setting bool) {
-	C.gtk_label_set_use_markup(C.to_GtkLabel(v.GWidget), bool2gboolean(setting))
+	C.gtk_label_set_use_markup(C.toGLabel(v.GWidget), bool2gboolean(setting))
 }
 func (v *Label) SetUseUnderline(setting bool) {
-	C.gtk_label_set_use_underline(C.to_GtkLabel(v.GWidget), bool2gboolean(setting))
+	C.gtk_label_set_use_underline(C.toGLabel(v.GWidget), bool2gboolean(setting))
 }
 func (v *Label) SetSingleLineMode(single_line bool) {
-	C.gtk_label_set_single_line_mode(C.to_GtkLabel(v.GWidget), bool2gboolean(single_line))
+	C.gtk_label_set_single_line_mode(C.toGLabel(v.GWidget), bool2gboolean(single_line))
 }
 func (v *Label) SetAngle(angle float64) {
-	C.gtk_label_set_angle(C.to_GtkLabel(v.GWidget), C.gdouble(angle))
+	C.gtk_label_set_angle(C.toGLabel(v.GWidget), C.gdouble(angle))
 }
 func (v *Label) GetCurrentUri() string {
 	panic_if_version_older(2, 18, 0, "gtk_label_get_current_uri()")
-	return C.GoString(C.toCstr(C.gtk_label_get_current_uri(C.to_GtkLabel(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_label_get_current_uri(C.toGLabel(v.GWidget))))
 }
 func (v *Label) SetTrackVisitedLinks(track_links bool) {
 	panic_if_version_older(2, 18, 0, "gtk_label_set_track_visited_links()")
-	C.gtk_label_set_track_visited_links(C.to_GtkLabel(v.GWidget), bool2gboolean(track_links))
+	C.gtk_label_set_track_visited_links(C.toGLabel(v.GWidget), bool2gboolean(track_links))
 }
 func (v *Label) GetTrackVisitedLinks() bool {
 	panic_if_version_older(2, 18, 0, "gtk_label_get_track_visited_links()")
-	return gboolean2bool(C.gtk_label_get_track_visited_links(C.to_GtkLabel(v.GWidget)))
+	return gboolean2bool(C.gtk_label_get_track_visited_links(C.toGLabel(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -1896,38 +1896,38 @@ func NewProgressBar() *ProgressBar {
 	return &ProgressBar{Widget{C.gtk_progress_bar_new()}}
 }
 func (v *ProgressBar) Pulse() {
-	C.gtk_progress_bar_pulse(C.to_GtkProgressBar(v.GWidget))
+	C.gtk_progress_bar_pulse(C.toGProgressBar(v.GWidget))
 }
 func (v *ProgressBar) SetText(show_text string) {
 	ptr := C.CString(show_text)
 	defer C.freeCstr(ptr)
-	C.gtk_progress_bar_set_text(C.to_GtkProgressBar(v.GWidget), C.toGstr(ptr))
+	C.gtk_progress_bar_set_text(C.toGProgressBar(v.GWidget), C.toGstr(ptr))
 }
 func (v *ProgressBar) SetFraction(fraction float64) {
-	C.gtk_progress_bar_set_fraction(C.to_GtkProgressBar(v.GWidget), C.gdouble(fraction))
+	C.gtk_progress_bar_set_fraction(C.toGProgressBar(v.GWidget), C.gdouble(fraction))
 }
 func (v *ProgressBar) SetPulseStep(fraction float64) {
-	C.gtk_progress_bar_set_pulse_step(C.to_GtkProgressBar(v.GWidget), C.gdouble(fraction))
+	C.gtk_progress_bar_set_pulse_step(C.toGProgressBar(v.GWidget), C.gdouble(fraction))
 }
 func (v *ProgressBar) SetOrientation(i ProgressBarOrientation) {
-	C.gtk_progress_bar_set_orientation(C.to_GtkProgressBar(v.GWidget), C.GtkProgressBarOrientation(i))
+	C.gtk_progress_bar_set_orientation(C.toGProgressBar(v.GWidget), C.GtkProgressBarOrientation(i))
 }
 
 // gtk_progress_bar_set_ellipsize
 
 func (v *ProgressBar) GetText() string {
-	return C.GoString(C.toCstr(C.gtk_progress_bar_get_text(C.to_GtkProgressBar(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_progress_bar_get_text(C.toGProgressBar(v.GWidget))))
 }
 func (v *ProgressBar) GetFraction() float64 {
-	r := C.gtk_progress_bar_get_fraction(C.to_GtkProgressBar(v.GWidget))
+	r := C.gtk_progress_bar_get_fraction(C.toGProgressBar(v.GWidget))
 	return float64(r)
 }
 func (v *ProgressBar) GetPulseStep() float64 {
-	r := C.gtk_progress_bar_get_pulse_step(C.to_GtkProgressBar(v.GWidget))
+	r := C.gtk_progress_bar_get_pulse_step(C.toGProgressBar(v.GWidget))
 	return float64(r)
 }
 func (v *ProgressBar) GetOrientation() ProgressBarOrientation {
-	return ProgressBarOrientation(C.gtk_progress_bar_get_orientation(C.to_GtkProgressBar(v.GWidget)))
+	return ProgressBarOrientation(C.gtk_progress_bar_get_orientation(C.toGProgressBar(v.GWidget)))
 }
 
 // gtk_progress_bar_get_ellipsize
@@ -1946,27 +1946,27 @@ func NewStatusbar() *Statusbar {
 func (v *Statusbar) GetContextId(content_description string) uint {
 	ptr := C.CString(content_description)
 	defer C.freeCstr(ptr)
-	return uint(C.gtk_statusbar_get_context_id(C.to_GtkStatusbar(v.GWidget), C.toGstr(ptr)))
+	return uint(C.gtk_statusbar_get_context_id(C.toGStatusbar(v.GWidget), C.toGstr(ptr)))
 }
 func (v *Statusbar) Push(context_id uint, text string) {
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C.gtk_statusbar_push(C.to_GtkStatusbar(v.GWidget), C.guint(context_id), C.toGstr(ptr))
+	C.gtk_statusbar_push(C.toGStatusbar(v.GWidget), C.guint(context_id), C.toGstr(ptr))
 }
 func (v *Statusbar) Pop(context_id uint) {
-	C.gtk_statusbar_pop(C.to_GtkStatusbar(v.GWidget), C.guint(context_id))
+	C.gtk_statusbar_pop(C.toGStatusbar(v.GWidget), C.guint(context_id))
 }
 func (v *Statusbar) Remove(context_id uint, message_id uint) {
-	C.gtk_statusbar_remove(C.to_GtkStatusbar(v.GWidget), C.guint(context_id), C.guint(message_id))
+	C.gtk_statusbar_remove(C.toGStatusbar(v.GWidget), C.guint(context_id), C.guint(message_id))
 }
 
 // gtk_statusbar_remove_all //since 2.22
 
 func (v *Statusbar) SetHasResizeGrip(add_tearoffs bool) {
-	C.gtk_statusbar_set_has_resize_grip(C.to_GtkStatusbar(v.GWidget), bool2gboolean(add_tearoffs))
+	C.gtk_statusbar_set_has_resize_grip(C.toGStatusbar(v.GWidget), bool2gboolean(add_tearoffs))
 }
 func (v *Statusbar) GetHasResizeGrip() bool {
-	return gboolean2bool(C.gtk_statusbar_get_has_resize_grip(C.to_GtkStatusbar(v.GWidget)))
+	return gboolean2bool(C.gtk_statusbar_get_has_resize_grip(C.toGStatusbar(v.GWidget)))
 }
 
 // gtk_statusbar_get_message_area //since 2.20
@@ -1996,7 +1996,7 @@ func NewInfoBarWithButtons(buttons ...interface{}) *InfoBar {
 
 func (v *InfoBar) AddActionWidget(child WidgetLike, responseId int) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_add_action_widget(C.to_GtkInfoBar(v.GWidget),
+	C._gtk_info_bar_add_action_widget(C.toGInfoBar(v.GWidget),
 		child.ToNative(), C.gint(responseId))
 }
 
@@ -2004,7 +2004,7 @@ func (v *InfoBar) AddButton(buttonText string, responseId int) *Widget {
 	panic_if_version_older_auto(2, 18, 0)
 	ptr := C.CString(buttonText)
 	defer C.freeCstr(ptr)
-	return &Widget{C._gtk_info_bar_add_button(C.to_GtkInfoBar(v.GWidget),
+	return &Widget{C._gtk_info_bar_add_button(C.toGInfoBar(v.GWidget),
 		C.toGstr(ptr), C.gint(responseId))}
 }
 
@@ -2018,40 +2018,40 @@ func (v *InfoBar) AddButtons(buttons ...interface{}) {
 
 func (v *InfoBar) SetResponseSensitive(responseId int, setting bool) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_set_response_sensitive(C.to_GtkInfoBar(v.GWidget),
+	C._gtk_info_bar_set_response_sensitive(C.toGInfoBar(v.GWidget),
 		C.gint(responseId), bool2gboolean(setting))
 }
 
 func (v *InfoBar) SetDefaultResponse(responseId int) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_set_default_response(C.to_GtkInfoBar(v.GWidget),
+	C._gtk_info_bar_set_default_response(C.toGInfoBar(v.GWidget),
 		C.gint(responseId))
 }
 
 func (v *InfoBar) Response(responseId int) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_response(C.to_GtkInfoBar(v.GWidget), C.gint(responseId))
+	C._gtk_info_bar_response(C.toGInfoBar(v.GWidget), C.gint(responseId))
 }
 
 func (v *InfoBar) SetMessageType(messageType MessageType) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_set_message_type(C.to_GtkInfoBar(v.GWidget),
+	C._gtk_info_bar_set_message_type(C.toGInfoBar(v.GWidget),
 		C.GtkMessageType(messageType))
 }
 
 func (v *InfoBar) GetMessageType() MessageType {
 	panic_if_version_older_auto(2, 18, 0)
-	return MessageType(C._gtk_info_bar_get_message_type(C.to_GtkInfoBar(v.GWidget)))
+	return MessageType(C._gtk_info_bar_get_message_type(C.toGInfoBar(v.GWidget)))
 }
 
 func (v *InfoBar) GetActionArea() *Widget {
 	panic_if_version_older_auto(2, 18, 0)
-	return &Widget{C._gtk_info_bar_get_action_area(C.to_GtkInfoBar(v.GWidget))}
+	return &Widget{C._gtk_info_bar_get_action_area(C.toGInfoBar(v.GWidget))}
 }
 
 func (v *InfoBar) GetContentArea() *Widget {
 	panic_if_version_older_auto(2, 18, 0)
-	return &Widget{C._gtk_info_bar_get_content_area(C.to_GtkInfoBar(v.GWidget))}
+	return &Widget{C._gtk_info_bar_get_content_area(C.toGInfoBar(v.GWidget))}
 }
 
 //-----------------------------------------------------------------------
@@ -2174,13 +2174,13 @@ func StatusIconPositionMenu(menu *Menu, px, py *int, push_in *bool, data interfa
 	if sm, ok := data.(*StatusIcon); ok {
 		pdata = C.gpointer(unsafe.Pointer(sm.GStatusIcon))
 	}
-	C.gtk_status_icon_position_menu(C.to_GtkMenu(menu.GWidget), &x, &y, &pi, pdata)
+	C.gtk_status_icon_position_menu(C.toGMenu(menu.GWidget), &x, &y, &pi, pdata)
 	*px = int(x)
 	*py = int(y)
 	*push_in = gboolean2bool(pi)
 }
 func (v *StatusIcon) Connect(s string, f interface{}, datas ...interface{}) int {
-	return glib.ObjectFromNative(unsafe.Pointer(C.to_GObject(unsafe.Pointer(v.GStatusIcon)))).Connect(s, f, datas...)
+	return glib.ObjectFromNative(unsafe.Pointer(C.toGObject(unsafe.Pointer(v.GStatusIcon)))).Connect(s, f, datas...)
 }
 
 func PrintContextFromNative(l unsafe.Pointer) *PrintContext {
@@ -2252,12 +2252,12 @@ func NewButtonWithMnemonic(label string) *Button {
 
 func (v *Button) Pressed() {
 	deprecated_since(2, 20, 0, "gtk_button_pressed()")
-	C.gtk_button_pressed(C.to_GtkButton(v.GWidget))
+	C.gtk_button_pressed(C.toGButton(v.GWidget))
 }
 
 func (v *Button) Released() {
 	deprecated_since(2, 20, 0, "gtk_button_released()")
-	C.gtk_button_released(C.to_GtkButton(v.GWidget))
+	C.gtk_button_released(C.toGButton(v.GWidget))
 }
 
 func (v *Button) Clicked(onclick interface{}, datas ...interface{}) int {
@@ -2266,59 +2266,59 @@ func (v *Button) Clicked(onclick interface{}, datas ...interface{}) int {
 
 func (v *Button) Enter() {
 	deprecated_since(2, 20, 0, "gtk_button_enter()")
-	C.gtk_button_enter(C.to_GtkButton(v.GWidget))
+	C.gtk_button_enter(C.toGButton(v.GWidget))
 }
 
 func (v *Button) Leave() {
 	deprecated_since(2, 20, 0, "gtk_button_leave()")
-	C.gtk_button_leave(C.to_GtkButton(v.GWidget))
+	C.gtk_button_leave(C.toGButton(v.GWidget))
 }
 
 func (v *Button) GetRelief() ReliefStyle {
-	return ReliefStyle(C.gtk_button_get_relief(C.to_GtkButton(v.GWidget)))
+	return ReliefStyle(C.gtk_button_get_relief(C.toGButton(v.GWidget)))
 }
 func (v *Button) SetRelief(relief ReliefStyle) {
-	C.gtk_button_set_relief(C.to_GtkButton(v.GWidget), C.GtkReliefStyle(relief))
+	C.gtk_button_set_relief(C.toGButton(v.GWidget), C.GtkReliefStyle(relief))
 }
 func (v *Button) GetLabel() string {
-	return C.GoString(C.toCstr(C.gtk_button_get_label(C.to_GtkButton(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_button_get_label(C.toGButton(v.GWidget))))
 }
 func (v *Button) SetLabel(label string) {
 	ptr := C.CString(label)
 	defer C.freeCstr(ptr)
-	C.gtk_button_set_label(C.to_GtkButton(v.GWidget), C.toGstr(ptr))
+	C.gtk_button_set_label(C.toGButton(v.GWidget), C.toGstr(ptr))
 }
 func (v *Button) GetUseStock() bool {
-	return gboolean2bool(C.gtk_button_get_use_stock(C.to_GtkButton(v.GWidget)))
+	return gboolean2bool(C.gtk_button_get_use_stock(C.toGButton(v.GWidget)))
 }
 func (v *Button) SetUseStock(use bool) {
-	C.gtk_button_set_use_stock(C.to_GtkButton(v.GWidget), bool2gboolean(use))
+	C.gtk_button_set_use_stock(C.toGButton(v.GWidget), bool2gboolean(use))
 }
 func (v *Button) GetUseUnderline() bool {
-	return gboolean2bool(C.gtk_button_get_use_underline(C.to_GtkButton(v.GWidget)))
+	return gboolean2bool(C.gtk_button_get_use_underline(C.toGButton(v.GWidget)))
 }
 func (v *Button) SetUseUnderline(setting bool) {
-	C.gtk_button_set_use_underline(C.to_GtkButton(v.GWidget), bool2gboolean(setting))
+	C.gtk_button_set_use_underline(C.toGButton(v.GWidget), bool2gboolean(setting))
 }
 func (v *Button) GetFocusOnClick() bool {
-	return gboolean2bool(C.gtk_button_get_focus_on_click(C.to_GtkButton(v.GWidget)))
+	return gboolean2bool(C.gtk_button_get_focus_on_click(C.toGButton(v.GWidget)))
 }
 func (v *Button) SetFocusOnClick(setting bool) {
-	C.gtk_button_set_focus_on_click(C.to_GtkButton(v.GWidget), bool2gboolean(setting))
+	C.gtk_button_set_focus_on_click(C.toGButton(v.GWidget), bool2gboolean(setting))
 }
 func (v *Button) SetAlignment(xalign, yalign float64) {
-	C.gtk_button_set_alignment(C.to_GtkButton(v.GWidget), C.gfloat(xalign), C.gfloat(yalign))
+	C.gtk_button_set_alignment(C.toGButton(v.GWidget), C.gfloat(xalign), C.gfloat(yalign))
 }
 func (v *Button) GetAlignment() (xalign, yalign float64) {
 	var xalign_, yalign_ C.gfloat
-	C.gtk_button_get_alignment(C.to_GtkButton(v.GWidget), &xalign_, &yalign_)
+	C.gtk_button_get_alignment(C.toGButton(v.GWidget), &xalign_, &yalign_)
 	return float64(xalign_), float64(yalign_)
 }
 func (v *Button) SetImage(image WidgetLike) {
-	C.gtk_button_set_image(C.to_GtkButton(v.GWidget), image.ToNative())
+	C.gtk_button_set_image(C.toGButton(v.GWidget), image.ToNative())
 }
 func (v *Button) GetImage() *Image {
-	return &Image{Widget{C.gtk_button_get_image(C.to_GtkButton(v.GWidget))}}
+	return &Image{Widget{C.gtk_button_get_image(C.toGButton(v.GWidget))}}
 }
 
 // gtk_button_set_image_position
@@ -2366,7 +2366,7 @@ func NewRadioButton(group *glib.SList) *RadioButton {
 }
 func NewRadioButtonFromWidget(w *RadioButton) *RadioButton {
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_from_widget(C.to_GtkRadioButton(w.GWidget))}}}}}}}
+		C.gtk_radio_button_new_from_widget(C.toGRadioButton(w.GWidget))}}}}}}}
 }
 func NewRadioButtonWithLabel(group *glib.SList, label string) *RadioButton {
 	ptr := C.CString(label)
@@ -2382,7 +2382,7 @@ func NewRadioButtonWithLabelFromWidget(w *RadioButton, label string) *RadioButto
 	ptr := C.CString(label)
 	defer C.freeCstr(ptr)
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_label_from_widget(C.to_GtkRadioButton(w.GWidget), C.toGstr(ptr))}}}}}}}
+		C.gtk_radio_button_new_with_label_from_widget(C.toGRadioButton(w.GWidget), C.toGstr(ptr))}}}}}}}
 }
 func NewRadioButtonWithMnemonic(group *glib.SList, label string) *RadioButton {
 	ptr := C.CString(label)
@@ -2398,16 +2398,16 @@ func NewRadioButtonWithMnemonicFromWidget(w *RadioButton, label string) *RadioBu
 	ptr := C.CString(label)
 	defer C.freeCstr(ptr)
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_mnemonic_from_widget(C.to_GtkRadioButton(w.GWidget), C.toGstr(ptr))}}}}}}}
+		C.gtk_radio_button_new_with_mnemonic_from_widget(C.toGRadioButton(w.GWidget), C.toGstr(ptr))}}}}}}}
 }
 func (v *RadioButton) GetGroup() *glib.SList {
-	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_button_get_group(C.to_GtkRadioButton(v.GWidget))))
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_button_get_group(C.toGRadioButton(v.GWidget))))
 }
 func (v *RadioButton) SetGroup(group *glib.SList) {
 	if group != nil {
-		C.gtk_radio_button_set_group(C.to_GtkRadioButton(v.GWidget), C.to_gslist(unsafe.Pointer(group)))
+		C.gtk_radio_button_set_group(C.toGRadioButton(v.GWidget), C.to_gslist(unsafe.Pointer(group)))
 	} else {
-		C.gtk_radio_button_set_group(C.to_GtkRadioButton(v.GWidget), nil)
+		C.gtk_radio_button_set_group(C.toGRadioButton(v.GWidget), nil)
 	}
 }
 
@@ -2435,22 +2435,22 @@ func NewToggleButtonWithMnemonic(label string) *ToggleButton {
 		C.gtk_toggle_button_new_with_mnemonic(C.toGstr(ptr))}}}}}
 }
 func (v *ToggleButton) SetMode(draw_indicator bool) {
-	C.gtk_toggle_button_set_mode(C.to_GtkToggleButton(v.GWidget), bool2gboolean(draw_indicator))
+	C.gtk_toggle_button_set_mode(C.toGToggleButton(v.GWidget), bool2gboolean(draw_indicator))
 }
 func (v *ToggleButton) GetMode() bool {
-	return gboolean2bool(C.gtk_toggle_button_get_mode(C.to_GtkToggleButton(v.GWidget)))
+	return gboolean2bool(C.gtk_toggle_button_get_mode(C.toGToggleButton(v.GWidget)))
 }
 func (v *ToggleButton) GetActive() bool {
-	return gboolean2bool(C.gtk_toggle_button_get_active(C.to_GtkToggleButton(v.GWidget)))
+	return gboolean2bool(C.gtk_toggle_button_get_active(C.toGToggleButton(v.GWidget)))
 }
 func (v *ToggleButton) SetActive(is_active bool) {
-	C.gtk_toggle_button_set_active(C.to_GtkToggleButton(v.GWidget), bool2gboolean(is_active))
+	C.gtk_toggle_button_set_active(C.toGToggleButton(v.GWidget), bool2gboolean(is_active))
 }
 func (v *ToggleButton) GetInconsistent() bool {
-	return gboolean2bool(C.gtk_toggle_button_get_inconsistent(C.to_GtkToggleButton(v.GWidget)))
+	return gboolean2bool(C.gtk_toggle_button_get_inconsistent(C.toGToggleButton(v.GWidget)))
 }
 func (v *ToggleButton) SetInconsistent(setting bool) {
-	C.gtk_toggle_button_set_inconsistent(C.to_GtkToggleButton(v.GWidget), bool2gboolean(setting))
+	C.gtk_toggle_button_set_inconsistent(C.toGToggleButton(v.GWidget), bool2gboolean(setting))
 }
 
 //-----------------------------------------------------------------------
@@ -2475,12 +2475,12 @@ func NewLinkButtonWithLabel(uri string, label string) *LinkButton {
 		C.gtk_link_button_new_with_label(C.toGstr(puri), C.toGstr(plabel))}}}}}
 }
 func (v *LinkButton) GetUri() string {
-	return C.GoString(C.toCstr(C.gtk_link_button_get_uri(C.to_GtkLinkButton(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_link_button_get_uri(C.toGLinkButton(v.GWidget))))
 }
 func (v *LinkButton) SetUri(uri string) {
 	ptr := C.CString(uri)
 	defer C.freeCstr(ptr)
-	C.gtk_link_button_set_uri(C.to_GtkLinkButton(v.GWidget), C.toGstr(ptr))
+	C.gtk_link_button_set_uri(C.toGLinkButton(v.GWidget), C.toGstr(ptr))
 }
 
 //gtk_link_button_set_uri_hook has been deprecated since 2.24. Use clicked signal instead. //TODO
@@ -2488,10 +2488,10 @@ func (v *LinkButton) SetUri(uri string) {
 // GtkLinkButtonUriFunc gtk_link_button_set_uri_hook (GtkLinkButtonUriFunc func, gpointer data, GDestroyNotify destroy);
 //}
 func (v *LinkButton) GetVisited() bool {
-	return gboolean2bool(C.gtk_link_button_get_visited(C.to_GtkLinkButton(v.GWidget)))
+	return gboolean2bool(C.gtk_link_button_get_visited(C.toGLinkButton(v.GWidget)))
 }
 func (v *LinkButton) SetVisited(visited bool) {
-	C.gtk_link_button_set_visited(C.to_GtkLinkButton(v.GWidget), bool2gboolean(visited))
+	C.gtk_link_button_set_visited(C.toGLinkButton(v.GWidget), bool2gboolean(visited))
 }
 
 //-----------------------------------------------------------------------
@@ -2530,84 +2530,84 @@ type Entry struct {
 
 func NewEntry() *Entry {
 	w := Widget{C.gtk_entry_new()}
-	return &Entry{w, Editable{C.to_GtkEditable(w.GWidget)}}
+	return &Entry{w, Editable{C.toGEditable(w.GWidget)}}
 }
 func NewEntryWithBuffer(buffer *EntryBuffer) *Entry {
 	panic_if_version_older_auto(2, 18, 0)
 	w := Widget{C._gtk_entry_new_with_buffer(buffer.GEntryBuffer)}
-	return &Entry{w, Editable{C.to_GtkEditable(w.GWidget)}}
+	return &Entry{w, Editable{C.toGEditable(w.GWidget)}}
 }
 func (v *Entry) GetBuffer() *EntryBuffer {
 	panic_if_version_older_auto(2, 18, 0)
-	return &EntryBuffer{C._gtk_entry_get_buffer(C.to_GtkEntry(v.GWidget))}
+	return &EntryBuffer{C._gtk_entry_get_buffer(C.toGEntry(v.GWidget))}
 }
 func (v *Entry) SetBuffer(buffer *EntryBuffer) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_entry_set_buffer(C.to_GtkEntry(v.GWidget), buffer.GEntryBuffer)
+	C._gtk_entry_set_buffer(C.toGEntry(v.GWidget), buffer.GEntryBuffer)
 }
 func (v *Entry) SetText(text string) {
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C.gtk_entry_set_text(C.to_GtkEntry(v.GWidget), C.toGstr(ptr))
+	C.gtk_entry_set_text(C.toGEntry(v.GWidget), C.toGstr(ptr))
 }
 func (v *Entry) GetText() string {
-	return C.GoString(C.toCstr(C.gtk_entry_get_text(C.to_GtkEntry(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_entry_get_text(C.toGEntry(v.GWidget))))
 }
 func (v *Entry) GetTextLength() int {
-	return int(C.gtk_entry_get_text_length(C.to_GtkEntry(v.GWidget)))
+	return int(C.gtk_entry_get_text_length(C.toGEntry(v.GWidget)))
 }
 func (v *Entry) SetVisibility(setting bool) {
-	C.gtk_entry_set_visibility(C.to_GtkEntry(v.GWidget), bool2gboolean(setting))
+	C.gtk_entry_set_visibility(C.toGEntry(v.GWidget), bool2gboolean(setting))
 }
 func (v *Entry) SetInvisibleChar(ch uint8) {
-	C.gtk_entry_set_invisible_char(C.to_GtkEntry(v.GWidget), C.gunichar(ch))
+	C.gtk_entry_set_invisible_char(C.toGEntry(v.GWidget), C.gunichar(ch))
 }
 func (v *Entry) UnsetInvisibleChar() {
-	C.gtk_entry_unset_invisible_char(C.to_GtkEntry(v.GWidget))
+	C.gtk_entry_unset_invisible_char(C.toGEntry(v.GWidget))
 }
 func (v *Entry) SetMaxLength(i int) {
-	C.gtk_entry_set_max_length(C.to_GtkEntry(v.GWidget), C.gint(i))
+	C.gtk_entry_set_max_length(C.toGEntry(v.GWidget), C.gint(i))
 }
 func (v *Entry) GetActivatesDefault() bool {
-	return gboolean2bool(C.gtk_entry_get_activates_default(C.to_GtkEntry(v.GWidget)))
+	return gboolean2bool(C.gtk_entry_get_activates_default(C.toGEntry(v.GWidget)))
 }
 func (v *Entry) GetHasFrame() bool {
-	return gboolean2bool(C.gtk_entry_get_has_frame(C.to_GtkEntry(v.GWidget)))
+	return gboolean2bool(C.gtk_entry_get_has_frame(C.toGEntry(v.GWidget)))
 }
 
 // gtk_entry_get_inner_border
 
 func (v *Entry) GetWidthChars() int {
-	return int(C.gtk_entry_get_width_chars(C.to_GtkEntry(v.GWidget)))
+	return int(C.gtk_entry_get_width_chars(C.toGEntry(v.GWidget)))
 }
 func (v *Entry) SetActivatesDefault(setting bool) {
-	C.gtk_entry_set_activates_default(C.to_GtkEntry(v.GWidget), bool2gboolean(setting))
+	C.gtk_entry_set_activates_default(C.toGEntry(v.GWidget), bool2gboolean(setting))
 }
 func (v *Entry) SetHasFrame(setting bool) {
-	C.gtk_entry_set_has_frame(C.to_GtkEntry(v.GWidget), bool2gboolean(setting))
+	C.gtk_entry_set_has_frame(C.toGEntry(v.GWidget), bool2gboolean(setting))
 }
 
 // gtk_entry_set_inner_border
 
 func (v *Entry) SetWidthChars(i int) {
-	C.gtk_entry_set_width_chars(C.to_GtkEntry(v.GWidget), C.gint(i))
+	C.gtk_entry_set_width_chars(C.toGEntry(v.GWidget), C.gint(i))
 }
 func (v *Entry) GetInvisibleChar() uint8 {
-	return uint8(C.gtk_entry_get_invisible_char(C.to_GtkEntry(v.GWidget)))
+	return uint8(C.gtk_entry_get_invisible_char(C.toGEntry(v.GWidget)))
 }
 func (v *Entry) SetAlignment(xalign float64) {
-	C.gtk_entry_set_alignment(C.to_GtkEntry(v.GWidget), C.gfloat(xalign))
+	C.gtk_entry_set_alignment(C.toGEntry(v.GWidget), C.gfloat(xalign))
 }
 func (v *Entry) GetAlignment() float64 {
-	return float64(C.gtk_entry_get_alignment(C.to_GtkEntry(v.GWidget)))
+	return float64(C.gtk_entry_get_alignment(C.toGEntry(v.GWidget)))
 }
 
 func (v *Entry) SetOverwriteMode(mode bool) {
-	C.gtk_entry_set_overwrite_mode(C.to_GtkEntry(v.GWidget), bool2gboolean(mode))
+	C.gtk_entry_set_overwrite_mode(C.toGEntry(v.GWidget), bool2gboolean(mode))
 }
 
 func (v *Entry) GetOverwriteMode() bool {
-	return gboolean2bool(C.gtk_entry_get_overwrite_mode(C.to_GtkEntry(v.GWidget)))
+	return gboolean2bool(C.gtk_entry_get_overwrite_mode(C.toGEntry(v.GWidget)))
 }
 
 // gtk_entry_get_layout
@@ -2616,20 +2616,20 @@ func (v *Entry) GetOverwriteMode() bool {
 // gtk_entry_text_index_to_layout_index
 
 func (v *Entry) GetMaxLength() int {
-	return int(C.gtk_entry_get_max_length(C.to_GtkEntry(v.GWidget)))
+	return int(C.gtk_entry_get_max_length(C.toGEntry(v.GWidget)))
 }
 func (v *Entry) GetVisibility() bool {
-	return gboolean2bool(C.gtk_entry_get_visibility(C.to_GtkEntry(v.GWidget)))
+	return gboolean2bool(C.gtk_entry_get_visibility(C.toGEntry(v.GWidget)))
 }
 func (v *Entry) SetCompletion(completion *EntryCompletion) {
-	C.gtk_entry_set_completion(C.to_GtkEntry(v.GWidget), completion.GEntryCompletion)
+	C.gtk_entry_set_completion(C.toGEntry(v.GWidget), completion.GEntryCompletion)
 }
 var g_Entry_EntryCompletion *EntryCompletion
 func (v *Entry) GetCompletion() *EntryCompletion {
 	if g_Entry_EntryCompletion == nil {
-		g_Entry_EntryCompletion = &EntryCompletion{C.gtk_entry_get_completion(C.to_GtkEntry(v.GWidget))}
+		g_Entry_EntryCompletion = &EntryCompletion{C.gtk_entry_get_completion(C.toGEntry(v.GWidget))}
 	} else {
-		g_Entry_EntryCompletion.GEntryCompletion = C.gtk_entry_get_completion(C.to_GtkEntry(v.GWidget))
+		g_Entry_EntryCompletion.GEntryCompletion = C.gtk_entry_get_completion(C.toGEntry(v.GWidget))
 	}
 	return g_Entry_EntryCompletion
 }
@@ -2879,11 +2879,11 @@ type SpinButton struct {
 
 func NewSpinButton(a *Adjustment, climb float64, digits uint) *SpinButton {
 	w := Widget{C.gtk_spin_button_new(a.GAdjustment, C.gdouble(climb), C.guint(digits))}
-	return &SpinButton{Entry{w, Editable{C.to_GtkEditable(w.GWidget)}}}
+	return &SpinButton{Entry{w, Editable{C.toGEditable(w.GWidget)}}}
 }
 func NewSpinButtonWithRange(min, max, step float64) *SpinButton {
 	w := Widget{C.gtk_spin_button_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}
-	return &SpinButton{Entry{w, Editable{C.to_GtkEditable(w.GWidget)}}}
+	return &SpinButton{Entry{w, Editable{C.toGEditable(w.GWidget)}}}
 }
 
 func (v *SpinButton) OnChangeValue(onclick interface{}, datas ...interface{}) int {
@@ -2903,77 +2903,77 @@ func (v *SpinButton) OnWrapped(onclick interface{}, datas ...interface{}) int {
 }
 
 func (v *SpinButton) Configure(a *Adjustment, climb_rate float64, digits uint) {
-	C.gtk_spin_button_configure(C.to_GtkSpinButton(v.GWidget), a.GAdjustment, C.gdouble(climb_rate), C.guint(digits))
+	C.gtk_spin_button_configure(C.toGSpinButton(v.GWidget), a.GAdjustment, C.gdouble(climb_rate), C.guint(digits))
 }
 func (v *SpinButton) SetAdjustment(a *Adjustment) {
-	C.gtk_spin_button_set_adjustment(C.to_GtkSpinButton(v.GWidget), a.GAdjustment)
+	C.gtk_spin_button_set_adjustment(C.toGSpinButton(v.GWidget), a.GAdjustment)
 }
 func (v *SpinButton) GetAdjustment() *Adjustment {
-	return &Adjustment{C.gtk_spin_button_get_adjustment(C.to_GtkSpinButton(v.GWidget))}
+	return &Adjustment{C.gtk_spin_button_get_adjustment(C.toGSpinButton(v.GWidget))}
 }
 func (v *SpinButton) SetDigits(digits uint) {
-	C.gtk_spin_button_set_digits(C.to_GtkSpinButton(v.GWidget), C.guint(digits))
+	C.gtk_spin_button_set_digits(C.toGSpinButton(v.GWidget), C.guint(digits))
 }
 func (v *SpinButton) SetIncrements(step, page float64) {
-	C.gtk_spin_button_set_increments(C.to_GtkSpinButton(v.GWidget), C.gdouble(step), C.gdouble(page))
+	C.gtk_spin_button_set_increments(C.toGSpinButton(v.GWidget), C.gdouble(step), C.gdouble(page))
 }
 func (v *SpinButton) SetRange(min, max float64) {
-	C.gtk_spin_button_set_range(C.to_GtkSpinButton(v.GWidget), C.gdouble(min), C.gdouble(max))
+	C.gtk_spin_button_set_range(C.toGSpinButton(v.GWidget), C.gdouble(min), C.gdouble(max))
 }
 func (v *SpinButton) GetValueAsFloat() float64 {
-	return float64(C.gtk_spin_button_get_value_as_float(C.to_GtkSpinButton(v.GWidget)))
+	return float64(C.gtk_spin_button_get_value_as_float(C.toGSpinButton(v.GWidget)))
 }
 func (v *SpinButton) GetValueAsInt() int {
-	return int(C.gtk_spin_button_get_value_as_int(C.to_GtkSpinButton(v.GWidget)))
+	return int(C.gtk_spin_button_get_value_as_int(C.toGSpinButton(v.GWidget)))
 }
 func (v *SpinButton) SetValue(val float64) {
-	C.gtk_spin_button_set_value(C.to_GtkSpinButton(v.GWidget), C.gdouble(val))
+	C.gtk_spin_button_set_value(C.toGSpinButton(v.GWidget), C.gdouble(val))
 }
 func (v *SpinButton) SetUpdatePolicy(policy SpinButtonUpdatePolicy) {
-	C.gtk_spin_button_set_update_policy(C.to_GtkSpinButton(v.GWidget), C.GtkSpinButtonUpdatePolicy(policy))
+	C.gtk_spin_button_set_update_policy(C.toGSpinButton(v.GWidget), C.GtkSpinButtonUpdatePolicy(policy))
 }
 func (v *SpinButton) SetNumeric(numeric bool) {
-	C.gtk_spin_button_set_numeric(C.to_GtkSpinButton(v.GWidget), bool2gboolean(numeric))
+	C.gtk_spin_button_set_numeric(C.toGSpinButton(v.GWidget), bool2gboolean(numeric))
 }
 func (v *SpinButton) Spin(direction SpinType, increment float64) {
-	C.gtk_spin_button_spin(C.to_GtkSpinButton(v.GWidget), C.GtkSpinType(direction), C.gdouble(increment))
+	C.gtk_spin_button_spin(C.toGSpinButton(v.GWidget), C.GtkSpinType(direction), C.gdouble(increment))
 }
 func (v *SpinButton) SetWrap(wrap bool) {
-	C.gtk_spin_button_set_wrap(C.to_GtkSpinButton(v.GWidget), bool2gboolean(wrap))
+	C.gtk_spin_button_set_wrap(C.toGSpinButton(v.GWidget), bool2gboolean(wrap))
 }
 func (v *SpinButton) SetSnapToTicks(snap_to_ticks bool) {
-	C.gtk_spin_button_set_snap_to_ticks(C.to_GtkSpinButton(v.GWidget), bool2gboolean(snap_to_ticks))
+	C.gtk_spin_button_set_snap_to_ticks(C.toGSpinButton(v.GWidget), bool2gboolean(snap_to_ticks))
 }
 func (v *SpinButton) Update() {
-	C.gtk_spin_button_update(C.to_GtkSpinButton(v.GWidget))
+	C.gtk_spin_button_update(C.toGSpinButton(v.GWidget))
 }
 func (v *SpinButton) GetDigits() uint {
-	return uint(C.gtk_spin_button_get_digits(C.to_GtkSpinButton(v.GWidget)))
+	return uint(C.gtk_spin_button_get_digits(C.toGSpinButton(v.GWidget)))
 }
 func (v *SpinButton) GetIncrements() (float64, float64) {
 	var step, page C.gdouble
-	C.gtk_spin_button_get_increments(C.to_GtkSpinButton(v.GWidget), &step, &page)
+	C.gtk_spin_button_get_increments(C.toGSpinButton(v.GWidget), &step, &page)
 	return float64(step), float64(page)
 }
 func (v *SpinButton) GetNumeric() bool {
-	return gboolean2bool(C.gtk_spin_button_get_numeric(C.to_GtkSpinButton(v.GWidget)))
+	return gboolean2bool(C.gtk_spin_button_get_numeric(C.toGSpinButton(v.GWidget)))
 }
 func (v *SpinButton) GetRange() (/*min*/ float64, /*max*/ float64) {
 	var min, max C.gdouble
-	C.gtk_spin_button_get_range(C.to_GtkSpinButton(v.GWidget), &min, &max)
+	C.gtk_spin_button_get_range(C.toGSpinButton(v.GWidget), &min, &max)
 	return float64(min), float64(max)
 }
 func (v *SpinButton) GetSnapToTicks() bool {
-	return gboolean2bool(C.gtk_spin_button_get_snap_to_ticks(C.to_GtkSpinButton(v.GWidget)))
+	return gboolean2bool(C.gtk_spin_button_get_snap_to_ticks(C.toGSpinButton(v.GWidget)))
 }
 func (v *SpinButton) GetUpdatePolicy() SpinButtonUpdatePolicy {
-	return SpinButtonUpdatePolicy(C.gtk_spin_button_get_update_policy(C.to_GtkSpinButton(v.GWidget)))
+	return SpinButtonUpdatePolicy(C.gtk_spin_button_get_update_policy(C.toGSpinButton(v.GWidget)))
 }
 func (v *SpinButton) GetValue() float64 {
-	return float64(C.gtk_spin_button_get_value(C.to_GtkSpinButton(v.GWidget)))
+	return float64(C.gtk_spin_button_get_value(C.toGSpinButton(v.GWidget)))
 }
 func (v *SpinButton) GetWrap() bool {
-	return gboolean2bool(C.gtk_spin_button_get_wrap(C.to_GtkSpinButton(v.GWidget)))
+	return gboolean2bool(C.gtk_spin_button_get_wrap(C.toGSpinButton(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -3227,8 +3227,8 @@ func newTextBuffer(buffer *C.GtkTextBuffer) *TextBuffer { // TODO
 		GObject:    glib.ObjectFromNative(unsafe.Pointer(buffer)),
 	}
 }
-func NewTextBufferFromPointer(v unsafe.Pointer) TextBuffer {
-	return *newTextBuffer(C.to_GtkTextBuffer(v))
+func NewTextBufferFromPointer(v unsafe.Pointer) TextBuffer { // FIXME (?)
+	return *newTextBuffer(C.toGTextBuffer(v))
 }
 func NewTextBuffer(tagtable *TextTagTable) *TextBuffer {
 	return newTextBuffer(C.gtk_text_buffer_new(tagtable.GTextTagTable))
@@ -3566,17 +3566,17 @@ func NewTextViewWithBuffer(b TextBuffer) *TextView {
 	return &TextView{Container{Widget{C.gtk_text_view_new_with_buffer(b.GTextBuffer)}}}
 }
 func (v *TextView) SetBuffer(b TextBufferLike) {
-	C.gtk_text_view_set_buffer(C.to_GtkTextView(v.GWidget), C.to_GtkTextBuffer(b.GetNativeBuffer()))
+	C.gtk_text_view_set_buffer(C.toGTextView(v.GWidget), C.toGTextBuffer(b.GetNativeBuffer()))
 }
 func (v *TextView) GetBuffer() *TextBuffer {
-	return newTextBuffer(C.gtk_text_view_get_buffer(C.to_GtkTextView(v.GWidget)))
+	return newTextBuffer(C.gtk_text_view_get_buffer(C.toGTextView(v.GWidget)))
 }
 func (v *TextView) ScrollToMark(mark *TextMark, wm float64, ua bool, xa float64, ya float64) {
-	C.gtk_text_view_scroll_to_mark(C.to_GtkTextView(v.GWidget),
+	C.gtk_text_view_scroll_to_mark(C.toGTextView(v.GWidget),
 		mark.GTextMark, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya))
 }
 func (v *TextView) ScrollToIter(iter *TextIter, wm float64, ua bool, xa float64, ya float64) bool {
-	return gboolean2bool(C.gtk_text_view_scroll_to_iter(C.to_GtkTextView(v.GWidget),
+	return gboolean2bool(C.gtk_text_view_scroll_to_iter(C.toGTextView(v.GWidget),
 		&iter.GTextIter, C.gdouble(wm), bool2gboolean(ua), C.gdouble(xa), C.gdouble(ya)))
 }
 
@@ -3589,7 +3589,7 @@ func (v *TextView) ScrollToIter(iter *TextIter, wm float64, ua bool, xa float64,
 
 func (v *TextView) GetLineYrange(iter *TextIter, y *int, h *int) {
 	var yy, hh C.gint
-	C.gtk_text_view_get_line_yrange(C.to_GtkTextView(v.GWidget), &iter.GTextIter, &yy, &hh)
+	C.gtk_text_view_get_line_yrange(C.toGTextView(v.GWidget), &iter.GTextIter, &yy, &hh)
 	*y = int(yy)
 	*h = int(hh)
 }
@@ -3599,10 +3599,10 @@ func (v *TextView) GetLineYrange(iter *TextIter, y *int, h *int) {
 func (v *TextView) GetIterAtPosition(iter *TextIter, trailing *int, x int, y int) {
 	if nil != trailing {
 		var tt C.gint
-		C.gtk_text_view_get_iter_at_position(C.to_GtkTextView(v.GWidget), &iter.GTextIter, &tt, C.gint(x), C.gint(y))
+		C.gtk_text_view_get_iter_at_position(C.toGTextView(v.GWidget), &iter.GTextIter, &tt, C.gint(x), C.gint(y))
 		*trailing = int(tt)
 	} else {
-		C.gtk_text_view_get_iter_at_position(C.to_GtkTextView(v.GWidget), &iter.GTextIter, nil, C.gint(x), C.gint(y))
+		C.gtk_text_view_get_iter_at_position(C.toGTextView(v.GWidget), &iter.GTextIter, nil, C.gint(x), C.gint(y))
 	}
 }
 
@@ -3623,28 +3623,28 @@ func (v *TextView) GetIterAtPosition(iter *TextIter, trailing *int, x int, y int
 // void gtk_text_view_move_child(GtkTextView* text_view, GtkWidget* child, gint xpos, gint ypos);
 
 func (v *TextView) SetWrapMode(mode WrapMode) {
-	C.gtk_text_view_set_wrap_mode(C.to_GtkTextView(v.GWidget), C.GtkWrapMode(mode))
+	C.gtk_text_view_set_wrap_mode(C.toGTextView(v.GWidget), C.GtkWrapMode(mode))
 }
 func (v *TextView) GetWrapMode() WrapMode {
-	return WrapMode(C.gtk_text_view_get_wrap_mode(C.to_GtkTextView(v.GWidget)))
+	return WrapMode(C.gtk_text_view_get_wrap_mode(C.toGTextView(v.GWidget)))
 }
 func (v *TextView) SetEditable(setting bool) {
-	C.gtk_text_view_set_editable(C.to_GtkTextView(v.GWidget), bool2gboolean(setting))
+	C.gtk_text_view_set_editable(C.toGTextView(v.GWidget), bool2gboolean(setting))
 }
 func (v *TextView) GetEditable() bool {
-	return gboolean2bool(C.gtk_text_view_get_editable(C.to_GtkTextView(v.GWidget)))
+	return gboolean2bool(C.gtk_text_view_get_editable(C.toGTextView(v.GWidget)))
 }
 func (v *TextView) SetCursorVisible(setting bool) {
-	C.gtk_text_view_set_cursor_visible(C.to_GtkTextView(v.GWidget), bool2gboolean(setting))
+	C.gtk_text_view_set_cursor_visible(C.toGTextView(v.GWidget), bool2gboolean(setting))
 }
 func (v *TextView) GetCursorVisible() bool {
-	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.to_GtkTextView(v.GWidget)))
+	return gboolean2bool(C.gtk_text_view_get_cursor_visible(C.toGTextView(v.GWidget)))
 }
 func (v *TextView) SetOverwrite(overwrite bool) {
-	C.gtk_text_view_set_overwrite(C.to_GtkTextView(v.GWidget), bool2gboolean(overwrite))
+	C.gtk_text_view_set_overwrite(C.toGTextView(v.GWidget), bool2gboolean(overwrite))
 }
 func (v *TextView) GetOverwrite() bool {
-	return gboolean2bool(C.gtk_text_view_get_overwrite(C.to_GtkTextView(v.GWidget)))
+	return gboolean2bool(C.gtk_text_view_get_overwrite(C.toGTextView(v.GWidget)))
 }
 
 // void gtk_text_view_set_pixels_above_lines(GtkTextView* text_view, gint pixels_above_lines);
@@ -3665,10 +3665,10 @@ func (v *TextView) GetOverwrite() bool {
 // PangoTabArray* gtk_text_view_get_tabs(GtkTextView* text_view);
 
 func (v *TextView) SetAcceptsTab(accepts_tab bool) {
-	C.gtk_text_view_set_accepts_tab(C.to_GtkTextView(v.GWidget), bool2gboolean(accepts_tab))
+	C.gtk_text_view_set_accepts_tab(C.toGTextView(v.GWidget), bool2gboolean(accepts_tab))
 }
 func (v *TextView) GetAcceptsTab() bool {
-	return gboolean2bool(C.gtk_text_view_get_accepts_tab(C.to_GtkTextView(v.GWidget)))
+	return gboolean2bool(C.gtk_text_view_get_accepts_tab(C.toGTextView(v.GWidget)))
 }
 
 // GtkTextAttributes* gtk_text_view_get_default_attributes(GtkTextView* text_view);
@@ -3814,7 +3814,7 @@ func (v *TreeModel) GetPath(iter *TreeIter) *TreePath {
 	return &TreePath{C._gtk_tree_model_get_path(v.GTreeModel, &iter.GTreeIter)}
 }
 func (v *TreeModel) GetValue(iter *TreeIter, col int, val *glib.GValue) {
-	C.gtk_tree_model_get_value(v.GTreeModel, &iter.GTreeIter, C.gint(col), C.to_GValueptr(unsafe.Pointer(&val.Value)))
+	C.gtk_tree_model_get_value(v.GTreeModel, &iter.GTreeIter, C.gint(col), C.toGValue(unsafe.Pointer(&val.Value)))
 }
 func (v *TreeModel) IterNext(iter *TreeIter) bool {
 	return gboolean2bool(C.gtk_tree_model_iter_next(v.GTreeModel, &iter.GTreeIter))
@@ -4131,10 +4131,10 @@ func (v *TreeView) SetModel(model TreeModelLike) {
 	if model != nil {
 		tm = model.cTreeModel()
 	}
-	C.gtk_tree_view_set_model(C.to_GtkTreeView(v.GWidget), tm)
+	C.gtk_tree_view_set_model(C.toGTreeView(v.GWidget), tm)
 }
 func (v *TreeView) GetSelection() *TreeSelection {
-	return &TreeSelection{C.gtk_tree_view_get_selection(C.to_GtkTreeView(v.GWidget))}
+	return &TreeSelection{C.gtk_tree_view_get_selection(C.toGTreeView(v.GWidget))}
 }
 
 //GtkAdjustment *gtk_tree_view_get_hadjustment (GtkTreeView *tree_view);
@@ -4144,7 +4144,7 @@ func (v *TreeView) GetSelection() *TreeSelection {
 //gboolean gtk_tree_view_get_headers_visible (GtkTreeView *tree_view);
 
 func (v *TreeView) SetHeadersVisible(flag bool) {
-	C.gtk_tree_view_set_headers_visible(C.to_GtkTreeView(v.GWidget), bool2gboolean(flag))
+	C.gtk_tree_view_set_headers_visible(C.toGTreeView(v.GWidget), bool2gboolean(flag))
 }
 
 //void gtk_tree_view_columns_autosize (GtkTreeView *tree_view);
@@ -4154,7 +4154,7 @@ func (v *TreeView) SetHeadersVisible(flag bool) {
 //gboolean gtk_tree_view_get_rules_hint (GtkTreeView *tree_view);
 
 func (v *TreeView) AppendColumn(c *TreeViewColumn) int {
-	return int(C.gtk_tree_view_append_column(C.to_GtkTreeView(v.GWidget), c.GTreeViewColumn))
+	return int(C.gtk_tree_view_append_column(C.toGTreeView(v.GWidget), c.GTreeViewColumn))
 }
 
 //gint gtk_tree_view_remove_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
@@ -4163,7 +4163,7 @@ func (v *TreeView) AppendColumn(c *TreeViewColumn) int {
 //gint gtk_tree_view_insert_column_with_data_func (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, GtkTreeCellDataFunc func, gpointer data, GDestroyNotify dnotify);
 
 func (v *TreeView) GetColumn(n int) *TreeViewColumn {
-	return newTreeViewColumn(C.gtk_tree_view_get_column(C.to_GtkTreeView(v.GWidget), C.gint(n)))
+	return newTreeViewColumn(C.gtk_tree_view_get_column(C.toGTreeView(v.GWidget), C.gint(n)))
 }
 
 //GList *gtk_tree_view_get_columns (GtkTreeView *tree_view);
@@ -4180,7 +4180,7 @@ func (v *TreeView) ScrollToCell(path *TreePath, col *TreeViewColumn, use bool, r
 	} else {
 		pcol = col.GTreeViewColumn
 	}
-	C.gtk_tree_view_scroll_to_cell(C.to_GtkTreeView(v.GWidget), path.GTreePath,
+	C.gtk_tree_view_scroll_to_cell(C.toGTreeView(v.GWidget), path.GTreePath,
 		pcol, bool2gboolean(use), C.gfloat(ra), C.gfloat(ca))
 }
 func (v *TreeView) SetCursor(path *TreePath, col *TreeViewColumn, se bool) {
@@ -4190,7 +4190,7 @@ func (v *TreeView) SetCursor(path *TreePath, col *TreeViewColumn, se bool) {
 	} else {
 		pcol = col.GTreeViewColumn
 	}
-	C.gtk_tree_view_set_cursor(C.to_GtkTreeView(v.GWidget), path.GTreePath,
+	C.gtk_tree_view_set_cursor(C.toGTreeView(v.GWidget), path.GTreePath,
 		pcol, bool2gboolean(se))
 }
 
@@ -4200,34 +4200,34 @@ func (v *TreeView) GetCursor(path **TreePath, focus_column **TreeViewColumn) {
 	*path = &TreePath{nil}
 	if nil != focus_column {
 		*focus_column = &TreeViewColumn{nil, nil}
-		C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.GWidget), &(*path).GTreePath, &(*focus_column).GTreeViewColumn)
+		C.gtk_tree_view_get_cursor(C.toGTreeView(v.GWidget), &(*path).GTreePath, &(*focus_column).GTreeViewColumn)
 	} else {
-		C.gtk_tree_view_get_cursor(C.to_GtkTreeView(v.GWidget), &(*path).GTreePath, nil)
+		C.gtk_tree_view_get_cursor(C.toGTreeView(v.GWidget), &(*path).GTreePath, nil)
 	}
 }
 
 //void gtk_tree_view_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column);
 
 func (v *TreeView) ExpandAll() {
-	C.gtk_tree_view_expand_all(C.to_GtkTreeView(v.GWidget))
+	C.gtk_tree_view_expand_all(C.toGTreeView(v.GWidget))
 }
 func (v *TreeView) CollapseAll() {
-	C.gtk_tree_view_collapse_all(C.to_GtkTreeView(v.GWidget))
+	C.gtk_tree_view_collapse_all(C.toGTreeView(v.GWidget))
 }
 
 //void gtk_tree_view_expand_to_path (GtkTreeView *tree_view, GtkTreePath *path);
 
 func (v *TreeView) ExpandRow(path *TreePath, openall bool) bool {
-	return gboolean2bool(C.gtk_tree_view_expand_row(C.to_GtkTreeView(v.GWidget), path.GTreePath, bool2gboolean(openall)))
+	return gboolean2bool(C.gtk_tree_view_expand_row(C.toGTreeView(v.GWidget), path.GTreePath, bool2gboolean(openall)))
 }
 func (v *TreeView) CollapseRow(path *TreePath) bool {
-	return gboolean2bool(C.gtk_tree_view_collapse_row(C.to_GtkTreeView(v.GWidget), path.GTreePath))
+	return gboolean2bool(C.gtk_tree_view_collapse_row(C.toGTreeView(v.GWidget), path.GTreePath))
 }
 
 //void gtk_tree_view_map_expanded_rows (GtkTreeView *tree_view, GtkTreeViewMappingFunc func, gpointer data);
 
 func (v *TreeView) RowExpanded(path *TreePath) bool {
-	return gboolean2bool(C.gtk_tree_view_row_expanded(C.to_GtkTreeView(v.GWidget), path.GTreePath))
+	return gboolean2bool(C.gtk_tree_view_row_expanded(C.toGTreeView(v.GWidget), path.GTreePath))
 }
 
 //void gtk_tree_view_set_reorderable (GtkTreeView *tree_view, gboolean reorderable);
@@ -4333,32 +4333,32 @@ func NewIconViewWithModel(model TreeModelLike) *IconView {
 }
 func (v *IconView) GetModel() *TreeModel {
 	return &TreeModel{
-		C.gtk_icon_view_get_model(C.to_GtkIconView(v.GWidget))}
+		C.gtk_icon_view_get_model(C.toGIconView(v.GWidget))}
 }
 func (v *IconView) SetModel(model TreeModelLike) {
 	var tm *C.GtkTreeModel
 	if model != nil {
 		tm = model.cTreeModel()
 	}
-	C.gtk_icon_view_set_model(C.to_GtkIconView(v.GWidget), tm)
+	C.gtk_icon_view_set_model(C.toGIconView(v.GWidget), tm)
 }
 func (v *IconView) GetTextColumn() int {
-	return int(C.gtk_icon_view_get_text_column(C.to_GtkIconView(v.GWidget)))
+	return int(C.gtk_icon_view_get_text_column(C.toGIconView(v.GWidget)))
 }
 func (v *IconView) SetTextColumn(text_column int) {
-	C.gtk_icon_view_set_text_column(C.to_GtkIconView(v.GWidget), C.gint(text_column))
+	C.gtk_icon_view_set_text_column(C.toGIconView(v.GWidget), C.gint(text_column))
 }
 func (v *IconView) GetMarkupColumn() int {
-	return int(C.gtk_icon_view_get_markup_column(C.to_GtkIconView(v.GWidget)))
+	return int(C.gtk_icon_view_get_markup_column(C.toGIconView(v.GWidget)))
 }
 func (v *IconView) SetMarkupColumn(markup_column int) {
-	C.gtk_icon_view_set_markup_column(C.to_GtkIconView(v.GWidget), C.gint(markup_column))
+	C.gtk_icon_view_set_markup_column(C.toGIconView(v.GWidget), C.gint(markup_column))
 }
 func (v *IconView) GetPixbufColumn() int {
-	return int(C.gtk_icon_view_get_pixbuf_column(C.to_GtkIconView(v.GWidget)))
+	return int(C.gtk_icon_view_get_pixbuf_column(C.toGIconView(v.GWidget)))
 }
 func (v *IconView) SetPixbufColumn(pixbuf_column int) {
-	C.gtk_icon_view_set_pixbuf_column(C.to_GtkIconView(v.GWidget), C.gint(pixbuf_column))
+	C.gtk_icon_view_set_pixbuf_column(C.toGIconView(v.GWidget), C.gint(pixbuf_column))
 }
 
 // gtk_icon_view_get_path_at_pos
@@ -4396,7 +4396,7 @@ func (v *IconView) SetPixbufColumn(pixbuf_column int) {
 // gtk_icon_view_item_activated
 
 func (v *IconView) ScrollToPath(path *TreePath, use bool, ra float64, ca float64) {
-	C.gtk_icon_view_scroll_to_path(C.to_GtkIconView(v.GWidget), path.GTreePath,
+	C.gtk_icon_view_scroll_to_path(C.toGIconView(v.GWidget), path.GTreePath,
 		bool2gboolean(use), C.gfloat(ra), C.gfloat(ca))
 }
 
@@ -4573,7 +4573,7 @@ func NewCellRendererText() *CellRendererText {
 		C.gtk_cell_renderer_text_new(), nil}}
 }
 func (v *CellRendererText) SetFixedHeightFromFont(number_of_rows int) {
-	C.gtk_cell_renderer_text_set_fixed_height_from_font(C.to_GtkCellRendererText(v.GCellRenderer), C.gint(number_of_rows))
+	C.gtk_cell_renderer_text_set_fixed_height_from_font(C.toGCellRendererText(v.GCellRenderer), C.gint(number_of_rows))
 }
 
 //-----------------------------------------------------------------------
@@ -4588,24 +4588,24 @@ func NewCellRendererToggle() *CellRendererToggle {
 		C.gtk_cell_renderer_toggle_new(), nil}}
 }
 func (v *CellRendererToggle) GetRadio() bool {
-	return gboolean2bool(C.gtk_cell_renderer_toggle_get_radio(C.to_GtkCellRendererToggle(v.GCellRenderer)))
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_radio(C.toGCellRendererToggle(v.GCellRenderer)))
 }
 func (v *CellRendererToggle) SetRadio(radio bool) {
-	C.gtk_cell_renderer_toggle_set_radio(C.to_GtkCellRendererToggle(v.GCellRenderer), bool2gboolean(radio))
+	C.gtk_cell_renderer_toggle_set_radio(C.toGCellRendererToggle(v.GCellRenderer), bool2gboolean(radio))
 }
 func (v *CellRendererToggle) GetActive() bool {
-	return gboolean2bool(C.gtk_cell_renderer_toggle_get_active(C.to_GtkCellRendererToggle(v.GCellRenderer)))
+	return gboolean2bool(C.gtk_cell_renderer_toggle_get_active(C.toGCellRendererToggle(v.GCellRenderer)))
 }
 func (v *CellRendererToggle) SetActive(active bool) {
-	C.gtk_cell_renderer_toggle_set_active(C.to_GtkCellRendererToggle(v.GCellRenderer), bool2gboolean(active))
+	C.gtk_cell_renderer_toggle_set_active(C.toGCellRendererToggle(v.GCellRenderer), bool2gboolean(active))
 }
 func (v *CellRendererToggle) GetActivatable() bool {
 	panic_if_version_older(2, 18, 0, "gtk_cell_renderer_toggle_get_activatable()")
-	return gboolean2bool(C._gtk_cell_renderer_toggle_get_activatable(C.to_GtkCellRendererToggle(v.GCellRenderer)))
+	return gboolean2bool(C._gtk_cell_renderer_toggle_get_activatable(C.toGCellRendererToggle(v.GCellRenderer)))
 }
 func (v *CellRendererToggle) SetActivatable(activatable bool) {
 	panic_if_version_older(2, 18, 0, "gtk_cell_renderer_toggle_set_activatable()")
-	C._gtk_cell_renderer_toggle_set_activatable(C.to_GtkCellRendererToggle(v.GCellRenderer), bool2gboolean(activatable))
+	C._gtk_cell_renderer_toggle_set_activatable(C.toGCellRendererToggle(v.GCellRenderer), bool2gboolean(activatable))
 }
 
 //-----------------------------------------------------------------------
@@ -4653,7 +4653,7 @@ func NewListStore(v ...interface{}) *ListStore {
 	defer C.destroy_gtypes(types)
 	cliststore := C.gtk_list_store_newv(C.gint(len(v)), types)
 	return &ListStore{TreeModel{
-		C.to_GtkTreeModelFromListStore(cliststore)}, cliststore}
+		C.toGTreeModelFromListStore(cliststore)}, cliststore}
 }
 
 //void gtk_list_store_set_column_types (GtkListStore *list_store, gint n_columns, GType *types);
@@ -4666,7 +4666,7 @@ func (v *ListStore) Set(iter *TreeIter, a ...interface{}) {
 func (v *ListStore) SetValue(iter *TreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_list_store_set_value(v.GListStore, &iter.GTreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
+		C.gtk_list_store_set_value(v.GListStore, &iter.GTreeIter, C.gint(column), C.toGValue(unsafe.Pointer(gv)))
 	} else {
 		if pv, ok := a.(*[0]uint8); ok {
 			C._gtk_list_store_set_ptr(v.GListStore, &iter.GTreeIter, C.gint(column), unsafe.Pointer(pv))
@@ -4728,11 +4728,11 @@ func (v *ListStore) MoveAfter(iter *TreeIter, position *TreeIter) {
 //nb: ListStore e TreeStore sono un TreeModel (implementano GtkTreeModel!)
 /*func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
 	return &TreeModel{
-		C.to_GtkTreeModelFromListStore(v.GListStore)}
+		C.toGTreeModelFromListStore(v.GListStore)}
 }*/
 /*func (v *GtkTreeModel) ToListStore() *GtkListStore {
 	return &ListStore{
-		C.to_GtkListStoreFromTreeModel(v.GTreeModel)}
+		C.toGListStoreFromTreeModel(v.GTreeModel)}
 }*/
 
 //-----------------------------------------------------------------------
@@ -4750,7 +4750,7 @@ func NewTreeStore(v ...interface{}) *TreeStore {
 	}
 	defer C.destroy_gtypes(types)
 	ctreestore := C.gtk_tree_store_newv(C.gint(len(v)), types)
-	return &TreeStore{TreeModel{C.to_GtkTreeModelFromTreeStore(ctreestore)}, ctreestore}
+	return &TreeStore{TreeModel{C.toGTreeModelFromTreeStore(ctreestore)}, ctreestore}
 }
 
 // void gtk_tree_store_set_column_types (GtkTreeStore *tree_store, gint n_columns, GType *types); void gtk_tree_store_set_value (GtkTreeStore *tree_store, GtkTreeIter *iter, gint column, GValue *value);
@@ -4763,7 +4763,7 @@ func (v *TreeStore) Set(iter *TreeIter, a ...interface{}) {
 func (v *TreeStore) SetValue(iter *TreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_tree_store_set_value(v.GTreeStore, &iter.GTreeIter, C.gint(column), C.to_GValueptr(unsafe.Pointer(gv)))
+		C.gtk_tree_store_set_value(v.GTreeStore, &iter.GTreeIter, C.gint(column), C.toGValue(unsafe.Pointer(gv)))
 	} else {
 		if pv, ok := a.(*[0]uint8); ok {
 			C._gtk_tree_store_set_ptr(v.GTreeStore, &iter.GTreeIter, C.gint(column), unsafe.Pointer(pv))
@@ -4812,7 +4812,7 @@ func (v *TreeStore) Append(iter *TreeIter, parent *TreeIter) {
 
 func (v *TreeStore) ToTreeModel() *TreeModel {
 	return &TreeModel{
-		C.to_GtkTreeModelFromTreeStore(v.GTreeStore)}
+		C.toGTreeModelFromTreeStore(v.GTreeStore)}
 }
 func (v *TreeStore) IterDepth(iter *TreeIter) int {
 	return int(C.gtk_tree_store_iter_depth(v.GTreeStore, &iter.GTreeIter))
@@ -4863,41 +4863,41 @@ func NewComboBoxWithModelAndEntry(model *TreeModel) *ComboBox {
 		C._gtk_combo_box_new_with_model_and_entry(model.GTreeModel)}}}}
 }
 func (v *ComboBox) GetWrapWidth() int {
-	return int(C.gtk_combo_box_get_wrap_width(C.to_GtkComboBox(v.GWidget)))
+	return int(C.gtk_combo_box_get_wrap_width(C.toGComboBox(v.GWidget)))
 }
 func (v *ComboBox) SetWrapWidth(width int) {
-	C.gtk_combo_box_set_wrap_width(C.to_GtkComboBox(v.GWidget), C.gint(width))
+	C.gtk_combo_box_set_wrap_width(C.toGComboBox(v.GWidget), C.gint(width))
 }
 func (v *ComboBox) GetRowSpanColumn() int {
-	return int(C.gtk_combo_box_get_row_span_column(C.to_GtkComboBox(v.GWidget)))
+	return int(C.gtk_combo_box_get_row_span_column(C.toGComboBox(v.GWidget)))
 }
 func (v *ComboBox) SetRowSpanColumn(row_span int) {
-	C.gtk_combo_box_set_row_span_column(C.to_GtkComboBox(v.GWidget), C.gint(row_span))
+	C.gtk_combo_box_set_row_span_column(C.toGComboBox(v.GWidget), C.gint(row_span))
 }
 func (v *ComboBox) GetColumnSpanColumn() int {
-	return int(C.gtk_combo_box_get_column_span_column(C.to_GtkComboBox(v.GWidget)))
+	return int(C.gtk_combo_box_get_column_span_column(C.toGComboBox(v.GWidget)))
 }
 func (v *ComboBox) SetColumnSpanColumn(column_span int) {
-	C.gtk_combo_box_set_column_span_column(C.to_GtkComboBox(v.GWidget), C.gint(column_span))
+	C.gtk_combo_box_set_column_span_column(C.toGComboBox(v.GWidget), C.gint(column_span))
 }
 func (v *ComboBox) GetActive() int {
-	return int(C.gtk_combo_box_get_active(C.to_GtkComboBox(v.GWidget)))
+	return int(C.gtk_combo_box_get_active(C.toGComboBox(v.GWidget)))
 }
 func (v *ComboBox) SetActive(width int) {
-	C.gtk_combo_box_set_active(C.to_GtkComboBox(v.GWidget), C.gint(width))
+	C.gtk_combo_box_set_active(C.toGComboBox(v.GWidget), C.gint(width))
 }
 func (v *ComboBox) GetActiveIter(iter *TreeIter) bool {
-	return gboolean2bool(C.gtk_combo_box_get_active_iter(C.to_GtkComboBox(v.GWidget), &iter.GTreeIter))
+	return gboolean2bool(C.gtk_combo_box_get_active_iter(C.toGComboBox(v.GWidget), &iter.GTreeIter))
 }
 func (v *ComboBox) SetActiveIter(iter *TreeIter) {
-	C.gtk_combo_box_set_active_iter(C.to_GtkComboBox(v.GWidget), &iter.GTreeIter)
+	C.gtk_combo_box_set_active_iter(C.toGComboBox(v.GWidget), &iter.GTreeIter)
 }
 func (v *ComboBox) GetModel() *TreeModel {
 	return &TreeModel{
-		C.gtk_combo_box_get_model(C.to_GtkComboBox(v.GWidget))}
+		C.gtk_combo_box_get_model(C.toGComboBox(v.GWidget))}
 }
 func (v *ComboBox) SetModel(model *TreeModel) {
-	C.gtk_combo_box_set_model(C.to_GtkComboBox(v.GWidget), model.GTreeModel)
+	C.gtk_combo_box_set_model(C.toGComboBox(v.GWidget), model.GTreeModel)
 }
 
 //Deprecated since 2.24. Use GtkComboBoxText.
@@ -4912,7 +4912,7 @@ func (v *ComboBox) AppendText(text string) {
 	deprecated_since(2, 24, 0, "gtk_combo_box_append_text()")
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C.gtk_combo_box_append_text(C.to_GtkComboBox(v.GWidget), C.toGstr(ptr))
+	C.gtk_combo_box_append_text(C.toGComboBox(v.GWidget), C.toGstr(ptr))
 }
 
 //Deprecated since 2.24. Use GtkComboBoxText.
@@ -4920,7 +4920,7 @@ func (v *ComboBox) InsertText(text string, position int) {
 	deprecated_since(2, 24, 0, "gtk_combo_box_insert_text()")
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C.gtk_combo_box_insert_text(C.to_GtkComboBox(v.GWidget), C.gint(position), C.toGstr(ptr))
+	C.gtk_combo_box_insert_text(C.toGComboBox(v.GWidget), C.gint(position), C.toGstr(ptr))
 }
 
 //Deprecated since 2.24. Use GtkComboBoxText.
@@ -4928,26 +4928,26 @@ func (v *ComboBox) PrependText(text string) {
 	deprecated_since(2, 24, 0, "gtk_combo_box_prepend_text()")
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C.gtk_combo_box_prepend_text(C.to_GtkComboBox(v.GWidget), C.toGstr(ptr))
+	C.gtk_combo_box_prepend_text(C.toGComboBox(v.GWidget), C.toGstr(ptr))
 }
 
 //Deprecated since 2.24. Use GtkComboBoxText.
 func (v *ComboBox) RemoveText(position int) {
 	deprecated_since(2, 24, 0, "gtk_combo_box_remove_text()")
-	C.gtk_combo_box_remove_text(C.to_GtkComboBox(v.GWidget), C.gint(position))
+	C.gtk_combo_box_remove_text(C.toGComboBox(v.GWidget), C.gint(position))
 }
 
 //Deprecated since 2.24. Use GtkComboBoxText or, if combo box contains an entry,
 // get text directly from GtkEntry.
 func (v *ComboBox) GetActiveText() string {
 	deprecated_since(2, 24, 0, "gtk_combo_box_get_active_text()")
-	return C.GoString(C.toCstr(C.gtk_combo_box_get_active_text(C.to_GtkComboBox(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_combo_box_get_active_text(C.toGComboBox(v.GWidget))))
 }
 func (v *ComboBox) Popup() {
-	C.gtk_combo_box_popup(C.to_GtkComboBox(v.GWidget))
+	C.gtk_combo_box_popup(C.toGComboBox(v.GWidget))
 }
 func (v *ComboBox) Popdown() {
-	C.gtk_combo_box_popdown(C.to_GtkComboBox(v.GWidget))
+	C.gtk_combo_box_popdown(C.toGComboBox(v.GWidget))
 }
 
 // gtk_combo_box_get_popup_accessible
@@ -4955,24 +4955,24 @@ func (v *ComboBox) Popdown() {
 // gtk_combo_box_set_row_separator_func
 
 func (v *ComboBox) SetAddTearoffs(add_tearoffs bool) {
-	C.gtk_combo_box_set_add_tearoffs(C.to_GtkComboBox(v.GWidget), bool2gboolean(add_tearoffs))
+	C.gtk_combo_box_set_add_tearoffs(C.toGComboBox(v.GWidget), bool2gboolean(add_tearoffs))
 }
 func (v *ComboBox) GetAddTearoffs() bool {
-	return gboolean2bool(C.gtk_combo_box_get_add_tearoffs(C.to_GtkComboBox(v.GWidget)))
+	return gboolean2bool(C.gtk_combo_box_get_add_tearoffs(C.toGComboBox(v.GWidget)))
 }
 func (v *ComboBox) SetTitle(title string) {
 	ptr := C.CString(title)
 	defer C.freeCstr(ptr)
-	C.gtk_combo_box_set_title(C.to_GtkComboBox(v.GWidget), C.toGstr(ptr))
+	C.gtk_combo_box_set_title(C.toGComboBox(v.GWidget), C.toGstr(ptr))
 }
 func (v *ComboBox) GetTitle() string {
-	return C.GoString(C.toCstr(C.gtk_combo_box_get_title(C.to_GtkComboBox(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_combo_box_get_title(C.toGComboBox(v.GWidget))))
 }
 func (v *ComboBox) SetFocusOnClick(focus_on_click bool) {
-	C.gtk_combo_box_set_focus_on_click(C.to_GtkComboBox(v.GWidget), bool2gboolean(focus_on_click))
+	C.gtk_combo_box_set_focus_on_click(C.toGComboBox(v.GWidget), bool2gboolean(focus_on_click))
 }
 func (v *ComboBox) GetFocusOnClick() bool {
-	return gboolean2bool(C.gtk_combo_box_get_focus_on_click(C.to_GtkComboBox(v.GWidget)))
+	return gboolean2bool(C.gtk_combo_box_get_focus_on_click(C.toGComboBox(v.GWidget)))
 }
 
 // gtk_combo_box_set_button_sensitivity
@@ -4999,23 +4999,23 @@ func NewComboBoxTextWithEntry() *ComboBoxText {
 func (v *ComboBoxText) AppendText(text string) {
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C._gtk_combo_box_text_append_text(C.to_GtkComboBoxText(v.GWidget), C.toGstr(ptr))
+	C._gtk_combo_box_text_append_text(C.toGComboBoxText(v.GWidget), C.toGstr(ptr))
 }
 func (v *ComboBoxText) InsertText(position int, text string) {
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C._gtk_combo_box_text_insert_text(C.to_GtkComboBoxText(v.GWidget), C.gint(position), C.toGstr(ptr))
+	C._gtk_combo_box_text_insert_text(C.toGComboBoxText(v.GWidget), C.gint(position), C.toGstr(ptr))
 }
 func (v *ComboBoxText) PrependText(text string) {
 	ptr := C.CString(text)
 	defer C.freeCstr(ptr)
-	C._gtk_combo_box_text_prepend_text(C.to_GtkComboBoxText(v.GWidget), C.toGstr(ptr))
+	C._gtk_combo_box_text_prepend_text(C.toGComboBoxText(v.GWidget), C.toGstr(ptr))
 }
 func (v *ComboBoxText) Remove(position int) {
-	C._gtk_combo_box_text_remove(C.to_GtkComboBoxText(v.GWidget), C.gint(position))
+	C._gtk_combo_box_text_remove(C.toGComboBoxText(v.GWidget), C.gint(position))
 }
 func (v *ComboBoxText) GetActiveText() string {
-	return C.GoString(C.toCstr(C._gtk_combo_box_text_get_active_text(C.to_GtkComboBoxText(v.GWidget))))
+	return C.GoString(C.toCstr(C._gtk_combo_box_text_get_active_text(C.toGComboBoxText(v.GWidget))))
 }
 
 //-----------------------------------------------------------------------
@@ -5040,11 +5040,11 @@ func NewComboBoxEntryNewText() *ComboBoxEntry {
 }
 func (v *ComboBoxEntry) GetTextColumn() int {
 	deprecated_since(2, 24, 0, "gtk_combo_box_entry_get_text_column()")
-	return int(C.gtk_combo_box_entry_get_text_column(C.to_GtkComboBoxEntry(v.GWidget)))
+	return int(C.gtk_combo_box_entry_get_text_column(C.toGComboBoxEntry(v.GWidget)))
 }
 func (v *ComboBoxEntry) SetTextColumn(text_column int) {
 	deprecated_since(2, 24, 0, "gtk_combo_box_entry_set_text_column()")
-	C.gtk_combo_box_entry_set_text_column(C.to_GtkComboBoxEntry(v.GWidget), C.gint(text_column))
+	C.gtk_combo_box_entry_set_text_column(C.toGComboBoxEntry(v.GWidget), C.gint(text_column))
 }
 
 //-----------------------------------------------------------------------
@@ -5063,17 +5063,17 @@ func NewMenu() *Menu {
 
 //TODO remove when GtkMenuShell is done
 func (v *Menu) Append(child WidgetLike) {
-	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.GWidget), child.ToNative())
+	C.gtk_menu_shell_append(C.toGMenuShell(v.GWidget), child.ToNative())
 }
 
 //TODO remove when GtkMenuShell is done
 func (v *Menu) Prepend(child WidgetLike) {
-	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.GWidget), child.ToNative())
+	C.gtk_menu_shell_prepend(C.toGMenuShell(v.GWidget), child.ToNative())
 }
 
 //TODO remove when GtkMenuShell is done
 func (v *Menu) Insert(child WidgetLike, position int) {
-	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.GWidget), child.ToNative(), C.gint(position))
+	C.gtk_menu_shell_insert(C.toGMenuShell(v.GWidget), child.ToNative(), C.gint(position))
 }
 
 // void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
@@ -5100,39 +5100,39 @@ func (v *Menu) Popup(parent_menu_shell, parent_menu_item WidgetLike, f MenuPosit
 // gint gtk_menu_get_monitor(GtkMenu *menu);
 
 func (v *Menu) GetTearoffState() bool {
-	return gboolean2bool(C.gtk_menu_get_tearoff_state(C.to_GtkMenu(v.GWidget)))
+	return gboolean2bool(C.gtk_menu_get_tearoff_state(C.toGMenu(v.GWidget)))
 }
 func (v *Menu) SetReserveToggleSize(b bool) {
 	panic_if_version_older(2, 18, 0, "gtk_menu_set_reserve_toggle_size()")
-	C._gtk_menu_set_reserve_toggle_size(C.to_GtkMenu(v.GWidget), bool2gboolean(b))
+	C._gtk_menu_set_reserve_toggle_size(C.toGMenu(v.GWidget), bool2gboolean(b))
 }
 func (v *Menu) GetReserveToggleSize() bool {
 	panic_if_version_older(2, 18, 0, "gtk_menu_get_reserve_toggle_size()")
-	return gboolean2bool(C._gtk_menu_get_reserve_toggle_size(C.to_GtkMenu(v.GWidget)))
+	return gboolean2bool(C._gtk_menu_get_reserve_toggle_size(C.toGMenu(v.GWidget)))
 }
 func (v *Menu) Popdown() {
-	C.gtk_menu_popdown(C.to_GtkMenu(v.GWidget))
+	C.gtk_menu_popdown(C.toGMenu(v.GWidget))
 }
 func (v *Menu) Reposition() {
-	C.gtk_menu_reposition(C.to_GtkMenu(v.GWidget))
+	C.gtk_menu_reposition(C.toGMenu(v.GWidget))
 }
 func (v *Menu) GetActive() *Widget {
-	return &Widget{C.gtk_menu_get_active(C.to_GtkMenu(v.GWidget))}
+	return &Widget{C.gtk_menu_get_active(C.toGMenu(v.GWidget))}
 }
 
 // void gtk_menu_set_active (GtkMenu *menu, guint index_);
 
 func (v *Menu) SetTearoffState(b bool) {
-	C.gtk_menu_set_tearoff_state(C.to_GtkMenu(v.GWidget), bool2gboolean(b))
+	C.gtk_menu_set_tearoff_state(C.toGMenu(v.GWidget), bool2gboolean(b))
 }
 
 // void gtk_menu_attach_to_widget (GtkMenu *menu, GtkWidget *attach_widget, GtkMenuDetachFunc detacher);
 
 func (v *Menu) Detach() {
-	C.gtk_menu_detach(C.to_GtkMenu(v.GWidget))
+	C.gtk_menu_detach(C.toGMenu(v.GWidget))
 }
 func (v *Menu) GetAttachWidget() *Widget {
-	return &Widget{C.gtk_menu_get_attach_widget(C.to_GtkMenu(v.GWidget))}
+	return &Widget{C.gtk_menu_get_attach_widget(C.toGMenu(v.GWidget))}
 }
 
 // GList* gtk_menu_get_for_attach_widget(GtkWidget *widget);
@@ -5182,31 +5182,31 @@ func NewMenuBar() *MenuBar {
 	return &MenuBar{Widget{C.gtk_menu_bar_new()}}
 }
 func (v *MenuBar) SetPackDirection(pack_dir PackDirection) {
-	C.gtk_menu_bar_set_pack_direction(C.to_GtkMenuBar(v.GWidget), C.GtkPackDirection(pack_dir))
+	C.gtk_menu_bar_set_pack_direction(C.toGMenuBar(v.GWidget), C.GtkPackDirection(pack_dir))
 }
 func (v *MenuBar) GetPackDirection() PackDirection {
-	return PackDirection(C.gtk_menu_bar_get_pack_direction(C.to_GtkMenuBar(v.GWidget)))
+	return PackDirection(C.gtk_menu_bar_get_pack_direction(C.toGMenuBar(v.GWidget)))
 }
 func (v *MenuBar) SetChildPackDirection(pack_dir PackDirection) {
-	C.gtk_menu_bar_set_child_pack_direction(C.to_GtkMenuBar(v.GWidget), C.GtkPackDirection(pack_dir))
+	C.gtk_menu_bar_set_child_pack_direction(C.toGMenuBar(v.GWidget), C.GtkPackDirection(pack_dir))
 }
 func (v *MenuBar) GetChildPackDirection() PackDirection {
-	return PackDirection(C.gtk_menu_bar_get_child_pack_direction(C.to_GtkMenuBar(v.GWidget)))
+	return PackDirection(C.gtk_menu_bar_get_child_pack_direction(C.toGMenuBar(v.GWidget)))
 }
 
 //TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
 func (v *MenuBar) Append(child WidgetLike) {
-	C.gtk_menu_shell_append(C.to_GtkMenuShell(v.GWidget), child.ToNative())
+	C.gtk_menu_shell_append(C.toGMenuShell(v.GWidget), child.ToNative())
 }
 
 //TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
 func (v *MenuBar) Prepend(child WidgetLike) {
-	C.gtk_menu_shell_prepend(C.to_GtkMenuShell(v.GWidget), child.ToNative())
+	C.gtk_menu_shell_prepend(C.toGMenuShell(v.GWidget), child.ToNative())
 }
 
 //TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
 func (v *MenuBar) Insert(child WidgetLike, position int) {
-	C.gtk_menu_shell_insert(C.to_GtkMenuShell(v.GWidget), child.ToNative(), C.gint(position))
+	C.gtk_menu_shell_insert(C.toGMenuShell(v.GWidget), child.ToNative(), C.gint(position))
 }
 
 //-----------------------------------------------------------------------
@@ -5233,53 +5233,53 @@ func NewMenuItemWithMnemonic(label string) *MenuItem {
 		C.gtk_menu_item_new_with_mnemonic(C.toGstr(ptr))}}}}}
 }
 func (v *MenuItem) SetRightJustified(b bool) {
-	C.gtk_menu_item_set_right_justified(C.to_GtkMenuItem(v.GWidget), bool2gboolean(b))
+	C.gtk_menu_item_set_right_justified(C.toGMenuItem(v.GWidget), bool2gboolean(b))
 }
 func (v *MenuItem) GetRightJustified() bool {
-	return gboolean2bool(C.gtk_menu_item_get_right_justified(C.to_GtkMenuItem(v.GWidget)))
+	return gboolean2bool(C.gtk_menu_item_get_right_justified(C.toGMenuItem(v.GWidget)))
 }
 
 // G_CONST_RETURN gchar *gtk_menu_item_get_label(GtkMenuItem *menu_item);
 // void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
 
 func (v *MenuItem) GetUseUnderline() bool {
-	return gboolean2bool(C.gtk_menu_item_get_use_underline(C.to_GtkMenuItem(v.GWidget)))
+	return gboolean2bool(C.gtk_menu_item_get_use_underline(C.toGMenuItem(v.GWidget)))
 }
 func (v *MenuItem) SetUseUnderline(setting bool) {
-	C.gtk_menu_item_set_use_underline(C.to_GtkMenuItem(v.GWidget), bool2gboolean(setting))
+	C.gtk_menu_item_set_use_underline(C.toGMenuItem(v.GWidget), bool2gboolean(setting))
 }
 func (v *MenuItem) SetSubmenu(w WidgetLike) {
-	C.gtk_menu_item_set_submenu(C.to_GtkMenuItem(v.GWidget), w.ToNative())
+	C.gtk_menu_item_set_submenu(C.toGMenuItem(v.GWidget), w.ToNative())
 }
 func (v *MenuItem) GetSubmenu() *Widget {
-	return &Widget{C.gtk_menu_item_get_submenu(C.to_GtkMenuItem(v.GWidget))}
+	return &Widget{C.gtk_menu_item_get_submenu(C.toGMenuItem(v.GWidget))}
 }
 
 //Deprecated since 2.12. Use SetSubmenu() instead.
 func (v *MenuItem) RemoveSubmenu() {
 	deprecated_since(2, 12, 0, "gtk_menu_item_remove_submenu()")
-	C.gtk_menu_item_remove_submenu(C.to_GtkMenuItem(v.GWidget))
+	C.gtk_menu_item_remove_submenu(C.toGMenuItem(v.GWidget))
 }
 
 // void gtk_menu_item_set_accel_path(GtkMenuItem *menu_item, const gchar *accel_path);
 // G_CONST_RETURN gchar* gtk_menu_item_get_accel_path(GtkMenuItem *menu_item);
 
 func (v *MenuItem) Select() {
-	C.gtk_menu_item_select(C.to_GtkMenuItem(v.GWidget))
+	C.gtk_menu_item_select(C.toGMenuItem(v.GWidget))
 }
 func (v *MenuItem) Deselect() {
-	C.gtk_menu_item_deselect(C.to_GtkMenuItem(v.GWidget))
+	C.gtk_menu_item_deselect(C.toGMenuItem(v.GWidget))
 }
 func (v *MenuItem) Activate() {
-	C.gtk_menu_item_activate(C.to_GtkMenuItem(v.GWidget))
+	C.gtk_menu_item_activate(C.toGMenuItem(v.GWidget))
 }
 func (v *MenuItem) ToggleSizeRequest(i *int) {
 	gi := C.gint(*i)
-	C.gtk_menu_item_toggle_size_request(C.to_GtkMenuItem(v.GWidget), &gi)
+	C.gtk_menu_item_toggle_size_request(C.toGMenuItem(v.GWidget), &gi)
 	*i = int(gi)
 }
 func (v *MenuItem) ToggleSizeAllocate(i int) {
-	C.gtk_menu_item_toggle_size_allocate(C.to_GtkMenuItem(v.GWidget), C.gint(i))
+	C.gtk_menu_item_toggle_size_allocate(C.toGMenuItem(v.GWidget), C.gint(i))
 }
 
 //-----------------------------------------------------------------------
@@ -5333,14 +5333,14 @@ func NewRadioMenuItemWithLabel(group *glib.SList, label string) *RadioMenuItem {
 
 func (v *RadioMenuItem) SetGroup(group *glib.SList) {
 	if group != nil {
-		C.gtk_radio_menu_item_set_group(C.to_GtkRadioMenuItem(v.GWidget), C.to_gslist(unsafe.Pointer(group)))
+		C.gtk_radio_menu_item_set_group(C.toGRadioMenuItem(v.GWidget), C.to_gslist(unsafe.Pointer(group)))
 	} else {
-		C.gtk_radio_menu_item_set_group(C.to_GtkRadioMenuItem(v.GWidget), nil)
+		C.gtk_radio_menu_item_set_group(C.toGRadioMenuItem(v.GWidget), nil)
 	}
 }
 
 func (v *RadioMenuItem) GetGroup() *glib.SList {
-	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_menu_item_get_group(C.to_GtkRadioMenuItem(v.GWidget))))
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_menu_item_get_group(C.toGRadioMenuItem(v.GWidget))))
 }
 
 //-----------------------------------------------------------------------
@@ -5367,25 +5367,25 @@ func NewCheckMenuItemWithMnemonic(label string) *CheckMenuItem {
 		C.gtk_check_menu_item_new_with_mnemonic(C.toGstr(ptr))}}}}}}
 }
 func (v *CheckMenuItem) GetActive() bool {
-	return gboolean2bool(C.gtk_check_menu_item_get_active(C.to_GtkCheckMenuItem(v.GWidget)))
+	return gboolean2bool(C.gtk_check_menu_item_get_active(C.toGCheckMenuItem(v.GWidget)))
 }
 func (v *CheckMenuItem) SetActive(setting bool) {
-	C.gtk_check_menu_item_set_active(C.to_GtkCheckMenuItem(v.GWidget), bool2gboolean(setting))
+	C.gtk_check_menu_item_set_active(C.toGCheckMenuItem(v.GWidget), bool2gboolean(setting))
 }
 func (v *CheckMenuItem) Toggled() {
-	C.gtk_check_menu_item_toggled(C.to_GtkCheckMenuItem(v.GWidget))
+	C.gtk_check_menu_item_toggled(C.toGCheckMenuItem(v.GWidget))
 }
 func (v *CheckMenuItem) GetInconsistent() bool {
-	return gboolean2bool(C.gtk_check_menu_item_get_inconsistent(C.to_GtkCheckMenuItem(v.GWidget)))
+	return gboolean2bool(C.gtk_check_menu_item_get_inconsistent(C.toGCheckMenuItem(v.GWidget)))
 }
 func (v *CheckMenuItem) SetInconsistent(setting bool) {
-	C.gtk_check_menu_item_set_inconsistent(C.to_GtkCheckMenuItem(v.GWidget), bool2gboolean(setting))
+	C.gtk_check_menu_item_set_inconsistent(C.toGCheckMenuItem(v.GWidget), bool2gboolean(setting))
 }
 func (v *CheckMenuItem) SetDrawAsRadio(setting bool) {
-	C.gtk_check_menu_item_set_draw_as_radio(C.to_GtkCheckMenuItem(v.GWidget), bool2gboolean(setting))
+	C.gtk_check_menu_item_set_draw_as_radio(C.toGCheckMenuItem(v.GWidget), bool2gboolean(setting))
 }
 func (v *CheckMenuItem) GetDrawAsRadio() bool {
-	return gboolean2bool(C.gtk_check_menu_item_get_draw_as_radio(C.to_GtkCheckMenuItem(v.GWidget)))
+	return gboolean2bool(C.gtk_check_menu_item_get_draw_as_radio(C.toGCheckMenuItem(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -5469,18 +5469,18 @@ func (v *Toolbar) OnStyleChanged(onclick interface{}, datas ...interface{}) int 
 }
 
 func (v *Toolbar) Insert(item IToolItem, pos int) {
-	p_tool_item := C.to_GtkToolItem(item.AsToolItem().GWidget)
+	p_tool_item := C.toGToolItem(item.AsToolItem().GWidget)
 	v.items[p_tool_item] = item
-	C.gtk_toolbar_insert(C.to_GtkToolbar(v.GWidget), p_tool_item, C.gint(pos))
+	C.gtk_toolbar_insert(C.toGToolbar(v.GWidget), p_tool_item, C.gint(pos))
 }
 func (v *Toolbar) GetItemIndex(item IToolItem) int {
-	return int(C.gtk_toolbar_get_item_index(C.to_GtkToolbar(v.GWidget), C.to_GtkToolItem(item.AsToolItem().GWidget)))
+	return int(C.gtk_toolbar_get_item_index(C.toGToolbar(v.GWidget), C.toGToolItem(item.AsToolItem().GWidget)))
 }
 func (v *Toolbar) GetNItems() int {
-	return int(C.gtk_toolbar_get_n_items(C.to_GtkToolbar(v.GWidget)))
+	return int(C.gtk_toolbar_get_n_items(C.toGToolbar(v.GWidget)))
 }
 func (v *Toolbar) GetNthItem(n int) IToolItem {	
-	p_tool_item := C.gtk_toolbar_get_nth_item(C.to_GtkToolbar(v.GWidget), C.gint(n))
+	p_tool_item := C.gtk_toolbar_get_nth_item(C.toGToolbar(v.GWidget), C.gint(n))
 	if p_tool_item == nil {
 		panic("Toolbar.GetNthItem: index out of bounds")
 	}
@@ -5490,40 +5490,40 @@ func (v *Toolbar) GetNthItem(n int) IToolItem {
 	return v.items[p_tool_item]	
 }
 func (v *Toolbar) GetDropIndex(x, y int) int {
-	return int(C.gtk_toolbar_get_drop_index(C.to_GtkToolbar(v.GWidget), C.gint(x), C.gint(y)))
+	return int(C.gtk_toolbar_get_drop_index(C.toGToolbar(v.GWidget), C.gint(x), C.gint(y)))
 }
 func (v *Toolbar) SetDropHighlightItem(item IToolItem, index int) {
-	C.gtk_toolbar_set_drop_highlight_item(C.to_GtkToolbar(v.GWidget), C.to_GtkToolItem(item.AsToolItem().GWidget), C.gint(index))
+	C.gtk_toolbar_set_drop_highlight_item(C.toGToolbar(v.GWidget), C.toGToolItem(item.AsToolItem().GWidget), C.gint(index))
 }
 func (v *Toolbar) SetShowArrow(show_arrow bool) {
-	C.gtk_toolbar_set_show_arrow(C.to_GtkToolbar(v.GWidget), bool2gboolean(show_arrow))
+	C.gtk_toolbar_set_show_arrow(C.toGToolbar(v.GWidget), bool2gboolean(show_arrow))
 }
 func (v *Toolbar) SetOrientation(orientation Orientation) {
-	C.gtk_toolbar_set_orientation(C.to_GtkToolbar(v.GWidget), C.GtkOrientation(orientation))
+	C.gtk_toolbar_set_orientation(C.toGToolbar(v.GWidget), C.GtkOrientation(orientation))
 }
 func (v *Toolbar) SetTooltips(enable bool) {
-	C.gtk_toolbar_set_tooltips(C.to_GtkToolbar(v.GWidget), bool2gboolean(enable))
+	C.gtk_toolbar_set_tooltips(C.toGToolbar(v.GWidget), bool2gboolean(enable))
 }
 func (v *Toolbar) UnsetIconSize() {
-	C.gtk_toolbar_unset_icon_size(C.to_GtkToolbar(v.GWidget))
+	C.gtk_toolbar_unset_icon_size(C.toGToolbar(v.GWidget))
 }
 func (v *Toolbar) GetShowArrow() bool {
-	return gboolean2bool(C.gtk_toolbar_get_show_arrow(C.to_GtkToolbar(v.GWidget)))
+	return gboolean2bool(C.gtk_toolbar_get_show_arrow(C.toGToolbar(v.GWidget)))
 }
 func (v *Toolbar) GetOrientation() Orientation {
-	return Orientation(C.gtk_toolbar_get_orientation(C.to_GtkToolbar(v.GWidget)))
+	return Orientation(C.gtk_toolbar_get_orientation(C.toGToolbar(v.GWidget)))
 }
 func (v *Toolbar) GetStyle() ToolbarStyle {
-	return ToolbarStyle(C.gtk_toolbar_get_style(C.to_GtkToolbar(v.GWidget)))
+	return ToolbarStyle(C.gtk_toolbar_get_style(C.toGToolbar(v.GWidget)))
 }
 func (v *Toolbar) GetIconSize() IconSize {
-	return IconSize(C.gtk_toolbar_get_icon_size(C.to_GtkToolbar(v.GWidget)))
+	return IconSize(C.gtk_toolbar_get_icon_size(C.toGToolbar(v.GWidget)))
 }
 func (v *Toolbar) GetTooltips() bool {
-	return gboolean2bool(C.gtk_toolbar_get_tooltips(C.to_GtkToolbar(v.GWidget)))
+	return gboolean2bool(C.gtk_toolbar_get_tooltips(C.toGToolbar(v.GWidget)))
 }
 func (v *Toolbar) GetReliefStyle() ReliefStyle {
-	return ReliefStyle(C.gtk_toolbar_get_relief_style(C.to_GtkToolbar(v.GWidget)))
+	return ReliefStyle(C.gtk_toolbar_get_relief_style(C.toGToolbar(v.GWidget)))
 }
 // gtk_toolbar_append_item
 // gtk_toolbar_prepend_item
@@ -5538,15 +5538,15 @@ func (v *Toolbar) GetReliefStyle() ReliefStyle {
 // gtk_toolbar_prepend_widget
 // gtk_toolbar_insert_widget
 func (v *Toolbar) SetStyle(style ToolbarStyle) {
-	C.gtk_toolbar_set_style(C.to_GtkToolbar(v.GWidget), C.GtkToolbarStyle(style))
+	C.gtk_toolbar_set_style(C.toGToolbar(v.GWidget), C.GtkToolbarStyle(style))
 }
 // gtk_toolbar_insert_stock
 func (v *Toolbar) SetIconSize(icon_size IconSize) {
-	C.gtk_toolbar_set_icon_size(C.to_GtkToolbar(v.GWidget), C.GtkIconSize(icon_size))
+	C.gtk_toolbar_set_icon_size(C.toGToolbar(v.GWidget), C.GtkIconSize(icon_size))
 }
 // gtk_toolbar_remove_space
 func (v *Toolbar) UnsetStyle() {
-	C.gtk_toolbar_unset_style(C.to_GtkToolbar(v.GWidget))
+	C.gtk_toolbar_unset_style(C.toGToolbar(v.GWidget))
 }
 
 //-----------------------------------------------------------------------
@@ -5562,7 +5562,7 @@ type ToolItem struct {
 }
 
 func NewToolItem() *ToolItem {		
-	return &ToolItem{Bin{Container{Widget{C.to_GtkWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
+	return &ToolItem{Bin{Container{Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
 }
 
 func (v *ToolItem) AsToolItem() *ToolItem {
@@ -5580,46 +5580,46 @@ func (v *ToolItem) OnToolbarReconfigured(onclick interface{}, datas ...interface
 }
 
 func (v *ToolItem) SetHomogeneous(homogeneous bool) {	
-	C.gtk_tool_item_set_homogeneous(C.to_GtkToolItem(v.GWidget), bool2gboolean(homogeneous))
+	C.gtk_tool_item_set_homogeneous(C.toGToolItem(v.GWidget), bool2gboolean(homogeneous))
 }
 func (v *ToolItem) GetHomogeneous() bool {
-	return gboolean2bool(C.gtk_tool_item_get_homogeneous(C.to_GtkToolItem(v.GWidget)))
+	return gboolean2bool(C.gtk_tool_item_get_homogeneous(C.toGToolItem(v.GWidget)))
 }
 func (v *ToolItem) SetExpand(expand bool) {	
-	C.gtk_tool_item_set_expand(C.to_GtkToolItem(v.GWidget), bool2gboolean(expand))
+	C.gtk_tool_item_set_expand(C.toGToolItem(v.GWidget), bool2gboolean(expand))
 }
 func (v *ToolItem) GetExpand() bool {
-	return gboolean2bool(C.gtk_tool_item_get_expand(C.to_GtkToolItem(v.GWidget)))
+	return gboolean2bool(C.gtk_tool_item_get_expand(C.toGToolItem(v.GWidget)))
 }
 /*func (v *GtkToolItem) SetTooltip(tooltips *GtkTooltips, tip_text, tip_private string) { // FIXME
 	p_tip_text := C.CString(tip_text)
 	defer C.freeCstr(p_tip_text)	
 	p_tip_private := C.CString(tip_private)
 	defer C.freeCstr(p_tip_private)	
-	C.gtk_tool_item_set_tooltip(C.to_GtkToolItem(v.GWidget), tooltips.Tooltip, C.toGstr(p_tip_text), C.toGstr(p_tip_private))
+	C.gtk_tool_item_set_tooltip(C.toGToolItem(v.GWidget), tooltips.Tooltip, C.toGstr(p_tip_text), C.toGstr(p_tip_private))
 }*/
 func (v *ToolItem) SetTooltipMarkup(markup string) {	
 	p_markup := C.CString(markup)
 	defer C.freeCstr(p_markup)		
-	C.gtk_tool_item_set_tooltip_markup(C.to_GtkToolItem(v.GWidget), C.toGstr(p_markup))
+	C.gtk_tool_item_set_tooltip_markup(C.toGToolItem(v.GWidget), C.toGstr(p_markup))
 }
 func (v *ToolItem) GetToolbarStyle() ToolbarStyle {
-	return ToolbarStyle(C.gtk_tool_item_get_toolbar_style(C.to_GtkToolItem(v.GWidget)))
+	return ToolbarStyle(C.gtk_tool_item_get_toolbar_style(C.toGToolItem(v.GWidget)))
 }
 func (v *ToolItem) GetReliefStyle() ReliefStyle {
-	return ReliefStyle(C.gtk_tool_item_get_relief_style(C.to_GtkToolItem(v.GWidget)))
+	return ReliefStyle(C.gtk_tool_item_get_relief_style(C.toGToolItem(v.GWidget)))
 }
 func (v *ToolItem) GetTextAlignment() float64 {
-	return float64(C.gtk_tool_item_get_text_alignment(C.to_GtkToolItem(v.GWidget)))
+	return float64(C.gtk_tool_item_get_text_alignment(C.toGToolItem(v.GWidget)))
 }
 func (v *ToolItem) GetTextOrientation() Orientation {
-	return Orientation(C.gtk_tool_item_get_text_orientation(C.to_GtkToolItem(v.GWidget)))
+	return Orientation(C.gtk_tool_item_get_text_orientation(C.toGToolItem(v.GWidget)))
 }
 // gtk_tool_item_retrieve_proxy_menu_item
 // gtk_tool_item_get_proxy_menu_item
 // gtk_tool_item_set_proxy_menu_item
 func (v *ToolItem) RebuildMenu() {		
-	C.gtk_tool_item_rebuild_menu(C.to_GtkToolItem(v.GWidget))
+	C.gtk_tool_item_rebuild_menu(C.toGToolItem(v.GWidget))
 }
 // gtk_tool_item_toolbar_reconfigured
 // gtk_tool_item_get_text_size_group
@@ -5682,7 +5682,7 @@ type SeparatorToolItem struct {
 
 func NewSeparatorToolItem() *SeparatorToolItem {		
 	return &SeparatorToolItem{ToolItem{Bin{Container{Widget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
 }
 
 func (v *SeparatorToolItem) AsToolItem() *ToolItem {
@@ -5690,10 +5690,10 @@ func (v *SeparatorToolItem) AsToolItem() *ToolItem {
 }
 
 func (v *SeparatorToolItem) SetDraw(draw bool) {	
-	C.gtk_separator_tool_item_set_draw(C.to_GtkSeparatorToolItem(v.GWidget), bool2gboolean(draw))
+	C.gtk_separator_tool_item_set_draw(C.toGSeparatorToolItem(v.GWidget), bool2gboolean(draw))
 }
 func (v *SeparatorToolItem) GetDraw() bool {
-	return gboolean2bool(C.gtk_separator_tool_item_get_draw(C.to_GtkSeparatorToolItem(v.GWidget)))
+	return gboolean2bool(C.gtk_separator_tool_item_get_draw(C.toGSeparatorToolItem(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -5707,15 +5707,15 @@ type ToolButton struct {
 func NewToolButton(icon_widget *Widget, text string) *ToolButton {
 	p_text := C.CString(text)
 	defer C.freeCstr(p_text)	
-	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget))
-	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(
+	p_icon_widget := C.toGWidget(unsafe.Pointer(icon_widget))
+	p_tool_button_widget := C.toGWidget(unsafe.Pointer(
 		C.gtk_tool_button_new(p_icon_widget, C.toGstr(p_text))))
 	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}}
 }
 func NewToolButtonFromStock(stock_id string) *ToolButton {
 	p_stock_id := C.CString(stock_id)
 	defer C.freeCstr(p_stock_id)
-	p_tool_button_widget := C.to_GtkWidget(unsafe.Pointer(
+	p_tool_button_widget := C.toGWidget(unsafe.Pointer(
 		C.gtk_tool_button_new_from_stock(C.toGstr(p_stock_id))))
 	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}}
 }
@@ -5731,58 +5731,58 @@ func (v *ToolButton) OnClicked(onclick interface{}, datas ...interface{}) int {
 func (v *ToolButton) SetLabel(label string) {
 	p_label := C.CString(label)
 	defer C.freeCstr(p_label)	
-	C.gtk_tool_button_set_label(C.to_GtkToolButton(v.GWidget), C.toGstr(p_label))
+	C.gtk_tool_button_set_label(C.toGToolButton(v.GWidget), C.toGstr(p_label))
 }
 func (v *ToolButton) GetLabel() string {
-	return C.GoString(C.toCstr(C.gtk_tool_button_get_label(C.to_GtkToolButton(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_tool_button_get_label(C.toGToolButton(v.GWidget))))
 }
 func (v *ToolButton) SetUseUnderline(use_underline bool) {	
-	C.gtk_tool_button_set_use_underline(C.to_GtkToolButton(v.GWidget), bool2gboolean(use_underline))
+	C.gtk_tool_button_set_use_underline(C.toGToolButton(v.GWidget), bool2gboolean(use_underline))
 }
 func (v *ToolButton) GetUseUnderline() bool {
-	return gboolean2bool(C.gtk_tool_button_get_use_underline(C.to_GtkToolButton(v.GWidget)))
+	return gboolean2bool(C.gtk_tool_button_get_use_underline(C.toGToolButton(v.GWidget)))
 }
 func (v *ToolButton) SetStockId(stock_id string) {
 	p_stock_id := C.CString(stock_id)
 	defer C.freeCstr(p_stock_id)	
-	C.gtk_tool_button_set_stock_id(C.to_GtkToolButton(v.GWidget), C.toGstr(p_stock_id))
+	C.gtk_tool_button_set_stock_id(C.toGToolButton(v.GWidget), C.toGstr(p_stock_id))
 }
 func (v *ToolButton) GetStockId() string {
-	return C.GoString(C.toCstr(C.gtk_tool_button_get_stock_id(C.to_GtkToolButton(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_tool_button_get_stock_id(C.toGToolButton(v.GWidget))))
 }
 func (v *ToolButton) SetIconName(icon_name string) {
 	p_icon_name := C.CString(icon_name)
 	defer C.freeCstr(p_icon_name)	
-	C.gtk_tool_button_set_icon_name(C.to_GtkToolButton(v.GWidget), C.toGstr(p_icon_name))
+	C.gtk_tool_button_set_icon_name(C.toGToolButton(v.GWidget), C.toGstr(p_icon_name))
 }
 func (v *ToolButton) GetIconName() string {
-	return C.GoString(C.toCstr(C.gtk_tool_button_get_icon_name(C.to_GtkToolButton(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_tool_button_get_icon_name(C.toGToolButton(v.GWidget))))
 }
 func (v *ToolButton) SetIconWidget(icon_widget *Widget) {
-	p_icon_widget := C.to_GtkWidget(unsafe.Pointer(icon_widget.GWidget))
-	C.gtk_tool_button_set_icon_widget(C.to_GtkToolButton(v.GWidget), p_icon_widget)
+	p_icon_widget := C.toGWidget(unsafe.Pointer(icon_widget.GWidget))
+	C.gtk_tool_button_set_icon_widget(C.toGToolButton(v.GWidget), p_icon_widget)
 }
 var g_ToolButton_IconWidget *Widget
 func (v *ToolButton) GetIconWidget() *Widget {
 	if g_ToolButton_IconWidget == nil {
-		g_ToolButton_IconWidget = &Widget{C.to_GtkWidget(unsafe.Pointer(
-			C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.GWidget))))}	
+		g_ToolButton_IconWidget = &Widget{C.toGWidget(unsafe.Pointer(
+			C.gtk_tool_button_get_icon_widget(C.toGToolButton(v.GWidget))))}	
 	} else {
-		g_ToolButton_IconWidget.GWidget = C.gtk_tool_button_get_icon_widget(C.to_GtkToolButton(v.GWidget))
+		g_ToolButton_IconWidget.GWidget = C.gtk_tool_button_get_icon_widget(C.toGToolButton(v.GWidget))
 	}
 	return g_ToolButton_IconWidget
 }
 func (v *ToolButton) SetLabelWidget(label_widget *Widget) {
-	p_label_widget := C.to_GtkWidget(unsafe.Pointer(label_widget.GWidget))
-	C.gtk_tool_button_set_label_widget(C.to_GtkToolButton(v.GWidget), p_label_widget)
+	p_label_widget := C.toGWidget(unsafe.Pointer(label_widget.GWidget))
+	C.gtk_tool_button_set_label_widget(C.toGToolButton(v.GWidget), p_label_widget)
 }
 var g_ToolButton_LabelWidget *Widget
 func (v *ToolButton) GetLabelWidget() *Widget {
 	if g_ToolButton_LabelWidget == nil {
-		g_ToolButton_LabelWidget = &Widget{C.to_GtkWidget(unsafe.Pointer(
-			C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.GWidget))))}	
+		g_ToolButton_LabelWidget = &Widget{C.toGWidget(unsafe.Pointer(
+			C.gtk_tool_button_get_label_widget(C.toGToolButton(v.GWidget))))}	
 	} else {
-		g_ToolButton_LabelWidget.GWidget = C.gtk_tool_button_get_label_widget(C.to_GtkToolButton(v.GWidget))
+		g_ToolButton_LabelWidget.GWidget = C.gtk_tool_button_get_label_widget(C.toGToolButton(v.GWidget))
 	}
 	return g_ToolButton_LabelWidget
 }
@@ -5808,13 +5808,13 @@ type ToggleToolButton struct {
 
 func NewToggleToolButton() *ToggleToolButton {		
 	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}}}
 }
 func NewToggleToolButtonFromStock(stock_id string) *ToggleToolButton {		
 	p_stock_id := C.CString(stock_id)
 	defer C.freeCstr(p_stock_id)	
 	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(C.toGstr(p_stock_id))))}}}}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(C.toGstr(p_stock_id))))}}}}}}
 }
 
 func (v *ToggleToolButton) AsToolItem() *ToolItem {
@@ -5826,10 +5826,10 @@ func (v *ToggleToolButton) OnToggled(onclick interface{}, datas ...interface{}) 
 }
 
 func (v *ToggleToolButton) SetActive(is_active bool) {	
-	C.gtk_toggle_tool_button_set_active(C.to_GtkToggleToolButton(v.GWidget), bool2gboolean(is_active))
+	C.gtk_toggle_tool_button_set_active(C.toGToggleToolButton(v.GWidget), bool2gboolean(is_active))
 }
 func (v *ToggleToolButton) GetActive() bool {
-	return gboolean2bool(C.gtk_toggle_tool_button_get_active(C.to_GtkToggleToolButton(v.GWidget)))
+	return gboolean2bool(C.gtk_toggle_tool_button_get_active(C.toGToggleToolButton(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -5842,14 +5842,14 @@ type RadioToolButton struct {
 
 func NewRadioToolButton(group *glib.SList) *RadioToolButton {		
 	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(
+		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(
 			C.to_gslist(unsafe.Pointer(group.ToSList())))))}}}}}}}
 }
 func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolButton {		
 	p_stock_id := C.CString(stock_id)
 	defer C.freeCstr(p_stock_id)	
 	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
+		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
 			C.to_gslist(unsafe.Pointer(group.ToSList())), C.toGstr(p_stock_id))))}}}}}}}
 }
 // gtk_radio_tool_button_new_from_widget
@@ -6151,7 +6151,7 @@ func (v *FileChooser) ListFilters() []*FileFilter {
 	n := int(C.g_slist_length(c_list))
 	ret := make([]*FileFilter, n)
 	for i := 0; i < n; i++ {
-		ret[i] = &FileFilter{C.to_GtkFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
+		ret[i] = &FileFilter{C.toGFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
 	}
 	return ret
 }
@@ -6193,7 +6193,7 @@ func NewFileChooserButton(title string, action FileChooserAction) *FileChooserBu
 		C.gtk_file_chooser_button_new(C.toGstr(ptitle), C.GtkFileChooserAction(action)), // FIXME
 	}
 	return &FileChooserButton{HBox{Box{Container{widget}}},
-		FileChooser{C.to_GtkFileChooser(widget.GWidget)}, // FIXME
+		FileChooser{C.toGFileChooser(widget.GWidget)}, // FIXME
 	}
 }
 
@@ -6206,7 +6206,7 @@ func NewFileChooserButtonWithDialog(dialog *FileChooserDialog) *FileChooserButto
 	}
 	return &FileChooserButton{
 		HBox{Box{Container{w}}},
-		FileChooser{C.to_GtkFileChooser(w.GWidget)},
+		FileChooser{C.toGFileChooser(w.GWidget)},
 	}
 }
 
@@ -6239,7 +6239,7 @@ func NewFileChooserDialog(title string, parent *Window, file_chooser_action File
 			C.toGstr(pbutton))}
 	ret := &FileChooserDialog{
 		Dialog{Window{Bin{Container{widget}}}},
-		FileChooser{C.to_GtkFileChooser(widget.GWidget)}}
+		FileChooser{C.toGFileChooser(widget.GWidget)}}
 	text, res := variadicButtonsToArrays(buttons)
 	for i := range text {
 		ret.AddButton(text[i], res[i])
@@ -6258,7 +6258,7 @@ type FileChooserWidget struct {
 func NewFileChooserWidget(file_chooser_action FileChooserAction) *FileChooserWidget {
 	w := Widget{C._gtk_file_chooser_widget_new(C.int(file_chooser_action))}
 	return &FileChooserWidget{VBox{Box{Container{w}}},
-		FileChooser{C.to_GtkFileChooser(w.GWidget)}, // FIXME
+		FileChooser{C.toGFileChooser(w.GWidget)}, // FIXME
 	}
 }
 
@@ -6318,38 +6318,38 @@ func NewFontButtonWithFont(fontname string) *FontButton {
 func (v *FontButton) SetFontName(fontname string) {
 	ptr := C.CString(fontname)
 	defer C.freeCstr(ptr)
-	C.gtk_font_button_set_font_name(C.to_GtkFontButton(v.GWidget), C.toGstr(ptr))
+	C.gtk_font_button_set_font_name(C.toGFontButton(v.GWidget), C.toGstr(ptr))
 }
 func (v *FontButton) GetFontName() string {
-	return C.GoString(C.toCstr(C.gtk_font_button_get_font_name(C.to_GtkFontButton(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_font_button_get_font_name(C.toGFontButton(v.GWidget))))
 }
 
 // gtk_font_button_set_show_style
 // gtk_font_button_get_show_style
 
 func (v *FontButton) SetShowSize(show_size bool) {
-	C.gtk_font_button_set_show_size(C.to_GtkFontButton(v.GWidget), bool2gboolean(show_size))
+	C.gtk_font_button_set_show_size(C.toGFontButton(v.GWidget), bool2gboolean(show_size))
 }
 func (v *FontButton) GetShowSize() bool {
-	return gboolean2bool(C.gtk_font_button_get_show_size(C.to_GtkFontButton(v.GWidget)))
+	return gboolean2bool(C.gtk_font_button_get_show_size(C.toGFontButton(v.GWidget)))
 }
 
 // gtk_font_button_set_use_font
 // gtk_font_button_get_use_font
 
 func (v *FontButton) SetUseSize(use_size bool) {
-	C.gtk_font_button_set_use_size(C.to_GtkFontButton(v.GWidget), bool2gboolean(use_size))
+	C.gtk_font_button_set_use_size(C.toGFontButton(v.GWidget), bool2gboolean(use_size))
 }
 func (v *FontButton) GetUseSize() bool {
-	return gboolean2bool(C.gtk_font_button_get_use_size(C.to_GtkFontButton(v.GWidget)))
+	return gboolean2bool(C.gtk_font_button_get_use_size(C.toGFontButton(v.GWidget)))
 }
 func (v *FontButton) SetTitle(title string) {
 	ptr := C.CString(title)
 	defer C.freeCstr(ptr)
-	C.gtk_font_button_set_title(C.to_GtkFontButton(v.GWidget), C.toGstr(ptr))
+	C.gtk_font_button_set_title(C.toGFontButton(v.GWidget), C.toGstr(ptr))
 }
 func (v *FontButton) GetTitle() string {
-	return C.GoString(C.toCstr(C.gtk_font_button_get_title(C.to_GtkFontButton(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_font_button_get_title(C.toGFontButton(v.GWidget))))
 }
 
 //-----------------------------------------------------------------------
@@ -6385,12 +6385,12 @@ func NewFontSelectionDialog(title string) *FontSelectionDialog {
 		C.gtk_font_selection_dialog_new(C.toGstr(ptitle))}}}}}}
 }
 func (v *FontSelectionDialog) GetFontName() string {
-	return C.GoString(C.toCstr(C.gtk_font_selection_dialog_get_font_name(C.to_GtkFontSelectionDialog(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_font_selection_dialog_get_font_name(C.toGFontSelectionDialog(v.GWidget))))
 }
 func (v *FontSelectionDialog) SetFontName(font string) {
 	pfont := C.CString(font)
 	defer C.freeCstr(pfont)
-	C.gtk_font_selection_dialog_set_font_name(C.to_GtkFontSelectionDialog(v.GWidget), C.toGstr(pfont))
+	C.gtk_font_selection_dialog_set_font_name(C.toGFontSelectionDialog(v.GWidget), C.toGstr(pfont))
 }
 
 // gtk_font_selection_dialog_get_preview_text
@@ -6417,14 +6417,14 @@ func NewAlignment(xalign float64, yalign float64, xscale float64, yscale float64
 		C.gtk_alignment_new(C.gfloat(xalign), C.gfloat(yalign), C.gfloat(xscale), C.gfloat(yscale))}}}}
 }
 func (v *Alignment) Set(xalign float64, yalign float64, xscale float64, yscale float64) {
-	C.gtk_alignment_set(C.to_GtkAlignment(v.GWidget), C.gfloat(xalign), C.gfloat(yalign), C.gfloat(xscale), C.gfloat(yscale))
+	C.gtk_alignment_set(C.toGAlignment(v.GWidget), C.gfloat(xalign), C.gfloat(yalign), C.gfloat(xscale), C.gfloat(yscale))
 }
 func (v *Alignment) SetPadding(padding_top uint, padding_bottom uint, padding_left uint, padding_right uint) {
-	C.gtk_alignment_set_padding(C.to_GtkAlignment(v.GWidget), C.guint(padding_top), C.guint(padding_bottom), C.guint(padding_left), C.guint(padding_right))
+	C.gtk_alignment_set_padding(C.toGAlignment(v.GWidget), C.guint(padding_top), C.guint(padding_bottom), C.guint(padding_left), C.guint(padding_right))
 }
 func (v *Alignment) GetPadding() (padding_top uint, padding_bottom uint, padding_left uint, padding_right uint) {
 	var cpadding_top, cpadding_bottom, cpadding_left, cpadding_right C.guint
-	C.gtk_alignment_get_padding(C.to_GtkAlignment(v.GWidget), &cpadding_top, &cpadding_bottom, &cpadding_left, &cpadding_right)
+	C.gtk_alignment_get_padding(C.toGAlignment(v.GWidget), &cpadding_top, &cpadding_bottom, &cpadding_left, &cpadding_right)
 	padding_top = uint(cpadding_top)
 	padding_bottom = uint(cpadding_bottom)
 	padding_left = uint(cpadding_left)
@@ -6494,23 +6494,23 @@ func NewFixed() *Fixed {
 	return &Fixed{Container{Widget{C.gtk_fixed_new()}}}
 }
 func (v *Fixed) Put(w WidgetLike, x, y int) {
-	C.gtk_fixed_put(C.to_GtkFixed(v.GWidget), w.ToNative(), C.gint(x), C.gint(y))
+	C.gtk_fixed_put(C.toGFixed(v.GWidget), w.ToNative(), C.gint(x), C.gint(y))
 }
 func (v *Fixed) Move(w WidgetLike, x, y int) {
-	C.gtk_fixed_move(C.to_GtkFixed(v.GWidget), w.ToNative(), C.gint(x), C.gint(y))
+	C.gtk_fixed_move(C.toGFixed(v.GWidget), w.ToNative(), C.gint(x), C.gint(y))
 }
 
 //Deprecated since 2.20. Use GtkWidget.GetHasWindow() instead.
 /*GtkFixed gets GetHasWindow() from anonymous field so this method can be commented out.
 func (v *GtkFixed) GetHasWindow() bool {
 	deprecated_since(2,20,0,"gtk_fixed_get_has_window()")
-	return gboolean2bool(C.gtk_fixed_get_has_window(C.to_GtkFixed(v.GWidget)))
+	return gboolean2bool(C.gtk_fixed_get_has_window(C.toGFixed(v.GWidget)))
 }*/
 //Deprecated since 2.20. Use GtkWidget.SetHasWindow() instead.
 /*GtkFixed gets SetHasWindow() from anonymous field so this method can be commented out.
 func (v *GtkFixed) SetHasWindow(has_window bool) {
 	deprecated_since(2,20,0,"gtk_fixed_set_has_window()")
-	C.gtk_fixed_set_has_window(C.to_GtkFixed(v.GWidget), bool2gboolean(has_window))
+	C.gtk_fixed_set_has_window(C.toGFixed(v.GWidget), bool2gboolean(has_window))
 }*/
 
 //-----------------------------------------------------------------------
@@ -6564,79 +6564,79 @@ func NewNotebook() *Notebook {
 		C.gtk_notebook_new()}}}
 }
 func (v *Notebook) AppendPage(child WidgetLike, tab_label WidgetLike) int {
-	return int(C.gtk_notebook_append_page(C.to_GtkNotebook(v.GWidget), child.ToNative(), tab_label.ToNative()))
+	return int(C.gtk_notebook_append_page(C.toGNotebook(v.GWidget), child.ToNative(), tab_label.ToNative()))
 }
 func (v *Notebook) AppendPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
-	return int(C.gtk_notebook_append_page_menu(C.to_GtkNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
+	return int(C.gtk_notebook_append_page_menu(C.toGNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
 }
 func (v *Notebook) PrependPage(child WidgetLike, tab_label WidgetLike) int {
-	return int(C.gtk_notebook_prepend_page(C.to_GtkNotebook(v.GWidget), child.ToNative(), tab_label.ToNative()))
+	return int(C.gtk_notebook_prepend_page(C.toGNotebook(v.GWidget), child.ToNative(), tab_label.ToNative()))
 }
 func (v *Notebook) PrependPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
-	return int(C.gtk_notebook_prepend_page_menu(C.to_GtkNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
+	return int(C.gtk_notebook_prepend_page_menu(C.toGNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
 }
 func (v *Notebook) InsertPage(child WidgetLike, tab_label WidgetLike, position int) int {
-	return int(C.gtk_notebook_insert_page(C.to_GtkNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), C.gint(position)))
+	return int(C.gtk_notebook_insert_page(C.toGNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), C.gint(position)))
 }
 func (v *Notebook) InsertPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike, position int) int {
-	return int(C.gtk_notebook_insert_page_menu(C.to_GtkNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative(), C.gint(position)))
+	return int(C.gtk_notebook_insert_page_menu(C.toGNotebook(v.GWidget), child.ToNative(), tab_label.ToNative(), menu_label.ToNative(), C.gint(position)))
 }
 func (v *Notebook) RemovePage(child WidgetLike, page_num int) {
-	C.gtk_notebook_remove_page(C.to_GtkNotebook(v.GWidget), C.gint(page_num))
+	C.gtk_notebook_remove_page(C.toGNotebook(v.GWidget), C.gint(page_num))
 }
 func (v *Notebook) PageNum(child WidgetLike) int {
-	return int(C.gtk_notebook_page_num(C.to_GtkNotebook(v.GWidget), child.ToNative()))
+	return int(C.gtk_notebook_page_num(C.toGNotebook(v.GWidget), child.ToNative()))
 }
 func (v *Notebook) NextPage() {
-	C.gtk_notebook_next_page(C.to_GtkNotebook(v.GWidget))
+	C.gtk_notebook_next_page(C.toGNotebook(v.GWidget))
 }
 func (v *Notebook) PrevPage() {
-	C.gtk_notebook_prev_page(C.to_GtkNotebook(v.GWidget))
+	C.gtk_notebook_prev_page(C.toGNotebook(v.GWidget))
 }
 func (v *Notebook) ReorderChild(child WidgetLike, position int) {
-	C.gtk_notebook_reorder_child(C.to_GtkNotebook(v.GWidget), child.ToNative(), C.gint(position))
+	C.gtk_notebook_reorder_child(C.toGNotebook(v.GWidget), child.ToNative(), C.gint(position))
 }
 func (v *Notebook) SetTabPos(pos PositionType) {
-	C.gtk_notebook_set_tab_pos(C.to_GtkNotebook(v.GWidget), C.GtkPositionType(pos))
+	C.gtk_notebook_set_tab_pos(C.toGNotebook(v.GWidget), C.GtkPositionType(pos))
 }
 func (v *Notebook) SetShowTabs(show_tabs bool) {
-	C.gtk_notebook_set_show_tabs(C.to_GtkNotebook(v.GWidget), bool2gboolean(show_tabs))
+	C.gtk_notebook_set_show_tabs(C.toGNotebook(v.GWidget), bool2gboolean(show_tabs))
 }
 func (v *Notebook) SetShowBorder(show_border bool) {
-	C.gtk_notebook_set_show_border(C.to_GtkNotebook(v.GWidget), bool2gboolean(show_border))
+	C.gtk_notebook_set_show_border(C.toGNotebook(v.GWidget), bool2gboolean(show_border))
 }
 func (v *Notebook) SetScrollable(scrollable bool) {
-	C.gtk_notebook_set_scrollable(C.to_GtkNotebook(v.GWidget), bool2gboolean(scrollable))
+	C.gtk_notebook_set_scrollable(C.toGNotebook(v.GWidget), bool2gboolean(scrollable))
 }
 
 //Deprecated.
 func (v *Notebook) SetTabBorder(border_width uint) {
 	deprecated_since(2, 0, 0, "gtk_notebook_set_tab_border()")
-	C.gtk_notebook_set_tab_border(C.to_GtkNotebook(v.GWidget), C.guint(border_width))
+	C.gtk_notebook_set_tab_border(C.toGNotebook(v.GWidget), C.guint(border_width))
 }
 func (v *Notebook) PopupEnable() {
-	C.gtk_notebook_popup_enable(C.to_GtkNotebook(v.GWidget))
+	C.gtk_notebook_popup_enable(C.toGNotebook(v.GWidget))
 }
 func (v *Notebook) PopupDisable() {
-	C.gtk_notebook_popup_disable(C.to_GtkNotebook(v.GWidget))
+	C.gtk_notebook_popup_disable(C.toGNotebook(v.GWidget))
 }
 func (v *Notebook) GetCurrentPage() int {
-	return int(C.gtk_notebook_get_current_page(C.to_GtkNotebook(v.GWidget)))
+	return int(C.gtk_notebook_get_current_page(C.toGNotebook(v.GWidget)))
 }
 func (v *Notebook) GetMenuLabel(child WidgetLike) *Widget {
 	return &Widget{
-		C.gtk_notebook_get_menu_label(C.to_GtkNotebook(v.GWidget), child.ToNative())}
+		C.gtk_notebook_get_menu_label(C.toGNotebook(v.GWidget), child.ToNative())}
 }
 func (v *Notebook) GetNthPage(page_num int) *Widget {
 	return &Widget{
-		C.gtk_notebook_get_nth_page(C.to_GtkNotebook(v.GWidget), C.gint(page_num))}
+		C.gtk_notebook_get_nth_page(C.toGNotebook(v.GWidget), C.gint(page_num))}
 }
 func (v *Notebook) GetNPages() int {
-	return int(C.gtk_notebook_get_n_pages(C.to_GtkNotebook(v.GWidget)))
+	return int(C.gtk_notebook_get_n_pages(C.toGNotebook(v.GWidget)))
 }
 func (v *Notebook) GetTabLabel(child WidgetLike) *Widget {
 	return &Widget{
-		C.gtk_notebook_get_tab_label(C.to_GtkNotebook(v.GWidget), child.ToNative())}
+		C.gtk_notebook_get_tab_label(C.toGNotebook(v.GWidget), child.ToNative())}
 }
 
 //Deprecated since 2.20. Modify the "tab-expand" and "tab-fill" child properties instead.
@@ -6644,7 +6644,7 @@ func (v *Notebook) QueryTabLabelPacking(child WidgetLike, expand *bool, fill *bo
 	deprecated_since(2, 20, 0, "gtk_notebook_query_tab_label_packing()")
 	var cexpand, cfill C.gboolean
 	var cpack_type C.GtkPackType
-	C.gtk_notebook_query_tab_label_packing(C.to_GtkNotebook(v.GWidget), child.ToNative(), &cexpand, &cfill, &cpack_type)
+	C.gtk_notebook_query_tab_label_packing(C.toGNotebook(v.GWidget), child.ToNative(), &cexpand, &cfill, &cpack_type)
 	*expand = gboolean2bool(cexpand)
 	*fill = gboolean2bool(cfill)
 	*pack_type = uint(cpack_type)
@@ -6653,112 +6653,112 @@ func (v *Notebook) QueryTabLabelPacking(child WidgetLike, expand *bool, fill *bo
 //Deprecated.
 func (v *Notebook) SetHomogeneousTabs(homogeneous bool) {
 	deprecated_since(2, 0, 0, "gtk_notebook_set_homogeneous_tabs()")
-	C.gtk_notebook_set_homogeneous_tabs(C.to_GtkNotebook(v.GWidget), bool2gboolean(homogeneous))
+	C.gtk_notebook_set_homogeneous_tabs(C.toGNotebook(v.GWidget), bool2gboolean(homogeneous))
 }
 func (v *Notebook) SetMenuLabel(child WidgetLike, menu_label WidgetLike) {
-	C.gtk_notebook_set_menu_label(C.to_GtkNotebook(v.GWidget), child.ToNative(), menu_label.ToNative())
+	C.gtk_notebook_set_menu_label(C.toGNotebook(v.GWidget), child.ToNative(), menu_label.ToNative())
 }
 func (v *Notebook) SetMenuLabelText(child WidgetLike, name string) {
 	ptr := C.CString(name)
 	defer C.freeCstr(ptr)
-	C.gtk_notebook_set_menu_label_text(C.to_GtkNotebook(v.GWidget), child.ToNative(), C.toGstr(ptr))
+	C.gtk_notebook_set_menu_label_text(C.toGNotebook(v.GWidget), child.ToNative(), C.toGstr(ptr))
 }
 
 //Deprecated.
 func (v *Notebook) SetTabHBorder(tab_hborder uint) {
 	deprecated_since(2, 0, 0, "gtk_notebook_set_tab_hborder()")
-	C.gtk_notebook_set_tab_hborder(C.to_GtkNotebook(v.GWidget), C.guint(tab_hborder))
+	C.gtk_notebook_set_tab_hborder(C.toGNotebook(v.GWidget), C.guint(tab_hborder))
 }
 func (v *Notebook) SetTabLabel(child WidgetLike, tab_label WidgetLike) {
-	C.gtk_notebook_set_tab_label(C.to_GtkNotebook(v.GWidget), child.ToNative(), tab_label.ToNative())
+	C.gtk_notebook_set_tab_label(C.toGNotebook(v.GWidget), child.ToNative(), tab_label.ToNative())
 }
 
 //Deprecated since 2.20. Modify the "tab-expand" and "tab-fill" child properties instead.
 func (v *Notebook) SetTabLabelPacking(child WidgetLike, expand bool, fill bool, pack_type uint) {
 	deprecated_since(2, 20, 0, "gtk_notebook_set_tab_label_packing()")
-	C.gtk_notebook_set_tab_label_packing(C.to_GtkNotebook(v.GWidget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type))
+	C.gtk_notebook_set_tab_label_packing(C.toGNotebook(v.GWidget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.GtkPackType(pack_type))
 }
 func (v *Notebook) SetTabLabelText(child WidgetLike, name string) {
 	ptr := C.CString(name)
 	defer C.freeCstr(ptr)
-	C.gtk_notebook_set_tab_label_text(C.to_GtkNotebook(v.GWidget), child.ToNative(), C.toGstr(ptr))
+	C.gtk_notebook_set_tab_label_text(C.toGNotebook(v.GWidget), child.ToNative(), C.toGstr(ptr))
 }
 
 //Deprecated.
 func (v *Notebook) SetTabVBorder(tab_vborder uint) {
 	deprecated_since(2, 0, 0, "gtk_notebook_set_tab_vborder()")
-	C.gtk_notebook_set_tab_vborder(C.to_GtkNotebook(v.GWidget), C.guint(tab_vborder))
+	C.gtk_notebook_set_tab_vborder(C.toGNotebook(v.GWidget), C.guint(tab_vborder))
 }
 func (v *Notebook) SetReorderable(child WidgetLike, reorderable bool) {
-	C.gtk_notebook_set_tab_reorderable(C.to_GtkNotebook(v.GWidget), child.ToNative(), bool2gboolean(reorderable))
+	C.gtk_notebook_set_tab_reorderable(C.toGNotebook(v.GWidget), child.ToNative(), bool2gboolean(reorderable))
 }
 func (v *Notebook) SetTabDetachable(child WidgetLike, detachable bool) {
-	C.gtk_notebook_set_tab_detachable(C.to_GtkNotebook(v.GWidget), child.ToNative(), bool2gboolean(detachable))
+	C.gtk_notebook_set_tab_detachable(C.toGNotebook(v.GWidget), child.ToNative(), bool2gboolean(detachable))
 }
 func (v *Notebook) GetMenuLabelText(child WidgetLike) string {
-	return C.GoString(C.toCstr(C.gtk_notebook_get_menu_label_text(C.to_GtkNotebook(v.GWidget), child.ToNative())))
+	return C.GoString(C.toCstr(C.gtk_notebook_get_menu_label_text(C.toGNotebook(v.GWidget), child.ToNative())))
 }
 func (v *Notebook) GetScrollable() bool {
-	return gboolean2bool(C.gtk_notebook_get_scrollable(C.to_GtkNotebook(v.GWidget)))
+	return gboolean2bool(C.gtk_notebook_get_scrollable(C.toGNotebook(v.GWidget)))
 }
 func (v *Notebook) GetShowBorder() bool {
-	return gboolean2bool(C.gtk_notebook_get_show_border(C.to_GtkNotebook(v.GWidget)))
+	return gboolean2bool(C.gtk_notebook_get_show_border(C.toGNotebook(v.GWidget)))
 }
 func (v *Notebook) GetShowTabs() bool {
-	return gboolean2bool(C.gtk_notebook_get_show_tabs(C.to_GtkNotebook(v.GWidget)))
+	return gboolean2bool(C.gtk_notebook_get_show_tabs(C.toGNotebook(v.GWidget)))
 }
 func (v *Notebook) GetTabLabelText(child WidgetLike) string {
-	return C.GoString(C.toCstr(C.gtk_notebook_get_tab_label_text(C.to_GtkNotebook(v.GWidget), child.ToNative())))
+	return C.GoString(C.toCstr(C.gtk_notebook_get_tab_label_text(C.toGNotebook(v.GWidget), child.ToNative())))
 }
 func (v *Notebook) GetTabPos() uint {
-	return uint(C.gtk_notebook_get_tab_pos(C.to_GtkNotebook(v.GWidget)))
+	return uint(C.gtk_notebook_get_tab_pos(C.toGNotebook(v.GWidget)))
 }
 func (v *Notebook) GetTabReorderable(child WidgetLike) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.to_GtkNotebook(v.GWidget), child.ToNative()))
+	return gboolean2bool(C.gtk_notebook_get_tab_reorderable(C.toGNotebook(v.GWidget), child.ToNative()))
 }
 func (v *Notebook) GetTabDetachable(child WidgetLike) bool {
-	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.to_GtkNotebook(v.GWidget), child.ToNative()))
+	return gboolean2bool(C.gtk_notebook_get_tab_detachable(C.toGNotebook(v.GWidget), child.ToNative()))
 }
 
 // gtk_notebook_get_tab_hborder //since 2.22
 // gtk_notebook_get_tab_vborder //since 2.22
 
 func (v *Notebook) SetCurrentPage(pageNum int) {
-	C.gtk_notebook_set_current_page(C.to_GtkNotebook(v.GWidget), C.gint(pageNum))
+	C.gtk_notebook_set_current_page(C.toGNotebook(v.GWidget), C.gint(pageNum))
 }
 
 //Deprecated since 2.12, use SetGroupName() instead
 func (v *Notebook) SetGroupId(group_id int) {
 	deprecated_since(2, 12, 0, "gtk_notebook_set_group_id()")
-	C.gtk_notebook_set_group_id(C.to_GtkNotebook(v.GWidget), C.gint(group_id))
+	C.gtk_notebook_set_group_id(C.toGNotebook(v.GWidget), C.gint(group_id))
 }
 
 //Deprecated since 2.12, use GetGroupName() instead
 func (v *Notebook) GetGroupId() int {
 	deprecated_since(2, 12, 0, "gtk_notebook_get_group_id()")
-	return int(C.gtk_notebook_get_group_id(C.to_GtkNotebook(v.GWidget)))
+	return int(C.gtk_notebook_get_group_id(C.toGNotebook(v.GWidget)))
 }
 
 //Deprecated since 2.24, use SetGroupName() instead
 func (v *Notebook) SetGroup(group unsafe.Pointer) {
 	deprecated_since(2, 24, 0, "gtk_notebook_set_group()")
-	C.gtk_notebook_set_group(C.to_GtkNotebook(v.GWidget), C.gpointer(group))
+	C.gtk_notebook_set_group(C.toGNotebook(v.GWidget), C.gpointer(group))
 }
 
 //Deprecated since 2.24, use GetGroupName() instead
 func (v *Notebook) GetGroup() unsafe.Pointer {
 	deprecated_since(2, 24, 0, "gtk_notebook_get_group()")
-	return unsafe.Pointer(C.gtk_notebook_get_group(C.to_GtkNotebook(v.GWidget)))
+	return unsafe.Pointer(C.gtk_notebook_get_group(C.toGNotebook(v.GWidget)))
 }
 func (v *Notebook) SetGroupName(group string) {
 	panic_if_version_older(2, 24, 0, "gtk_notebook_set_group_name()")
 	ptr := C.CString(group)
 	defer C.freeCstr(ptr)
-	C._gtk_notebook_set_group_name(C.to_GtkNotebook(v.GWidget), C.toGstr(ptr))
+	C._gtk_notebook_set_group_name(C.toGNotebook(v.GWidget), C.toGstr(ptr))
 }
 func (v *Notebook) GetGroupName() string {
 	panic_if_version_older(2, 24, 0, "gtk_notebook_get_group_name()")
-	return C.GoString(C.toCstr(C._gtk_notebook_get_group_name(C.to_GtkNotebook(v.GWidget))))
+	return C.GoString(C.toCstr(C._gtk_notebook_get_group_name(C.toGNotebook(v.GWidget))))
 }
 
 // gtk_notebook_set_action_widget //since 2.20
@@ -6785,43 +6785,43 @@ func NewTable(rows uint, columns uint, homogeneous bool) *Table {
 		C.gtk_table_new(C.guint(rows), C.guint(columns), bool2gboolean(homogeneous))}}}
 }
 func (v *Table) Resize(rows uint, columns uint) {
-	C.gtk_table_resize(C.to_GtkTable(v.GWidget), C.guint(rows), C.guint(columns))
+	C.gtk_table_resize(C.toGTable(v.GWidget), C.guint(rows), C.guint(columns))
 }
 func (v *Table) Attach(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint, xoptions AttachOptions, yoptions AttachOptions, xpadding uint, ypadding uint) {
-	C.gtk_table_attach(C.to_GtkTable(v.GWidget), child.ToNative(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), C.guint(xpadding), C.guint(ypadding))
+	C.gtk_table_attach(C.toGTable(v.GWidget), child.ToNative(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), C.guint(xpadding), C.guint(ypadding))
 }
 func (v *Table) AttachDefaults(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
-	C.gtk_table_attach_defaults(C.to_GtkTable(v.GWidget), child.ToNative(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach))
+	C.gtk_table_attach_defaults(C.toGTable(v.GWidget), child.ToNative(), C.guint(left_attach), C.guint(right_attach), C.guint(top_attach), C.guint(bottom_attach))
 }
 func (v *Table) SetRowSpacing(child WidgetLike, row uint, spacing uint) {
-	C.gtk_table_set_row_spacing(C.to_GtkTable(v.GWidget), C.guint(row), C.guint(spacing))
+	C.gtk_table_set_row_spacing(C.toGTable(v.GWidget), C.guint(row), C.guint(spacing))
 }
 func (v *Table) SetColSpacing(child WidgetLike, column uint, spacing uint) {
-	C.gtk_table_set_col_spacing(C.to_GtkTable(v.GWidget), C.guint(column), C.guint(spacing))
+	C.gtk_table_set_col_spacing(C.toGTable(v.GWidget), C.guint(column), C.guint(spacing))
 }
 func (v *Table) SetRowSpacings(child WidgetLike, spacing uint) {
-	C.gtk_table_set_row_spacings(C.to_GtkTable(v.GWidget), C.guint(spacing))
+	C.gtk_table_set_row_spacings(C.toGTable(v.GWidget), C.guint(spacing))
 }
 func (v *Table) SetColSpacings(child WidgetLike, spacing uint) {
-	C.gtk_table_set_col_spacings(C.to_GtkTable(v.GWidget), C.guint(spacing))
+	C.gtk_table_set_col_spacings(C.toGTable(v.GWidget), C.guint(spacing))
 }
 func (v *Table) SetHomogeneous(child WidgetLike, homogeneous bool) {
-	C.gtk_table_set_homogeneous(C.to_GtkTable(v.GWidget), bool2gboolean(homogeneous))
+	C.gtk_table_set_homogeneous(C.toGTable(v.GWidget), bool2gboolean(homogeneous))
 }
 func (v *Table) GetDefaultRowSpacing(child WidgetLike) uint {
-	return uint(C.gtk_table_get_default_row_spacing(C.to_GtkTable(v.GWidget)))
+	return uint(C.gtk_table_get_default_row_spacing(C.toGTable(v.GWidget)))
 }
 func (v *Table) GetHomogeneous(child WidgetLike) bool {
-	return gboolean2bool(C.gtk_table_get_homogeneous(C.to_GtkTable(v.GWidget)))
+	return gboolean2bool(C.gtk_table_get_homogeneous(C.toGTable(v.GWidget)))
 }
 func (v *Table) GetRowSpacing(child WidgetLike, row uint) uint {
-	return uint(C.gtk_table_get_row_spacing(C.to_GtkTable(v.GWidget), C.guint(row)))
+	return uint(C.gtk_table_get_row_spacing(C.toGTable(v.GWidget), C.guint(row)))
 }
 func (v *Table) GetColSpacing(child WidgetLike, column uint) uint {
-	return uint(C.gtk_table_get_col_spacing(C.to_GtkTable(v.GWidget), C.guint(column)))
+	return uint(C.gtk_table_get_col_spacing(C.toGTable(v.GWidget), C.guint(column)))
 }
 func (v *Table) GetDefaultColSpacing(child WidgetLike) uint {
-	return uint(C.gtk_table_get_default_col_spacing(C.to_GtkTable(v.GWidget)))
+	return uint(C.gtk_table_get_default_col_spacing(C.toGTable(v.GWidget)))
 }
 
 // gtk_table_get_size //since 2.22
@@ -6847,43 +6847,43 @@ func NewExpanderWithMnemonic(label string) *Expander {
 }
 
 func (v *Expander) SetExpanded(expanded bool) {
-	C.gtk_expander_set_expanded(C.to_GtkExpander(v.GWidget), bool2gboolean(expanded))
+	C.gtk_expander_set_expanded(C.toGExpander(v.GWidget), bool2gboolean(expanded))
 }
 func (v *Expander) GetExpanded() bool {
-	return gboolean2bool(C.gtk_expander_get_expanded(C.to_GtkExpander(v.GWidget)))
+	return gboolean2bool(C.gtk_expander_get_expanded(C.toGExpander(v.GWidget)))
 }
 func (v *Expander) SetSpacing(spacing int) {
-	C.gtk_expander_set_spacing(C.to_GtkExpander(v.GWidget), C.gint(spacing))
+	C.gtk_expander_set_spacing(C.toGExpander(v.GWidget), C.gint(spacing))
 }
 func (v *Expander) GetSpacing() int {
-	return int(C.gtk_expander_get_spacing(C.to_GtkExpander(v.GWidget)))
+	return int(C.gtk_expander_get_spacing(C.toGExpander(v.GWidget)))
 }
 func (v *Expander) SetLabel(label string) {
 	ptr := C.CString(label)
 	defer C.freeCstr(ptr)
-	C.gtk_expander_set_label(C.to_GtkExpander(v.GWidget), C.toGstr(ptr))
+	C.gtk_expander_set_label(C.toGExpander(v.GWidget), C.toGstr(ptr))
 }
 func (v *Expander) GetLabel() string {
-	return C.GoString(C.toCstr(C.gtk_expander_get_label(C.to_GtkExpander(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_expander_get_label(C.toGExpander(v.GWidget))))
 }
 func (v *Expander) SetUseUnderline(setting bool) {
-	C.gtk_expander_set_use_underline(C.to_GtkExpander(v.GWidget), bool2gboolean(setting))
+	C.gtk_expander_set_use_underline(C.toGExpander(v.GWidget), bool2gboolean(setting))
 }
 func (v *Expander) GetUseUnderline() bool {
-	return gboolean2bool(C.gtk_expander_get_use_underline(C.to_GtkExpander(v.GWidget)))
+	return gboolean2bool(C.gtk_expander_get_use_underline(C.toGExpander(v.GWidget)))
 }
 func (v *Expander) SetUseMarkup(setting bool) {
-	C.gtk_expander_set_use_markup(C.to_GtkExpander(v.GWidget), bool2gboolean(setting))
+	C.gtk_expander_set_use_markup(C.toGExpander(v.GWidget), bool2gboolean(setting))
 }
 func (v *Expander) GetUseMarkup() bool {
-	return gboolean2bool(C.gtk_expander_get_use_markup(C.to_GtkExpander(v.GWidget)))
+	return gboolean2bool(C.gtk_expander_get_use_markup(C.toGExpander(v.GWidget)))
 }
 func (v *Expander) SetLabelWidget(label_widget LabelLike) {
-	C.gtk_expander_set_label_widget(C.to_GtkExpander(v.GWidget), label_widget.ToNative())
+	C.gtk_expander_set_label_widget(C.toGExpander(v.GWidget), label_widget.ToNative())
 }
 func (v *Expander) GetLabelWidget() LabelLike {
 	return &Label{Widget{
-		C.gtk_expander_get_label_widget(C.to_GtkExpander(v.GWidget))}}
+		C.gtk_expander_get_label_widget(C.toGExpander(v.GWidget))}}
 }
 
 // gtk_expander_set_label_fill //since 2.22
@@ -6922,31 +6922,31 @@ func NewFrame(label string) *Frame {
 func (v *Frame) SetLabel(label string) {
 	ptr := C.CString(label)
 	defer C.freeCstr(ptr)
-	C.gtk_frame_set_label(C.to_GtkFrame(v.GWidget), C.toGstr(ptr))
+	C.gtk_frame_set_label(C.toGFrame(v.GWidget), C.toGstr(ptr))
 }
 func (v *Frame) SetLabelWidget(label_widget LabelLike) {
-	C.gtk_frame_set_label_widget(C.to_GtkFrame(v.GWidget), label_widget.ToNative())
+	C.gtk_frame_set_label_widget(C.toGFrame(v.GWidget), label_widget.ToNative())
 }
 func (v *Frame) SetLabelAlign(xalign, yalign float64) {
-	C.gtk_frame_set_label_align(C.to_GtkFrame(v.GWidget), C.gfloat(xalign), C.gfloat(yalign))
+	C.gtk_frame_set_label_align(C.toGFrame(v.GWidget), C.gfloat(xalign), C.gfloat(yalign))
 }
 func (v *Frame) SetShadowType(shadow_type ShadowType) {
-	C.gtk_frame_set_shadow_type(C.to_GtkFrame(v.GWidget), C.GtkShadowType(shadow_type))
+	C.gtk_frame_set_shadow_type(C.toGFrame(v.GWidget), C.GtkShadowType(shadow_type))
 }
 func (v *Frame) GetLabel() string {
-	return C.GoString(C.toCstr(C.gtk_frame_get_label(C.to_GtkFrame(v.GWidget))))
+	return C.GoString(C.toCstr(C.gtk_frame_get_label(C.toGFrame(v.GWidget))))
 }
 func (v *Frame) GetLabelAlign() (xalign, yalign float64) {
 	var xalign_, yalign_ C.gfloat
-	C.gtk_frame_get_label_align(C.to_GtkFrame(v.GWidget), &xalign_, &yalign_)
+	C.gtk_frame_get_label_align(C.toGFrame(v.GWidget), &xalign_, &yalign_)
 	return float64(xalign_), float64(yalign_)
 }
 func (v *Frame) GetLabelWidget() LabelLike {
 	return &Label{Widget{
-		C.gtk_frame_get_label_widget(C.to_GtkFrame(v.GWidget))}}
+		C.gtk_frame_get_label_widget(C.toGFrame(v.GWidget))}}
 }
 func (v *Frame) GetShadowType() ShadowType {
-	return ShadowType(C.gtk_frame_get_shadow_type(C.to_GtkFrame(v.GWidget)))
+	return ShadowType(C.gtk_frame_get_shadow_type(C.toGFrame(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -7020,48 +7020,48 @@ func NewScrolledWindow(hadjustment *Adjustment, vadjustment *Adjustment) *Scroll
 }
 func (v *ScrolledWindow) GetHAdjustment() *Adjustment {
 	return &Adjustment{
-		C.gtk_scrolled_window_get_hadjustment(C.to_GtkScrolledWindow(v.GWidget))}
+		C.gtk_scrolled_window_get_hadjustment(C.toGScrolledWindow(v.GWidget))}
 }
 func (v *ScrolledWindow) GetVAdjustment() *Adjustment {
 	return &Adjustment{
-		C.gtk_scrolled_window_get_vadjustment(C.to_GtkScrolledWindow(v.GWidget))}
+		C.gtk_scrolled_window_get_vadjustment(C.toGScrolledWindow(v.GWidget))}
 }
 
 // gtk_scrolled_window_get_hscrollbar
 // gtk_scrolled_window_get_vscrollbar
 
 func (v *ScrolledWindow) SetPolicy(hscrollbar_policy PolicyType, vscrollbar_policy PolicyType) {
-	C.gtk_scrolled_window_set_policy(C.to_GtkScrolledWindow(v.GWidget), C.GtkPolicyType(hscrollbar_policy), C.GtkPolicyType(vscrollbar_policy))
+	C.gtk_scrolled_window_set_policy(C.toGScrolledWindow(v.GWidget), C.GtkPolicyType(hscrollbar_policy), C.GtkPolicyType(vscrollbar_policy))
 }
 func (v *ScrolledWindow) AddWithViewPort(w WidgetLike) {
-	C.gtk_scrolled_window_add_with_viewport(C.to_GtkScrolledWindow(v.GWidget), w.ToNative())
+	C.gtk_scrolled_window_add_with_viewport(C.toGScrolledWindow(v.GWidget), w.ToNative())
 }
 func (v *ScrolledWindow) SetPlacement(window_placement CornerType) {
-	C.gtk_scrolled_window_set_placement(C.to_GtkScrolledWindow(v.GWidget), C.GtkCornerType(window_placement))
+	C.gtk_scrolled_window_set_placement(C.toGScrolledWindow(v.GWidget), C.GtkCornerType(window_placement))
 }
 func (v *ScrolledWindow) UnsetPlacement() {
-	C.gtk_scrolled_window_unset_placement(C.to_GtkScrolledWindow(v.GWidget))
+	C.gtk_scrolled_window_unset_placement(C.toGScrolledWindow(v.GWidget))
 }
 func (v *ScrolledWindow) SetShadowType(typ ShadowType) {
-	C.gtk_scrolled_window_set_shadow_type(C.to_GtkScrolledWindow(v.GWidget), C.GtkShadowType(typ))
+	C.gtk_scrolled_window_set_shadow_type(C.toGScrolledWindow(v.GWidget), C.GtkShadowType(typ))
 }
 func (v *ScrolledWindow) SetHAdjustment(hadjustment *Adjustment) {
-	C.gtk_scrolled_window_set_hadjustment(C.to_GtkScrolledWindow(v.GWidget), hadjustment.GAdjustment)
+	C.gtk_scrolled_window_set_hadjustment(C.toGScrolledWindow(v.GWidget), hadjustment.GAdjustment)
 }
 func (v *ScrolledWindow) SetVAdjustment(vadjustment *Adjustment) {
-	C.gtk_scrolled_window_set_vadjustment(C.to_GtkScrolledWindow(v.GWidget), vadjustment.GAdjustment)
+	C.gtk_scrolled_window_set_vadjustment(C.toGScrolledWindow(v.GWidget), vadjustment.GAdjustment)
 }
 func (v *ScrolledWindow) GetPlacement() CornerType {
-	return CornerType(C.gtk_scrolled_window_get_placement(C.to_GtkScrolledWindow(v.GWidget)))
+	return CornerType(C.gtk_scrolled_window_get_placement(C.toGScrolledWindow(v.GWidget)))
 }
 func (v *ScrolledWindow) GetPolicy(hscrollbar_policy *PolicyType, vscrollbar_policy *PolicyType) {
 	var chscrollbar_policy, cvscrollbar_policy C.GtkPolicyType
-	C.gtk_scrolled_window_get_policy(C.to_GtkScrolledWindow(v.GWidget), &chscrollbar_policy, &cvscrollbar_policy)
+	C.gtk_scrolled_window_get_policy(C.toGScrolledWindow(v.GWidget), &chscrollbar_policy, &cvscrollbar_policy)
 	*hscrollbar_policy = PolicyType(chscrollbar_policy)
 	*vscrollbar_policy = PolicyType(cvscrollbar_policy)
 }
 func (v *ScrolledWindow) GetShadowType() ShadowType {
-	return ShadowType(C.gtk_scrolled_window_get_shadow_type(C.to_GtkScrolledWindow(v.GWidget)))
+	return ShadowType(C.gtk_scrolled_window_get_shadow_type(C.toGScrolledWindow(v.GWidget)))
 }
 
 //-----------------------------------------------------------------------
@@ -7100,7 +7100,7 @@ func (v *PrintOperation) Run(action PrintOperationAction, parent *Window) (resul
 		C.gtk_print_operation_run(
 			v.GPrintOperation,
 			C.GtkPrintOperationAction(action),
-			C.to_GtkWindow(parent.GWidget),
+			C.toGWindow(parent.GWidget),
 			&gerror))
 	if gerror != nil {
 		err = glib.ErrorFromNative(unsafe.Pointer(gerror))
@@ -7397,7 +7397,7 @@ type Adjustment struct {
 
 func NewAdjustment(value, lower, upper, step_increment, page_increment, page_size float64) *Adjustment {
 	return &Adjustment{
-		C.to_GtkAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper),
+		C.toGAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper),
 			C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))}
 }
 func (v *Adjustment) GetValue() float64 {
@@ -7500,7 +7500,7 @@ func NewDrawingArea() *DrawingArea {
 //Deprecated. Use GtkWidget.SetSizeRequest() instead.
 func (v *DrawingArea) GetSizeRequest(width, height int) {
 	deprecated_since(2, 0, 0, "gtk_drawing_area_size()")
-	C.gtk_drawing_area_size(C.to_GtkDrawingArea(v.GWidget), C.gint(width), C.gint(height))
+	C.gtk_drawing_area_size(C.toGDrawingArea(v.GWidget), C.gint(width), C.gint(height))
 }
 
 //-----------------------------------------------------------------------
@@ -7647,32 +7647,32 @@ func NewViewport(ha, va *Adjustment) *Viewport {
 	return &Viewport{Bin{Container{Widget{C.gtk_viewport_new(had, vad)}}}}
 }
 func (v *Viewport) GetHAdjustment() *Adjustment {
-	return &Adjustment{C.gtk_viewport_get_hadjustment(C.to_GtkViewport(v.GWidget))}
+	return &Adjustment{C.gtk_viewport_get_hadjustment(C.toGViewport(v.GWidget))}
 }
 func (v *Viewport) GetVAdjustment() *Adjustment {
-	return &Adjustment{C.gtk_viewport_get_vadjustment(C.to_GtkViewport(v.GWidget))}
+	return &Adjustment{C.gtk_viewport_get_vadjustment(C.toGViewport(v.GWidget))}
 }
 func (v *Viewport) SetHAdjustment(ha *Adjustment) {
-	C.gtk_viewport_set_hadjustment(C.to_GtkViewport(v.GWidget), ha.GAdjustment)
+	C.gtk_viewport_set_hadjustment(C.toGViewport(v.GWidget), ha.GAdjustment)
 }
 func (v *Viewport) SetVAdjustment(va *Adjustment) {
-	C.gtk_viewport_set_vadjustment(C.to_GtkViewport(v.GWidget), va.GAdjustment)
+	C.gtk_viewport_set_vadjustment(C.toGViewport(v.GWidget), va.GAdjustment)
 }
 func (v *Viewport) GetShadowType() ShadowType {
-	return ShadowType(C.gtk_viewport_get_shadow_type(C.to_GtkViewport(v.GWidget)))
+	return ShadowType(C.gtk_viewport_get_shadow_type(C.toGViewport(v.GWidget)))
 }
 func (v *Viewport) SetShadowType(typ ShadowType) {
-	C.gtk_viewport_set_shadow_type(C.to_GtkViewport(v.GWidget), C.GtkShadowType(typ))
+	C.gtk_viewport_set_shadow_type(C.toGViewport(v.GWidget), C.GtkShadowType(typ))
 }
 func (v *Viewport) GetBinWindow() *Window {
 	panic_if_version_older_auto(2, 20, 0)
-	return &Window{Bin{Container{Widget{C.to_GtkWidget(
-		unsafe.Pointer(C._gtk_viewport_get_bin_window(C.to_GtkViewport(v.GWidget))))}}}}
+	return &Window{Bin{Container{Widget{C.toGWidget(
+		unsafe.Pointer(C._gtk_viewport_get_bin_window(C.toGViewport(v.GWidget))))}}}}
 }
 func (v *Viewport) GetViewWindow() *Window {
 	panic_if_version_older_auto(2, 22, 0)
 	return &Window{Bin{Container{Widget{
-		C.to_GtkWidget(unsafe.Pointer(C._gtk_viewport_get_view_window(C.to_GtkViewport(v.GWidget))))}}}}
+		C.toGWidget(unsafe.Pointer(C._gtk_viewport_get_view_window(C.toGViewport(v.GWidget))))}}}}
 }
 
 //-----------------------------------------------------------------------
@@ -7684,17 +7684,17 @@ type Accessible struct {
 
 func (v *Accessible) ConnectWidgetDestroyed() {
 	C.gtk_accessible_connect_widget_destroyed(
-		C.to_GtkAccessible(unsafe.Pointer(v.Object)))
+		C.toGAccessible(unsafe.Pointer(v.Object)))
 }
 func (v *Accessible) SetWidget(w WidgetLike) {
 	panic_if_version_older_auto(2, 22, 0)
 	C._gtk_accessible_set_widget(
-		C.to_GtkAccessible(unsafe.Pointer(v.Object)), w.ToNative())
+		C.toGAccessible(unsafe.Pointer(v.Object)), w.ToNative())
 }
 func (v *Accessible) GetWidget() *Widget {
 	panic_if_version_older_auto(2, 22, 0)
 	return &Widget{C._gtk_accessible_get_widget(
-		C.to_GtkAccessible(unsafe.Pointer(v.Object)))}
+		C.toGAccessible(unsafe.Pointer(v.Object)))}
 }
 
 //-----------------------------------------------------------------------
@@ -7705,7 +7705,7 @@ type Bin struct {
 }
 
 func (v *Bin) GetChild() *Widget {
-	return &Widget{C.gtk_bin_get_child(C.to_GtkBin(v.GWidget))}
+	return &Widget{C.gtk_bin_get_child(C.toGBin(v.GWidget))}
 }
 
 //-----------------------------------------------------------------------
@@ -7728,52 +7728,52 @@ type Box struct {
 }
 
 func (v *Box) PackStart(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_start(C.to_GtkBox(v.GWidget), child.ToNative(), bool2gboolean(expand),
+	C.gtk_box_pack_start(C.toGBox(v.GWidget), child.ToNative(), bool2gboolean(expand),
 		bool2gboolean(fill), C.guint(padding))
 }
 func (v *Box) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
-	C.gtk_box_pack_end(C.to_GtkBox(v.GWidget), child.ToNative(), bool2gboolean(expand),
+	C.gtk_box_pack_end(C.toGBox(v.GWidget), child.ToNative(), bool2gboolean(expand),
 		bool2gboolean(fill), C.guint(padding))
 }
 
 //Deprecated since 2.14. Use PackStart() instead.
 func (v *Box) PackStartDefaults(child WidgetLike) {
 	deprecated_since(2, 14, 0, "gtk_box_pack_start_defaults()")
-	C.gtk_box_pack_start_defaults(C.to_GtkBox(v.GWidget), child.ToNative())
+	C.gtk_box_pack_start_defaults(C.toGBox(v.GWidget), child.ToNative())
 }
 
 //Deprecated since 2.14. Use PackEnd() instead.
 func (v *Box) PackEndDefaults(child WidgetLike) {
 	deprecated_since(2, 14, 0, "gtk_box_pack_end_defaults()")
-	C.gtk_box_pack_end_defaults(C.to_GtkBox(v.GWidget), child.ToNative())
+	C.gtk_box_pack_end_defaults(C.toGBox(v.GWidget), child.ToNative())
 }
 func (v *Box) GetHomogeneous() bool {
-	return gboolean2bool(C.gtk_box_get_homogeneous(C.to_GtkBox(v.GWidget)))
+	return gboolean2bool(C.gtk_box_get_homogeneous(C.toGBox(v.GWidget)))
 }
 func (v *Box) SetHomogeneous(homogeneous bool) {
-	C.gtk_box_set_homogeneous(C.to_GtkBox(v.GWidget), bool2gboolean(homogeneous))
+	C.gtk_box_set_homogeneous(C.toGBox(v.GWidget), bool2gboolean(homogeneous))
 }
 func (v *Box) GetSpacing() int {
-	return int(C.gtk_box_get_spacing(C.to_GtkBox(v.GWidget)))
+	return int(C.gtk_box_get_spacing(C.toGBox(v.GWidget)))
 }
 func (v *Box) SetSpacing(spacing int) {
-	C.gtk_box_set_spacing(C.to_GtkBox(v.GWidget), C.gint(spacing))
+	C.gtk_box_set_spacing(C.toGBox(v.GWidget), C.gint(spacing))
 }
 func (v *Box) ReorderChild(child WidgetLike, position PackType) {
-	C.gtk_box_reorder_child(C.to_GtkBox(v.GWidget), child.ToNative(), C.gint(position))
+	C.gtk_box_reorder_child(C.toGBox(v.GWidget), child.ToNative(), C.gint(position))
 }
 func (v *Box) QueryChildPacking(child WidgetLike, expand *bool, fill *bool, padding *uint, pack_type *PackType) {
 	var cexpand, cfill C.gboolean
 	var cpadding C.guint
 	var cpack_type C.GtkPackType
-	C.gtk_box_query_child_packing(C.to_GtkBox(v.GWidget), child.ToNative(), &cexpand, &cfill, &cpadding, &cpack_type)
+	C.gtk_box_query_child_packing(C.toGBox(v.GWidget), child.ToNative(), &cexpand, &cfill, &cpadding, &cpack_type)
 	*expand = gboolean2bool(cexpand)
 	*fill = gboolean2bool(cfill)
 	*padding = uint(cpadding)
 	*pack_type = PackType(cpack_type)
 }
 func (v *Box) SetChildPacking(child WidgetLike, expand, fill bool, padding uint, pack_type PackType) {
-	C.gtk_box_set_child_packing(C.to_GtkBox(v.GWidget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type))
+	C.gtk_box_set_child_packing(C.toGBox(v.GWidget), child.ToNative(), bool2gboolean(expand), bool2gboolean(fill), C.guint(padding), C.GtkPackType(pack_type))
 }
 
 //-----------------------------------------------------------------------
@@ -7803,10 +7803,10 @@ type Container struct {
 }
 
 func (v *Container) Add(w WidgetLike) {
-	C.gtk_container_add(C.to_GtkContainer(v.GWidget), w.ToNative())
+	C.gtk_container_add(C.toGContainer(v.GWidget), w.ToNative())
 }
 func (v *Container) Remove(w WidgetLike) {
-	C.gtk_container_remove(C.to_GtkContainer(v.GWidget), w.ToNative())
+	C.gtk_container_remove(C.toGContainer(v.GWidget), w.ToNative())
 }
 
 // gtk_container_add_with_properties
@@ -7814,13 +7814,13 @@ func (v *Container) Remove(w WidgetLike) {
 // gtk_container_set_resize_mode
 
 func (v *Container) CheckResize() {
-	C.gtk_container_check_resize(C.to_GtkContainer(v.GWidget))
+	C.gtk_container_check_resize(C.toGContainer(v.GWidget))
 }
 
 // gtk_container_foreach
 
 func (v *Container) GetChildren() *glib.List {
-	return glib.ListFromNative(unsafe.Pointer(C.gtk_container_get_children(C.to_GtkContainer(v.GWidget))))
+	return glib.ListFromNative(unsafe.Pointer(C.gtk_container_get_children(C.toGContainer(v.GWidget))))
 }
 
 // gtk_container_set_reallocate_redraws
@@ -7841,10 +7841,10 @@ func (v *Container) GetChildren() *glib.List {
 // gtk_container_forall
 
 func (v *Container) GetBorderWidth() uint {
-	return uint(C.gtk_container_get_border_width(C.to_GtkContainer(v.GWidget)))
+	return uint(C.gtk_container_get_border_width(C.toGContainer(v.GWidget)))
 }
 func (v *Container) SetBorderWidth(border_width uint) {
-	C.gtk_container_set_border_width(C.to_GtkContainer(v.GWidget), C.guint(border_width))
+	C.gtk_container_set_border_width(C.toGContainer(v.GWidget), C.guint(border_width))
 }
 
 // gtk_container_propagate_expose
@@ -7865,19 +7865,19 @@ type Item struct {
 //Deprecated since 2.22. Use GtkMenuItem.Select() instead.
 func (v *Item) Select() {
 	deprecated_since(2, 22, 0, "gtk_item_select()")
-	C.gtk_item_select(C.to_GtkItem(v.GWidget))
+	C.gtk_item_select(C.toGItem(v.GWidget))
 }
 
 //Deprecated since 2.22. Use GtkMenuItem.Deselect() instead.
 func (v *Item) Deselect() {
 	deprecated_since(2, 22, 0, "gtk_item_deselect()")
-	C.gtk_item_deselect(C.to_GtkItem(v.GWidget))
+	C.gtk_item_deselect(C.toGItem(v.GWidget))
 }
 
 //Deprecated since 2.22.
 func (v *Item) Toggle() {
 	deprecated_since(2, 22, 0, "gtk_item_select()")
-	C.gtk_item_toggle(C.to_GtkItem(v.GWidget))
+	C.gtk_item_toggle(C.toGItem(v.GWidget))
 }
 
 //-----------------------------------------------------------------------
@@ -7929,30 +7929,30 @@ type Paned struct {
 }
 
 func (v *Paned) Add1(child WidgetLike) {
-	C.gtk_paned_add1(C.to_GtkPaned(v.GWidget), child.ToNative())
+	C.gtk_paned_add1(C.toGPaned(v.GWidget), child.ToNative())
 }
 func (v *Paned) Add2(child WidgetLike) {
-	C.gtk_paned_add2(C.to_GtkPaned(v.GWidget), child.ToNative())
+	C.gtk_paned_add2(C.toGPaned(v.GWidget), child.ToNative())
 }
 func (v *Paned) Pack1(child WidgetLike, resize bool, shrink bool) {
-	C.gtk_paned_pack1(C.to_GtkPaned(v.GWidget), child.ToNative(), bool2gboolean(resize), bool2gboolean(shrink))
+	C.gtk_paned_pack1(C.toGPaned(v.GWidget), child.ToNative(), bool2gboolean(resize), bool2gboolean(shrink))
 }
 func (v *Paned) Pack2(child WidgetLike, resize bool, shrink bool) {
-	C.gtk_paned_pack2(C.to_GtkPaned(v.GWidget), child.ToNative(), bool2gboolean(resize), bool2gboolean(shrink))
+	C.gtk_paned_pack2(C.toGPaned(v.GWidget), child.ToNative(), bool2gboolean(resize), bool2gboolean(shrink))
 }
 func (v *Paned) GetChild1() *Widget {
 	return &Widget{
-		C.gtk_paned_get_child1(C.to_GtkPaned(v.GWidget))}
+		C.gtk_paned_get_child1(C.toGPaned(v.GWidget))}
 }
 func (v *Paned) GetChild2() *Widget {
 	return &Widget{
-		C.gtk_paned_get_child2(C.to_GtkPaned(v.GWidget))}
+		C.gtk_paned_get_child2(C.toGPaned(v.GWidget))}
 }
 func (v *Paned) SetPosition(position int) {
-	C.gtk_paned_set_position(C.to_GtkPaned(v.GWidget), C.gint(position))
+	C.gtk_paned_set_position(C.toGPaned(v.GWidget), C.gint(position))
 }
 func (v *Paned) GetPosition() int {
-	return int(C.gtk_paned_get_position(C.to_GtkPaned(v.GWidget)))
+	return int(C.gtk_paned_get_position(C.toGPaned(v.GWidget)))
 }
 
 // gtk_paned_get_handle_window //since 2.20
@@ -7965,56 +7965,56 @@ type Range struct {
 }
 
 func (v *Range) GetFillLevel() float64 {
-	r := C.gtk_range_get_fill_level(C.to_GtkRange(v.GWidget))
+	r := C.gtk_range_get_fill_level(C.toGRange(v.GWidget))
 	return float64(r)
 }
 func (v *Range) GetRestrictToFillLevel() bool {
-	return gboolean2bool(C.gtk_range_get_restrict_to_fill_level(C.to_GtkRange(v.GWidget)))
+	return gboolean2bool(C.gtk_range_get_restrict_to_fill_level(C.toGRange(v.GWidget)))
 }
 func (v *Range) GetShowFillLevel() bool {
-	return gboolean2bool(C.gtk_range_get_show_fill_level(C.to_GtkRange(v.GWidget)))
+	return gboolean2bool(C.gtk_range_get_show_fill_level(C.toGRange(v.GWidget)))
 }
 func (v *Range) SetFillLevel(value float64) {
-	C.gtk_range_set_fill_level(C.to_GtkRange(v.GWidget), C.gdouble(value))
+	C.gtk_range_set_fill_level(C.toGRange(v.GWidget), C.gdouble(value))
 }
 func (v *Range) SetRestrictToFillLevel(b bool) {
-	C.gtk_range_set_restrict_to_fill_level(C.to_GtkRange(v.GWidget), bool2gboolean(b))
+	C.gtk_range_set_restrict_to_fill_level(C.toGRange(v.GWidget), bool2gboolean(b))
 }
 func (v *Range) SetShowFillLevel(b bool) {
-	C.gtk_range_set_show_fill_level(C.to_GtkRange(v.GWidget), bool2gboolean(b))
+	C.gtk_range_set_show_fill_level(C.toGRange(v.GWidget), bool2gboolean(b))
 }
 func (v *Range) GetAdjustment() *Adjustment {
-	return &Adjustment{C.gtk_range_get_adjustment(C.to_GtkRange(v.GWidget))}
+	return &Adjustment{C.gtk_range_get_adjustment(C.toGRange(v.GWidget))}
 }
 
 // void gtk_range_set_update_policy (GtkRange *range, GtkUpdateType policy); //deprecated in 2.24
 
 func (v *Range) SetAdjustment(a *Adjustment) {
-	C.gtk_range_set_adjustment(C.to_GtkRange(v.GWidget), a.GAdjustment)
+	C.gtk_range_set_adjustment(C.toGRange(v.GWidget), a.GAdjustment)
 }
 func (v *Range) GetInverted() bool {
-	return gboolean2bool(C.gtk_range_get_inverted(C.to_GtkRange(v.GWidget)))
+	return gboolean2bool(C.gtk_range_get_inverted(C.toGRange(v.GWidget)))
 }
 func (v *Range) SetInverted(b bool) {
-	C.gtk_range_set_inverted(C.to_GtkRange(v.GWidget), bool2gboolean(b))
+	C.gtk_range_set_inverted(C.toGRange(v.GWidget), bool2gboolean(b))
 }
 
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range); //deprecated since 2.24
 
 func (v *Range) SetIncrements(step, page float64) {
-	C.gtk_range_set_increments(C.to_GtkRange(v.GWidget), C.gdouble(step), C.gdouble(page))
+	C.gtk_range_set_increments(C.toGRange(v.GWidget), C.gdouble(step), C.gdouble(page))
 }
 func (v *Range) SetRange(min, max float64) {
-	C.gtk_range_set_range(C.to_GtkRange(v.GWidget), C.gdouble(min), C.gdouble(max))
+	C.gtk_range_set_range(C.toGRange(v.GWidget), C.gdouble(min), C.gdouble(max))
 }
 func (v *Range) GetValue() float64 {
-	return float64(C.gtk_range_get_value(C.to_GtkRange(v.GWidget))) //TODO test
+	return float64(C.gtk_range_get_value(C.toGRange(v.GWidget))) //TODO test
 	//var r C.gdouble
-	//C._gtk_range_get_value(C.to_GtkRange(v.GWidget), &r)
+	//C._gtk_range_get_value(C.toGRange(v.GWidget), &r)
 	//return float64(r)
 }
 func (v *Range) SetValue(value float64) {
-	C.gtk_range_set_value(C.to_GtkRange(v.GWidget), C.gdouble(value))
+	C.gtk_range_set_value(C.toGRange(v.GWidget), C.gdouble(value))
 }
 
 // gtk_range_get_round_digits //since 2.24
@@ -8026,11 +8026,11 @@ func (v *Range) SetValue(value float64) {
 
 func (v *Range) GetFlippable() bool {
 	panic_if_version_older(2, 18, 0, "gtk_range_get_flippable()")
-	return gboolean2bool(C._gtk_range_get_flippable(C.to_GtkRange(v.GWidget)))
+	return gboolean2bool(C._gtk_range_get_flippable(C.toGRange(v.GWidget)))
 }
 func (v *Range) SetFlippable(b bool) {
 	panic_if_version_older(2, 18, 0, "gtk_range_set_flippable()")
-	C._gtk_range_set_flippable(C.to_GtkRange(v.GWidget), bool2gboolean(b))
+	C._gtk_range_set_flippable(C.toGRange(v.GWidget), bool2gboolean(b))
 }
 
 // gtk_range_get_min_slider_size //since 2.20
@@ -8057,39 +8057,39 @@ type Scale struct {
 }
 
 func (v *Scale) SetDigits(digits int) {
-	C.gtk_scale_set_digits(C.to_GtkScale(v.GWidget), C.gint(digits))
+	C.gtk_scale_set_digits(C.toGScale(v.GWidget), C.gint(digits))
 }
 func (v *Scale) SetDrawValue(draw_value bool) {
-	C.gtk_scale_set_draw_value(C.to_GtkScale(v.GWidget), bool2gboolean(draw_value))
+	C.gtk_scale_set_draw_value(C.toGScale(v.GWidget), bool2gboolean(draw_value))
 }
 func (v *Scale) SetValuePos(pos PositionType) {
-	C.gtk_scale_set_value_pos(C.to_GtkScale(v.GWidget), C.GtkPositionType(pos))
+	C.gtk_scale_set_value_pos(C.toGScale(v.GWidget), C.GtkPositionType(pos))
 }
 func (v *Scale) GetDigits() int {
-	return int(C.gtk_scale_get_digits(C.to_GtkScale(v.GWidget)))
+	return int(C.gtk_scale_get_digits(C.toGScale(v.GWidget)))
 }
 func (v *Scale) GetDrawValue() bool {
-	return gboolean2bool(C.gtk_scale_get_draw_value(C.to_GtkScale(v.GWidget)))
+	return gboolean2bool(C.gtk_scale_get_draw_value(C.toGScale(v.GWidget)))
 }
 func (v *Scale) GetValuePos() PositionType {
-	return PositionType(C.gtk_scale_get_value_pos(C.to_GtkScale(v.GWidget)))
+	return PositionType(C.gtk_scale_get_value_pos(C.toGScale(v.GWidget)))
 }
 
 // PangoLayout * gtk_scale_get_layout (GtkScale *scale);
 
 func (v *Scale) GetLayoutOffsets(x *int, y *int) {
 	var xx, yy C.gint
-	C.gtk_scale_get_layout_offsets(C.to_GtkScale(v.GWidget), &xx, &yy)
+	C.gtk_scale_get_layout_offsets(C.toGScale(v.GWidget), &xx, &yy)
 	*x = int(xx)
 	*y = int(yy)
 }
 func (v *Scale) AddMark(value float64, position PositionType, markup string) {
 	ptr := C.CString(markup)
 	defer C.freeCstr(ptr)
-	C.gtk_scale_add_mark(C.to_GtkScale(v.GWidget), C.gdouble(value), C.GtkPositionType(position), C.toGstr(ptr))
+	C.gtk_scale_add_mark(C.toGScale(v.GWidget), C.gdouble(value), C.GtkPositionType(position), C.toGstr(ptr))
 }
 func (v *Scale) ClearMarks() {
-	C.gtk_scale_clear_marks(C.to_GtkScale(v.GWidget))
+	C.gtk_scale_clear_marks(C.toGScale(v.GWidget))
 }
 
 //-----------------------------------------------------------------------
@@ -8141,13 +8141,13 @@ type Widget struct {
 }
 
 func WidgetFromNative(p unsafe.Pointer) *Widget {
-	return &Widget{C.to_GtkWidget(p)}
+	return &Widget{C.toGWidget(p)}
 }
 
 //TODO GtkWidget will have GObject as anonymous field.
 func WidgetFromObject(object *glib.GObject) *Widget {
 	return &Widget{
-		C.to_GtkWidget(unsafe.Pointer(object.Object))}
+		C.toGWidget(unsafe.Pointer(object.Object))}
 }
 func (v *Widget) ToNative() *C.GtkWidget {
 	if v == nil {
@@ -8483,10 +8483,10 @@ func (v *Widget) SetTooltipText(text string) {
 }
 func (v *Widget) GetTooltipWindow() *Window {
 	return &Window{Bin{Container{Widget{
-		C.to_GtkWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.GWidget)))}}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_widget_get_tooltip_window(v.GWidget)))}}}}
 }
 func (v *Widget) SetTooltipWindow(w *Window) {
-	C.gtk_widget_set_tooltip_window(v.GWidget, C.to_GtkWindow(w.ToNative()))
+	C.gtk_widget_set_tooltip_window(v.GWidget, C.toGWindow(w.ToNative()))
 }
 func (v *Widget) GetHasTooltip() bool {
 	return gboolean2bool(C.gtk_widget_get_has_tooltip(v.GWidget))
