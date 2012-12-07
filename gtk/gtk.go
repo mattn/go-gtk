@@ -225,10 +225,10 @@ type Clipboard struct {
 	GClipboard *C.GtkClipboard
 }
 
-func NewClipboardGetForDisplay(display *gdk.GdkDisplay, selection gdk.GdkAtom) *Clipboard {
+func NewClipboardGetForDisplay(display *gdk.Display, selection gdk.Atom) *Clipboard {
 	var cdisplay unsafe.Pointer
 	if display != nil {
-		cdisplay = display.Display
+		cdisplay = display.GDisplay
 	}
 	return &Clipboard{C._gtk_clipboard_get_for_display(cdisplay, unsafe.Pointer(selection))}
 }
@@ -242,8 +242,8 @@ func (v *Clipboard) SetText(text string) {
 	C.gtk_clipboard_set_text(v.GClipboard, C.to_gcharptr(ptr), C.gint(-1))
 }
 
-func (v *Clipboard) SetImage(pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_clipboard_set_image(v.GClipboard, pixbuf.Pixbuf)
+func (v *Clipboard) SetImage(pixbuf *gdkpixbuf.Pixbuf) {
+	C.gtk_clipboard_set_image(v.GClipboard, pixbuf.GPixbuf)
 }
 
 func (v *Clipboard) Store() {
@@ -300,7 +300,7 @@ type TargetEntry struct {
 	Info   uint
 }
 
-func (v *Widget) DragDestSet(flags DestDefaults, targets []TargetEntry, actions gdk.GdkDragAction) {
+func (v *Widget) DragDestSet(flags DestDefaults, targets []TargetEntry, actions gdk.DragAction) {
 	ctargets := make([]C.GtkTargetEntry, len(targets))
 	for i, target := range targets {
 		ptr := C.CString(target.Target)
@@ -312,7 +312,7 @@ func (v *Widget) DragDestSet(flags DestDefaults, targets []TargetEntry, actions 
 	C.gtk_drag_dest_set(v.GWidget, C.GtkDestDefaults(flags), &ctargets[0], C.gint(len(targets)), C.GdkDragAction(actions))
 }
 
-func (v *Widget) DragSourceSet(start_button_mask gdk.GdkModifierType, targets []TargetEntry, actions gdk.GdkDragAction) {
+func (v *Widget) DragSourceSet(start_button_mask gdk.ModifierType, targets []TargetEntry, actions gdk.DragAction) {
 	ctargets := make([]C.GtkTargetEntry, len(targets))
 	for i, target := range targets {
 		ptr := C.CString(target.Target)
@@ -324,7 +324,7 @@ func (v *Widget) DragSourceSet(start_button_mask gdk.GdkModifierType, targets []
 	C.gtk_drag_source_set(v.GWidget, C.GdkModifierType(start_button_mask), &ctargets[0], C.gint(len(targets)), C.GdkDragAction(actions))
 }
 
-func (v *Widget) DragFinish(context *gdk.GdkDragContext, success bool, del bool, time uint) {
+func (v *Widget) DragFinish(context *gdk.DragContext, success bool, del bool, time uint) {
 	C._gtk_drag_finish(unsafe.Pointer(context.DragContext), bool2gboolean(success), bool2gboolean(del), C.guint32(time))
 }
 
@@ -1162,7 +1162,7 @@ func (v *Window) SetDecorated(setting bool){
 func (v *Window) SetDeletable(setting bool){
 	C.gtk_window_set_deletable(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
 }
-func (v *Window) SetTypeHint(hint gdk.GdkWindowTypeHint) {
+func (v *Window) SetTypeHint(hint gdk.WindowTypeHint) {
 	C.gtk_window_set_type_hint(C.to_GtkWindow(v.GWidget), C.GdkWindowTypeHint(hint))
 }
 
@@ -1229,8 +1229,8 @@ func (v *Window) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.GWidget))))
 }
 
-func (v *Window) GetTypeHint() gdk.GdkWindowTypeHint {
-	return gdk.GdkWindowTypeHint(C.gtk_window_get_type_hint(C.to_GtkWindow(v.GWidget)))
+func (v *Window) GetTypeHint() gdk.WindowTypeHint {
+	return gdk.WindowTypeHint(C.gtk_window_get_type_hint(C.to_GtkWindow(v.GWidget)))
 }
 
 // gtk_window_get_transient_for
@@ -1445,12 +1445,12 @@ func (v *AboutDialog) SetTranslatorCredits(translator_credits string) {
 	defer C.free_string(ptr)
 	C.gtk_about_dialog_set_translator_credits(C.to_GtkAboutDialog(v.GWidget), C.to_gcharptr(ptr))
 }
-func (v *AboutDialog) GetLogo() *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf{
+func (v *AboutDialog) GetLogo() *gdkpixbuf.Pixbuf {
+	return &gdkpixbuf.Pixbuf{
 		C.gtk_about_dialog_get_logo(C.to_GtkAboutDialog(v.GWidget))}
 }
-func (v *AboutDialog) SetLogo(logo *gdkpixbuf.GdkPixbuf) {
-	C.gtk_about_dialog_set_logo(C.to_GtkAboutDialog(v.GWidget), logo.Pixbuf)
+func (v *AboutDialog) SetLogo(logo *gdkpixbuf.Pixbuf) {
+	C.gtk_about_dialog_set_logo(C.to_GtkAboutDialog(v.GWidget), logo.GPixbuf)
 }
 func (v *AboutDialog) GetLogoIconName() string {
 	return C.GoString(C.to_charptr(C.gtk_about_dialog_get_logo_icon_name(C.to_GtkAboutDialog(v.GWidget))))
@@ -1524,18 +1524,18 @@ func (v *Assistant) SetPageTitle(page WidgetLike, title string) {
 func (v *Assistant) GetPageTitle(page WidgetLike) string {
 	return C.GoString(C.to_charptr(C.gtk_assistant_get_page_title(C.to_GtkAssistant(v.GWidget), page.ToNative())))
 }
-func (v *Assistant) SetPageHeaderImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.GWidget), page.ToNative(), pixbuf.Pixbuf)
+func (v *Assistant) SetPageHeaderImage(page WidgetLike, pixbuf *gdkpixbuf.Pixbuf) {
+	C.gtk_assistant_set_page_header_image(C.to_GtkAssistant(v.GWidget), page.ToNative(), pixbuf.GPixbuf)
 }
-func (v *Assistant) GetPageHeaderImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf{
+func (v *Assistant) GetPageHeaderImage(page WidgetLike) *gdkpixbuf.Pixbuf {
+	return &gdkpixbuf.Pixbuf{
 		C.gtk_assistant_get_page_header_image(C.to_GtkAssistant(v.GWidget), page.ToNative())}
 }
-func (v *Assistant) SetPageSideImage(page WidgetLike, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.GWidget), page.ToNative(), pixbuf.Pixbuf)
+func (v *Assistant) SetPageSideImage(page WidgetLike, pixbuf *gdkpixbuf.Pixbuf) {
+	C.gtk_assistant_set_page_side_image(C.to_GtkAssistant(v.GWidget), page.ToNative(), pixbuf.GPixbuf)
 }
-func (v *Assistant) GetPageSideImage(page WidgetLike) *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf{
+func (v *Assistant) GetPageSideImage(page WidgetLike) *gdkpixbuf.Pixbuf {
+	return &gdkpixbuf.Pixbuf{
 		C.gtk_assistant_get_page_side_image(C.to_GtkAssistant(v.GWidget), page.ToNative())}
 }
 func (v *Assistant) SetPageComplete(page WidgetLike, complete bool) {
@@ -1632,9 +1632,9 @@ func NewImageFromFile(filename string) *Image {
 // gtk_image_new_from_icon_set
 // gtk_image_new_from_image
 
-func NewImageFromPixbuf(pixbuf gdkpixbuf.GdkPixbuf) *Image {
+func NewImageFromPixbuf(pixbuf gdkpixbuf.Pixbuf) *Image {
 	return &Image{Widget{
-		C.gtk_image_new_from_pixbuf(pixbuf.Pixbuf)}}
+		C.gtk_image_new_from_pixbuf(pixbuf.GPixbuf)}}
 }
 
 // gtk_image_new_from_pixmap
@@ -1649,8 +1649,8 @@ func NewImageFromStock(stock_id string, size IconSize) *Image {
 // gtk_image_new_from_icon_name
 // gtk_image_new_from_gicon
 
-func (v *Image) GetPixbuf() *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf{
+func (v *Image) GetPixbuf() *gdkpixbuf.Pixbuf {
+	return &gdkpixbuf.Pixbuf{
 		C.gtk_image_get_pixbuf(C.to_GtkImage(v.GWidget))}
 }
 
@@ -1663,8 +1663,8 @@ func (v *Image) SetFromFile(filename string) {
 // gtk_image_set_from_icon_set
 // gtk_image_set_from_image
 
-func (v *Image) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_image_set_from_pixbuf(C.to_GtkImage(v.GWidget), pixbuf.Pixbuf)
+func (v *Image) SetFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) {
+	C.gtk_image_set_from_pixbuf(C.to_GtkImage(v.GWidget), pixbuf.GPixbuf)
 }
 
 // gtk_image_set_from_pixmap
@@ -1753,7 +1753,7 @@ func (v *Label) SetPattern(pattern string) {
 func (v *Label) SetJustify(jtype Justification) {
 	C.gtk_label_set_justify(C.to_GtkLabel(v.GWidget), C.GtkJustification(jtype))
 }
-func (v *Label) SetEllipsize(ellipsize pango.PangoEllipsizeMode) {
+func (v *Label) SetEllipsize(ellipsize pango.EllipsizeMode) {
 	C.gtk_label_set_ellipsize(C.to_GtkLabel(v.GWidget), C.PangoEllipsizeMode(ellipsize))
 }
 func (v *Label) SetWidthChars(n_chars int) {
@@ -1765,7 +1765,7 @@ func (v *Label) SetMaxWidthChars(n_chars int) {
 func (v *Label) SetLineWrap(setting bool) {
 	C.gtk_label_set_line_wrap(C.to_GtkLabel(v.GWidget), bool2gboolean(setting))
 }
-func (v *Label) SetUseLineWrapMode(wrap_mode pango.PangoWrapMode) {
+func (v *Label) SetUseLineWrapMode(wrap_mode pango.WrapMode) {
 	C.gtk_label_set_line_wrap_mode(C.to_GtkLabel(v.GWidget), C.PangoWrapMode(wrap_mode))
 }
 
@@ -1802,8 +1802,8 @@ func (v *Label) SetTextWithMnemonic(str string) {
 func (v *Label) GetJustify() Justification {
 	return Justification(C.gtk_label_get_justify(C.to_GtkLabel(v.GWidget)))
 }
-func (v *Label) GetEllipsize() pango.PangoEllipsizeMode {
-	return pango.PangoEllipsizeMode(C.gtk_label_get_ellipsize(C.to_GtkLabel(v.GWidget)))
+func (v *Label) GetEllipsize() pango.EllipsizeMode {
+	return pango.EllipsizeMode(C.gtk_label_get_ellipsize(C.to_GtkLabel(v.GWidget)))
 }
 func (v *Label) GetWidthChars() int {
 	return int(C.gtk_label_get_width_chars(C.to_GtkLabel(v.GWidget)))
@@ -1820,8 +1820,8 @@ func (v *Label) GetLabel() string {
 func (v *Label) GetLineWrap() bool {
 	return gboolean2bool(C.gtk_label_get_line_wrap(C.to_GtkLabel(v.GWidget)))
 }
-func (v *Label) GetLineWrapMode() pango.PangoWrapMode {
-	return pango.PangoWrapMode(C.gtk_label_get_line_wrap_mode(C.to_GtkLabel(v.GWidget)))
+func (v *Label) GetLineWrapMode() pango.WrapMode {
+	return pango.WrapMode(C.gtk_label_get_line_wrap_mode(C.to_GtkLabel(v.GWidget)))
 }
 
 // gtk_label_get_mnemonic_widget
@@ -2063,9 +2063,9 @@ func NewStatusIcon() *StatusIcon {
 	return &StatusIcon{
 		C.gtk_status_icon_new()}
 }
-func NewStatusIconFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) *StatusIcon {
+func NewStatusIconFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) *StatusIcon {
 	return &StatusIcon{
-		C.gtk_status_icon_new_from_pixbuf(pixbuf.Pixbuf)}
+		C.gtk_status_icon_new_from_pixbuf(pixbuf.GPixbuf)}
 }
 func NewStatusIconFromFile(filename string) *StatusIcon {
 	ptr := C.CString(filename)
@@ -2088,8 +2088,8 @@ func NewStatusIconFromIconName(icon_name string) *StatusIcon {
 
 //GtkStatusIcon *gtk_status_icon_new_from_gicon(GIcon *icon);
 
-func (v *StatusIcon) SetFromPixbuf(pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_status_icon_set_from_pixbuf(v.GStatusIcon, pixbuf.Pixbuf)
+func (v *StatusIcon) SetFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) {
+	C.gtk_status_icon_set_from_pixbuf(v.GStatusIcon, pixbuf.GPixbuf)
 }
 func (v *StatusIcon) SetFromFile(filename string) {
 	ptr := C.CString(filename)
@@ -2110,8 +2110,8 @@ func (v *StatusIcon) SetFromIconName(icon_name string) {
 //void gtk_status_icon_set_from_gicon (GtkStatusIcon *status_icon, GIcon *icon);
 //GtkImageType gtk_status_icon_get_storage_type (GtkStatusIcon *status_icon);
 
-func (v *StatusIcon) GetPixbuf() *gdkpixbuf.GdkPixbuf {
-	return &gdkpixbuf.GdkPixbuf{
+func (v *StatusIcon) GetPixbuf() *gdkpixbuf.Pixbuf {
+	return &gdkpixbuf.Pixbuf{
 		C.gtk_status_icon_get_pixbuf(v.GStatusIcon)}
 }
 func (v *StatusIcon) GetStock() string {
@@ -3310,8 +3310,8 @@ func (v *TextBuffer) GetSlice(start *TextIter, end *TextIter, include_hidden_cha
 	defer C.free(unsafe.Pointer(pchar))
 	return C.GoString(pchar)
 }
-func (v *TextBuffer) InsertPixbuf(iter *TextIter, pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_text_buffer_insert_pixbuf(v.GTextBuffer, &iter.GTextIter, pixbuf.Pixbuf)
+func (v *TextBuffer) InsertPixbuf(iter *TextIter, pixbuf *gdkpixbuf.Pixbuf) {
+	C.gtk_text_buffer_insert_pixbuf(v.GTextBuffer, &iter.GTextIter, pixbuf.GPixbuf)
 }
 
 // gtk_text_buffer_insert_child_anchor
@@ -7604,8 +7604,8 @@ func (v *Tooltip) SetText(text string) {
 	defer C.free_string(ptr)
 	C.gtk_tooltip_set_text(v.GTooltip, C.to_gcharptr(ptr))
 }
-func (v *Tooltip) SetIcon(pixbuf *gdkpixbuf.GdkPixbuf) {
-	C.gtk_tooltip_set_icon(v.GTooltip, pixbuf.Pixbuf)
+func (v *Tooltip) SetIcon(pixbuf *gdkpixbuf.Pixbuf) {
+	C.gtk_tooltip_set_icon(v.GTooltip, pixbuf.GPixbuf)
 }
 func (v *Tooltip) SetIconFromStock(stock_id string, size IconSize) {
 	ptr := C.CString(stock_id)
@@ -8241,7 +8241,7 @@ func (v *Widget) QueueResizeNoRedraw() {
 // gtk_widget_get_child_requisition
 // gtk_widget_size_allocate
 
-func (v *Widget) AddAccelerator(signal string, group *AccelGroup, key uint, mods gdk.GdkModifierType, flags AccelFlags) {
+func (v *Widget) AddAccelerator(signal string, group *AccelGroup, key uint, mods gdk.ModifierType, flags AccelFlags) {
 	csignal := C.CString(signal)
 	defer C.free_string(csignal)
 	C.gtk_widget_add_accelerator(v.GWidget, C.to_gcharptr(csignal), group.GAccelGroup, C.guint(key),
@@ -8293,10 +8293,10 @@ func (v *Widget) SetSensitive(setting bool) {
 func (v *Widget) SetParent(parent WidgetLike) {
 	C.gtk_widget_set_parent(v.GWidget, parent.ToNative())
 }
-func (v *Widget) SetParentWindow(parent *gdk.GdkWindow) {
-	C.gtk_widget_set_parent_window(v.GWidget, C.to_GdkWindow(unsafe.Pointer(parent.Window)))
+func (v *Widget) SetParentWindow(parent *gdk.Window) {
+	C.gtk_widget_set_parent_window(v.GWidget, C.to_GdkWindow(unsafe.Pointer(parent.GWindow)))
 }
-func (v *Widget) GetParentWindow() *gdk.GdkWindow {
+func (v *Widget) GetParentWindow() *gdk.Window {
 	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_parent_window(v.GWidget)))
 }
 
@@ -8363,12 +8363,12 @@ func (v *Widget) HideOnDelete() {
 // gtk_widget_get_pango_context
 // gtk_widget_create_pango_layout
 
-func (v *Widget) RenderIcon(stock_id string, size IconSize, detail string) *gdkpixbuf.GdkPixbuf {
+func (v *Widget) RenderIcon(stock_id string, size IconSize, detail string) *gdkpixbuf.Pixbuf {
 	pstock_id := C.CString(stock_id)
 	defer C.free_string(pstock_id)
 	pdetail := C.CString(detail)
 	defer C.free_string(pdetail)
-	return &gdkpixbuf.GdkPixbuf{
+	return &gdkpixbuf.Pixbuf{
 		C.gtk_widget_render_icon(v.GWidget, C.to_gcharptr(pstock_id), C.GtkIconSize(size), C.to_gcharptr(pdetail))}
 }
 
@@ -8496,7 +8496,7 @@ func (v *Widget) SetHasTooltip(setting bool) {
 // gtk_widget_trigger_tooltip_query
 // gtk_widget_get_snapshot
 
-func (v *Widget) GetWindow() *gdk.GdkWindow {
+func (v *Widget) GetWindow() *gdk.Window {
 	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_window(v.GWidget)))
 }
 
@@ -8594,9 +8594,9 @@ func (v *Widget) IsToplevel() bool {
 	panic_if_version_older(2, 18, 0, "gtk_widget_is_toplevel()")
 	return gboolean2bool(C._gtk_widget_is_toplevel(v.GWidget))
 }
-func (v *Widget) SetWindow(window *gdk.GdkWindow) {
+func (v *Widget) SetWindow(window *gdk.Window) {
 	panic_if_version_older(2, 18, 0, "gtk_widget_set_window()")
-	C._gtk_widget_set_window(v.GWidget, C.to_GdkWindow(unsafe.Pointer(window.Window)))
+	C._gtk_widget_set_window(v.GWidget, C.to_GdkWindow(unsafe.Pointer(window.GWindow)))
 }
 func (v *Widget) SetReceivesDefault(setting bool) {
 	panic_if_version_older(2, 18, 0, "gtk_widget_set_receives_default()")
@@ -8627,8 +8627,8 @@ func (v *Widget) ModifyFontEasy(desc string) {
 	C.gtk_widget_modify_font(v.GWidget, C.pango_font_description_from_string(pdesc))
 }
 
-func (v *Widget) ModifyBG(state StateType, color *gdk.GdkColor) {
-	C.gtk_widget_modify_bg(v.GWidget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.Color)))
+func (v *Widget) ModifyBG(state StateType, color *gdk.Color) {
+	C.gtk_widget_modify_bg(v.GWidget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.GColor)))
 }
 
 //-----------------------------------------------------------------------

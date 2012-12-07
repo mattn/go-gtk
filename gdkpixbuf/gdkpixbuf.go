@@ -14,121 +14,121 @@ func gboolean2bool(b C.gboolean) bool {
 }
 
 //-----------------------------------------------------------------------
-// GdkPixbuf
+// 
 //-----------------------------------------------------------------------
-type GdkPixbuf struct {
-	Pixbuf *C.GdkPixbuf
+type Pixbuf struct {
+	GPixbuf *C.GdkPixbuf
 }
 
-func PixbufFromFile(path string) (pixbuf *GdkPixbuf, err **glib.Error) {
+func PixbufFromFile(path string) (pixbuf *Pixbuf, err **glib.Error) {
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
-	pixbuf = &GdkPixbuf{C.gdk_pixbuf_new_from_file(ptr, &error)}
+	pixbuf = &Pixbuf{C.gdk_pixbuf_new_from_file(ptr, &error)}
 	if err != nil && error != nil {
 		*err = glib.ErrorFromNative(unsafe.Pointer(error))
 	}
 	return
 }
 
-func PixbufFromFileAtSize(path string, imgW int, imgH int) (pixbuf *GdkPixbuf, err **glib.Error) {
+func PixbufFromFileAtSize(path string, imgW int, imgH int) (pixbuf *Pixbuf, err **glib.Error) {
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
-	pixbuf = &GdkPixbuf{C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(imgW), C.int(imgH), &error)}
+	pixbuf = &Pixbuf{C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(imgW), C.int(imgH), &error)}
 	if err != nil && error != nil {
 		*err = glib.ErrorFromNative(unsafe.Pointer(error))
 	}
 	return
 }
 
-func GetGdkPixbufType() int {
+func GetPixbufType() int {
 	return int(C.gdk_pixbuf_get_type())
 }
 
-func GetFileInfo(path string, imgW *int, imgH *int) *GdkPixbufFormat {
+func GetFileInfo(path string, imgW *int, imgH *int) *Format {
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
 
 	var w, h C.gint
-	format := &GdkPixbufFormat{C.gdk_pixbuf_get_file_info(C.to_gcharptr(ptr), &w, &h)}
+	format := &Format{C.gdk_pixbuf_get_file_info(C.to_gcharptr(ptr), &w, &h)}
 	*imgW = int(w)
 	*imgH = int(h)
 	return format
 }
 
 //-----------------------------------------------------------------------
-// GdkPixbufAnimation
+// Animation
 //-----------------------------------------------------------------------
-type GdkPixbufAnimation struct {
-	PixbufAnimation *C.GdkPixbufAnimation
+type Animation struct {
+	GPixbufAnimation *C.GdkPixbufAnimation
 }
 
 //-----------------------------------------------------------------------
-// GdkPixbufFormat
+// Format
 //-----------------------------------------------------------------------
-type GdkPixbufFormat struct {
-	PixbufFormat *C.GdkPixbufFormat
+type Format struct {
+	GPixbufFormat *C.GdkPixbufFormat
 }
 
 //-----------------------------------------------------------------------
-// GdkPixbufLoader
+// Loader
 //-----------------------------------------------------------------------
-type GdkPixbufLoader struct {
-	PixbufLoader *C.GdkPixbufLoader
+type Loader struct {
+	GPixbufLoader *C.GdkPixbufLoader
 }
 
-func PixbufLoader() *GdkPixbufLoader {
-	return &GdkPixbufLoader{
+func PixbufLoader() *Loader {
+	return &Loader{
 		C.gdk_pixbuf_loader_new()}
 }
-func PixbufLoaderWithType(image_type string) (loader *GdkPixbufLoader, err *C.GError) {
+func PixbufLoaderWithType(image_type string) (loader *Loader, err *C.GError) {
 	var error *C.GError
 	ptr := C.CString(image_type)
 	defer C.free_string(ptr)
-	loader = &GdkPixbufLoader{
+	loader = &Loader{
 		C.gdk_pixbuf_loader_new_with_type(ptr, &error)}
 	err = error
 	return
 }
-func PixbufLoaderWithMimeType(mime_type string) (loader *GdkPixbufLoader, err *C.GError) {
+func PixbufLoaderWithMimeType(mime_type string) (loader *Loader, err *C.GError) {
 	var error *C.GError
 	ptr := C.CString(mime_type)
 	defer C.free_string(ptr)
-	loader = &GdkPixbufLoader{
+	loader = &Loader{
 		C.gdk_pixbuf_loader_new_with_mime_type(ptr, &error)}
 	err = error
 	return
 }
-func (v GdkPixbufLoader) GetPixbuf() *GdkPixbuf {
-	return &GdkPixbuf{
-		C.gdk_pixbuf_loader_get_pixbuf(v.PixbufLoader)}
+func (v Loader) GetPixbuf() *Pixbuf {
+	return &Pixbuf{
+		C.gdk_pixbuf_loader_get_pixbuf(v.GPixbufLoader)}
 }
-func (v GdkPixbufLoader) Write(buf []byte) (ret bool, err *C.GError) {
+func (v Loader) Write(buf []byte) (ret bool, err *C.GError) {
 	var error *C.GError
 	var pbuf *byte
 	pbuf = &buf[0]
-	ret = gboolean2bool(C.gdk_pixbuf_loader_write(v.PixbufLoader, C.to_gucharptr(unsafe.Pointer(pbuf)), C.gsize(len(buf)), &error))
+	ret = gboolean2bool(C.gdk_pixbuf_loader_write(v.GPixbufLoader, C.to_gucharptr(unsafe.Pointer(pbuf)), C.gsize(len(buf)), &error))
 	err = error
 	return
 }
-func (v GdkPixbufLoader) Close() (ret bool, err *C.GError) {
+func (v Loader) Close() (ret bool, err *C.GError) {
 	var error *C.GError
-	ret = gboolean2bool(C.gdk_pixbuf_loader_close(v.PixbufLoader, &error))
+	ret = gboolean2bool(C.gdk_pixbuf_loader_close(v.GPixbufLoader, &error))
 	err = error
 	return
 }
 
-//func (v GdkPixbufLoader) GetPixbufAnimation() *GdkPixbufAnimation {
-//	return &GdkPixbufAnimation {
-//		C.gdk_pixbuf_loader_get_animation(v.PixbufLoader) };
+//func (v Loader) GetPixbufAnimation() *Animation {
+//	return &Animation {
+//		C.gdk_pixbuf_loader_get_animation(v.GPixbufLoader) };
 //}
-func (v GdkPixbufLoader) SetSize(width int, height int) {
-	C.gdk_pixbuf_loader_set_size(v.PixbufLoader, C.int(width), C.int(height))
+func (v Loader) SetSize(width int, height int) {
+	C.gdk_pixbuf_loader_set_size(v.GPixbufLoader, C.int(width), C.int(height))
 }
-func (v GdkPixbufLoader) GetFormat() *GdkPixbufFormat {
-	return &GdkPixbufFormat{
-		C.gdk_pixbuf_loader_get_format(v.PixbufLoader)}
+func (v Loader) GetFormat() *Format {
+	return &Format{
+		C.gdk_pixbuf_loader_get_format(v.GPixbufLoader)}
 }
 
 // FINISH
