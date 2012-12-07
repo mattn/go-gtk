@@ -22,180 +22,180 @@ func gboolean2bool(b C.gboolean) bool {
 //-----------------------------------------------------------------------
 // GtkSourceBuffer
 //-----------------------------------------------------------------------
-type GtkSourceBuffer struct {
-	SourceBuffer *C.GtkSourceBuffer
-	gtk.GtkTextBuffer
+type SourceBuffer struct {
+	GSourceBuffer *C.GtkSourceBuffer
+	gtk.TextBuffer
 }
 
-func SourceBuffer() *GtkSourceBuffer {
+func NewSourceBuffer() *SourceBuffer {
 	v := C.gtk_source_buffer_new(nil)
-	return &GtkSourceBuffer{v, gtk.TextBufferFromPointer(unsafe.Pointer(v))}
+	return &SourceBuffer{v, gtk.NewTextBufferFromPointer(unsafe.Pointer(v))}
 }
-func SourceBufferWithLanguage(lang *GtkSourceLanguage) *GtkSourceBuffer {
-	v := C.gtk_source_buffer_new_with_language(lang.SourceLanguage)
-	return &GtkSourceBuffer{v, gtk.TextBufferFromPointer(unsafe.Pointer(v))}
+func NewSourceBufferWithLanguage(lang *SourceLanguage) *SourceBuffer {
+	v := C.gtk_source_buffer_new_with_language(lang.GSourceLanguage)
+	return &SourceBuffer{v, gtk.NewTextBufferFromPointer(unsafe.Pointer(v))}
 }
-func (v *GtkSourceBuffer) GetNativeBuffer() unsafe.Pointer {
-	return unsafe.Pointer(v.SourceBuffer)
+func (v *SourceBuffer) GetNativeBuffer() unsafe.Pointer {
+	return unsafe.Pointer(v.GSourceBuffer)
 }
-func (v *GtkSourceBuffer) SetHighlightSyntax(highlight bool) {
-	C.gtk_source_buffer_set_highlight_syntax(v.SourceBuffer, bool2gboolean(highlight))
+func (v *SourceBuffer) SetHighlightSyntax(highlight bool) {
+	C.gtk_source_buffer_set_highlight_syntax(v.GSourceBuffer, bool2gboolean(highlight))
 }
-func (v *GtkSourceBuffer) GetHighlightSyntax() bool {
-	return gboolean2bool(C.gtk_source_buffer_get_highlight_syntax(v.SourceBuffer))
+func (v *SourceBuffer) GetHighlightSyntax() bool {
+	return gboolean2bool(C.gtk_source_buffer_get_highlight_syntax(v.GSourceBuffer))
 }
-func (v *GtkSourceBuffer) SetLanguage(lang *GtkSourceLanguage) {
-	C.gtk_source_buffer_set_language(v.SourceBuffer, lang.SourceLanguage)
+func (v *SourceBuffer) SetLanguage(lang *SourceLanguage) {
+	C.gtk_source_buffer_set_language(v.GSourceBuffer, lang.GSourceLanguage)
 }
-func (v *GtkSourceBuffer) GetLanguage() *GtkSourceLanguage {
-	return &GtkSourceLanguage{C.gtk_source_buffer_get_language(v.SourceBuffer)}
+func (v *SourceBuffer) GetLanguage() *SourceLanguage {
+	return &SourceLanguage{C.gtk_source_buffer_get_language(v.GSourceBuffer)}
 }
-func (v *GtkSourceBuffer) BeginNotUndoableAction() {
-	C.gtk_source_buffer_begin_not_undoable_action(v.SourceBuffer)
+func (v *SourceBuffer) BeginNotUndoableAction() {
+	C.gtk_source_buffer_begin_not_undoable_action(v.GSourceBuffer)
 }
-func (v *GtkSourceBuffer) EndNotUndoableAction() {
-	C.gtk_source_buffer_end_not_undoable_action(v.SourceBuffer)
+func (v *SourceBuffer) EndNotUndoableAction() {
+	C.gtk_source_buffer_end_not_undoable_action(v.GSourceBuffer)
 }
 
 //-----------------------------------------------------------------------
 // GtkSourceView
 //-----------------------------------------------------------------------
-type GtkSourceView struct {
-	gtk.GtkTextView
+type SourceView struct {
+	gtk.TextView
 }
 
-func SourceView() *GtkSourceView {
-	return &GtkSourceView{gtk.GtkTextView{gtk.GtkContainer{
+func NewSourceView() *SourceView {
+	return &SourceView{gtk.TextView{gtk.Container{
 		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new()))}}}
 }
-func SourceViewWithBuffer(buf *GtkSourceBuffer) *GtkSourceView {
-	return &GtkSourceView{gtk.GtkTextView{gtk.GtkContainer{
-		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.SourceBuffer)))}}}
+func NewSourceViewWithBuffer(buf *SourceBuffer) *SourceView {
+	return &SourceView{gtk.TextView{gtk.Container{
+		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.GSourceBuffer)))}}}
 }
-func (v *GtkSourceView) ToNativeSourceView() *C.GtkSourceView {
-	return C.to_GtkSourceView(unsafe.Pointer(v.Widget))
+func (v *SourceView) ToNativeSourceView() *C.GtkSourceView {
+	return C.to_GtkSourceView(unsafe.Pointer(v.GWidget))
 }
-func (v *GtkSourceView) SetAutoIndent(enable bool) {
+func (v *SourceView) SetAutoIndent(enable bool) {
 	C.gtk_source_view_set_auto_indent(v.ToNativeSourceView(), bool2gboolean(enable))
 }
-func (v *GtkSourceView) GetAutoIndent() bool {
+func (v *SourceView) GetAutoIndent() bool {
 	return gboolean2bool(C.gtk_source_view_get_auto_indent(v.ToNativeSourceView()))
 }
-func (v *GtkSourceView) SetHighlightCurrentLine(enable bool) {
+func (v *SourceView) SetHighlightCurrentLine(enable bool) {
 	C.gtk_source_view_set_highlight_current_line(v.ToNativeSourceView(), bool2gboolean(enable))
 }
-func (v *GtkSourceView) GetHighlightCurrentLine() bool {
+func (v *SourceView) GetHighlightCurrentLine() bool {
 	return gboolean2bool(C.gtk_source_view_get_highlight_current_line(v.ToNativeSourceView()))
 }
-func (v *GtkSourceView) SetShowLineNumbers(enable bool) {
+func (v *SourceView) SetShowLineNumbers(enable bool) {
 	C.gtk_source_view_set_show_line_numbers(v.ToNativeSourceView(), bool2gboolean(enable))
 }
-func (v *GtkSourceView) GetShowLineNumbers() bool {
+func (v *SourceView) GetShowLineNumbers() bool {
 	return gboolean2bool(C.gtk_source_view_get_show_line_numbers(v.ToNativeSourceView()))
 }
-func (v *GtkSourceView) SetRightMarginPosition(pos uint) {
+func (v *SourceView) SetRightMarginPosition(pos uint) {
 	C.gtk_source_view_set_right_margin_position(v.ToNativeSourceView(), C.guint(pos))
 }
-func (v *GtkSourceView) GetRightMarginPosition() uint {
+func (v *SourceView) GetRightMarginPosition() uint {
 	return uint(C.gtk_source_view_get_right_margin_position(v.ToNativeSourceView()))
 }
-func (v *GtkSourceView) SetIndentWidth(width int) {
+func (v *SourceView) SetIndentWidth(width int) {
 	C.gtk_source_view_set_indent_width(v.ToNativeSourceView(), C.gint(width))
 }
-func (v *GtkSourceView) GetIndentWidth() int {
+func (v *SourceView) GetIndentWidth() int {
 	return int(C.gtk_source_view_get_indent_width(v.ToNativeSourceView()))
 }
-func (v *GtkSourceView) SetShowRightMargin(enable bool) {
+func (v *SourceView) SetShowRightMargin(enable bool) {
 	C.gtk_source_view_set_show_right_margin(v.ToNativeSourceView(), bool2gboolean(enable))
 }
-func (v *GtkSourceView) GetShowRightMargin() bool {
+func (v *SourceView) GetShowRightMargin() bool {
 	return gboolean2bool(C.gtk_source_view_get_show_right_margin(v.ToNativeSourceView()))
 }
-func (v *GtkSourceView) SetInsertSpacesInsteadOfTabs(enable bool) {
+func (v *SourceView) SetInsertSpacesInsteadOfTabs(enable bool) {
 	C.gtk_source_view_set_insert_spaces_instead_of_tabs(v.ToNativeSourceView(), bool2gboolean(enable))
 }
-func (v *GtkSourceView) GetInsertSpacesInsteadOfTabs() bool {
+func (v *SourceView) GetInsertSpacesInsteadOfTabs() bool {
 	return gboolean2bool(C.gtk_source_view_get_insert_spaces_instead_of_tabs(v.ToNativeSourceView()))
 }
 
-type GtkSourceDrawSpacesFlags int
+type SourceDrawSpacesFlags int
 
 const (
-	GTK_SOURCE_DRAW_SPACES_SPACE    GtkSourceDrawSpacesFlags = 1 << 0
-	GTK_SOURCE_DRAW_SPACES_TAB      GtkSourceDrawSpacesFlags = 1 << 1
-	GTK_SOURCE_DRAW_SPACES_NEWLINE  GtkSourceDrawSpacesFlags = 1 << 2
-	GTK_SOURCE_DRAW_SPACES_NBSP     GtkSourceDrawSpacesFlags = 1 << 3
-	GTK_SOURCE_DRAW_SPACES_LEADING  GtkSourceDrawSpacesFlags = 1 << 4
-	GTK_SOURCE_DRAW_SPACES_TEXT     GtkSourceDrawSpacesFlags = 1 << 5
-	GTK_SOURCE_DRAW_SPACES_TRAILING GtkSourceDrawSpacesFlags = 1 << 6
-	GTK_SOURCE_DRAW_SPACES_ALL      GtkSourceDrawSpacesFlags = (GTK_SOURCE_DRAW_SPACES_SPACE |
-		GTK_SOURCE_DRAW_SPACES_TAB |
-		GTK_SOURCE_DRAW_SPACES_NEWLINE |
-		GTK_SOURCE_DRAW_SPACES_NBSP |
-		GTK_SOURCE_DRAW_SPACES_LEADING |
-		GTK_SOURCE_DRAW_SPACES_TEXT |
-		GTK_SOURCE_DRAW_SPACES_TRAILING)
+	SOURCE_DRAW_SPACES_SPACE    SourceDrawSpacesFlags = 1 << 0
+	SOURCE_DRAW_SPACES_TAB      SourceDrawSpacesFlags = 1 << 1
+	SOURCE_DRAW_SPACES_NEWLINE  SourceDrawSpacesFlags = 1 << 2
+	SOURCE_DRAW_SPACES_NBSP     SourceDrawSpacesFlags = 1 << 3
+	SOURCE_DRAW_SPACES_LEADING  SourceDrawSpacesFlags = 1 << 4
+	SOURCE_DRAW_SPACES_TEXT     SourceDrawSpacesFlags = 1 << 5
+	SOURCE_DRAW_SPACES_TRAILING SourceDrawSpacesFlags = 1 << 6
+	SOURCE_DRAW_SPACES_ALL      SourceDrawSpacesFlags = (SOURCE_DRAW_SPACES_SPACE |
+		SOURCE_DRAW_SPACES_TAB |
+		SOURCE_DRAW_SPACES_NEWLINE |
+		SOURCE_DRAW_SPACES_NBSP |
+		SOURCE_DRAW_SPACES_LEADING |
+		SOURCE_DRAW_SPACES_TEXT |
+		SOURCE_DRAW_SPACES_TRAILING)
 )
 
-func (v *GtkSourceView) SetDrawSpaces(flags GtkSourceDrawSpacesFlags) {
+func (v *SourceView) SetDrawSpaces(flags SourceDrawSpacesFlags) {
 	C.gtk_source_view_set_draw_spaces(v.ToNativeSourceView(),
 		C.GtkSourceDrawSpacesFlags(flags))
 }
-func (v *GtkSourceView) GetDrawSpaces() GtkSourceDrawSpacesFlags {
-	return GtkSourceDrawSpacesFlags(C.gtk_source_view_get_draw_spaces(v.ToNativeSourceView()))
+func (v *SourceView) GetDrawSpaces() SourceDrawSpacesFlags {
+	return SourceDrawSpacesFlags(C.gtk_source_view_get_draw_spaces(v.ToNativeSourceView()))
 }
-func (v *GtkSourceView) SetTabWidth(width uint) {
+func (v *SourceView) SetTabWidth(width uint) {
 	C.gtk_source_view_set_tab_width(v.ToNativeSourceView(),
 		C.guint(width))
 }
-func (v *GtkSourceView) GetTabWidth() uint {
+func (v *SourceView) GetTabWidth() uint {
 	return uint(C.gtk_source_view_get_tab_width(v.ToNativeSourceView()))
 }
 
-type GtkSourceSmartHomeEndType int
+type SourceSmartHomeEndType int
 
 const (
-	GTK_SOURCE_SMART_HOME_END_DISABLED GtkSourceSmartHomeEndType = 0
-	GTK_SOURCE_SMART_HOME_END_BEFORE   GtkSourceSmartHomeEndType = 1
-	GTK_SOURCE_SMART_HOME_END_AFTER    GtkSourceSmartHomeEndType = 2
-	GTK_SOURCE_SMART_HOME_END_ALWAYS   GtkSourceSmartHomeEndType = 3
+	SOURCE_SMART_HOME_END_DISABLED SourceSmartHomeEndType = 0
+	SOURCE_SMART_HOME_END_BEFORE   SourceSmartHomeEndType = 1
+	SOURCE_SMART_HOME_END_AFTER    SourceSmartHomeEndType = 2
+	SOURCE_SMART_HOME_END_ALWAYS   SourceSmartHomeEndType = 3
 )
 
-func (v *GtkSourceView) SetSmartHomeEnd(flags GtkSourceSmartHomeEndType) {
+func (v *SourceView) SetSmartHomeEnd(flags SourceSmartHomeEndType) {
 	C.gtk_source_view_set_smart_home_end(v.ToNativeSourceView(),
 		C.GtkSourceSmartHomeEndType(flags))
 }
-func (v *GtkSourceView) GetSmartHomeEnd() GtkSourceSmartHomeEndType {
-	return GtkSourceSmartHomeEndType(C.gtk_source_view_get_smart_home_end(v.ToNativeSourceView()))
+func (v *SourceView) GetSmartHomeEnd() SourceSmartHomeEndType {
+	return SourceSmartHomeEndType(C.gtk_source_view_get_smart_home_end(v.ToNativeSourceView()))
 }
 
 //-----------------------------------------------------------------------
 // GtkSourceLanguage
 //-----------------------------------------------------------------------
-type GtkSourceLanguage struct {
-	SourceLanguage *C.GtkSourceLanguage
+type SourceLanguage struct {
+	GSourceLanguage *C.GtkSourceLanguage
 }
 
-func (v *GtkSourceLanguage) GetId() string {
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_id(v.SourceLanguage)))
+func (v *SourceLanguage) GetId() string {
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_id(v.GSourceLanguage)))
 }
-func (v *GtkSourceLanguage) GetName() string {
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_name(v.SourceLanguage)))
+func (v *SourceLanguage) GetName() string {
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_name(v.GSourceLanguage)))
 }
-func (v *GtkSourceLanguage) GetSection() string {
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_section(v.SourceLanguage)))
+func (v *SourceLanguage) GetSection() string {
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_section(v.GSourceLanguage)))
 }
-func (v *GtkSourceLanguage) GetHidden() bool {
-	return gboolean2bool(C.gtk_source_language_get_hidden(v.SourceLanguage))
+func (v *SourceLanguage) GetHidden() bool {
+	return gboolean2bool(C.gtk_source_language_get_hidden(v.GSourceLanguage))
 }
-func (v *GtkSourceLanguage) GetMetadata(name string) string {
+func (v *SourceLanguage) GetMetadata(name string) string {
 	cname := C.CString(name)
 	defer C.free_string(cname)
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.SourceLanguage, C.to_gcharptr(cname))))
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.GSourceLanguage, C.to_gcharptr(cname))))
 }
-func (v *GtkSourceLanguage) GetMimeTypes() []string {
+func (v *SourceLanguage) GetMimeTypes() []string {
 	var types []string
-	ctypes := C.gtk_source_language_get_mime_types(v.SourceLanguage)
+	ctypes := C.gtk_source_language_get_mime_types(v.GSourceLanguage)
 	for {
 		types = append(types, C.GoString(C.to_charptr(*ctypes)))
 		ctypes = C.next_gcharptr(ctypes)
@@ -205,9 +205,9 @@ func (v *GtkSourceLanguage) GetMimeTypes() []string {
 	}
 	return types
 }
-func (v *GtkSourceLanguage) GetGlobs() []string {
+func (v *SourceLanguage) GetGlobs() []string {
 	var globs []string
-	cglobs := C.gtk_source_language_get_globs(v.SourceLanguage)
+	cglobs := C.gtk_source_language_get_globs(v.GSourceLanguage)
 	for {
 		globs = append(globs, C.GoString(C.to_charptr(*cglobs)))
 		cglobs = C.next_gcharptr(cglobs)
@@ -217,14 +217,14 @@ func (v *GtkSourceLanguage) GetGlobs() []string {
 	}
 	return globs
 }
-func (v *GtkSourceLanguage) GetStyleName(styleId string) string {
+func (v *SourceLanguage) GetStyleName(styleId string) string {
 	cstyleId := C.CString(styleId)
 	defer C.free_string(cstyleId)
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.SourceLanguage, C.to_gcharptr(cstyleId))))
+	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.GSourceLanguage, C.to_gcharptr(cstyleId))))
 }
-func (v *GtkSourceLanguage) GetStyleIds() []string {
+func (v *SourceLanguage) GetStyleIds() []string {
 	var ids []string
-	cids := C.gtk_source_language_get_globs(v.SourceLanguage)
+	cids := C.gtk_source_language_get_globs(v.GSourceLanguage)
 	for {
 		ids = append(ids, C.GoString(C.to_charptr(*cids)))
 		cids = C.next_gcharptr(cids)
@@ -240,17 +240,17 @@ func (v *GtkSourceLanguage) GetStyleIds() []string {
 //-----------------------------------------------------------------------
 // GtkSourceLanguageManager
 //-----------------------------------------------------------------------
-type GtkSourceLanguageManager struct {
-	LanguageManager *C.GtkSourceLanguageManager
+type SourceLanguageManager struct {
+	GSourceLanguageManager *C.GtkSourceLanguageManager
 }
 
-func SourceLanguageManager() *GtkSourceLanguageManager {
-	return &GtkSourceLanguageManager{C.gtk_source_language_manager_new()}
+func NewSourceLanguageManager() *SourceLanguageManager {
+	return &SourceLanguageManager{C.gtk_source_language_manager_new()}
 }
-func SourceLanguageManagerGetDefault() *GtkSourceLanguageManager {
-	return &GtkSourceLanguageManager{C.gtk_source_language_manager_get_default()}
+func SourceLanguageManagerGetDefault() *SourceLanguageManager {
+	return &SourceLanguageManager{C.gtk_source_language_manager_get_default()}
 }
-func (v *GtkSourceLanguageManager) SetSearchPath(paths []string) {
+func (v *SourceLanguageManager) SetSearchPath(paths []string) {
 	cpaths := C.make_strings(C.int(len(paths) + 1))
 	for i, path := range paths {
 		ptr := C.CString(path)
@@ -258,12 +258,12 @@ func (v *GtkSourceLanguageManager) SetSearchPath(paths []string) {
 		C.set_string(cpaths, C.int(i), C.to_gcharptr(ptr))
 	}
 	C.set_string(cpaths, C.int(len(paths)), nil)
-	C.gtk_source_language_manager_set_search_path(v.LanguageManager, cpaths)
+	C.gtk_source_language_manager_set_search_path(v.GSourceLanguageManager, cpaths)
 	C.destroy_strings(cpaths)
 }
-func (v *GtkSourceLanguageManager) GetSearchPath() []string {
+func (v *SourceLanguageManager) GetSearchPath() []string {
 	var dirs []string
-	cdirs := C.gtk_source_language_manager_get_search_path(v.LanguageManager)
+	cdirs := C.gtk_source_language_manager_get_search_path(v.GSourceLanguageManager)
 	for {
 		dirs = append(dirs, C.GoString(C.to_charptr(*cdirs)))
 		cdirs = C.next_gcharptr(cdirs)
@@ -273,9 +273,9 @@ func (v *GtkSourceLanguageManager) GetSearchPath() []string {
 	}
 	return dirs
 }
-func (v *GtkSourceLanguageManager) GetLanguageIds() []string {
+func (v *SourceLanguageManager) GetLanguageIds() []string {
 	var ids []string
-	cids := C.gtk_source_language_manager_get_language_ids(v.LanguageManager)
+	cids := C.gtk_source_language_manager_get_language_ids(v.GSourceLanguageManager)
 	for {
 		ids = append(ids, C.GoString(C.to_charptr(*cids)))
 		cids = C.next_gcharptr(cids)
@@ -285,21 +285,21 @@ func (v *GtkSourceLanguageManager) GetLanguageIds() []string {
 	}
 	return ids
 }
-func (v *GtkSourceLanguageManager) GetLanguage(id string) *GtkSourceLanguage {
+func (v *SourceLanguageManager) GetLanguage(id string) *SourceLanguage {
 	cid := C.CString(id)
 	defer C.free_string(cid)
-	return &GtkSourceLanguage{C.gtk_source_language_manager_get_language(v.LanguageManager,
+	return &SourceLanguage{C.gtk_source_language_manager_get_language(v.GSourceLanguageManager,
 		C.to_gcharptr(cid))}
 }
-func (v *GtkSourceLanguageManager) GuessLanguage(filename string, contentType string) *GtkSourceLanguage {
+func (v *SourceLanguageManager) GuessLanguage(filename string, contentType string) *SourceLanguage {
 	if filename == "" {
 		cct := C.CString(contentType)
 		defer C.free_string(cct)
-		return &GtkSourceLanguage{C.gtk_source_language_manager_guess_language(v.LanguageManager, nil, C.to_gcharptr(cct))}
+		return &SourceLanguage{C.gtk_source_language_manager_guess_language(v.GSourceLanguageManager, nil, C.to_gcharptr(cct))}
 	}
 	cfn := C.CString(filename)
 	defer C.free_string(cfn)
-	return &GtkSourceLanguage{C.gtk_source_language_manager_guess_language(v.LanguageManager, C.to_gcharptr(cfn), nil)}
+	return &SourceLanguage{C.gtk_source_language_manager_guess_language(v.GSourceLanguageManager, C.to_gcharptr(cfn), nil)}
 }
 
 //FINISH

@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"strconv"
 )
 
 func main() {
 	gtk.Init(nil)
-	window := gtk.NewWindow(gtk.GTK_WINDOW_TOPLEVEL)
-	window.SetPosition(gtk.GTK_WIN_POS_CENTER)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
+	window.SetPosition(gtk.WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
 	window.Connect("destroy", func(ctx *glib.CallbackContext) {
 		println("got destroy!", ctx.Data().(string))
@@ -26,7 +26,7 @@ func main() {
 	//--------------------------------------------------------
 	spinbutton1 := gtk.NewSpinButtonWithRange(1.0, 10.0, 1.0)
 	spinbutton1.SetDigits(3)
-	spinbutton1.Spin(gtk.GTK_SPIN_STEP_FORWARD, 7.0)
+	spinbutton1.Spin(gtk.SPIN_STEP_FORWARD, 7.0)
 	fixed.Put(spinbutton1, 40, 50)
 
 	spinbutton1.OnValueChanged(func() {

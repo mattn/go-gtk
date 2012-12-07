@@ -13,14 +13,14 @@ func main() {
 	gdk.ThreadsInit()
 	gdk.ThreadsEnter()
 	gtk.Init(nil)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.Connect("destroy", gtk.MainQuit)
 
-	vbox := gtk.VBox(false, 1)
+	vbox := gtk.NewVBox(false, 1)
 
-	label1 := gtk.Label("")
+	label1 := gtk.NewLabel("")
 	vbox.Add(label1)
-	label2 := gtk.Label("")
+	label2 := gtk.NewLabel("")
 	vbox.Add(label2)
 
 	window.Add(vbox)

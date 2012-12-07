@@ -2,23 +2,23 @@ package main
 
 import (
 	"os"
-	"github.com/mattn/go-gtk/gtk"
-	gsv "github.com/mattn/go-gtk/gtksourceview"
+	"github.com/mattn/go-gtk/gtk"	
+	gsv "github.com/mattn/go-gtk/gtksourceview"	
 )
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("SourceView")
 	window.Connect("destroy", gtk.MainQuit)
 
-	swin := gtk.ScrolledWindow(nil, nil)
-	swin.SetPolicy(gtk.GTK_POLICY_AUTOMATIC, gtk.GTK_POLICY_AUTOMATIC)
-	swin.SetShadowType(gtk.GTK_SHADOW_IN)
-	sourcebuffer := gsv.SourceBufferWithLanguage(gsv.SourceLanguageManagerGetDefault().GetLanguage("cpp"))
-	sourceview := gsv.SourceViewWithBuffer(sourcebuffer)
+	swin := gtk.NewScrolledWindow(nil, nil)
+	swin.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+	swin.SetShadowType(gtk.SHADOW_IN)
+	sourcebuffer := gsv.NewSourceBufferWithLanguage(gsv.SourceLanguageManagerGetDefault().GetLanguage("cpp"))
+	sourceview := gsv.NewSourceViewWithBuffer(sourcebuffer)
 
-	var start gtk.GtkTextIter
+	var start gtk.TextIter
 	sourcebuffer.GetStartIter(&start)
 	sourcebuffer.BeginNotUndoableAction()
 	sourcebuffer.Insert(&start, `#include <iostream>
