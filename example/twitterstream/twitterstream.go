@@ -129,7 +129,7 @@ func main() {
 					fmt.Println("error reading tweet: ", err)
 					continue
 				}
-				var iter gtk.GtkTextIter
+				var iter gtk.TextIter
 				pixbufbytes, resp := readURL(t.User.ProfileImageUrl)
 				gdk.ThreadsEnter()
 				buffer.GetStartIter(&iter)
