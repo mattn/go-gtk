@@ -1162,8 +1162,8 @@ func (v *Window) SetDecorated(setting bool){
 func (v *Window) SetDeletable(setting bool){
 	C.gtk_window_set_deletable(C.to_GtkWindow(v.GWidget), bool2gboolean(setting))
 }
-func (v *GtkWindow) SetTypeHint(hint gdk.GdkWindowTypeHint) {
-	C.gtk_window_set_type_hint(C.to_GtkWindow(v.Widget), C.GdkWindowTypeHint(hint))
+func (v *Window) SetTypeHint(hint gdk.GdkWindowTypeHint) {
+	C.gtk_window_set_type_hint(C.to_GtkWindow(v.GWidget), C.GdkWindowTypeHint(hint))
 }
 
 // gtk_window_begin_resize_drag
@@ -1229,8 +1229,8 @@ func (v *Window) GetTitle() string {
 	return C.GoString(C.to_charptr(C.gtk_window_get_title(C.to_GtkWindow(v.GWidget))))
 }
 
-func (v *GtkWindow) GetTypeHint() gdk.GdkWindowTypeHint {
-	return gdk.GdkWindowTypeHint(C.gtk_window_get_type_hint(C.to_GtkWindow(v.Widget)))
+func (v *Window) GetTypeHint() gdk.GdkWindowTypeHint {
+	return gdk.GdkWindowTypeHint(C.gtk_window_get_type_hint(C.to_GtkWindow(v.GWidget)))
 }
 
 // gtk_window_get_transient_for
