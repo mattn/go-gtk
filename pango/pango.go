@@ -17,19 +17,19 @@ func gboolean2bool(b C.gboolean) bool {
 	return false
 }
 
-type PangoWrapMode int
+type WrapMode int
 
 const (
-	PANGO_WRAP_WORD      PangoWrapMode = 0
-	PANGO_WRAP_CHAR      PangoWrapMode = 1
-	PANGO_WRAP_WORD_CHAR PangoWrapMode = 2
+	WRAP_WORD      WrapMode = 0
+	WRAP_CHAR      WrapMode = 1
+	WRAP_WORD_CHAR WrapMode = 2
 )
 
-type PangoEllipsizeMode int
+type EllipsizeMode int
 
 const (
-	PANGO_ELLIPSIZE_NONE   PangoEllipsizeMode = 0
-	PANGO_ELLIPSIZE_START  PangoEllipsizeMode = 1
-	PANGO_ELLIPSIZE_MIDDLE PangoEllipsizeMode = 2
-	PANGO_ELLIPSIZE_END    PangoEllipsizeMode = 3
+	ELLIPSIZE_NONE   EllipsizeMode = 0
+	ELLIPSIZE_START  EllipsizeMode = 1
+	ELLIPSIZE_MIDDLE EllipsizeMode = 2
+	ELLIPSIZE_END    EllipsizeMode = 3
 )
