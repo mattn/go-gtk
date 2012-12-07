@@ -11,19 +11,19 @@ import (
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("GTK DrawingArea")
 	window.Connect("destroy", gtk.MainQuit)
 
-	vbox := gtk.VBox(true, 0)
+	vbox := gtk.NewVBox(true, 0)
 	vbox.SetBorderWidth(5)
 
-	targets := []gtk.GtkTargetEntry {
+	targets := []gtk.TargetEntry {
 			{"text/uri-list", 0, 0 },
 			{"STRING", 0, 1 },
 			{"text/plain", 0, 2 },
 		}
-	dest := gtk.Label("drop me file")
+	dest := gtk.NewLabel("drop me file")
 	dest.DragDestSet(
 		gtk.GTK_DEST_DEFAULT_MOTION |
 		gtk.GTK_DEST_DEFAULT_HIGHLIGHT |
@@ -40,7 +40,7 @@ func main() {
 				filename, _, _ := glib.FilenameFromUri(files[i])
 				files[i] = filename
 			}
-			dialog := gtk.MessageDialog(
+			dialog := gtk.NewMessageDialog(
 				window,
 				gtk.GTK_DIALOG_MODAL,
 				gtk.GTK_MESSAGE_INFO,
