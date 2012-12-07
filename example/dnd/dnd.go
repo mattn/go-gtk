@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/glib"	
 	"github.com/mattn/go-gtk/gtk"
 	"strings"
 	"unsafe"
@@ -11,7 +11,7 @@ import (
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.NewWindow(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GTK DrawingArea")
 	window.Connect("destroy", gtk.MainQuit)
 
@@ -25,9 +25,9 @@ func main() {
 		}
 	dest := gtk.NewLabel("drop me file")
 	dest.DragDestSet(
-		gtk.GTK_DEST_DEFAULT_MOTION |
-		gtk.GTK_DEST_DEFAULT_HIGHLIGHT |
-		gtk.GTK_DEST_DEFAULT_DROP,
+		gtk.DEST_DEFAULT_MOTION |
+		gtk.DEST_DEFAULT_HIGHLIGHT |
+		gtk.DEST_DEFAULT_DROP,
 		targets,
 		gdk.GDK_ACTION_COPY)
 	dest.DragDestAddUriTargets()
@@ -42,9 +42,9 @@ func main() {
 			}
 			dialog := gtk.NewMessageDialog(
 				window,
-				gtk.GTK_DIALOG_MODAL,
-				gtk.GTK_MESSAGE_INFO,
-				gtk.GTK_BUTTONS_OK,
+				gtk.DIALOG_MODAL,
+				gtk.MESSAGE_INFO,
+				gtk.BUTTONS_OK,
 				strings.Join(files, "\n"))
 			dialog.SetTitle("D&D")
 			dialog.Response(func() {
