@@ -9,7 +9,7 @@ func main() {
 	gtk.Init(nil)
 	clipboard := gtk.NewClipboardGetForDisplay(
 		gdk.DisplayGetDefault(),
-		gdk.GDK_SELECTION_CLIPBOARD)
+		gdk.SELECTION_CLIPBOARD)
 	println(clipboard.WaitForText())
 	clipboard.SetText("helloworld")
 	gtk.MainIterationDo(true)
