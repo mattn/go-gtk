@@ -4,7 +4,7 @@ import (
 	"os"
 	"github.com/mattn/go-gtk/glib"	
 	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"	
 	"unsafe"
 )
 
@@ -15,7 +15,7 @@ type point struct {
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.NewWindow(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetTitle("GTK DrawingArea")
 	window.Connect("destroy", gtk.MainQuit)
 
