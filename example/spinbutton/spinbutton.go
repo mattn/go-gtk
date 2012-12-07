@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"go-gtk/gtk"
 	"strconv"
 )
 
 func main() {
 	gtk.Init(nil)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetPosition(gtk.GTK_WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
 	window.Connect("destroy", func(ctx *glib.CallbackContext) {
@@ -19,12 +19,12 @@ func main() {
 	//--------------------------------------------------------
 	// GtkHBox
 	//--------------------------------------------------------
-	fixed := gtk.Fixed()
+	fixed := gtk.NewFixed()
 
 	//--------------------------------------------------------
 	// GtkSpinButton
 	//--------------------------------------------------------
-	spinbutton1 := gtk.SpinButtonWithRange(1.0, 10.0, 1.0)
+	spinbutton1 := gtk.NewSpinButtonWithRange(1.0, 10.0, 1.0)
 	spinbutton1.SetDigits(3)
 	spinbutton1.Spin(gtk.GTK_SPIN_STEP_FORWARD, 7.0)
 	fixed.Put(spinbutton1, 40, 50)
@@ -38,8 +38,8 @@ func main() {
 		println("Digits: " + strconv.Itoa(int(spinbutton1.GetDigits())))
 	})
 
-	adjustment := gtk.Adjustment(2.0, 1.0, 8.0, 2.0, 0.0, 0.0)
-	spinbutton2 := gtk.SpinButton(adjustment, 1.0, 1)
+	adjustment := gtk.NewAdjustment(2.0, 1.0, 8.0, 2.0, 0.0, 0.0)
+	spinbutton2 := gtk.NewSpinButton(adjustment, 1.0, 1)
 	spinbutton2.SetRange(0.0, 20.0)
 	spinbutton2.SetValue(18.0)
 	spinbutton2.SetIncrements(2.0, 4.0)
