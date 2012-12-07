@@ -15,7 +15,7 @@ func main() {
 
 	swin := gtk.NewScrolledWindow(nil, nil)
 
-	store := gtk.NewListStore(glib.G_TYPE_STRING, glib.G_TYPE_BOOL, gdkpixbuf.GetGdkPixbufType())
+	store := gtk.NewListStore(glib.G_TYPE_STRING, glib.G_TYPE_BOOL, gdkpixbuf.GetType())
 	treeview := gtk.NewTreeView()
 	swin.Add(treeview)
 
@@ -28,7 +28,7 @@ func main() {
 		id := glib.GPtrToString(d)
 		var iter gtk.TreeIter
 		store.Append(&iter)
-		store.Set(&iter, id, (n == 1), gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf)
+		store.Set(&iter, id, (n == 1), gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf)
 		n = 1 - n
 	})
 

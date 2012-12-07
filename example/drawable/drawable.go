@@ -24,9 +24,9 @@ func main() {
 	drawingarea := gtk.NewDrawingArea()
 
 	var p1, p2 point
-	var gdkwin *gdk.GdkWindow
-	var pixmap *gdk.GdkPixmap
-	var gc *gdk.GdkGC
+	var gdkwin *gdk.Window
+	var pixmap *gdk.Pixmap
+	var gc *gdk.GC
 	p1.x = -1
 	p1.y = -1
 
@@ -36,12 +36,12 @@ func main() {
 		}
 		var allocation gtk.Allocation
 		drawingarea.GetAllocation(&allocation)
-		pixmap = gdk.Pixmap(drawingarea.GetWindow().GetDrawable(), allocation.Width, allocation.Height, 24)
-		gc = gdk.GC(pixmap.GetDrawable())
-		gc.SetRgbFgColor(gdk.Color("white"))
+		pixmap = gdk.NewPixmap(drawingarea.GetWindow().GetDrawable(), allocation.Width, allocation.Height, 24)
+		gc = gdk.NewGC(pixmap.GetDrawable())
+		gc.SetRgbFgColor(gdk.NewColor("white"))
 		pixmap.GetDrawable().DrawRectangle(gc, true, 0, 0, -1, -1)
-		gc.SetRgbFgColor(gdk.Color("black"))
-		gc.SetRgbBgColor(gdk.Color("white"))
+		gc.SetRgbFgColor(gdk.NewColor("black"))
+		gc.SetRgbBgColor(gdk.NewColor("white"))
 	})
 
 	drawingarea.Connect("motion-notify-event", func(ctx *glib.CallbackContext) {
@@ -50,13 +50,13 @@ func main() {
 		}
 		arg := ctx.Args(0)
 		mev := *(**gdk.EventMotion)(unsafe.Pointer(&arg))
-		var mt gdk.GdkModifierType
+		var mt gdk.ModifierType
 		if mev.IsHint != 0 {
 			gdkwin.GetPointer(&p2.x, &p2.y, &mt)
 		} else {
 			p2.x, p2.y = int(mev.X), int(mev.Y)
 		}
-		if p1.x != -1 && p2.x != -1 && (gdk.GdkEventMask(mt)&gdk.GDK_BUTTON_PRESS_MASK) != 0 {
+		if p1.x != -1 && p2.x != -1 && (gdk.EventMask(mt)&gdk.BUTTON_PRESS_MASK) != 0 {
 			pixmap.GetDrawable().DrawLine(gc, p1.x, p1.y, p2.x, p2.y)
 			drawingarea.GetWindow().Invalidate(nil, false)
 		}
@@ -69,7 +69,7 @@ func main() {
 		}
 	})
 
-	drawingarea.SetEvents(int(gdk.GDK_POINTER_MOTION_MASK | gdk.GDK_POINTER_MOTION_HINT_MASK | gdk.GDK_BUTTON_PRESS_MASK))
+	drawingarea.SetEvents(int(gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK | gdk.BUTTON_PRESS_MASK))
 	vbox.Add(drawingarea)
 
 	window.Add(vbox)

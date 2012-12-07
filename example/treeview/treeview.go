@@ -16,7 +16,7 @@ func main() {
 
 	swin := gtk.NewScrolledWindow(nil, nil)
 
-	store := gtk.NewTreeStore(gdkpixbuf.GetGdkPixbufType(), glib.G_TYPE_STRING)
+	store := gtk.NewTreeStore(gdkpixbuf.GetType(), glib.G_TYPE_STRING)
 	treeview := gtk.NewTreeView()
 	swin.Add(treeview)
 
@@ -27,11 +27,11 @@ func main() {
 	for n := 1; n <= 10; n++ {
 		var iter1, iter2, iter3 gtk.TreeIter
 		store.Append(&iter1, nil)
-		store.Set(&iter1, gtk.NewImage().RenderIcon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "Folder"+strconv.Itoa(n))
+		store.Set(&iter1, gtk.NewImage().RenderIcon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf, "Folder"+strconv.Itoa(n))
 		store.Append(&iter2, &iter1)
-		store.Set(&iter2, gtk.NewImage().RenderIcon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "SubFolder"+strconv.Itoa(n))
+		store.Set(&iter2, gtk.NewImage().RenderIcon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf, "SubFolder"+strconv.Itoa(n))
 		store.Append(&iter3, &iter2)
-		store.Set(&iter3, gtk.NewImage().RenderIcon(gtk.STOCK_FILE, gtk.ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf, "File"+strconv.Itoa(n))
+		store.Set(&iter3, gtk.NewImage().RenderIcon(gtk.STOCK_FILE, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf, "File"+strconv.Itoa(n))
 	}
 
 	treeview.Connect("row_activated", func() {

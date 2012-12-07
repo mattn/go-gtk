@@ -15,7 +15,7 @@ func main() {
 
 	swin := gtk.NewScrolledWindow(nil, nil)
 
-	store := gtk.NewListStore(gdkpixbuf.GetGdkPixbufType(), glib.G_TYPE_STRING)
+	store := gtk.NewListStore(gdkpixbuf.GetType(), glib.G_TYPE_STRING)
 	iconview := gtk.NewIconViewWithModel(store)
 	iconview.SetPixbufColumn(0)
 	iconview.SetTextColumn(1)
@@ -26,7 +26,7 @@ func main() {
 		var iter gtk.TreeIter
 		store.Append(&iter)
 		store.Set(&iter,
-			gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").Pixbuf,
+			gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf,
 			id)
 	})
 

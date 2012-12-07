@@ -29,7 +29,7 @@ func main() {
 		gtk.DEST_DEFAULT_HIGHLIGHT |
 		gtk.DEST_DEFAULT_DROP,
 		targets,
-		gdk.GDK_ACTION_COPY)
+		gdk.ACTION_COPY)
 	dest.DragDestAddUriTargets()
 	dest.Connect("drag-data-received", func(ctx *glib.CallbackContext) {
 		sdata := gtk.SelectionDataFromNative(unsafe.Pointer(ctx.Args(3)))

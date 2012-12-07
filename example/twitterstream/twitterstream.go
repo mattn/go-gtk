@@ -27,12 +27,12 @@ func readURL(url string) ([]byte, *http.Response) {
 	return b, r
 }
 
-func bytes2pixbuf(data []byte, typ string) *gdkpixbuf.GdkPixbuf {
-	var loader *gdkpixbuf.GdkPixbufLoader
+func bytes2pixbuf(data []byte, typ string) *gdkpixbuf.Pixbuf {
+	var loader *gdkpixbuf.Loader
 	if strings.Index(typ, "jpeg") >= 0 {
-		loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/jpeg")
+		loader, _ = gdkpixbuf.NewLoaderWithMimeType("image/jpeg")
 	} else {
-		loader, _ = gdkpixbuf.PixbufLoaderWithMimeType("image/png")
+		loader, _ = gdkpixbuf.NewLoaderWithMimeType("image/png")
 	}
 	loader.SetSize(24, 24)
 	loader.Write(data)

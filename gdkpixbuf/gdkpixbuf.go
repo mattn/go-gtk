@@ -20,7 +20,7 @@ type Pixbuf struct {
 	GPixbuf *C.GdkPixbuf
 }
 
-func PixbufFromFile(path string) (pixbuf *Pixbuf, err **glib.Error) {
+func NewFromFile(path string) (pixbuf *Pixbuf, err **glib.Error) {
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
@@ -31,7 +31,7 @@ func PixbufFromFile(path string) (pixbuf *Pixbuf, err **glib.Error) {
 	return
 }
 
-func PixbufFromFileAtSize(path string, imgW int, imgH int) (pixbuf *Pixbuf, err **glib.Error) {
+func NewFromFileAtSize(path string, imgW int, imgH int) (pixbuf *Pixbuf, err **glib.Error) {
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
@@ -42,7 +42,7 @@ func PixbufFromFileAtSize(path string, imgW int, imgH int) (pixbuf *Pixbuf, err 
 	return
 }
 
-func GetPixbufType() int {
+func GetType() int {
 	return int(C.gdk_pixbuf_get_type())
 }
 
@@ -78,11 +78,11 @@ type Loader struct {
 	GPixbufLoader *C.GdkPixbufLoader
 }
 
-func PixbufLoader() *Loader {
+func NewLoader() *Loader {
 	return &Loader{
 		C.gdk_pixbuf_loader_new()}
 }
-func PixbufLoaderWithType(image_type string) (loader *Loader, err *C.GError) {
+func NewLoaderWithType(image_type string) (loader *Loader, err *C.GError) {
 	var error *C.GError
 	ptr := C.CString(image_type)
 	defer C.free_string(ptr)
@@ -91,7 +91,7 @@ func PixbufLoaderWithType(image_type string) (loader *Loader, err *C.GError) {
 	err = error
 	return
 }
-func PixbufLoaderWithMimeType(mime_type string) (loader *Loader, err *C.GError) {
+func NewLoaderWithMimeType(mime_type string) (loader *Loader, err *C.GError) {
 	var error *C.GError
 	ptr := C.CString(mime_type)
 	defer C.free_string(ptr)
