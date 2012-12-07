@@ -748,7 +748,7 @@ type GMainLoop struct {
 	MainLoop *C.GMainLoop
 }
 
-func MainContextNew() *GMainContext {
+func NewMainContext() *GMainContext {
 	return &GMainContext{C.g_main_context_new()}
 }
 
@@ -772,7 +772,7 @@ func (v *GMainContext) Pending() bool {
 	return gboolean2bool(C.g_main_context_pending(v.MainContext))
 }
 
-func MainLoopNew(context *GMainContext, is_running bool) *GMainLoop {
+func NewMainLoop(context *GMainContext, is_running bool) *GMainLoop {
 	var ctx *C.GMainContext
 	if context != nil {
 		ctx = context.MainContext
