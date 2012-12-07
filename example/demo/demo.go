@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/glib"	
 	"github.com/mattn/go-gtk/gtk"
 	"os"
 	"os/exec"
@@ -47,8 +47,8 @@ func authors() []string {
 func main() {
 	var menuitem *gtk.MenuItem
 	gtk.Init(nil)
-	window := gtk.NewWindow(gtk.GTK_WINDOW_TOPLEVEL)
-	window.SetPosition(gtk.GTK_WIN_POS_CENTER)
+	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
+	window.SetPosition(gtk.WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
 	window.SetIconName("gtk-dialog-info")
 	window.Connect("destroy", func(ctx *glib.CallbackContext) {
@@ -129,9 +129,9 @@ func main() {
 		println("button clicked:", button.GetLabel())
 		messagedialog := gtk.NewMessageDialog(
 			button.GetTopLevelAsWindow(),
-			gtk.GTK_DIALOG_MODAL,
-			gtk.GTK_MESSAGE_INFO,
-			gtk.GTK_BUTTONS_OK,
+			gtk.DIALOG_MODAL,
+			gtk.MESSAGE_INFO,
+			gtk.BUTTONS_OK,
 			entry.GetText())
 		messagedialog.Response(func() {
 			println("Dialog OK!")
@@ -142,9 +142,9 @@ func main() {
 			filechooserdialog := gtk.NewFileChooserDialog(
 				"Choose File...",
 				button.GetTopLevelAsWindow(),
-				gtk.GTK_FILE_CHOOSER_ACTION_OPEN,
-				gtk.GTK_STOCK_OK,
-				gtk.GTK_RESPONSE_ACCEPT)
+				gtk.FILE_CHOOSER_ACTION_OPEN,
+				gtk.STOCK_OK,
+				gtk.RESPONSE_ACCEPT)
 			filter := gtk.NewFileFilter()
 			filter.AddPattern("*.go")
 			filechooserdialog.AddFilter(filter)
@@ -252,8 +252,8 @@ func main() {
 	// GtkTextView
 	//--------------------------------------------------------
 	swin := gtk.NewScrolledWindow(nil, nil)
-	swin.SetPolicy(gtk.GTK_POLICY_AUTOMATIC, gtk.GTK_POLICY_AUTOMATIC)
-	swin.SetShadowType(gtk.GTK_SHADOW_IN)
+	swin.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+	swin.SetShadowType(gtk.SHADOW_IN)
 	textview := gtk.NewTextView()
 	var start, end gtk.TextIter
 	buffer := textview.GetBuffer()
