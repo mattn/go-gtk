@@ -288,10 +288,10 @@ func (v *Clipboard) Connect(s string, f interface{}, datas ...interface{}) int {
 type DestDefaults int
 
 const (
-	GTK_DEST_DEFAULT_MOTION    DestDefaults = 1 << 0 /* respond to "drag_motion" */
-	GTK_DEST_DEFAULT_HIGHLIGHT DestDefaults = 1 << 1 /* auto-highlight */
-	GTK_DEST_DEFAULT_DROP      DestDefaults = 1 << 2 /* respond to "drag_drop" */
-	GTK_DEST_DEFAULT_ALL       DestDefaults = 0x07
+	DEST_DEFAULT_MOTION    DestDefaults = 1 << 0 /* respond to "drag_motion" */
+	DEST_DEFAULT_HIGHLIGHT DestDefaults = 1 << 1 /* auto-highlight */
+	DEST_DEFAULT_DROP      DestDefaults = 1 << 2 /* respond to "drag_drop" */
+	DEST_DEFAULT_ALL       DestDefaults = 0x07
 )
 
 type TargetEntry struct {
@@ -404,111 +404,111 @@ func (v *Widget) DragDestAddUriTargets() {
 // GtkStockItem
 //-----------------------------------------------------------------------
 const (
-	GTK_STOCK_ABOUT                         = "gtk-about"
-	GTK_STOCK_ADD                           = "gtk-add"
-	GTK_STOCK_APPLY                         = "gtk-apply"
-	GTK_STOCK_BOLD                          = "gtk-bold"
-	GTK_STOCK_CANCEL                        = "gtk-cancel"
-	GTK_STOCK_CAPS_LOCK_WARNING             = "gtk-caps-lock-warning"
-	GTK_STOCK_CDROM                         = "gtk-cdrom"
-	GTK_STOCK_CLEAR                         = "gtk-clear"
-	GTK_STOCK_CLOSE                         = "gtk-close"
-	GTK_STOCK_COLOR_PICKER                  = "gtk-color-picker"
-	GTK_STOCK_CONVERT                       = "gtk-convert"
-	GTK_STOCK_CONNECT                       = "gtk-connect"
-	GTK_STOCK_COPY                          = "gtk-copy"
-	GTK_STOCK_CUT                           = "gtk-cut"
-	GTK_STOCK_DELETE                        = "gtk-delete"
-	GTK_STOCK_DIALOG_AUTHENTICATION         = "gtk-dialog-authentication"
-	GTK_STOCK_DIALOG_INFO                   = "gtk-dialog-info"
-	GTK_STOCK_DIALOG_WARNING                = "gtk-dialog-warning"
-	GTK_STOCK_DIALOG_ERROR                  = "gtk-dialog-error"
-	GTK_STOCK_DIALOG_QUESTION               = "gtk-dialog-question"
-	GTK_STOCK_DIRECTORY                     = "gtk-directory"
-	GTK_STOCK_DISCARD                       = "gtk-discard"
-	GTK_STOCK_DISCONNECT                    = "gtk-disconnect"
-	GTK_STOCK_DND                           = "gtk-dnd"
-	GTK_STOCK_DND_MULTIPLE                  = "gtk-dnd-multiple"
-	GTK_STOCK_EDIT                          = "gtk-edit"
-	GTK_STOCK_EXECUTE                       = "gtk-execute"
-	GTK_STOCK_FILE                          = "gtk-file"
-	GTK_STOCK_FIND                          = "gtk-find"
-	GTK_STOCK_FIND_AND_REPLACE              = "gtk-find-and-replace"
-	GTK_STOCK_FLOPPY                        = "gtk-floppy"
-	GTK_STOCK_FULLSCREEN                    = "gtk-fullscreen"
-	GTK_STOCK_GOTO_BOTTOM                   = "gtk-goto-bottom"
-	GTK_STOCK_GOTO_FIRST                    = "gtk-goto-first"
-	GTK_STOCK_GOTO_LAST                     = "gtk-goto-last"
-	GTK_STOCK_GOTO_TOP                      = "gtk-goto-top"
-	GTK_STOCK_GO_BACK                       = "gtk-go-back"
-	GTK_STOCK_GO_DOWN                       = "gtk-go-down"
-	GTK_STOCK_GO_FORWARD                    = "gtk-go-forward"
-	GTK_STOCK_GO_UP                         = "gtk-go-up"
-	GTK_STOCK_HARDDISK                      = "gtk-harddisk"
-	GTK_STOCK_HELP                          = "gtk-help"
-	GTK_STOCK_HOME                          = "gtk-home"
-	GTK_STOCK_INDEX                         = "gtk-index"
-	GTK_STOCK_INDENT                        = "gtk-indent"
-	GTK_STOCK_INFO                          = "gtk-info"
-	GTK_STOCK_UNINDENT                      = "gtk-unindent"
-	GTK_STOCK_ITALIC                        = "gtk-italic"
-	GTK_STOCK_JUMP_TO                       = "gtk-jump-to"
-	GTK_STOCK_JUSTIFY_CENTER                = "gtk-justify-center"
-	GTK_STOCK_JUSTIFY_FILL                  = "gtk-justify-fill"
-	GTK_STOCK_JUSTIFY_LEFT                  = "gtk-justify-left"
-	GTK_STOCK_JUSTIFY_RIGHT                 = "gtk-justify-right"
-	GTK_STOCK_LEAVE_FULLSCREEN              = "gtk-leave-fullscreen"
-	GTK_STOCK_MISSING_IMAGE                 = "gtk-missing-image"
-	GTK_STOCK_MEDIA_FORWARD                 = "gtk-media-forward"
-	GTK_STOCK_MEDIA_NEXT                    = "gtk-media-next"
-	GTK_STOCK_MEDIA_PAUSE                   = "gtk-media-pause"
-	GTK_STOCK_MEDIA_PLAY                    = "gtk-media-play"
-	GTK_STOCK_MEDIA_PREVIOUS                = "gtk-media-previous"
-	GTK_STOCK_MEDIA_RECORD                  = "gtk-media-record"
-	GTK_STOCK_MEDIA_REWIND                  = "gtk-media-rewind"
-	GTK_STOCK_MEDIA_STOP                    = "gtk-media-stop"
-	GTK_STOCK_NETWORK                       = "gtk-network"
-	GTK_STOCK_NEW                           = "gtk-new"
-	GTK_STOCK_NO                            = "gtk-no"
-	GTK_STOCK_OK                            = "gtk-ok"
-	GTK_STOCK_OPEN                          = "gtk-open"
-	GTK_STOCK_ORIENTATION_PORTRAIT          = "gtk-orientation-portrait"
-	GTK_STOCK_ORIENTATION_LANDSCAPE         = "gtk-orientation-landscape"
-	GTK_STOCK_ORIENTATION_REVERSE_LANDSCAPE = "gtk-orientation-reverse-landscape"
-	GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT  = "gtk-orientation-reverse-portrait"
-	GTK_STOCK_PAGE_SETUP                    = "gtk-page-setup"
-	GTK_STOCK_PASTE                         = "gtk-paste"
-	GTK_STOCK_PREFERENCES                   = "gtk-preferences"
-	GTK_STOCK_PRINT                         = "gtk-print"
-	GTK_STOCK_PRINT_ERROR                   = "gtk-print-error"
-	GTK_STOCK_PRINT_PAUSED                  = "gtk-print-paused"
-	GTK_STOCK_PRINT_PREVIEW                 = "gtk-print-preview"
-	GTK_STOCK_PRINT_REPORT                  = "gtk-print-report"
-	GTK_STOCK_PRINT_WARNING                 = "gtk-print-warning"
-	GTK_STOCK_PROPERTIES                    = "gtk-properties"
-	GTK_STOCK_QUIT                          = "gtk-quit"
-	GTK_STOCK_REDO                          = "gtk-redo"
-	GTK_STOCK_REFRESH                       = "gtk-refresh"
-	GTK_STOCK_REMOVE                        = "gtk-remove"
-	GTK_STOCK_REVERT_TO_SAVED               = "gtk-revert-to-saved"
-	GTK_STOCK_SAVE                          = "gtk-save"
-	GTK_STOCK_SAVE_AS                       = "gtk-save-as"
-	GTK_STOCK_SELECT_ALL                    = "gtk-select-all"
-	GTK_STOCK_SELECT_COLOR                  = "gtk-select-color"
-	GTK_STOCK_SELECT_FONT                   = "gtk-select-font"
-	GTK_STOCK_SORT_ASCENDING                = "gtk-sort-ascending"
-	GTK_STOCK_SORT_DESCENDING               = "gtk-sort-descending"
-	GTK_STOCK_SPELL_CHECK                   = "gtk-spell-check"
-	GTK_STOCK_STOP                          = "gtk-stop"
-	GTK_STOCK_STRIKETHROUGH                 = "gtk-strikethrough"
-	GTK_STOCK_UNDELETE                      = "gtk-undelete"
-	GTK_STOCK_UNDERLINE                     = "gtk-underline"
-	GTK_STOCK_UNDO                          = "gtk-undo"
-	GTK_STOCK_YES                           = "gtk-yes"
-	GTK_STOCK_ZOOM_100                      = "gtk-zoom-100"
-	GTK_STOCK_ZOOM_FIT                      = "gtk-zoom-fit"
-	GTK_STOCK_ZOOM_IN                       = "gtk-zoom-in"
-	GTK_STOCK_ZOOM_OUT                      = "gtk-zoom-out"
+	STOCK_ABOUT                         = "gtk-about"
+	STOCK_ADD                           = "gtk-add"
+	STOCK_APPLY                         = "gtk-apply"
+	STOCK_BOLD                          = "gtk-bold"
+	STOCK_CANCEL                        = "gtk-cancel"
+	STOCK_CAPS_LOCK_WARNING             = "gtk-caps-lock-warning"
+	STOCK_CDROM                         = "gtk-cdrom"
+	STOCK_CLEAR                         = "gtk-clear"
+	STOCK_CLOSE                         = "gtk-close"
+	STOCK_COLOR_PICKER                  = "gtk-color-picker"
+	STOCK_CONVERT                       = "gtk-convert"
+	STOCK_CONNECT                       = "gtk-connect"
+	STOCK_COPY                          = "gtk-copy"
+	STOCK_CUT                           = "gtk-cut"
+	STOCK_DELETE                        = "gtk-delete"
+	STOCK_DIALOG_AUTHENTICATION         = "gtk-dialog-authentication"
+	STOCK_DIALOG_INFO                   = "gtk-dialog-info"
+	STOCK_DIALOG_WARNING                = "gtk-dialog-warning"
+	STOCK_DIALOG_ERROR                  = "gtk-dialog-error"
+	STOCK_DIALOG_QUESTION               = "gtk-dialog-question"
+	STOCK_DIRECTORY                     = "gtk-directory"
+	STOCK_DISCARD                       = "gtk-discard"
+	STOCK_DISCONNECT                    = "gtk-disconnect"
+	STOCK_DND                           = "gtk-dnd"
+	STOCK_DND_MULTIPLE                  = "gtk-dnd-multiple"
+	STOCK_EDIT                          = "gtk-edit"
+	STOCK_EXECUTE                       = "gtk-execute"
+	STOCK_FILE                          = "gtk-file"
+	STOCK_FIND                          = "gtk-find"
+	STOCK_FIND_AND_REPLACE              = "gtk-find-and-replace"
+	STOCK_FLOPPY                        = "gtk-floppy"
+	STOCK_FULLSCREEN                    = "gtk-fullscreen"
+	STOCK_GOTO_BOTTOM                   = "gtk-goto-bottom"
+	STOCK_GOTO_FIRST                    = "gtk-goto-first"
+	STOCK_GOTO_LAST                     = "gtk-goto-last"
+	STOCK_GOTO_TOP                      = "gtk-goto-top"
+	STOCK_GO_BACK                       = "gtk-go-back"
+	STOCK_GO_DOWN                       = "gtk-go-down"
+	STOCK_GO_FORWARD                    = "gtk-go-forward"
+	STOCK_GO_UP                         = "gtk-go-up"
+	STOCK_HARDDISK                      = "gtk-harddisk"
+	STOCK_HELP                          = "gtk-help"
+	STOCK_HOME                          = "gtk-home"
+	STOCK_INDEX                         = "gtk-index"
+	STOCK_INDENT                        = "gtk-indent"
+	STOCK_INFO                          = "gtk-info"
+	STOCK_UNINDENT                      = "gtk-unindent"
+	STOCK_ITALIC                        = "gtk-italic"
+	STOCK_JUMP_TO                       = "gtk-jump-to"
+	STOCK_JUSTIFY_CENTER                = "gtk-justify-center"
+	STOCK_JUSTIFY_FILL                  = "gtk-justify-fill"
+	STOCK_JUSTIFY_LEFT                  = "gtk-justify-left"
+	STOCK_JUSTIFY_RIGHT                 = "gtk-justify-right"
+	STOCK_LEAVE_FULLSCREEN              = "gtk-leave-fullscreen"
+	STOCK_MISSING_IMAGE                 = "gtk-missing-image"
+	STOCK_MEDIA_FORWARD                 = "gtk-media-forward"
+	STOCK_MEDIA_NEXT                    = "gtk-media-next"
+	STOCK_MEDIA_PAUSE                   = "gtk-media-pause"
+	STOCK_MEDIA_PLAY                    = "gtk-media-play"
+	STOCK_MEDIA_PREVIOUS                = "gtk-media-previous"
+	STOCK_MEDIA_RECORD                  = "gtk-media-record"
+	STOCK_MEDIA_REWIND                  = "gtk-media-rewind"
+	STOCK_MEDIA_STOP                    = "gtk-media-stop"
+	STOCK_NETWORK                       = "gtk-network"
+	STOCK_NEW                           = "gtk-new"
+	STOCK_NO                            = "gtk-no"
+	STOCK_OK                            = "gtk-ok"
+	STOCK_OPEN                          = "gtk-open"
+	STOCK_ORIENTATION_PORTRAIT          = "gtk-orientation-portrait"
+	STOCK_ORIENTATION_LANDSCAPE         = "gtk-orientation-landscape"
+	STOCK_ORIENTATION_REVERSE_LANDSCAPE = "gtk-orientation-reverse-landscape"
+	STOCK_ORIENTATION_REVERSE_PORTRAIT  = "gtk-orientation-reverse-portrait"
+	STOCK_PAGE_SETUP                    = "gtk-page-setup"
+	STOCK_PASTE                         = "gtk-paste"
+	STOCK_PREFERENCES                   = "gtk-preferences"
+	STOCK_PRINT                         = "gtk-print"
+	STOCK_PRINT_ERROR                   = "gtk-print-error"
+	STOCK_PRINT_PAUSED                  = "gtk-print-paused"
+	STOCK_PRINT_PREVIEW                 = "gtk-print-preview"
+	STOCK_PRINT_REPORT                  = "gtk-print-report"
+	STOCK_PRINT_WARNING                 = "gtk-print-warning"
+	STOCK_PROPERTIES                    = "gtk-properties"
+	STOCK_QUIT                          = "gtk-quit"
+	STOCK_REDO                          = "gtk-redo"
+	STOCK_REFRESH                       = "gtk-refresh"
+	STOCK_REMOVE                        = "gtk-remove"
+	STOCK_REVERT_TO_SAVED               = "gtk-revert-to-saved"
+	STOCK_SAVE                          = "gtk-save"
+	STOCK_SAVE_AS                       = "gtk-save-as"
+	STOCK_SELECT_ALL                    = "gtk-select-all"
+	STOCK_SELECT_COLOR                  = "gtk-select-color"
+	STOCK_SELECT_FONT                   = "gtk-select-font"
+	STOCK_SORT_ASCENDING                = "gtk-sort-ascending"
+	STOCK_SORT_DESCENDING               = "gtk-sort-descending"
+	STOCK_SPELL_CHECK                   = "gtk-spell-check"
+	STOCK_STOP                          = "gtk-stop"
+	STOCK_STRIKETHROUGH                 = "gtk-strikethrough"
+	STOCK_UNDELETE                      = "gtk-undelete"
+	STOCK_UNDERLINE                     = "gtk-underline"
+	STOCK_UNDO                          = "gtk-undo"
+	STOCK_YES                           = "gtk-yes"
+	STOCK_ZOOM_100                      = "gtk-zoom-100"
+	STOCK_ZOOM_FIT                      = "gtk-zoom-fit"
+	STOCK_ZOOM_IN                       = "gtk-zoom-in"
+	STOCK_ZOOM_OUT                      = "gtk-zoom-out"
 )
 
 type StockItem struct {
@@ -867,25 +867,25 @@ func (v *SelectionData) GetText() string {
 type DialogFlags int
 
 const (
-	GTK_DIALOG_MODAL               DialogFlags = 1 << 0 /* call gtk_window_set_modal (win, TRUE) */
-	GTK_DIALOG_DESTROY_WITH_PARENT DialogFlags = 1 << 1 /* call gtk_window_set_destroy_with_parent () */
-	GTK_DIALOG_NO_SEPARATOR        DialogFlags = 1 << 2 /* no separator bar above buttons */
+	DIALOG_MODAL               DialogFlags = 1 << 0 /* call gtk_window_set_modal (win, TRUE) */
+	DIALOG_DESTROY_WITH_PARENT DialogFlags = 1 << 1 /* call gtk_window_set_destroy_with_parent () */
+	DIALOG_NO_SEPARATOR        DialogFlags = 1 << 2 /* no separator bar above buttons */
 )
 
 type ResponseType int
 
 const (
-	GTK_RESPONSE_NONE         ResponseType = -1
-	GTK_RESPONSE_REJECT       ResponseType = -2
-	GTK_RESPONSE_ACCEPT       ResponseType = -3
-	GTK_RESPONSE_DELETE_EVENT ResponseType = -4
-	GTK_RESPONSE_OK           ResponseType = -5
-	GTK_RESPONSE_CANCEL       ResponseType = -6
-	GTK_RESPONSE_CLOSE        ResponseType = -7
-	GTK_RESPONSE_YES          ResponseType = -8
-	GTK_RESPONSE_NO           ResponseType = -9
-	GTK_RESPONSE_APPLY        ResponseType = -10
-	GTK_RESPONSE_HELP         ResponseType = -11
+	RESPONSE_NONE         ResponseType = -1
+	RESPONSE_REJECT       ResponseType = -2
+	RESPONSE_ACCEPT       ResponseType = -3
+	RESPONSE_DELETE_EVENT ResponseType = -4
+	RESPONSE_OK           ResponseType = -5
+	RESPONSE_CANCEL       ResponseType = -6
+	RESPONSE_CLOSE        ResponseType = -7
+	RESPONSE_YES          ResponseType = -8
+	RESPONSE_NO           ResponseType = -9
+	RESPONSE_APPLY        ResponseType = -10
+	RESPONSE_HELP         ResponseType = -11
 )
 
 /*type DialogLike interface {
@@ -957,22 +957,22 @@ func (v *Dialog) GetVBox() *VBox {
 type MessageType int
 
 const (
-	GTK_MESSAGE_INFO     = 0
-	GTK_MESSAGE_WARNING  = 1
-	GTK_MESSAGE_QUESTION = 2
-	GTK_MESSAGE_ERROR    = 3
-	GTK_MESSAGE_OTHER    = 4
+	MESSAGE_INFO     = 0
+	MESSAGE_WARNING  = 1
+	MESSAGE_QUESTION = 2
+	MESSAGE_ERROR    = 3
+	MESSAGE_OTHER    = 4
 )
 
 type ButtonsType int
 
 const (
-	GTK_BUTTONS_NONE      = 0
-	GTK_BUTTONS_OK        = 1
-	GTK_BUTTONS_CLOSE     = 2
-	GTK_BUTTONS_CANCEL    = 3
-	GTK_BUTTONS_YES_NO    = 4
-	GTK_BUTTONS_OK_CANCEL = 5
+	BUTTONS_NONE      = 0
+	BUTTONS_OK        = 1
+	BUTTONS_CLOSE     = 2
+	BUTTONS_CANCEL    = 3
+	BUTTONS_YES_NO    = 4
+	BUTTONS_OK_CANCEL = 5
 )
 
 type MessageDialog struct {
@@ -1026,18 +1026,18 @@ func (v *MessageDialog) GetImage() *Image {
 type WindowType int
 
 const (
-	GTK_WINDOW_TOPLEVEL WindowType = 0
-	GTK_WINDOW_POPUP    WindowType = 1
+	WINDOW_TOPLEVEL WindowType = 0
+	WINDOW_POPUP    WindowType = 1
 )
 
 type WindowPosition int
 
 const (
-	GTK_WIN_POS_NONE             WindowPosition = 0
-	GTK_WIN_POS_CENTER           WindowPosition = 1
-	GTK_WIN_POS_MOUSE            WindowPosition = 2
-	GTK_WIN_POS_CENTER_ALWAYS    WindowPosition = 3
-	GTK_WIN_POS_CENTER_ON_PARENT WindowPosition = 4
+	WIN_POS_NONE             WindowPosition = 0
+	WIN_POS_CENTER           WindowPosition = 1
+	WIN_POS_MOUSE            WindowPosition = 2
+	WIN_POS_CENTER_ALWAYS    WindowPosition = 3
+	WIN_POS_CENTER_ON_PARENT WindowPosition = 4
 )
 
 /*type WindowLike interface {
@@ -1467,11 +1467,11 @@ func (v *AboutDialog) SetLogoIconName(icon_name string) {
 type AssistantPageType int
 
 const (
-	GTK_ASSISTANT_PAGE_CONTENT  AssistantPageType = 0
-	GTK_ASSISTANT_PAGE_INTRO    AssistantPageType = 1
-	GTK_ASSISTANT_PAGE_CONFIRM  AssistantPageType = 2
-	GTK_ASSISTANT_PAGE_SUMMARY  AssistantPageType = 3
-	GTK_ASSISTANT_PAGE_PROGRESS AssistantPageType = 4
+	ASSISTANT_PAGE_CONTENT  AssistantPageType = 0
+	ASSISTANT_PAGE_INTRO    AssistantPageType = 1
+	ASSISTANT_PAGE_CONFIRM  AssistantPageType = 2
+	ASSISTANT_PAGE_SUMMARY  AssistantPageType = 3
+	ASSISTANT_PAGE_PROGRESS AssistantPageType = 4
 )
 
 type Assistant struct {
@@ -1599,13 +1599,13 @@ func (v *AccelLabel) Refetch() bool {
 type IconSize int
 
 const (
-	GTK_ICON_SIZE_INVALID       IconSize = 0
-	GTK_ICON_SIZE_MENU          IconSize = 1
-	GTK_ICON_SIZE_SMALL_TOOLBAR IconSize = 2
-	GTK_ICON_SIZE_LARGE_TOOLBAR IconSize = 3
-	GTK_ICON_SIZE_BUTTON        IconSize = 4
-	GTK_ICON_SIZE_DND           IconSize = 5
-	GTK_ICON_SIZE_DIALOG        IconSize = 6
+	ICON_SIZE_INVALID       IconSize = 0
+	ICON_SIZE_MENU          IconSize = 1
+	ICON_SIZE_SMALL_TOOLBAR IconSize = 2
+	ICON_SIZE_LARGE_TOOLBAR IconSize = 3
+	ICON_SIZE_BUTTON        IconSize = 4
+	ICON_SIZE_DND           IconSize = 5
+	ICON_SIZE_DIALOG        IconSize = 6
 )
 
 /*type ImageLike interface {
@@ -1698,10 +1698,10 @@ func (v *Image) Clear() {
 type Justification int
 
 const (
-	GTK_JUSTIFY_LEFT   Justification = 0
-	GTK_JUSTIFY_RIGHT  Justification = 1
-	GTK_JUSTIFY_CENTER Justification = 2
-	GTK_JUSTIFY_FILL   Justification = 3
+	JUSTIFY_LEFT   Justification = 0
+	JUSTIFY_RIGHT  Justification = 1
+	JUSTIFY_CENTER Justification = 2
+	JUSTIFY_FILL   Justification = 3
 )
 
 type LabelLike interface {
@@ -1876,10 +1876,10 @@ func (v *Label) GetTrackVisitedLinks() bool {
 type ProgressBarOrientation int
 
 const (
-	GTK_PROGRESS_LEFT_TO_RIGHT ProgressBarOrientation = 0
-	GTK_PROGRESS_RIGHT_TO_LEFT ProgressBarOrientation = 1
-	GTK_PROGRESS_BOTTOM_TO_TOP ProgressBarOrientation = 2
-	GTK_PROGRESS_TOP_TO_BOTTOM ProgressBarOrientation = 3
+	PROGRESS_LEFT_TO_RIGHT ProgressBarOrientation = 0
+	PROGRESS_RIGHT_TO_LEFT ProgressBarOrientation = 1
+	PROGRESS_BOTTOM_TO_TOP ProgressBarOrientation = 2
+	PROGRESS_TOP_TO_BOTTOM ProgressBarOrientation = 3
 )
 
 type ProgressBar struct {
@@ -2215,9 +2215,9 @@ func PrintContextFromNative(l unsafe.Pointer) *PrintContext {
 type ReliefStyle int
 
 const (
-	GTK_RELIEF_NORMAL ReliefStyle = 0
-	GTK_RELIEF_HALF   ReliefStyle = 1
-	GTK_RELIEF_NONE   ReliefStyle = 2
+	RELIEF_NORMAL ReliefStyle = 0
+	RELIEF_HALF   ReliefStyle = 1
+	RELIEF_NONE   ReliefStyle = 2
 )
 
 type Button struct {
@@ -2851,20 +2851,20 @@ func NewVScaleWithRange(min, max, step float64) *Scale {
 type SpinButtonUpdatePolicy int
 
 const (
-	GTK_UPDATE_ALWAYS           = 0
-	GTK_UPDATE_IF_VALID         = 1
+	UPDATE_ALWAYS           = 0
+	UPDATE_IF_VALID         = 1
 )
 
 type SpinType int
 
 const (
-	GTK_SPIN_STEP_FORWARD       = 0
-	GTK_SPIN_STEP_BACKWARD      = 1
-	GTK_SPIN_PAGE_FORWARD       = 2
-	GTK_SPIN_PAGE_BACKWARD      = 3
-	GTK_SPIN_HOME               = 4
-	GTK_SPIN_END                = 5
-	GTK_SPIN_USER_DEFINED       = 6
+	SPIN_STEP_FORWARD       = 0
+	SPIN_STEP_BACKWARD      = 1
+	SPIN_PAGE_FORWARD       = 2
+	SPIN_PAGE_BACKWARD      = 3
+	SPIN_HOME               = 4
+	SPIN_END                = 5
+	SPIN_USER_DEFINED       = 6
 )
 
 type SpinButton struct {
@@ -3033,9 +3033,9 @@ type TextIter struct {
 type TextSearchFlags int
 
 const (
-	GTK_TEXT_SEARCH_VISIBLE_ONLY     TextSearchFlags = 1 << 0
-	GTK_TEXT_SEARCH_TEXT_ONLY        TextSearchFlags = 1 << 1
-	GTK_TEXT_SEARCH_CASE_INSENSITIVE TextSearchFlags = 1 << 2
+	TEXT_SEARCH_VISIBLE_ONLY     TextSearchFlags = 1 << 0
+	TEXT_SEARCH_TEXT_ONLY        TextSearchFlags = 1 << 1
+	TEXT_SEARCH_CASE_INSENSITIVE TextSearchFlags = 1 << 2
 )
 
 func (v *TextIter) GetBuffer() *TextBuffer {
@@ -3536,10 +3536,10 @@ func (v *TextTagTable) GetSize() int {
 type WrapMode int
 
 const (
-	GTK_WRAP_NONE      WrapMode = 0
-	GTK_WRAP_CHAR      WrapMode = 1
-	GTK_WRAP_WORD      WrapMode = 2
-	GTK_WRAP_WORD_CHAR WrapMode = 3
+	WRAP_NONE      WrapMode = 0
+	WRAP_CHAR      WrapMode = 1
+	WRAP_WORD      WrapMode = 2
+	WRAP_WORD_CHAR WrapMode = 3
 )
 
 type TextChildAnchor struct {
@@ -3768,8 +3768,8 @@ func (v *TreeIter) Assign(to *TreeIter) {
 type TreeModelFlags int
 
 const (
-	GTK_TREE_MODEL_ITERS_PERSIST TreeModelFlags = 1 << 0
-	GTK_TREE_MODEL_LIST_ONLY     TreeModelFlags = 1 << 1
+	TREE_MODEL_ITERS_PERSIST TreeModelFlags = 1 << 0
+	TREE_MODEL_LIST_ONLY     TreeModelFlags = 1 << 1
 )
 
 type TreeModelLike interface {
@@ -3853,11 +3853,11 @@ type TreeSelection struct {
 type SelectionMode int
 
 const (
-	GTK_SELECTION_NONE     SelectionMode = 0
-	GTK_SELECTION_SINGLE   SelectionMode = 1
-	GTK_SELECTION_BROWSE   SelectionMode = 2
-	GTK_SELECTION_MULTIPLE SelectionMode = 3
-	GTK_SELECTION_EXTENDED                  = GTK_SELECTION_MULTIPLE
+	SELECTION_NONE     SelectionMode = 0
+	SELECTION_SINGLE   SelectionMode = 1
+	SELECTION_BROWSE   SelectionMode = 2
+	SELECTION_MULTIPLE SelectionMode = 3
+	SELECTION_EXTENDED                  = SELECTION_MULTIPLE
 )
 
 func (v *TreeSelection) Connect(s string, f interface{}, datas ...interface{}) int {
@@ -3923,9 +3923,9 @@ func (v *TreeSelection) UnselectRange(start_path *TreePath, end_path *TreePath) 
 type TreeViewColumnSizing int
 
 const (
-	GTK_TREE_VIEW_COLUMN_GROW_ONLY TreeViewColumnSizing = 0
-	GTK_TREE_VIEW_COLUMN_AUTOSIZE  TreeViewColumnSizing = 1
-	GTK_TREE_VIEW_COLUMN_FIXED     TreeViewColumnSizing = 2
+	TREE_VIEW_COLUMN_GROW_ONLY TreeViewColumnSizing = 0
+	TREE_VIEW_COLUMN_AUTOSIZE  TreeViewColumnSizing = 1
+	TREE_VIEW_COLUMN_FIXED     TreeViewColumnSizing = 2
 )
 
 type TreeViewColumn struct {
@@ -4619,19 +4619,19 @@ func NewCellRendererSpinner() *CellRendererSpinner {
 // GtkListStore
 //-----------------------------------------------------------------------
 const (
-	GTK_TYPE_CHAR    = glib.G_TYPE_CHAR
-	GTK_TYPE_UCHAR   = glib.G_TYPE_UCHAR
-	GTK_TYPE_BOOL    = glib.G_TYPE_BOOL
-	GTK_TYPE_INT     = glib.G_TYPE_INT
-	GTK_TYPE_UINT    = glib.G_TYPE_UINT
-	GTK_TYPE_LONG    = glib.G_TYPE_LONG
-	GTK_TYPE_ULONG   = glib.G_TYPE_ULONG
-	GTK_TYPE_FLOAT   = glib.G_TYPE_FLOAT
-	GTK_TYPE_DOUBLE  = glib.G_TYPE_DOUBLE
-	GTK_TYPE_STRING  = glib.G_TYPE_STRING
-	GTK_TYPE_BOXED   = glib.G_TYPE_BOXED
-	GTK_TYPE_POINTER = glib.G_TYPE_POINTER
-	GTK_TYPE_PIXBUF  = GTK_TYPE_POINTER
+	TYPE_CHAR    = glib.G_TYPE_CHAR
+	TYPE_UCHAR   = glib.G_TYPE_UCHAR
+	TYPE_BOOL    = glib.G_TYPE_BOOL
+	TYPE_INT     = glib.G_TYPE_INT
+	TYPE_UINT    = glib.G_TYPE_UINT
+	TYPE_LONG    = glib.G_TYPE_LONG
+	TYPE_ULONG   = glib.G_TYPE_ULONG
+	TYPE_FLOAT   = glib.G_TYPE_FLOAT
+	TYPE_DOUBLE  = glib.G_TYPE_DOUBLE
+	TYPE_STRING  = glib.G_TYPE_STRING
+	TYPE_BOXED   = glib.G_TYPE_BOXED
+	TYPE_POINTER = glib.G_TYPE_POINTER
+	TYPE_PIXBUF  = TYPE_POINTER
 )
 
 type ListStore struct {
@@ -5162,10 +5162,10 @@ func _go_gtk_menu_position_func(gmpfi *C._gtk_menu_position_func_info) {
 type PackDirection int
 
 const (
-	GTK_PACK_DIRECTION_LTR PackDirection = 0
-	GTK_PACK_DIRECTION_RTL PackDirection = 1
-	GTK_PACK_DIRECTION_TTB PackDirection = 2
-	GTK_PACK_DIRECTION_BTT PackDirection = 3
+	PACK_DIRECTION_LTR PackDirection = 0
+	PACK_DIRECTION_RTL PackDirection = 1
+	PACK_DIRECTION_TTB PackDirection = 2
+	PACK_DIRECTION_BTT PackDirection = 3
 )
 
 type MenuBar struct {
@@ -5427,17 +5427,17 @@ func NewTearoffMenuItem() *TearoffMenuItem {
 type Orientation int
 
 const (
-	GTK_ORIENTATION_HORIZONTAL     = 0
-	GTK_ORIENTATION_VERTICAL       = 1
+	ORIENTATION_HORIZONTAL     = 0
+	ORIENTATION_VERTICAL       = 1
 )
 
 type ToolbarStyle int
 
 const (
-	GTK_TOOLBAR_ICONS        = 0
-	GTK_TOOLBAR_TEXT         = 1
-	GTK_TOOLBAR_BOTH         = 2
-	GTK_TOOLBAR_BOTH_HORIZ   = 3
+	TOOLBAR_ICONS        = 0
+	TOOLBAR_TEXT         = 1
+	TOOLBAR_BOTH         = 2
+	TOOLBAR_BOTH_HORIZ   = 3
 )
 
 type Toolbar struct {
@@ -6057,10 +6057,10 @@ func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolB
 type FileChooserAction int
 
 const (
-	GTK_FILE_CHOOSER_ACTION_OPEN          FileChooserAction = 0
-	GTK_FILE_CHOOSER_ACTION_SAVE          FileChooserAction = 1
-	GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER FileChooserAction = 2
-	GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER FileChooserAction = 3
+	FILE_CHOOSER_ACTION_OPEN          FileChooserAction = 0
+	FILE_CHOOSER_ACTION_SAVE          FileChooserAction = 1
+	FILE_CHOOSER_ACTION_SELECT_FOLDER FileChooserAction = 2
+	FILE_CHOOSER_ACTION_CREATE_FOLDER FileChooserAction = 3
 )
 
 type FileChooser struct {
@@ -6765,9 +6765,9 @@ func (v *Notebook) GetGroupName() string {
 type AttachOptions int
 
 const (
-	GTK_EXPAND AttachOptions = 1 << 0
-	GTK_SHRINK AttachOptions = 1 << 1
-	GTK_FILL   AttachOptions = 1 << 2
+	EXPAND AttachOptions = 1 << 0
+	SHRINK AttachOptions = 1 << 1
+	FILL   AttachOptions = 1 << 2
 )
 
 type Table struct {
@@ -6896,11 +6896,11 @@ func (v *Expander) GetLabelWidget() LabelLike {
 type ShadowType int
 
 const (
-	GTK_SHADOW_NONE       ShadowType = 0
-	GTK_SHADOW_IN         ShadowType = 1
-	GTK_SHADOW_OUT        ShadowType = 2
-	GTK_SHADOW_ETCHED_IN  ShadowType = 3
-	GTK_SHADOW_ETCHED_OUT ShadowType = 4
+	SHADOW_NONE       ShadowType = 0
+	SHADOW_IN         ShadowType = 1
+	SHADOW_OUT        ShadowType = 2
+	SHADOW_ETCHED_IN  ShadowType = 3
+	SHADOW_ETCHED_OUT ShadowType = 4
 )
 
 type Frame struct {
@@ -6983,18 +6983,18 @@ func NewVSeparator() *VSeparator {
 type PolicyType int
 
 const (
-	GTK_POLICY_ALWAYS    = 0
-	GTK_POLICY_AUTOMATIC = 1
-	GTK_POLICY_NEVER     = 2
+	POLICY_ALWAYS    = 0
+	POLICY_AUTOMATIC = 1
+	POLICY_NEVER     = 2
 )
 
 type CornerType int
 
 const (
-	GTK_CORNER_TOP_LEFT     CornerType = 0
-	GTK_CORNER_BOTTOM_LEFT  CornerType = 1
-	GTK_CORNER_TOP_RIGHT    CornerType = 2
-	GTK_CORNER_BOTTOM_RIGHT CornerType = 3
+	CORNER_TOP_LEFT     CornerType = 0
+	CORNER_BOTTOM_LEFT  CornerType = 1
+	CORNER_TOP_RIGHT    CornerType = 2
+	CORNER_BOTTOM_RIGHT CornerType = 3
 )
 
 type ScrolledWindow struct {
@@ -7069,19 +7069,19 @@ type PrintOperation struct {
 type PrintOperationResult int
 
 const (
-	GTK_PRINT_OPERATION_RESULT_ERROR       PrintOperationResult = 0
-	GTK_PRINT_OPERATION_RESULT_APPLY       PrintOperationResult = 1
-	GTK_PRINT_OPERATION_RESULT_CANCEL      PrintOperationResult = 2
-	GTK_PRINT_OPERATION_RESULT_IN_PROGRESS PrintOperationResult = 3
+	PRINT_OPERATION_RESULT_ERROR       PrintOperationResult = 0
+	PRINT_OPERATION_RESULT_APPLY       PrintOperationResult = 1
+	PRINT_OPERATION_RESULT_CANCEL      PrintOperationResult = 2
+	PRINT_OPERATION_RESULT_IN_PROGRESS PrintOperationResult = 3
 )
 
 type PrintOperationAction int
 
 const (
-	GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG PrintOperationAction = 0
-	GTK_PRINT_OPERATION_ACTION_PRINT        PrintOperationAction = 1
-	GTK_PRINT_OPERATION_ACTION_PREVIEW      PrintOperationAction = 2
-	GTK_PRINT_OPERATION_ACTION_EXPOR        PrintOperationAction = 3
+	PRINT_OPERATION_ACTION_PRINT_DIALOG PrintOperationAction = 0
+	PRINT_OPERATION_ACTION_PRINT        PrintOperationAction = 1
+	PRINT_OPERATION_ACTION_PREVIEW      PrintOperationAction = 2
+	PRINT_OPERATION_ACTION_EXPOR        PrintOperationAction = 3
 )
 
 func NewPrintOperation() *PrintOperation {
@@ -7548,10 +7548,10 @@ func NewEventBox() *EventBox {
 type SizeGroupMode int
 
 const (
-	GTK_SIZE_GROUP_NONE       SizeGroupMode = 0
-	GTK_SIZE_GROUP_HORIZONTAL SizeGroupMode = 1
-	GTK_SIZE_GROUP_VERTICAL   SizeGroupMode = 2
-	GTK_SIZE_GROUP_BOTH       SizeGroupMode = 3
+	SIZE_GROUP_NONE       SizeGroupMode = 0
+	SIZE_GROUP_HORIZONTAL SizeGroupMode = 1
+	SIZE_GROUP_VERTICAL   SizeGroupMode = 2
+	SIZE_GROUP_BOTH       SizeGroupMode = 3
 )
 
 type SizeGroup struct {
@@ -7708,8 +7708,8 @@ func (v *Bin) GetChild() *Widget {
 type PackType int
 
 const (
-	GTK_PACK_START PackType = 0
-	GTK_PACK_END   PackType = 1
+	PACK_START PackType = 0
+	PACK_END   PackType = 1
 )
 
 type BoxLike interface {
@@ -8040,10 +8040,10 @@ func (v *Range) SetFlippable(b bool) {
 type PositionType int
 
 const (
-	GTK_POS_LEFT   PositionType = 0
-	GTK_POS_RIGHT  PositionType = 1
-	GTK_POS_TOP    PositionType = 2
-	GTK_POS_BOTTOM PositionType = 3
+	POS_LEFT   PositionType = 0
+	POS_RIGHT  PositionType = 1
+	POS_TOP    PositionType = 2
+	POS_BOTTOM PositionType = 3
 )
 
 type Scale struct {
@@ -8101,19 +8101,19 @@ type Allocation gdk.Rectangle
 type AccelFlags int
 
 const (
-	GTK_ACCEL_VISIBLE AccelFlags = 1 << 0
-	GTK_ACCEL_LOCKED  AccelFlags = 1 << 1
-	GTK_ACCEL_MASK    AccelFlags = 0x07
+	ACCEL_VISIBLE AccelFlags = 1 << 0
+	ACCEL_LOCKED  AccelFlags = 1 << 1
+	ACCEL_MASK    AccelFlags = 0x07
 )
 
 type StateType int
 
 const (
-	GTK_STATE_NORMAL      StateType = 0
-	GTK_STATE_ACTIVE      StateType = 1
-	GTK_STATE_PRELIGHT    StateType = 2
-	GTK_STATE_SELECTED    StateType = 3
-	GTK_STATE_INSENSITIVE StateType = 4
+	STATE_NORMAL      StateType = 0
+	STATE_ACTIVE      StateType = 1
+	STATE_PRELIGHT    StateType = 2
+	STATE_SELECTED    StateType = 3
+	STATE_INSENSITIVE StateType = 4
 )
 
 type WidgetLike interface {
