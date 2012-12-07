@@ -7,7 +7,7 @@ import (
 
 func main() {
 	gtk.Init(nil)
-	clipboard := gtk.ClipboardGetForDisplay(
+	clipboard := gtk.NewClipboardGetForDisplay(
 		gdk.DisplayGetDefault(),
 		gdk.GDK_SELECTION_CLIPBOARD)
 	println(clipboard.WaitForText())
