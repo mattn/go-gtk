@@ -7,26 +7,26 @@ import (
 
 func main() {
 	gtk.Init(&os.Args)
-	window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)
+	window := gtk.NewWindow(gtk.GTK_WINDOW_TOPLEVEL)
 	window.SetTitle("Alignment")
 	window.Connect("destroy", gtk.MainQuit)
 
-	notebook := gtk.Notebook()
+	notebook := gtk.NewNotebook()
 	window.Add(notebook)
 
-	align := gtk.Alignment(0.5, 0.5, 0.5, 0.5)
+	align := gtk.NewAlignment(0.5, 0.5, 0.5, 0.5)
 	notebook.AppendPage(align, gtk.Label("Alignment"))
 
-	button := gtk.ButtonWithLabel("Hello World!")
+	button := gtk.NewButtonWithLabel("Hello World!")
 	align.Add(button)
 
-	fixed := gtk.Fixed()
+	fixed := gtk.NewFixed()
 	notebook.AppendPage(fixed, gtk.Label("Fixed"))
 
-	button2 := gtk.ButtonWithLabel("Pulse")
+	button2 := gtk.NewButtonWithLabel("Pulse")
 	fixed.Put(button2, 30, 30)
 
-	progress := gtk.ProgressBar()
+	progress := gtk.NewProgressBar()
 	fixed.Put(progress, 30, 70)
 
 	button.Connect("clicked", func() {
