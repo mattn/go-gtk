@@ -703,84 +703,85 @@ static GtkCellRenderer* _gtk_cell_renderer_spinner_new(void) {
 // ################# Casting #################
 //////////////////////////////////////////////
 
-static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
-static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
-static inline char* to_charptr(const gchar* s) { return (char*)s; }
-static inline char* to_charptr_guchar(const guchar* s) { return (char*)s; }
-static inline char* to_charptr_voidp(const void* s) { return (char*)s; }
-static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
-static inline void free_string(char* s) { free(s); }
+static inline void freeCstr(char* s) { free(s); }
+static inline gchar** nextGstr(gchar** s) { return (s+1); }
 
-static GValue* to_GValueptr(void* s) { return (GValue*)s; }
-static GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
-static GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
-static GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
-static GtkContainer* to_GtkContainer(GtkWidget* w) { return GTK_CONTAINER(w); }
-static GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER(w); }
-static GtkFontSelectionDialog* to_GtkFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
-static GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
-static GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
-static GtkSpinButton* to_GtkSpinButton(GtkWidget* w) { return GTK_SPIN_BUTTON(w); }
-static GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
-static GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w); }
-static GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
-static GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
-static GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
-static GtkMessageDialog* to_GtkMessageDialog(GtkWidget* w) { return GTK_MESSAGE_DIALOG(w); }
+static inline gchar* toGstr(const char* s) { return (gchar*)s; }
+static inline char* toCstr(const gchar* s) { return (char*)s; }
+//static inline char* toCstrU(const guchar* s) { return (char*)s; }
+//static inline char* toCstrV(const void* s) { return (char*)s; }
+
+static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
+static inline GValue* to_GValueptr(void* s) { return (GValue*)s; }
+static inline GtkWindow* to_GtkWindow(GtkWidget* w) { return GTK_WINDOW(w); }
+static inline GtkDialog* to_GtkDialog(GtkWidget* w) { return GTK_DIALOG(w); }
+static inline GtkAboutDialog* to_GtkAboutDialog(GtkWidget* w) { return GTK_ABOUT_DIALOG(w); }
+static inline GtkContainer* to_GtkContainer(GtkWidget* w) { return GTK_CONTAINER(w); }
+static inline GtkFileChooser* to_GtkFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER(w); }
+static inline GtkFontSelectionDialog* to_GtkFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
+static inline GtkLabel* to_GtkLabel(GtkWidget* w) { return GTK_LABEL(w); }
+static inline GtkButton* to_GtkButton(GtkWidget* w) { return GTK_BUTTON(w); }
+static inline GtkSpinButton* to_GtkSpinButton(GtkWidget* w) { return GTK_SPIN_BUTTON(w); }
+static inline GtkRadioButton* to_GtkRadioButton(GtkWidget* w) { return GTK_RADIO_BUTTON(w); }
+static inline GtkFontButton* to_GtkFontButton(GtkWidget* w) { return GTK_FONT_BUTTON(w); }
+static inline GtkLinkButton* to_GtkLinkButton(GtkWidget* w) { return GTK_LINK_BUTTON(w); }
+static inline GtkComboBox* to_GtkComboBox(GtkWidget* w) { return GTK_COMBO_BOX(w); }
+static inline GtkComboBoxEntry* to_GtkComboBoxEntry(GtkWidget* w) { return GTK_COMBO_BOX_ENTRY(w); }
+static inline GtkMessageDialog* to_GtkMessageDialog(GtkWidget* w) { return GTK_MESSAGE_DIALOG(w); }
 
 #if GTK_CHECK_VERSION(2,24,0)
-static GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
+static inline GtkComboBoxText* to_GtkComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
 #else
-static GtkWidget* to_GtkComboBoxText(GtkWidget* w) { return w; }
+static inline GtkWidget* to_GtkComboBoxText(GtkWidget* w) { return w; }
 #endif
 
-static GtkAccessible* to_GtkAccessible(void* w) { return GTK_ACCESSIBLE(w); }
-static GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
-static GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
-static GtkInfoBar* to_GtkInfoBar(GtkWidget* w) { return GTK_INFO_BAR(w); }
-static GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
-static GtkBox* to_GtkBox(GtkWidget* w) { return GTK_BOX(w); }
-static GtkPaned* to_GtkPaned(GtkWidget* w) { return GTK_PANED(w); }
-static GtkToggleButton* to_GtkToggleButton(GtkWidget* w) { return GTK_TOGGLE_BUTTON(w); }
-static GtkAccelLabel* to_GtkAccelLabel(GtkWidget* w) { return GTK_ACCEL_LABEL(w); }
-static GtkEntry* to_GtkEntry(GtkWidget* w) { return GTK_ENTRY(w); }
-static GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
-static GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
-static GtkTextBuffer* to_GtkTextBuffer(void* w) { return GTK_TEXT_BUFFER(w); }
-static GtkMenu* to_GtkMenu(GtkWidget* w) { return GTK_MENU(w); }
-static GtkMenuBar* to_GtkMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
-static GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
-static GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
-static GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
-static GtkToolbar* to_GtkToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
-static GtkToolItem* to_GtkToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
-static GtkSeparatorToolItem* to_GtkSeparatorToolItem(GtkWidget* w) { return GTK_SEPARATOR_TOOL_ITEM(w); }
-static GtkToolButton* to_GtkToolButton(GtkWidget* w) { return GTK_TOOL_BUTTON(w); }
-static GtkToggleToolButton* to_GtkToggleToolButton(GtkWidget* w) { return GTK_TOGGLE_TOOL_BUTTON(w); }
-static GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
-static GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
-static GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
-static GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
-static GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
-static GtkIconView* to_GtkIconView(GtkWidget* w) { return GTK_ICON_VIEW(w); }
-static GtkEditable* to_GtkEditable(GtkWidget* w) { return GTK_EDITABLE(w); }
-static GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
-static GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
-static GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
-static GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
-static GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
-static GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
-static GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
-static GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
-static GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
-static GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
-static GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
-static GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
-static GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
-static GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
-static GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
-static GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
-static GtkRadioMenuItem* to_GtkRadioMenuItem(GtkWidget* w) { return GTK_RADIO_MENU_ITEM(w); }
-static GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
+static inline GtkAccessible* to_GtkAccessible(void* w) { return GTK_ACCESSIBLE(w); }
+static inline GtkBin* to_GtkBin(GtkWidget* w) { return GTK_BIN(w); }
+static inline GtkStatusbar* to_GtkStatusbar(GtkWidget* w) { return GTK_STATUSBAR(w); }
+static inline GtkInfoBar* to_GtkInfoBar(GtkWidget* w) { return GTK_INFO_BAR(w); }
+static inline GtkFrame* to_GtkFrame(GtkWidget* w) { return GTK_FRAME(w); }
+static inline GtkBox* to_GtkBox(GtkWidget* w) { return GTK_BOX(w); }
+static inline GtkPaned* to_GtkPaned(GtkWidget* w) { return GTK_PANED(w); }
+static inline GtkToggleButton* to_GtkToggleButton(GtkWidget* w) { return GTK_TOGGLE_BUTTON(w); }
+static inline GtkAccelLabel* to_GtkAccelLabel(GtkWidget* w) { return GTK_ACCEL_LABEL(w); }
+static inline GtkEntry* to_GtkEntry(GtkWidget* w) { return GTK_ENTRY(w); }
+static inline GtkAdjustment* to_GtkAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
+static inline GtkTextView* to_GtkTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
+static inline GtkTextBuffer* to_GtkTextBuffer(void* w) { return GTK_TEXT_BUFFER(w); }
+static inline GtkMenu* to_GtkMenu(GtkWidget* w) { return GTK_MENU(w); }
+static inline GtkMenuBar* to_GtkMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
+static inline GtkMenuShell* to_GtkMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }
+static inline GtkMenuItem* to_GtkMenuItem(GtkWidget* w) { return GTK_MENU_ITEM(w); }
+static inline GtkItem* to_GtkItem(GtkWidget* w) { return GTK_ITEM(w); }
+static inline GtkToolbar* to_GtkToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
+static inline GtkToolItem* to_GtkToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
+static inline GtkSeparatorToolItem* to_GtkSeparatorToolItem(GtkWidget* w) { return GTK_SEPARATOR_TOOL_ITEM(w); }
+static inline GtkToolButton* to_GtkToolButton(GtkWidget* w) { return GTK_TOOL_BUTTON(w); }
+static inline GtkToggleToolButton* to_GtkToggleToolButton(GtkWidget* w) { return GTK_TOGGLE_TOOL_BUTTON(w); }
+static inline GtkScrolledWindow* to_GtkScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
+static inline GtkViewport* to_GtkViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
+static inline GtkWidget* to_GtkWidget(void* w) { return GTK_WIDGET(w); }
+static inline GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
+static inline GtkTreeView* to_GtkTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
+static inline GtkIconView* to_GtkIconView(GtkWidget* w) { return GTK_ICON_VIEW(w); }
+static inline GtkEditable* to_GtkEditable(GtkWidget* w) { return GTK_EDITABLE(w); }
+static inline GtkCellRendererText* to_GtkCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
+static inline GtkCellRendererToggle* to_GtkCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
+static inline GtkScale* to_GtkScale(GtkWidget* w) { return GTK_SCALE(w); }
+static inline GtkRange* to_GtkRange(GtkWidget* w) { return GTK_RANGE(w); }
+static inline GtkTreeModel* to_GtkTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
+static inline GtkTreeModel* to_GtkTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
+static inline GtkImage* to_GtkImage(GtkWidget* w) { return GTK_IMAGE(w); }
+static inline GtkNotebook* to_GtkNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
+static inline GtkTable* to_GtkTable(GtkWidget* w) { return GTK_TABLE(w); }
+static inline GtkDrawingArea* to_GtkDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
+static inline GtkAssistant* to_GtkAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
+static inline GtkExpander* to_GtkExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
+static inline GtkAlignment* to_GtkAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
+static inline GtkProgressBar* to_GtkProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
+static inline GtkFixed* to_GtkFixed(GtkWidget* w) { return GTK_FIXED(w); }
+static inline GtkCheckMenuItem* to_GtkCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
+static inline GtkRadioMenuItem* to_GtkRadioMenuItem(GtkWidget* w) { return GTK_RADIO_MENU_ITEM(w); }
+static inline GtkFileFilter* to_GtkFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
 #endif
