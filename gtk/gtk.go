@@ -19,80 +19,100 @@ import (
 	"unsafe"
 )
 
-func gint(v int) C.gint { return C.gint(v) }
-func guint(v uint) C.guint { return C.guint(v) }
+func gint(v int) C.gint          { return C.gint(v) }
+func guint(v uint) C.guint       { return C.guint(v) }
 func guint32(v uint32) C.guint32 { return C.guint32(v) }
-func gsize_t(v C.size_t) C.gint { return C.gint(v) }
+func gsize_t(v C.size_t) C.gint  { return C.gint(v) }
 
 func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
 func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
 func gostring(s *C.gchar) string { return C.GoString(cstring(s)) }
+
+func gslist(l *glib.SList) *C.GSList {
+	if l == nil {
+		return nil
+	}
+	return C.to_gslist(unsafe.Pointer(l.ToSList()))
+}
+
 func cfree(s *C.char) { C.freeCstr(s) }
 
-func GOBJECT(p unsafe.Pointer) *C.GObject { return C.toGObject(p) }
-func GVALUE(p unsafe.Pointer) *C.GValue { return C.toGValue(p) }
-func WINDOW(p *Window) *C.GtkWindow { return C.toGWindow(p.GWidget) }
-func DIALOG(p *Dialog) *C.GtkDialog { return C.toGDialog(p.GWidget) }
+func GOBJECT(p unsafe.Pointer) *C.GObject           { return C.toGObject(p) }
+func GVALUE(p unsafe.Pointer) *C.GValue             { return C.toGValue(p) }
+func WINDOW(p *Window) *C.GtkWindow                 { return C.toGWindow(p.GWidget) }
+func DIALOG(p *Dialog) *C.GtkDialog                 { return C.toGDialog(p.GWidget) }
 func ABOUT_DIALOG(p *AboutDialog) *C.GtkAboutDialog { return C.toGAboutDialog(p.GWidget) }
-func CONTAINER(p *Container) *C.GtkContainer { return C.toGContainer(p.GWidget) }
-func FILE_CHOOSER(p *Widget) *C.GtkFileChooser { return C.toGFileChooser(p.GWidget) }
-func FONT_SELECTION_DIALOG(p *FontSelectionDialog) *C.GtkFontSelectionDialog { return C.toGFontSelectionDialog(p.GWidget) }
-func LABEL(p *Label) *C.GtkLabel { return C.toGLabel(p.GWidget) }
-func BUTTON(p *Button) *C.GtkButton { return C.toGButton(p.GWidget) }
-func SPIN_BUTTON(p *SpinButton) *C.GtkSpinButton { return C.toGSpinButton(p.GWidget) }
-func RADIO_BUTTON(p *RadioButton) *C.GtkRadioButton { return C.toGRadioButton(p.GWidget) }
-func FONT_BUTTON(p *FontButton) *C.GtkFontButton { return C.toGFontButton(p.GWidget) }
-func LINK_BUTTON(p *LinkButton) *C.GtkLinkButton { return C.toGLinkButton(p.GWidget) }
-func COMBO_BOX(p *ComboBox) *C.GtkComboBox { return C.toGComboBox(p.GWidget) }
+func CONTAINER(p *Container) *C.GtkContainer        { return C.toGContainer(p.GWidget) }
+func FILE_CHOOSER(p *Widget) *C.GtkFileChooser      { return C.toGFileChooser(p.GWidget) }
+func FONT_SELECTION_DIALOG(p *FontSelectionDialog) *C.GtkFontSelectionDialog {
+	return C.toGFontSelectionDialog(p.GWidget)
+}
+func LABEL(p *Label) *C.GtkLabel                           { return C.toGLabel(p.GWidget) }
+func BUTTON(p *Button) *C.GtkButton                        { return C.toGButton(p.GWidget) }
+func SPIN_BUTTON(p *SpinButton) *C.GtkSpinButton           { return C.toGSpinButton(p.GWidget) }
+func RADIO_BUTTON(p *RadioButton) *C.GtkRadioButton        { return C.toGRadioButton(p.GWidget) }
+func FONT_BUTTON(p *FontButton) *C.GtkFontButton           { return C.toGFontButton(p.GWidget) }
+func LINK_BUTTON(p *LinkButton) *C.GtkLinkButton           { return C.toGLinkButton(p.GWidget) }
+func COMBO_BOX(p *ComboBox) *C.GtkComboBox                 { return C.toGComboBox(p.GWidget) }
 func COMBO_BOX_ENTRY(p *ComboBoxEntry) *C.GtkComboBoxEntry { return C.toGComboBoxEntry(p.GWidget) }
-func MESSAGE_DIALOG(p *MessageDialog) *C.GtkMessageDialog { return C.toGMessageDialog(p.GWidget) }
-func COMBO_BOX_TEXT(p *ComboBoxText) *C.GtkComboBoxText { return C.toGComboBoxText(p.GWidget) }
-func ACCESSIBLE(p *Accessible) *C.GtkAccessible { return C.toGAccessible(unsafe.Pointer(p.Object)) }
-func BIN(p *Bin) *C.GtkBin { return C.toGBin(p.GWidget) }
-func STATUS_BAR(p *Statusbar) *C.GtkStatusbar { return C.toGStatusbar(p.GWidget) }
-func INFO_BAR(p *InfoBar) *C.GtkInfoBar { return C.toGInfoBar(p.GWidget) }
-func FRAME(p *Frame) *C.GtkFrame { return C.toGFrame(p.GWidget) }
-func BOX(p *Box) *C.GtkBox { return C.toGBox(p.GWidget) }
-func PANED(p *Paned) *C.GtkPaned { return C.toGPaned(p.GWidget) }
-func TOGGLE_BUTTON(p *ToggleButton) *C.GtkToggleButton { return C.toGToggleButton(p.GWidget) }
-func ACCEL_LABEL(p *AccelLabel) *C.GtkAccelLabel { return C.toGAccelLabel(p.GWidget) }
-func ENTRY(p *Entry) *C.GtkEntry { return C.toGEntry(p.GWidget) }
-func ADJUSTMENT(p *Adjustment) *C.GtkAdjustment { return p.GAdjustment }
-func TEXT_VIEW(p *TextView) *C.GtkTextView { return C.toGTextView(p.GWidget) }
-func TEXT_BUFFER(p unsafe.Pointer) *C.GtkTextBuffer { return C.toGTextBuffer(p) }
-func MENU(p *Menu) *C.GtkMenu { return C.toGMenu(p.GWidget) }
-func MENU_BAR(p *MenuBar) *C.GtkMenuBar { return C.toGMenuBar(p.GWidget) }
-func MENU_SHELL(p *Menu) *C.GtkMenuShell { return C.toGMenuShell(p.GWidget) } // TODO (GtkMenuShell receiver)
-func MENU_BAR_SHELL(p *MenuBar) *C.GtkMenuShell { return C.toGMenuShell(p.GWidget) } // TODO
-func MENU_ITEM(p *MenuItem) *C.GtkMenuItem { return C.toGMenuItem(p.GWidget) }
-func ITEM(p *Item) *C.GtkItem { return C.toGItem(p.GWidget) }
-func TOOLBAR(p *Toolbar) *C.GtkToolbar { return C.toGToolbar(p.GWidget) }
-func TOOL_ITEM(p *ToolItem) *C.GtkToolItem { return C.toGToolItem(p.GWidget) }
-func SEPARATOR_TOOL_ITEM(p *SeparatorToolItem) *C.GtkSeparatorToolItem { return C.toGSeparatorToolItem(p.GWidget) }
+func MESSAGE_DIALOG(p *MessageDialog) *C.GtkMessageDialog  { return C.toGMessageDialog(p.GWidget) }
+func COMBO_BOX_TEXT(p *ComboBoxText) *C.GtkComboBoxText    { return C.toGComboBoxText(p.GWidget) }
+func ACCESSIBLE(p *Accessible) *C.GtkAccessible            { return C.toGAccessible(unsafe.Pointer(p.Object)) }
+func BIN(p *Bin) *C.GtkBin                                 { return C.toGBin(p.GWidget) }
+func STATUS_BAR(p *Statusbar) *C.GtkStatusbar              { return C.toGStatusbar(p.GWidget) }
+func INFO_BAR(p *InfoBar) *C.GtkInfoBar                    { return C.toGInfoBar(p.GWidget) }
+func FRAME(p *Frame) *C.GtkFrame                           { return C.toGFrame(p.GWidget) }
+func BOX(p *Box) *C.GtkBox                                 { return C.toGBox(p.GWidget) }
+func PANED(p *Paned) *C.GtkPaned                           { return C.toGPaned(p.GWidget) }
+func TOGGLE_BUTTON(p *ToggleButton) *C.GtkToggleButton     { return C.toGToggleButton(p.GWidget) }
+func ACCEL_LABEL(p *AccelLabel) *C.GtkAccelLabel           { return C.toGAccelLabel(p.GWidget) }
+func ENTRY(p *Entry) *C.GtkEntry                           { return C.toGEntry(p.GWidget) }
+func ADJUSTMENT(p *Adjustment) *C.GtkAdjustment            { return p.GAdjustment }
+func TEXT_VIEW(p *TextView) *C.GtkTextView                 { return C.toGTextView(p.GWidget) }
+func TEXT_BUFFER(p unsafe.Pointer) *C.GtkTextBuffer        { return C.toGTextBuffer(p) }
+func MENU(p *Menu) *C.GtkMenu                              { return C.toGMenu(p.GWidget) }
+func MENU_BAR(p *MenuBar) *C.GtkMenuBar                    { return C.toGMenuBar(p.GWidget) }
+func MENU_SHELL(p *Menu) *C.GtkMenuShell                   { return C.toGMenuShell(p.GWidget) } // TODO (GtkMenuShell receiver)
+func MENU_BAR_SHELL(p *MenuBar) *C.GtkMenuShell            { return C.toGMenuShell(p.GWidget) } // TODO
+func MENU_ITEM(p *MenuItem) *C.GtkMenuItem                 { return C.toGMenuItem(p.GWidget) }
+func ITEM(p *Item) *C.GtkItem                              { return C.toGItem(p.GWidget) }
+func TOOLBAR(p *Toolbar) *C.GtkToolbar                     { return C.toGToolbar(p.GWidget) }
+func TOOL_ITEM(p *ToolItem) *C.GtkToolItem                 { return C.toGToolItem(p.GWidget) }
+func SEPARATOR_TOOL_ITEM(p *SeparatorToolItem) *C.GtkSeparatorToolItem {
+	return C.toGSeparatorToolItem(p.GWidget)
+}
 func TOOL_BUTTON(p *ToolButton) *C.GtkToolButton { return C.toGToolButton(p.GWidget) }
-func TOGGLE_TOOL_BUTTON(p *ToggleToolButton) *C.GtkToggleToolButton { return C.toGToggleToolButton(p.GWidget) }
+func TOGGLE_TOOL_BUTTON(p *ToggleToolButton) *C.GtkToggleToolButton {
+	return C.toGToggleToolButton(p.GWidget)
+}
 func SCROLLED_WINDOW(p *ScrolledWindow) *C.GtkScrolledWindow { return C.toGScrolledWindow(p.GWidget) }
-func VIEWPORT(p *Viewport) *C.GtkViewport { return C.toGViewport(p.GWidget) }
-func WIDGET(p *Widget) *C.GtkWidget { return C.toGWidget(unsafe.Pointer(p.GWidget)) }
-func TREE_VIEW(p *TreeView) *C.GtkTreeView { return C.toGTreeView(p.GWidget) }
-func ICON_VIEW(p *IconView) *C.GtkIconView { return C.toGIconView(p.GWidget) }
-func CELL_RENDERER_TEXT(p *CellRendererText) *C.GtkCellRendererText { return C.toGCellRendererText(p.GCellRenderer) }
-func CELL_RENDERER_TOGGLE(p *CellRendererToggle) *C.GtkCellRendererToggle { return C.toGCellRendererToggle(p.GCellRenderer) }
+func VIEWPORT(p *Viewport) *C.GtkViewport                    { return C.toGViewport(p.GWidget) }
+func WIDGET(p *Widget) *C.GtkWidget                          { return C.toGWidget(unsafe.Pointer(p.GWidget)) }
+func TREE_VIEW(p *TreeView) *C.GtkTreeView                   { return C.toGTreeView(p.GWidget) }
+func ICON_VIEW(p *IconView) *C.GtkIconView                   { return C.toGIconView(p.GWidget) }
+func CELL_RENDERER_TEXT(p *CellRendererText) *C.GtkCellRendererText {
+	return C.toGCellRendererText(p.GCellRenderer)
+}
+func CELL_RENDERER_TOGGLE(p *CellRendererToggle) *C.GtkCellRendererToggle {
+	return C.toGCellRendererToggle(p.GCellRenderer)
+}
 func SCALE(p *Scale) *C.GtkScale { return C.toGScale(p.GWidget) }
 func RANGE(p *Range) *C.GtkRange { return C.toGRange(p.GWidget) }
+
 //static inline GtkTreeModel* toGTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 //static inline GtkTreeModel* toGTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
-func IMAGE(p *Image) *C.GtkImage { return C.toGImage(p.GWidget) }
-func NOTEBOOK(p *Notebook) *C.GtkNotebook { return C.toGNotebook(p.GWidget) }
-func TABLE(p *Table) *C.GtkTable { return C.toGTable(p.GWidget) }
-func DRAWING_AREA(p *DrawingArea) *C.GtkDrawingArea { return C.toGDrawingArea(p.GWidget) }
-func ASSISTANT(p *Assistant) *C.GtkAssistant { return C.toGAssistant(p.GWidget) }
-func EXPANDER(p *Expander) *C.GtkExpander { return C.toGExpander(p.GWidget) }
-func ALIGNMENT(p *Alignment) *C.GtkAlignment { return C.toGAlignment(p.GWidget) }
-func PROGRESS_BAR(p *ProgressBar) *C.GtkProgressBar { return C.toGProgressBar(p.GWidget) }
-func FIXED(p *Fixed) *C.GtkFixed { return C.toGFixed(p.GWidget) }
+func IMAGE(p *Image) *C.GtkImage                           { return C.toGImage(p.GWidget) }
+func NOTEBOOK(p *Notebook) *C.GtkNotebook                  { return C.toGNotebook(p.GWidget) }
+func TABLE(p *Table) *C.GtkTable                           { return C.toGTable(p.GWidget) }
+func DRAWING_AREA(p *DrawingArea) *C.GtkDrawingArea        { return C.toGDrawingArea(p.GWidget) }
+func ASSISTANT(p *Assistant) *C.GtkAssistant               { return C.toGAssistant(p.GWidget) }
+func EXPANDER(p *Expander) *C.GtkExpander                  { return C.toGExpander(p.GWidget) }
+func ALIGNMENT(p *Alignment) *C.GtkAlignment               { return C.toGAlignment(p.GWidget) }
+func PROGRESS_BAR(p *ProgressBar) *C.GtkProgressBar        { return C.toGProgressBar(p.GWidget) }
+func FIXED(p *Fixed) *C.GtkFixed                           { return C.toGFixed(p.GWidget) }
 func CHECK_MENU_ITEM(p *CheckMenuItem) *C.GtkCheckMenuItem { return C.toGCheckMenuItem(p.GWidget) }
 func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMenuItem(p.GWidget) }
+
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
 func gbool(b bool) C.gboolean {
@@ -1229,16 +1249,16 @@ func (v *Window) Fullscreen() {
 func (v *Window) Unfullscreen() {
 	C.gtk_window_unfullscreen(WINDOW(v))
 }
-func (v *Window) SetKeepAbove(setting bool){
+func (v *Window) SetKeepAbove(setting bool) {
 	C.gtk_window_set_keep_above(WINDOW(v), gbool(setting))
 }
-func (v *Window) SetKeepBelow(setting bool){
+func (v *Window) SetKeepBelow(setting bool) {
 	C.gtk_window_set_keep_below(WINDOW(v), gbool(setting))
 }
-func (v *Window) SetDecorated(setting bool){
+func (v *Window) SetDecorated(setting bool) {
 	C.gtk_window_set_decorated(WINDOW(v), gbool(setting))
 }
-func (v *Window) SetDeletable(setting bool){
+func (v *Window) SetDeletable(setting bool) {
 	C.gtk_window_set_deletable(WINDOW(v), gbool(setting))
 }
 func (v *Window) SetTypeHint(hint gdk.WindowTypeHint) {
@@ -1284,6 +1304,7 @@ func (v *Window) GetDestroyWithParent() bool {
 func (v *Window) GetIconName() string {
 	return gostring(C.gtk_window_get_icon_name(WINDOW(v)))
 }
+
 // gtk_window_get_mnemonic_modifier
 
 func (v *Window) GetModal() bool {
@@ -1920,7 +1941,7 @@ func (v *Label) GetSingleLineMode() bool {
 	return gobool(C.gtk_label_get_single_line_mode(LABEL(v)))
 }
 func (v *Label) GetAngle() float64 {
-	return float64(C.gtk_label_get_angle(LABEL(v)))	
+	return float64(C.gtk_label_get_angle(LABEL(v)))
 }
 func (v *Label) SetLabel(label string) {
 	ptr := C.CString(label)
@@ -2433,12 +2454,8 @@ type RadioButton struct {
 }
 
 func NewRadioButton(group *glib.SList) *RadioButton {
-	if group != nil {
-		return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-			C.gtk_radio_button_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}}}
-	}
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new(nil)}}}}}}}
+		C.gtk_radio_button_new(gslist(group))}}}}}}}
 }
 func NewRadioButtonFromWidget(w *RadioButton) *RadioButton {
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
@@ -2447,12 +2464,8 @@ func NewRadioButtonFromWidget(w *RadioButton) *RadioButton {
 func NewRadioButtonWithLabel(group *glib.SList, label string) *RadioButton {
 	ptr := C.CString(label)
 	defer cfree(ptr)
-	if group != nil {
-		return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-			C.gtk_radio_button_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), gstring(ptr))}}}}}}}
-	}
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_label(nil, gstring(ptr))}}}}}}}
+		C.gtk_radio_button_new_with_label(gslist(group), gstring(ptr))}}}}}}}
 }
 func NewRadioButtonWithLabelFromWidget(w *RadioButton, label string) *RadioButton {
 	ptr := C.CString(label)
@@ -2463,12 +2476,8 @@ func NewRadioButtonWithLabelFromWidget(w *RadioButton, label string) *RadioButto
 func NewRadioButtonWithMnemonic(group *glib.SList, label string) *RadioButton {
 	ptr := C.CString(label)
 	defer cfree(ptr)
-	if group != nil {
-		return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-			C.gtk_radio_button_new_with_mnemonic(C.to_gslist(unsafe.Pointer(group.ToSList())), gstring(ptr))}}}}}}}
-	}
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_mnemonic(nil, gstring(ptr))}}}}}}}
+		C.gtk_radio_button_new_with_mnemonic(gslist(group), gstring(ptr))}}}}}}}
 }
 func NewRadioButtonWithMnemonicFromWidget(w *RadioButton, label string) *RadioButton {
 	ptr := C.CString(label)
@@ -2480,11 +2489,7 @@ func (v *RadioButton) GetGroup() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_button_get_group(RADIO_BUTTON(v))))
 }
 func (v *RadioButton) SetGroup(group *glib.SList) {
-	if group != nil {
-		C.gtk_radio_button_set_group(RADIO_BUTTON(v), C.to_gslist(unsafe.Pointer(group)))
-	} else {
-		C.gtk_radio_button_set_group(RADIO_BUTTON(v), nil)
-	}
+	C.gtk_radio_button_set_group(RADIO_BUTTON(v), gslist(group))
 }
 
 //-----------------------------------------------------------------------
@@ -2700,7 +2705,9 @@ func (v *Entry) GetVisibility() bool {
 func (v *Entry) SetCompletion(completion *EntryCompletion) {
 	C.gtk_entry_set_completion(ENTRY(v), completion.GEntryCompletion)
 }
+
 var g_Entry_EntryCompletion *EntryCompletion
+
 func (v *Entry) GetCompletion() *EntryCompletion {
 	if g_Entry_EntryCompletion == nil {
 		g_Entry_EntryCompletion = &EntryCompletion{C.gtk_entry_get_completion(ENTRY(v))}
@@ -2933,20 +2940,20 @@ func NewVScaleWithRange(min, max, step float64) *Scale {
 type SpinButtonUpdatePolicy int
 
 const (
-	UPDATE_ALWAYS           = 0
-	UPDATE_IF_VALID         = 1
+	UPDATE_ALWAYS   = 0
+	UPDATE_IF_VALID = 1
 )
 
 type SpinType int
 
 const (
-	SPIN_STEP_FORWARD       = 0
-	SPIN_STEP_BACKWARD      = 1
-	SPIN_PAGE_FORWARD       = 2
-	SPIN_PAGE_BACKWARD      = 3
-	SPIN_HOME               = 4
-	SPIN_END                = 5
-	SPIN_USER_DEFINED       = 6
+	SPIN_STEP_FORWARD  = 0
+	SPIN_STEP_BACKWARD = 1
+	SPIN_PAGE_FORWARD  = 2
+	SPIN_PAGE_BACKWARD = 3
+	SPIN_HOME          = 4
+	SPIN_END           = 5
+	SPIN_USER_DEFINED  = 6
 )
 
 type SpinButton struct {
@@ -3034,7 +3041,7 @@ func (v *SpinButton) GetIncrements() (float64, float64) {
 func (v *SpinButton) GetNumeric() bool {
 	return gobool(C.gtk_spin_button_get_numeric(SPIN_BUTTON(v)))
 }
-func (v *SpinButton) GetRange() (/*min*/ float64, /*max*/ float64) {
+func (v *SpinButton) GetRange() ( /*min*/ float64 /*max*/, float64) {
 	var min, max C.gdouble
 	C.gtk_spin_button_get_range(SPIN_BUTTON(v), &min, &max)
 	return float64(min), float64(max)
@@ -3300,7 +3307,7 @@ type TextBuffer struct {
 func newTextBuffer(buffer *C.GtkTextBuffer) *TextBuffer { // TODO
 	return &TextBuffer{
 		GTextBuffer: buffer,
-		GObject:    glib.ObjectFromNative(unsafe.Pointer(buffer)),
+		GObject:     glib.ObjectFromNative(unsafe.Pointer(buffer)),
 	}
 }
 func NewTextBufferFromPointer(v unsafe.Pointer) TextBuffer {
@@ -3772,6 +3779,7 @@ func NewTreePathFromString(path string) *TreePath {
 func NewTreePathNewFirst() *TreePath {
 	return &TreePath{C.gtk_tree_path_new_first()}
 }
+
 // gtk_tree_path_new_from_indices
 
 func (v *TreePath) String() string {
@@ -3939,7 +3947,7 @@ const (
 	SELECTION_SINGLE   SelectionMode = 1
 	SELECTION_BROWSE   SelectionMode = 2
 	SELECTION_MULTIPLE SelectionMode = 3
-	SELECTION_EXTENDED                  = SELECTION_MULTIPLE
+	SELECTION_EXTENDED               = SELECTION_MULTIPLE
 )
 
 func (v *TreeSelection) Connect(s string, f interface{}, datas ...interface{}) int {
@@ -4018,7 +4026,7 @@ type TreeViewColumn struct {
 func newTreeViewColumn(column *C.GtkTreeViewColumn) *TreeViewColumn {
 	return &TreeViewColumn{
 		GTreeViewColumn: column,
-		GObject:        glib.ObjectFromNative(unsafe.Pointer(column)),
+		GObject:         glib.ObjectFromNative(unsafe.Pointer(column)),
 	}
 }
 
@@ -4097,7 +4105,7 @@ func (v *TreeViewColumn) SetVisible(resizable bool) {
 	C.gtk_tree_view_column_set_visible(v.GTreeViewColumn, gbool(resizable))
 }
 func (v *TreeViewColumn) GetVisible() bool {
-	return gobool(C.gtk_tree_view_column_get_visible (v.GTreeViewColumn))
+	return gobool(C.gtk_tree_view_column_get_visible(v.GTreeViewColumn))
 }
 func (v *TreeViewColumn) SetResizable(resizable bool) {
 	C.gtk_tree_view_column_set_resizable(v.GTreeViewColumn, gbool(resizable))
@@ -4158,6 +4166,7 @@ func (v *TreeViewColumn) SetClickable(clickable bool) {
 func (v *TreeViewColumn) GetClickable() bool {
 	return gobool(C.gtk_tree_view_column_get_clickable(v.GTreeViewColumn))
 }
+
 //void gtk_tree_view_column_set_widget (GtkTreeViewColumn *tree_column, GtkWidget *widget);
 //GtkWidget *gtk_tree_view_column_get_widget (GtkTreeViewColumn *tree_column);
 //void gtk_tree_view_column_set_alignment (GtkTreeViewColumn *tree_column, gfloat xalign);
@@ -5382,23 +5391,15 @@ type RadioMenuItem struct {
 }
 
 func NewRadioMenuItem(group *glib.SList) *RadioMenuItem {
-	if group != nil {
-		return &RadioMenuItem{CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-			C.gtk_radio_menu_item_new(C.to_gslist(unsafe.Pointer(group.ToSList())))}}}}}}}
-	}
 	return &RadioMenuItem{CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_radio_menu_item_new(nil)}}}}}}}
+		C.gtk_radio_menu_item_new(gslist(group))}}}}}}}
 }
 
 func NewRadioMenuItemWithLabel(group *glib.SList, label string) *RadioMenuItem {
 	ptr := C.CString(label)
 	defer cfree(ptr)
-	if group != nil {
-		return &RadioMenuItem{CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-			C.gtk_radio_menu_item_new_with_label(C.to_gslist(unsafe.Pointer(group.ToSList())), gstring(ptr))}}}}}}}
-	}
 	return &RadioMenuItem{CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_radio_menu_item_new_with_label(nil, gstring(ptr))}}}}}}}
+		C.gtk_radio_menu_item_new_with_label(gslist(group), gstring(ptr))}}}}}}}
 }
 
 // gtk_radio_menu_item_new_with_mnemonic
@@ -5408,11 +5409,7 @@ func NewRadioMenuItemWithLabel(group *glib.SList, label string) *RadioMenuItem {
 // gtk_radio_menu_item_group
 
 func (v *RadioMenuItem) SetGroup(group *glib.SList) {
-	if group != nil {
-		C.gtk_radio_menu_item_set_group(RADIO_MENU_ITEM(v), C.to_gslist(unsafe.Pointer(group)))
-	} else {
-		C.gtk_radio_menu_item_set_group(RADIO_MENU_ITEM(v), nil)
-	}
+	C.gtk_radio_menu_item_set_group(RADIO_MENU_ITEM(v), gslist(group))
 }
 
 func (v *RadioMenuItem) GetGroup() *glib.SList {
@@ -5509,17 +5506,17 @@ func NewTearoffMenuItem() *TearoffMenuItem {
 type Orientation int
 
 const (
-	ORIENTATION_HORIZONTAL     = 0
-	ORIENTATION_VERTICAL       = 1
+	ORIENTATION_HORIZONTAL = 0
+	ORIENTATION_VERTICAL   = 1
 )
 
 type ToolbarStyle int
 
 const (
-	TOOLBAR_ICONS        = 0
-	TOOLBAR_TEXT         = 1
-	TOOLBAR_BOTH         = 2
-	TOOLBAR_BOTH_HORIZ   = 3
+	TOOLBAR_ICONS      = 0
+	TOOLBAR_TEXT       = 1
+	TOOLBAR_BOTH       = 2
+	TOOLBAR_BOTH_HORIZ = 3
 )
 
 type Toolbar struct {
@@ -5555,15 +5552,15 @@ func (v *Toolbar) GetItemIndex(item IToolItem) int {
 func (v *Toolbar) GetNItems() int {
 	return int(C.gtk_toolbar_get_n_items(TOOLBAR(v)))
 }
-func (v *Toolbar) GetNthItem(n int) IToolItem {	
+func (v *Toolbar) GetNthItem(n int) IToolItem {
 	p_tool_item := C.gtk_toolbar_get_nth_item(TOOLBAR(v), gint(n))
 	if p_tool_item == nil {
 		panic("Toolbar.GetNthItem: index out of bounds")
 	}
-	if _, ok := v.items[p_tool_item]; !ok {	
+	if _, ok := v.items[p_tool_item]; !ok {
 		panic("Toolbar.GetNthItem: interface not found in map")
 	}
-	return v.items[p_tool_item]	
+	return v.items[p_tool_item]
 }
 func (v *Toolbar) GetDropIndex(x, y int) int {
 	return int(C.gtk_toolbar_get_drop_index(TOOLBAR(v), gint(x), gint(y)))
@@ -5601,6 +5598,7 @@ func (v *Toolbar) GetTooltips() bool {
 func (v *Toolbar) GetReliefStyle() ReliefStyle {
 	return ReliefStyle(C.gtk_toolbar_get_relief_style(TOOLBAR(v)))
 }
+
 // gtk_toolbar_append_item
 // gtk_toolbar_prepend_item
 // gtk_toolbar_insert_item
@@ -5616,10 +5614,12 @@ func (v *Toolbar) GetReliefStyle() ReliefStyle {
 func (v *Toolbar) SetStyle(style ToolbarStyle) {
 	C.gtk_toolbar_set_style(TOOLBAR(v), C.GtkToolbarStyle(style))
 }
+
 // gtk_toolbar_insert_stock
 func (v *Toolbar) SetIconSize(icon_size IconSize) {
 	C.gtk_toolbar_set_icon_size(TOOLBAR(v), C.GtkIconSize(icon_size))
 }
+
 // gtk_toolbar_remove_space
 func (v *Toolbar) UnsetStyle() {
 	C.gtk_toolbar_unset_style(TOOLBAR(v))
@@ -5637,8 +5637,8 @@ type ToolItem struct {
 	Bin
 }
 
-func NewToolItem() *ToolItem {		
-	return &ToolItem{Bin{Container{Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}	
+func NewToolItem() *ToolItem {
+	return &ToolItem{Bin{Container{Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
 }
 
 func (v *ToolItem) AsToolItem() *ToolItem {
@@ -5655,18 +5655,19 @@ func (v *ToolItem) OnToolbarReconfigured(onclick interface{}, datas ...interface
 	return v.Connect("toolbar-reconfigured", onclick, datas...)
 }
 
-func (v *ToolItem) SetHomogeneous(homogeneous bool) {	
+func (v *ToolItem) SetHomogeneous(homogeneous bool) {
 	C.gtk_tool_item_set_homogeneous(TOOL_ITEM(v), gbool(homogeneous))
 }
 func (v *ToolItem) GetHomogeneous() bool {
 	return gobool(C.gtk_tool_item_get_homogeneous(TOOL_ITEM(v)))
 }
-func (v *ToolItem) SetExpand(expand bool) {	
+func (v *ToolItem) SetExpand(expand bool) {
 	C.gtk_tool_item_set_expand(TOOL_ITEM(v), gbool(expand))
 }
 func (v *ToolItem) GetExpand() bool {
 	return gobool(C.gtk_tool_item_get_expand(TOOL_ITEM(v)))
 }
+
 /*func (v *GtkToolItem) SetTooltip(tooltips *GtkTooltips, tip_text, tip_private string) { // FIXME
 	p_tip_text := C.CString(tip_text)
 	defer cfree(p_tip_text)	
@@ -5674,9 +5675,9 @@ func (v *ToolItem) GetExpand() bool {
 	defer cfree(p_tip_private)	
 	C.gtk_tool_item_set_tooltip(TOOL_ITEM(v), tooltips.Tooltip, gstring(p_tip_text), gstring(p_tip_private))
 }*/
-func (v *ToolItem) SetTooltipMarkup(markup string) {	
+func (v *ToolItem) SetTooltipMarkup(markup string) {
 	p_markup := C.CString(markup)
-	defer cfree(p_markup)		
+	defer cfree(p_markup)
 	C.gtk_tool_item_set_tooltip_markup(TOOL_ITEM(v), gstring(p_markup))
 }
 func (v *ToolItem) GetToolbarStyle() ToolbarStyle {
@@ -5691,12 +5692,14 @@ func (v *ToolItem) GetTextAlignment() float64 {
 func (v *ToolItem) GetTextOrientation() Orientation {
 	return Orientation(C.gtk_tool_item_get_text_orientation(TOOL_ITEM(v)))
 }
+
 // gtk_tool_item_retrieve_proxy_menu_item
 // gtk_tool_item_get_proxy_menu_item
 // gtk_tool_item_set_proxy_menu_item
-func (v *ToolItem) RebuildMenu() {		
+func (v *ToolItem) RebuildMenu() {
 	C.gtk_tool_item_rebuild_menu(TOOL_ITEM(v))
 }
+
 // gtk_tool_item_toolbar_reconfigured
 // gtk_tool_item_get_text_size_group
 
@@ -5756,7 +5759,7 @@ type SeparatorToolItem struct {
 	ToolItem
 }
 
-func NewSeparatorToolItem() *SeparatorToolItem {		
+func NewSeparatorToolItem() *SeparatorToolItem {
 	return &SeparatorToolItem{ToolItem{Bin{Container{Widget{
 		C.toGWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
 }
@@ -5765,7 +5768,7 @@ func (v *SeparatorToolItem) AsToolItem() *ToolItem {
 	return &v.ToolItem
 }
 
-func (v *SeparatorToolItem) SetDraw(draw bool) {	
+func (v *SeparatorToolItem) SetDraw(draw bool) {
 	C.gtk_separator_tool_item_set_draw(SEPARATOR_TOOL_ITEM(v), gbool(draw))
 }
 func (v *SeparatorToolItem) GetDraw() bool {
@@ -5777,7 +5780,7 @@ func (v *SeparatorToolItem) GetDraw() bool {
 //-----------------------------------------------------------------------
 
 type ToolButton struct {
-	ToolItem	
+	ToolItem
 	iconWidget, labelWidget *Widget
 }
 
@@ -5804,13 +5807,13 @@ func (v *ToolButton) OnClicked(onclick interface{}, datas ...interface{}) int {
 
 func (v *ToolButton) SetLabel(label string) {
 	p_label := C.CString(label)
-	defer cfree(p_label)	
+	defer cfree(p_label)
 	C.gtk_tool_button_set_label(TOOL_BUTTON(v), gstring(p_label))
 }
 func (v *ToolButton) GetLabel() string {
 	return gostring(C.gtk_tool_button_get_label(TOOL_BUTTON(v)))
 }
-func (v *ToolButton) SetUseUnderline(use_underline bool) {	
+func (v *ToolButton) SetUseUnderline(use_underline bool) {
 	C.gtk_tool_button_set_use_underline(TOOL_BUTTON(v), gbool(use_underline))
 }
 func (v *ToolButton) GetUseUnderline() bool {
@@ -5818,7 +5821,7 @@ func (v *ToolButton) GetUseUnderline() bool {
 }
 func (v *ToolButton) SetStockId(stock_id string) {
 	p_stock_id := C.CString(stock_id)
-	defer cfree(p_stock_id)	
+	defer cfree(p_stock_id)
 	C.gtk_tool_button_set_stock_id(TOOL_BUTTON(v), gstring(p_stock_id))
 }
 func (v *ToolButton) GetStockId() string {
@@ -5826,7 +5829,7 @@ func (v *ToolButton) GetStockId() string {
 }
 func (v *ToolButton) SetIconName(icon_name string) {
 	p_icon_name := C.CString(icon_name)
-	defer cfree(p_icon_name)	
+	defer cfree(p_icon_name)
 	C.gtk_tool_button_set_icon_name(TOOL_BUTTON(v), gstring(p_icon_name))
 }
 func (v *ToolButton) GetIconName() string {
@@ -5838,7 +5841,7 @@ func (v *ToolButton) SetIconWidget(icon_widget *Widget) {
 }
 func (v *ToolButton) GetIconWidget() *Widget {
 	if v.iconWidget == nil {
-		v.iconWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))))}		
+		v.iconWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))))}
 	} else {
 		v.iconWidget.GWidget = C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))
 	}
@@ -5850,12 +5853,13 @@ func (v *ToolButton) SetLabelWidget(label_widget *Widget) {
 }
 func (v *ToolButton) GetLabelWidget() *Widget {
 	if v.labelWidget == nil {
-		v.labelWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))))}	
+		v.labelWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))))}
 	} else {
 		v.labelWidget.GWidget = C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))
 	}
 	return v.labelWidget
 }
+
 //-----------------------------------------------------------------------
 // GtkMenuToolButton
 //-----------------------------------------------------------------------
@@ -5876,13 +5880,13 @@ type ToggleToolButton struct {
 	ToolButton
 }
 
-func NewToggleToolButton() *ToggleToolButton {		
+func NewToggleToolButton() *ToggleToolButton {
 	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
 		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}, nil, nil}}
 }
-func NewToggleToolButtonFromStock(stock_id string) *ToggleToolButton {		
+func NewToggleToolButtonFromStock(stock_id string) *ToggleToolButton {
 	p_stock_id := C.CString(stock_id)
-	defer cfree(p_stock_id)	
+	defer cfree(p_stock_id)
 	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
 		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(gstring(p_stock_id))))}}}}, nil, nil}}
 }
@@ -5895,7 +5899,7 @@ func (v *ToggleToolButton) OnToggled(onclick interface{}, datas ...interface{}) 
 	return v.Connect("toggled", onclick, datas...)
 }
 
-func (v *ToggleToolButton) SetActive(is_active bool) {	
+func (v *ToggleToolButton) SetActive(is_active bool) {
 	C.gtk_toggle_tool_button_set_active(TOGGLE_TOOL_BUTTON(v), gbool(is_active))
 }
 func (v *ToggleToolButton) GetActive() bool {
@@ -5910,18 +5914,18 @@ type RadioToolButton struct {
 	ToggleToolButton
 }
 
-func NewRadioToolButton(group *glib.SList) *RadioToolButton {		
+func NewRadioToolButton(group *glib.SList) *RadioToolButton {
 	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(
-			C.to_gslist(unsafe.Pointer(group.ToSList())))))}}}}, nil, nil}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(gslist(group))))}}}}, nil, nil}}}
 }
-func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolButton {		
+func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolButton {
 	p_stock_id := C.CString(stock_id)
-	defer cfree(p_stock_id)	
+	defer cfree(p_stock_id)
 	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
 		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
-			C.to_gslist(unsafe.Pointer(group.ToSList())), gstring(p_stock_id))))}}}}, nil, nil}}}
+			gslist(group), gstring(p_stock_id))))}}}}, nil, nil}}}
 }
+
 // gtk_radio_tool_button_new_from_widget
 // gtk_radio_tool_button_new_with_stock_from_widget
 // gtk_radio_tool_button_get_group
@@ -6219,7 +6223,7 @@ func (v *FileChooser) ListFilters() []*FileFilter {
 	c_list := C.gtk_file_chooser_list_filters(v.GFileChooser)
 	defer C.g_slist_free(c_list)
 	n := int(C.g_slist_length(c_list))
-	ret := make([]*FileFilter, n)	
+	ret := make([]*FileFilter, n)
 	for i := 0; i < n; i++ {
 		ret[i] = &FileFilter{C.toGFileFilter(C.g_slist_nth_data(c_list, C.guint(i)))}
 	}
@@ -7469,7 +7473,7 @@ func NewAdjustment(value, lower, upper, step_increment, page_increment, page_siz
 			C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))}
 }
 func (v *Adjustment) GetValue() float64 {
-	return float64(C.gtk_adjustment_get_value(v.GAdjustment))	
+	return float64(C.gtk_adjustment_get_value(v.GAdjustment))
 }
 func (v *Adjustment) SetValue(value float64) {
 	C.gtk_adjustment_set_value(v.GAdjustment, C.gdouble(value))
@@ -7486,23 +7490,23 @@ func (v *Adjustment) Configure(value, lower, upper, step_increment, page_increme
 }
 func (v *Adjustment) GetLower() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_lower()")
-	return float64(C._gtk_adjustment_get_lower(v.GAdjustment))	
+	return float64(C._gtk_adjustment_get_lower(v.GAdjustment))
 }
 func (v *Adjustment) GetPageIncrement() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_increment()")
-	return float64(C._gtk_adjustment_get_page_increment(v.GAdjustment))	
+	return float64(C._gtk_adjustment_get_page_increment(v.GAdjustment))
 }
 func (v *Adjustment) GetPageSize() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_page_size()")
-	return float64(C._gtk_adjustment_get_page_size(v.GAdjustment))	
+	return float64(C._gtk_adjustment_get_page_size(v.GAdjustment))
 }
 func (v *Adjustment) GetStepIncrement() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_step_increment()")
-	return float64(C._gtk_adjustment_get_step_increment(v.GAdjustment))	
+	return float64(C._gtk_adjustment_get_step_increment(v.GAdjustment))
 }
 func (v *Adjustment) GetUpper() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_upper()")
-	return float64(C._gtk_adjustment_get_upper(v.GAdjustment))	
+	return float64(C._gtk_adjustment_get_upper(v.GAdjustment))
 }
 func (v *Adjustment) SetLower(lower float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_lower()")
