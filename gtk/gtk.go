@@ -110,6 +110,7 @@ func CELL_RENDERER_TOGGLE(p *CellRendererToggle) *C.GtkCellRendererToggle {
 }
 func SCALE(p *Scale) *C.GtkScale { return C.toGScale(p.GWidget) }
 func RANGE(p *Range) *C.GtkRange { return C.toGRange(p.GWidget) }
+
 //static inline GtkTreeModel* toGTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 //static inline GtkTreeModel* toGTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
 func IMAGE(p *Image) *C.GtkImage                           { return C.toGImage(p.GWidget) }
@@ -123,6 +124,7 @@ func PROGRESS_BAR(p *ProgressBar) *C.GtkProgressBar        { return C.toGProgres
 func FIXED(p *Fixed) *C.GtkFixed                           { return C.toGFixed(p.GWidget) }
 func CHECK_MENU_ITEM(p *CheckMenuItem) *C.GtkCheckMenuItem { return C.toGCheckMenuItem(p.GWidget) }
 func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMenuItem(p.GWidget) }
+
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
 func panic_if_version_older(major int, minor int, micro int, function string) {
