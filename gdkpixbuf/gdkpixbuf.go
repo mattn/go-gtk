@@ -6,7 +6,7 @@ import "C"
 import "github.com/mattn/go-gtk/glib"
 import "unsafe"
 
-func gboolean2bool(b C.gboolean) bool {
+func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
 	}
@@ -108,13 +108,13 @@ func (v Loader) Write(buf []byte) (ret bool, err *C.GError) {
 	var error *C.GError
 	var pbuf *byte
 	pbuf = &buf[0]
-	ret = gboolean2bool(C.gdk_pixbuf_loader_write(v.GPixbufLoader, C.to_gucharptr(unsafe.Pointer(pbuf)), C.gsize(len(buf)), &error))
+	ret = gobool(C.gdk_pixbuf_loader_write(v.GPixbufLoader, C.to_gucharptr(unsafe.Pointer(pbuf)), C.gsize(len(buf)), &error))
 	err = error
 	return
 }
 func (v Loader) Close() (ret bool, err *C.GError) {
 	var error *C.GError
-	ret = gboolean2bool(C.gdk_pixbuf_loader_close(v.GPixbufLoader, &error))
+	ret = gobool(C.gdk_pixbuf_loader_close(v.GPixbufLoader, &error))
 	err = error
 	return
 }

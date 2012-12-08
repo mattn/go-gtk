@@ -6,13 +6,13 @@ import "C"
 import "github.com/mattn/go-gtk/gtk"
 import "unsafe"
 
-func bool2gboolean(b bool) C.gboolean {
+func gbool(b bool) C.gboolean {
 	if b {
 		return C.gboolean(1)
 	}
 	return C.gboolean(0)
 }
-func gboolean2bool(b C.gboolean) bool {
+func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
 	}
@@ -39,10 +39,10 @@ func (v *SourceBuffer) GetNativeBuffer() unsafe.Pointer {
 	return unsafe.Pointer(v.GSourceBuffer)
 }
 func (v *SourceBuffer) SetHighlightSyntax(highlight bool) {
-	C.gtk_source_buffer_set_highlight_syntax(v.GSourceBuffer, bool2gboolean(highlight))
+	C.gtk_source_buffer_set_highlight_syntax(v.GSourceBuffer, gbool(highlight))
 }
 func (v *SourceBuffer) GetHighlightSyntax() bool {
-	return gboolean2bool(C.gtk_source_buffer_get_highlight_syntax(v.GSourceBuffer))
+	return gobool(C.gtk_source_buffer_get_highlight_syntax(v.GSourceBuffer))
 }
 func (v *SourceBuffer) SetLanguage(lang *SourceLanguage) {
 	C.gtk_source_buffer_set_language(v.GSourceBuffer, lang.GSourceLanguage)
@@ -76,22 +76,22 @@ func (v *SourceView) ToNativeSourceView() *C.GtkSourceView {
 	return C.to_GtkSourceView(unsafe.Pointer(v.GWidget))
 }
 func (v *SourceView) SetAutoIndent(enable bool) {
-	C.gtk_source_view_set_auto_indent(v.ToNativeSourceView(), bool2gboolean(enable))
+	C.gtk_source_view_set_auto_indent(v.ToNativeSourceView(), gbool(enable))
 }
 func (v *SourceView) GetAutoIndent() bool {
-	return gboolean2bool(C.gtk_source_view_get_auto_indent(v.ToNativeSourceView()))
+	return gobool(C.gtk_source_view_get_auto_indent(v.ToNativeSourceView()))
 }
 func (v *SourceView) SetHighlightCurrentLine(enable bool) {
-	C.gtk_source_view_set_highlight_current_line(v.ToNativeSourceView(), bool2gboolean(enable))
+	C.gtk_source_view_set_highlight_current_line(v.ToNativeSourceView(), gbool(enable))
 }
 func (v *SourceView) GetHighlightCurrentLine() bool {
-	return gboolean2bool(C.gtk_source_view_get_highlight_current_line(v.ToNativeSourceView()))
+	return gobool(C.gtk_source_view_get_highlight_current_line(v.ToNativeSourceView()))
 }
 func (v *SourceView) SetShowLineNumbers(enable bool) {
-	C.gtk_source_view_set_show_line_numbers(v.ToNativeSourceView(), bool2gboolean(enable))
+	C.gtk_source_view_set_show_line_numbers(v.ToNativeSourceView(), gbool(enable))
 }
 func (v *SourceView) GetShowLineNumbers() bool {
-	return gboolean2bool(C.gtk_source_view_get_show_line_numbers(v.ToNativeSourceView()))
+	return gobool(C.gtk_source_view_get_show_line_numbers(v.ToNativeSourceView()))
 }
 func (v *SourceView) SetRightMarginPosition(pos uint) {
 	C.gtk_source_view_set_right_margin_position(v.ToNativeSourceView(), C.guint(pos))
@@ -106,16 +106,16 @@ func (v *SourceView) GetIndentWidth() int {
 	return int(C.gtk_source_view_get_indent_width(v.ToNativeSourceView()))
 }
 func (v *SourceView) SetShowRightMargin(enable bool) {
-	C.gtk_source_view_set_show_right_margin(v.ToNativeSourceView(), bool2gboolean(enable))
+	C.gtk_source_view_set_show_right_margin(v.ToNativeSourceView(), gbool(enable))
 }
 func (v *SourceView) GetShowRightMargin() bool {
-	return gboolean2bool(C.gtk_source_view_get_show_right_margin(v.ToNativeSourceView()))
+	return gobool(C.gtk_source_view_get_show_right_margin(v.ToNativeSourceView()))
 }
 func (v *SourceView) SetInsertSpacesInsteadOfTabs(enable bool) {
-	C.gtk_source_view_set_insert_spaces_instead_of_tabs(v.ToNativeSourceView(), bool2gboolean(enable))
+	C.gtk_source_view_set_insert_spaces_instead_of_tabs(v.ToNativeSourceView(), gbool(enable))
 }
 func (v *SourceView) GetInsertSpacesInsteadOfTabs() bool {
-	return gboolean2bool(C.gtk_source_view_get_insert_spaces_instead_of_tabs(v.ToNativeSourceView()))
+	return gobool(C.gtk_source_view_get_insert_spaces_instead_of_tabs(v.ToNativeSourceView()))
 }
 
 type SourceDrawSpacesFlags int
@@ -186,7 +186,7 @@ func (v *SourceLanguage) GetSection() string {
 	return C.GoString(C.to_charptr(C.gtk_source_language_get_section(v.GSourceLanguage)))
 }
 func (v *SourceLanguage) GetHidden() bool {
-	return gboolean2bool(C.gtk_source_language_get_hidden(v.GSourceLanguage))
+	return gobool(C.gtk_source_language_get_hidden(v.GSourceLanguage))
 }
 func (v *SourceLanguage) GetMetadata(name string) string {
 	cname := C.CString(name)
