@@ -759,7 +759,7 @@ static inline GtkToggleToolButton* toGToggleToolButton(GtkWidget* w) { return GT
 static inline GtkScrolledWindow* toGScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
 static inline GtkViewport* toGViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
 static inline GtkWidget* toGWidget(void* w) { return GTK_WIDGET(w); }
-static inline GdkWindow* to_GdkWindow(void* w) { return GDK_WINDOW(w); }
+static inline GdkWindow* toGdkWindow(void* w) { return GDK_WINDOW(w); }
 static inline GtkTreeView* toGTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
 static inline GtkIconView* toGIconView(GtkWidget* w) { return GTK_ICON_VIEW(w); }
 static inline GtkEditable* toGEditable(GtkWidget* w) { return GTK_EDITABLE(w); }
