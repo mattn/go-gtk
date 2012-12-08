@@ -983,8 +983,8 @@ const (
 	RESPONSE_HELP         ResponseType = -11
 )
 
-/*type DialogLike interface {
-	WidgetLike
+/*type IDialog interface {
+	IWidget
 	Run() int
 	Response(interface{}, ...interface{})
 }*/
@@ -1104,7 +1104,7 @@ func (v *MessageDialog) SetMarkup(markup string) {
 	defer cfree(ptr)
 	C.gtk_message_dialog_set_markup(MESSAGE_DIALOG(v), gstring(ptr))
 }
-func (v *MessageDialog) SetImage(image WidgetLike) {
+func (v *MessageDialog) SetImage(image IWidget) {
 	C.gtk_message_dialog_set_image(MESSAGE_DIALOG(v), image.ToNative())
 }
 func (v *MessageDialog) GetImage() *Image {
@@ -1135,9 +1135,9 @@ const (
 	WIN_POS_CENTER_ON_PARENT WindowPosition = 4
 )
 
-/*type WindowLike interface {
-	ContainerLike
-	SetTransientFor(parent WindowLike)
+/*type IWindow interface {
+	IContainer
+	SetTransientFor(parent IWindow)
 	GetTitle() string
 	SetTitle(title string)
 }*/
@@ -1594,56 +1594,56 @@ func (v *Assistant) GetNthPage(page_num int) *Widget {
 	return &Widget{
 		C.gtk_assistant_get_nth_page(ASSISTANT(v), gint(page_num))}
 }
-func (v *Assistant) PrependPage(page WidgetLike) int {
+func (v *Assistant) PrependPage(page IWidget) int {
 	return int(C.gtk_assistant_prepend_page(ASSISTANT(v), page.ToNative()))
 }
-func (v *Assistant) AppendPage(page WidgetLike) int {
+func (v *Assistant) AppendPage(page IWidget) int {
 	return int(C.gtk_assistant_prepend_page(ASSISTANT(v), page.ToNative()))
 }
-func (v *Assistant) InsertPage(page WidgetLike, position int) int {
+func (v *Assistant) InsertPage(page IWidget, position int) int {
 	return int(C.gtk_assistant_insert_page(ASSISTANT(v), page.ToNative(), gint(position)))
 }
 
 // void gtk_assistant_set_forward_page_func (GtkAssistant *assistant, GtkAssistantPageFunc page_func, gpointer data, GDestroyNotify destroy);
 
-func (v *Assistant) SetPageType(page WidgetLike, t AssistantPageType) {
+func (v *Assistant) SetPageType(page IWidget, t AssistantPageType) {
 	C.gtk_assistant_set_page_type(ASSISTANT(v), page.ToNative(), C.GtkAssistantPageType(t))
 }
-func (v *Assistant) GetPageType(page WidgetLike) AssistantPageType {
+func (v *Assistant) GetPageType(page IWidget) AssistantPageType {
 	return AssistantPageType(C.gtk_assistant_get_page_type(ASSISTANT(v), page.ToNative()))
 }
-func (v *Assistant) SetPageTitle(page WidgetLike, title string) {
+func (v *Assistant) SetPageTitle(page IWidget, title string) {
 	ptr := C.CString(title)
 	defer cfree(ptr)
 	C.gtk_assistant_set_page_title(ASSISTANT(v), page.ToNative(), gstring(ptr))
 }
-func (v *Assistant) GetPageTitle(page WidgetLike) string {
+func (v *Assistant) GetPageTitle(page IWidget) string {
 	return gostring(C.gtk_assistant_get_page_title(ASSISTANT(v), page.ToNative()))
 }
-func (v *Assistant) SetPageHeaderImage(page WidgetLike, pixbuf *gdkpixbuf.Pixbuf) {
+func (v *Assistant) SetPageHeaderImage(page IWidget, pixbuf *gdkpixbuf.Pixbuf) {
 	C.gtk_assistant_set_page_header_image(ASSISTANT(v), page.ToNative(), pixbuf.GPixbuf)
 }
-func (v *Assistant) GetPageHeaderImage(page WidgetLike) *gdkpixbuf.Pixbuf {
+func (v *Assistant) GetPageHeaderImage(page IWidget) *gdkpixbuf.Pixbuf {
 	return &gdkpixbuf.Pixbuf{
 		C.gtk_assistant_get_page_header_image(ASSISTANT(v), page.ToNative())}
 }
-func (v *Assistant) SetPageSideImage(page WidgetLike, pixbuf *gdkpixbuf.Pixbuf) {
+func (v *Assistant) SetPageSideImage(page IWidget, pixbuf *gdkpixbuf.Pixbuf) {
 	C.gtk_assistant_set_page_side_image(ASSISTANT(v), page.ToNative(), pixbuf.GPixbuf)
 }
-func (v *Assistant) GetPageSideImage(page WidgetLike) *gdkpixbuf.Pixbuf {
+func (v *Assistant) GetPageSideImage(page IWidget) *gdkpixbuf.Pixbuf {
 	return &gdkpixbuf.Pixbuf{
 		C.gtk_assistant_get_page_side_image(ASSISTANT(v), page.ToNative())}
 }
-func (v *Assistant) SetPageComplete(page WidgetLike, complete bool) {
+func (v *Assistant) SetPageComplete(page IWidget, complete bool) {
 	C.gtk_assistant_set_page_complete(ASSISTANT(v), page.ToNative(), gbool(complete))
 }
-func (v *Assistant) GetPageComplete(page WidgetLike) bool {
+func (v *Assistant) GetPageComplete(page IWidget) bool {
 	return gobool(C.gtk_assistant_get_page_complete(ASSISTANT(v), page.ToNative()))
 }
-func (v *Assistant) AddActionWidget(child WidgetLike) {
+func (v *Assistant) AddActionWidget(child IWidget) {
 	C.gtk_assistant_add_action_widget(ASSISTANT(v), child.ToNative())
 }
-func (v *Assistant) RemoveActionWidget(child WidgetLike) {
+func (v *Assistant) RemoveActionWidget(child IWidget) {
 	C.gtk_assistant_remove_action_widget(ASSISTANT(v), child.ToNative())
 }
 func (v *Assistant) UpdateButtonsState() {
@@ -1663,8 +1663,8 @@ func (v *Assistant) UpdateButtonsState() {
 //-----------------------------------------------------------------------
 // GtkAccelLabel
 //-----------------------------------------------------------------------
-/*type AccelLabelLike interface {
-	WidgetLike
+/*type IAccelLabel interface {
+	IWidget
 	GetAccelWidget() GtkWidget
 	SetAccelWidget(GtkWidget)
 }*/
@@ -1683,7 +1683,7 @@ func NewAccelLabel(label string) *AccelLabel {
 func (v *AccelLabel) GetAccelWidget() Widget {
 	return Widget{C.gtk_accel_label_get_accel_widget(ACCEL_LABEL(v))}
 }
-func (v *AccelLabel) SetAccelWidget(w WidgetLike) {
+func (v *AccelLabel) SetAccelWidget(w IWidget) {
 	C.gtk_accel_label_set_accel_widget(ACCEL_LABEL(v), w.ToNative())
 }
 func (v *AccelLabel) GetAccelWidth() uint {
@@ -1708,8 +1708,8 @@ const (
 	ICON_SIZE_DIALOG        IconSize = 6
 )
 
-/*type ImageLike interface {
-	WidgetLike
+/*type IImage interface {
+	IWidget
 }*/
 type Image struct {
 	Widget
@@ -1804,9 +1804,9 @@ const (
 	JUSTIFY_FILL   Justification = 3
 )
 
-type LabelLike interface {
-	WidgetLike
-	isLabelLike()
+type ILabel interface {
+	IWidget
+	isILabel()
 	GetLabel() string
 	SetLabel(label string)
 }
@@ -1814,7 +1814,7 @@ type Label struct {
 	Widget
 }
 
-func (Label) isLabelLike() {}
+func (Label) isILabel() {}
 
 func NewLabel(label string) *Label {
 	ptr := C.CString(label)
@@ -1827,7 +1827,7 @@ func (v *Label) SetText(label string) {
 	C.gtk_label_set_text(LABEL(v), gstring(ptr))
 }
 
-func (v *Label) SetMnemonicWidget(widget WidgetLike) {
+func (v *Label) SetMnemonicWidget(widget IWidget) {
 	C.gtk_label_set_mnemonic_widget(LABEL(v), widget.ToNative())
 }
 
@@ -2087,7 +2087,7 @@ func NewInfoBarWithButtons(buttons ...interface{}) *InfoBar {
 	return infobar
 }
 
-func (v *InfoBar) AddActionWidget(child WidgetLike, responseId int) {
+func (v *InfoBar) AddActionWidget(child IWidget, responseId int) {
 	panic_if_version_older_auto(2, 18, 0)
 	C._gtk_info_bar_add_action_widget(INFO_BAR(v),
 		child.ToNative(), gint(responseId))
@@ -2301,13 +2301,13 @@ func PrintContextFromNative(l unsafe.Pointer) *PrintContext {
 //-----------------------------------------------------------------------
 // GtkButton
 //-----------------------------------------------------------------------
-/*type ButtonLike interface { // Buttons are LabelLike Widgets!
-	LabelLike
+/*type IButton interface { // Buttons are ILabel Widgets!
+	ILabel
 	// the following should be just Clickable; ...
 	Clicked(interface{}, ...interface{}) // this is a very simple interface...
 }*/
 /*type Clickable interface {
-	WidgetLike
+	IWidget
 	Clicked(interface{}, ...interface{}) // this is a very simple interface...
 }*/
 
@@ -2323,7 +2323,7 @@ type Button struct {
 	Bin
 }
 
-func (Button) isLabelLike() {} // TODO
+func (Button) isILabel() {} // TODO
 
 func NewButton() *Button {
 	return &Button{Bin{Container{Widget{C.gtk_button_new()}}}}
@@ -2407,7 +2407,7 @@ func (v *Button) GetAlignment() (xalign, yalign float64) {
 	C.gtk_button_get_alignment(BUTTON(v), &xalign_, &yalign_)
 	return float64(xalign_), float64(yalign_)
 }
-func (v *Button) SetImage(image WidgetLike) {
+func (v *Button) SetImage(image IWidget) {
 	C.gtk_button_set_image(BUTTON(v), image.ToNative())
 }
 func (v *Button) GetImage() *Image {
@@ -2594,8 +2594,8 @@ func (v *LinkButton) SetVisited(visited bool) {
 //-----------------------------------------------------------------------
 // GtkEntry
 //-----------------------------------------------------------------------
-/*type TextInputLike interface {
-	WidgetLike
+/*type ITextInput interface {
+	IWidget
 	GetText() string
 	SetText(label string)
 }*/
@@ -3291,7 +3291,7 @@ type TextMark struct {
 //-----------------------------------------------------------------------
 // GtkTextBuffer
 //-----------------------------------------------------------------------
-type TextBufferLike interface {
+type ITextBuffer interface {
 	GetNativeBuffer() unsafe.Pointer
 }
 
@@ -3644,7 +3644,7 @@ func NewTextView() *TextView {
 func NewTextViewWithBuffer(b TextBuffer) *TextView {
 	return &TextView{Container{Widget{C.gtk_text_view_new_with_buffer(b.GTextBuffer)}}}
 }
-func (v *TextView) SetBuffer(b TextBufferLike) {
+func (v *TextView) SetBuffer(b ITextBuffer) {
 	C.gtk_text_view_set_buffer(TEXT_VIEW(v), TEXT_BUFFER(b.GetNativeBuffer()))
 }
 func (v *TextView) GetBuffer() *TextBuffer {
@@ -3858,7 +3858,7 @@ const (
 	TREE_MODEL_LIST_ONLY     TreeModelFlags = 1 << 1
 )
 
-type TreeModelLike interface {
+type ITreeModel interface {
 	cTreeModel() *C.GtkTreeModel
 }
 
@@ -4031,7 +4031,7 @@ func NewTreeViewColumn() *TreeViewColumn {
 }
 
 //TODO test
-func NewTreeViewColumnWithAttributes2(title string, cell CellRendererLike, attributes ...interface{}) *TreeViewColumn {
+func NewTreeViewColumnWithAttributes2(title string, cell ICellRenderer, attributes ...interface{}) *TreeViewColumn {
 	if len(attributes)%2 != 0 {
 		log.Panic("Error in gtk.TreeViewColumnWithAttributes: last attribute isn't associated to a value, len(attributes) must be even")
 	}
@@ -4055,13 +4055,13 @@ func NewTreeViewColumnWithAttributes2(title string, cell CellRendererLike, attri
 	return ret
 }
 
-func NewTreeViewColumnWithAttribute(title string, cell CellRendererLike) *TreeViewColumn {
+func NewTreeViewColumnWithAttribute(title string, cell ICellRenderer) *TreeViewColumn {
 	ptitle := C.CString(title)
 	defer cfree(ptitle)
 	return newTreeViewColumn(
 		C._gtk_tree_view_column_new_with_attribute(gstring(ptitle), cell.ToCellRenderer()))
 }
-func NewTreeViewColumnWithAttributes(title string, cell CellRendererLike, attribute string, column int) *TreeViewColumn {
+func NewTreeViewColumnWithAttributes(title string, cell ICellRenderer, attribute string, column int) *TreeViewColumn {
 	ptitle := C.CString(title)
 	defer cfree(ptitle)
 	pattribute := C.CString(attribute)
@@ -4069,10 +4069,10 @@ func NewTreeViewColumnWithAttributes(title string, cell CellRendererLike, attrib
 	return newTreeViewColumn(
 		C._gtk_tree_view_column_new_with_attributes(gstring(ptitle), cell.ToCellRenderer(), gstring(pattribute), gint(column)))
 }
-func (v *TreeViewColumn) PackStart(cell CellRendererLike, expand bool) {
+func (v *TreeViewColumn) PackStart(cell ICellRenderer, expand bool) {
 	C.gtk_tree_view_column_pack_start(v.GTreeViewColumn, cell.ToCellRenderer(), gbool(expand))
 }
-func (v *TreeViewColumn) PackEnd(cell CellRendererLike, expand bool) {
+func (v *TreeViewColumn) PackEnd(cell ICellRenderer, expand bool) {
 	C.gtk_tree_view_column_pack_end(v.GTreeViewColumn, cell.ToCellRenderer(), gbool(expand))
 }
 func (v *TreeViewColumn) Clear() {
@@ -4081,7 +4081,7 @@ func (v *TreeViewColumn) Clear() {
 
 // gtk_tree_view_column_get_cell_renderers //deprecated since 2.18
 
-func (v *TreeViewColumn) AddAttribute(cell CellRendererLike, attribute string, column int) {
+func (v *TreeViewColumn) AddAttribute(cell ICellRenderer, attribute string, column int) {
 	ptr := C.CString(attribute)
 	defer cfree(ptr)
 	C.gtk_tree_view_column_add_attribute(v.GTreeViewColumn, cell.ToCellRenderer(), gstring(ptr), gint(column))
@@ -4207,7 +4207,7 @@ func NewTreeView() *TreeView {
 //GtkWidget *gtk_tree_view_new_with_model (GtkTreeModel *model);
 //GtkTreeModel *gtk_tree_view_get_model (GtkTreeView *tree_view);
 
-func (v *TreeView) SetModel(model TreeModelLike) {
+func (v *TreeView) SetModel(model ITreeModel) {
 	var tm *C.GtkTreeModel
 	if model != nil {
 		tm = model.cTreeModel()
@@ -4404,7 +4404,7 @@ func NewIconView() *IconView {
 	return &IconView{Container{Widget{
 		C.gtk_icon_view_new()}}}
 }
-func NewIconViewWithModel(model TreeModelLike) *IconView {
+func NewIconViewWithModel(model ITreeModel) *IconView {
 	var tm *C.GtkTreeModel
 	if model != nil {
 		tm = model.cTreeModel()
@@ -4416,7 +4416,7 @@ func (v *IconView) GetModel() *TreeModel {
 	return &TreeModel{
 		C.gtk_icon_view_get_model(ICON_VIEW(v))}
 }
-func (v *IconView) SetModel(model TreeModelLike) {
+func (v *IconView) SetModel(model ITreeModel) {
 	var tm *C.GtkTreeModel
 	if model != nil {
 		tm = model.cTreeModel()
@@ -4558,12 +4558,12 @@ func (v *IconView) ScrollToPath(path *TreePath, use bool, ra float64, ca float64
 //-----------------------------------------------------------------------
 // GtkCellRenderer
 //-----------------------------------------------------------------------
-type CellRendererLike interface {
+type ICellRenderer interface {
 	ToCellRenderer() *C.GtkCellRenderer
 }
 type CellRenderer struct {
 	GCellRenderer *C.GtkCellRenderer
-	CellRendererLike
+	ICellRenderer
 }
 
 func (v *CellRenderer) ToCellRenderer() *C.GtkCellRenderer {
@@ -4805,7 +4805,7 @@ func (v *ListStore) MoveAfter(iter *TreeIter, position *TreeIter) {
 	C.gtk_list_store_move_after(v.GListStore, &iter.GTreeIter, &position.GTreeIter)
 }
 
-//TODO instead of using this methods to change between treemodel and liststore, is better to usa an interface GtkTreeModelLike
+//TODO instead of using this methods to change between treemodel and liststore, is better to usa an interface ITreeModel
 //nb: ListStore e TreeStore sono un TreeModel (implementano GtkTreeModel!)
 /*func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
 	return &TreeModel{
@@ -5143,24 +5143,24 @@ func NewMenu() *Menu {
 // void gtk_menu_set_screen (GtkMenu *menu, GdkScreen *screen);
 
 //TODO remove when GtkMenuShell is done
-func (v *Menu) Append(child WidgetLike) {
+func (v *Menu) Append(child IWidget) {
 	C.gtk_menu_shell_append(MENU_SHELL(v), child.ToNative())
 }
 
 //TODO remove when GtkMenuShell is done
-func (v *Menu) Prepend(child WidgetLike) {
+func (v *Menu) Prepend(child IWidget) {
 	C.gtk_menu_shell_prepend(MENU_SHELL(v), child.ToNative())
 }
 
 //TODO remove when GtkMenuShell is done
-func (v *Menu) Insert(child WidgetLike, position int) {
+func (v *Menu) Insert(child IWidget, position int) {
 	C.gtk_menu_shell_insert(MENU_SHELL(v), child.ToNative(), gint(position))
 }
 
 // void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
 // void gtk_menu_attach(GtkMenu *menu, GtkWidget *child, guint left_attach, guint right_attach, guint top_attach, guint bottom_attach);
 
-func (v *Menu) Popup(parent_menu_shell, parent_menu_item WidgetLike, f MenuPositionFunc, data interface{}, button uint, active_item uint32) {
+func (v *Menu) Popup(parent_menu_shell, parent_menu_item IWidget, f MenuPositionFunc, data interface{}, button uint, active_item uint32) {
 	var pms, pmi *C.GtkWidget
 	if parent_menu_shell != nil {
 		pms = parent_menu_shell.ToNative()
@@ -5276,17 +5276,17 @@ func (v *MenuBar) GetChildPackDirection() PackDirection {
 }
 
 //TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
-func (v *MenuBar) Append(child WidgetLike) {
+func (v *MenuBar) Append(child IWidget) {
 	C.gtk_menu_shell_append(MENU_BAR_SHELL(v), child.ToNative())
 }
 
 //TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
-func (v *MenuBar) Prepend(child WidgetLike) {
+func (v *MenuBar) Prepend(child IWidget) {
 	C.gtk_menu_shell_prepend(MENU_BAR_SHELL(v), child.ToNative())
 }
 
 //TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
-func (v *MenuBar) Insert(child WidgetLike, position int) {
+func (v *MenuBar) Insert(child IWidget, position int) {
 	C.gtk_menu_shell_insert(MENU_BAR_SHELL(v), child.ToNative(), gint(position))
 }
 
@@ -5329,7 +5329,7 @@ func (v *MenuItem) GetUseUnderline() bool {
 func (v *MenuItem) SetUseUnderline(setting bool) {
 	C.gtk_menu_item_set_use_underline(MENU_ITEM(v), gbool(setting))
 }
-func (v *MenuItem) SetSubmenu(w WidgetLike) {
+func (v *MenuItem) SetSubmenu(w IWidget) {
 	C.gtk_menu_item_set_submenu(MENU_ITEM(v), w.ToNative())
 }
 func (v *MenuItem) GetSubmenu() *Widget {
@@ -6561,10 +6561,10 @@ type Fixed struct {
 func NewFixed() *Fixed {
 	return &Fixed{Container{Widget{C.gtk_fixed_new()}}}
 }
-func (v *Fixed) Put(w WidgetLike, x, y int) {
+func (v *Fixed) Put(w IWidget, x, y int) {
 	C.gtk_fixed_put(FIXED(v), w.ToNative(), gint(x), gint(y))
 }
-func (v *Fixed) Move(w WidgetLike, x, y int) {
+func (v *Fixed) Move(w IWidget, x, y int) {
 	C.gtk_fixed_move(FIXED(v), w.ToNative(), gint(x), gint(y))
 }
 
@@ -6631,28 +6631,28 @@ func NewNotebook() *Notebook {
 	return &Notebook{Container{Widget{
 		C.gtk_notebook_new()}}}
 }
-func (v *Notebook) AppendPage(child WidgetLike, tab_label WidgetLike) int {
+func (v *Notebook) AppendPage(child IWidget, tab_label IWidget) int {
 	return int(C.gtk_notebook_append_page(NOTEBOOK(v), child.ToNative(), tab_label.ToNative()))
 }
-func (v *Notebook) AppendPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
+func (v *Notebook) AppendPageMenu(child IWidget, tab_label IWidget, menu_label IWidget) int {
 	return int(C.gtk_notebook_append_page_menu(NOTEBOOK(v), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
 }
-func (v *Notebook) PrependPage(child WidgetLike, tab_label WidgetLike) int {
+func (v *Notebook) PrependPage(child IWidget, tab_label IWidget) int {
 	return int(C.gtk_notebook_prepend_page(NOTEBOOK(v), child.ToNative(), tab_label.ToNative()))
 }
-func (v *Notebook) PrependPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike) int {
+func (v *Notebook) PrependPageMenu(child IWidget, tab_label IWidget, menu_label IWidget) int {
 	return int(C.gtk_notebook_prepend_page_menu(NOTEBOOK(v), child.ToNative(), tab_label.ToNative(), menu_label.ToNative()))
 }
-func (v *Notebook) InsertPage(child WidgetLike, tab_label WidgetLike, position int) int {
+func (v *Notebook) InsertPage(child IWidget, tab_label IWidget, position int) int {
 	return int(C.gtk_notebook_insert_page(NOTEBOOK(v), child.ToNative(), tab_label.ToNative(), gint(position)))
 }
-func (v *Notebook) InsertPageMenu(child WidgetLike, tab_label WidgetLike, menu_label WidgetLike, position int) int {
+func (v *Notebook) InsertPageMenu(child IWidget, tab_label IWidget, menu_label IWidget, position int) int {
 	return int(C.gtk_notebook_insert_page_menu(NOTEBOOK(v), child.ToNative(), tab_label.ToNative(), menu_label.ToNative(), gint(position)))
 }
-func (v *Notebook) RemovePage(child WidgetLike, page_num int) {
+func (v *Notebook) RemovePage(child IWidget, page_num int) {
 	C.gtk_notebook_remove_page(NOTEBOOK(v), gint(page_num))
 }
-func (v *Notebook) PageNum(child WidgetLike) int {
+func (v *Notebook) PageNum(child IWidget) int {
 	return int(C.gtk_notebook_page_num(NOTEBOOK(v), child.ToNative()))
 }
 func (v *Notebook) NextPage() {
@@ -6661,7 +6661,7 @@ func (v *Notebook) NextPage() {
 func (v *Notebook) PrevPage() {
 	C.gtk_notebook_prev_page(NOTEBOOK(v))
 }
-func (v *Notebook) ReorderChild(child WidgetLike, position int) {
+func (v *Notebook) ReorderChild(child IWidget, position int) {
 	C.gtk_notebook_reorder_child(NOTEBOOK(v), child.ToNative(), gint(position))
 }
 func (v *Notebook) SetTabPos(pos PositionType) {
@@ -6691,7 +6691,7 @@ func (v *Notebook) PopupDisable() {
 func (v *Notebook) GetCurrentPage() int {
 	return int(C.gtk_notebook_get_current_page(NOTEBOOK(v)))
 }
-func (v *Notebook) GetMenuLabel(child WidgetLike) *Widget {
+func (v *Notebook) GetMenuLabel(child IWidget) *Widget {
 	return &Widget{
 		C.gtk_notebook_get_menu_label(NOTEBOOK(v), child.ToNative())}
 }
@@ -6702,13 +6702,13 @@ func (v *Notebook) GetNthPage(page_num int) *Widget {
 func (v *Notebook) GetNPages() int {
 	return int(C.gtk_notebook_get_n_pages(NOTEBOOK(v)))
 }
-func (v *Notebook) GetTabLabel(child WidgetLike) *Widget {
+func (v *Notebook) GetTabLabel(child IWidget) *Widget {
 	return &Widget{
 		C.gtk_notebook_get_tab_label(NOTEBOOK(v), child.ToNative())}
 }
 
 //Deprecated since 2.20. Modify the "tab-expand" and "tab-fill" child properties instead.
-func (v *Notebook) QueryTabLabelPacking(child WidgetLike, expand *bool, fill *bool, pack_type *uint) {
+func (v *Notebook) QueryTabLabelPacking(child IWidget, expand *bool, fill *bool, pack_type *uint) {
 	deprecated_since(2, 20, 0, "gtk_notebook_query_tab_label_packing()")
 	var cexpand, cfill C.gboolean
 	var cpack_type C.GtkPackType
@@ -6723,10 +6723,10 @@ func (v *Notebook) SetHomogeneousTabs(homogeneous bool) {
 	deprecated_since(2, 0, 0, "gtk_notebook_set_homogeneous_tabs()")
 	C.gtk_notebook_set_homogeneous_tabs(NOTEBOOK(v), gbool(homogeneous))
 }
-func (v *Notebook) SetMenuLabel(child WidgetLike, menu_label WidgetLike) {
+func (v *Notebook) SetMenuLabel(child IWidget, menu_label IWidget) {
 	C.gtk_notebook_set_menu_label(NOTEBOOK(v), child.ToNative(), menu_label.ToNative())
 }
-func (v *Notebook) SetMenuLabelText(child WidgetLike, name string) {
+func (v *Notebook) SetMenuLabelText(child IWidget, name string) {
 	ptr := C.CString(name)
 	defer cfree(ptr)
 	C.gtk_notebook_set_menu_label_text(NOTEBOOK(v), child.ToNative(), gstring(ptr))
@@ -6737,16 +6737,16 @@ func (v *Notebook) SetTabHBorder(tab_hborder uint) {
 	deprecated_since(2, 0, 0, "gtk_notebook_set_tab_hborder()")
 	C.gtk_notebook_set_tab_hborder(NOTEBOOK(v), guint(tab_hborder))
 }
-func (v *Notebook) SetTabLabel(child WidgetLike, tab_label WidgetLike) {
+func (v *Notebook) SetTabLabel(child IWidget, tab_label IWidget) {
 	C.gtk_notebook_set_tab_label(NOTEBOOK(v), child.ToNative(), tab_label.ToNative())
 }
 
 //Deprecated since 2.20. Modify the "tab-expand" and "tab-fill" child properties instead.
-func (v *Notebook) SetTabLabelPacking(child WidgetLike, expand bool, fill bool, pack_type uint) {
+func (v *Notebook) SetTabLabelPacking(child IWidget, expand bool, fill bool, pack_type uint) {
 	deprecated_since(2, 20, 0, "gtk_notebook_set_tab_label_packing()")
 	C.gtk_notebook_set_tab_label_packing(NOTEBOOK(v), child.ToNative(), gbool(expand), gbool(fill), C.GtkPackType(pack_type))
 }
-func (v *Notebook) SetTabLabelText(child WidgetLike, name string) {
+func (v *Notebook) SetTabLabelText(child IWidget, name string) {
 	ptr := C.CString(name)
 	defer cfree(ptr)
 	C.gtk_notebook_set_tab_label_text(NOTEBOOK(v), child.ToNative(), gstring(ptr))
@@ -6757,13 +6757,13 @@ func (v *Notebook) SetTabVBorder(tab_vborder uint) {
 	deprecated_since(2, 0, 0, "gtk_notebook_set_tab_vborder()")
 	C.gtk_notebook_set_tab_vborder(NOTEBOOK(v), guint(tab_vborder))
 }
-func (v *Notebook) SetReorderable(child WidgetLike, reorderable bool) {
+func (v *Notebook) SetReorderable(child IWidget, reorderable bool) {
 	C.gtk_notebook_set_tab_reorderable(NOTEBOOK(v), child.ToNative(), gbool(reorderable))
 }
-func (v *Notebook) SetTabDetachable(child WidgetLike, detachable bool) {
+func (v *Notebook) SetTabDetachable(child IWidget, detachable bool) {
 	C.gtk_notebook_set_tab_detachable(NOTEBOOK(v), child.ToNative(), gbool(detachable))
 }
-func (v *Notebook) GetMenuLabelText(child WidgetLike) string {
+func (v *Notebook) GetMenuLabelText(child IWidget) string {
 	return gostring(C.gtk_notebook_get_menu_label_text(NOTEBOOK(v), child.ToNative()))
 }
 func (v *Notebook) GetScrollable() bool {
@@ -6775,16 +6775,16 @@ func (v *Notebook) GetShowBorder() bool {
 func (v *Notebook) GetShowTabs() bool {
 	return gobool(C.gtk_notebook_get_show_tabs(NOTEBOOK(v)))
 }
-func (v *Notebook) GetTabLabelText(child WidgetLike) string {
+func (v *Notebook) GetTabLabelText(child IWidget) string {
 	return gostring(C.gtk_notebook_get_tab_label_text(NOTEBOOK(v), child.ToNative()))
 }
 func (v *Notebook) GetTabPos() uint {
 	return uint(C.gtk_notebook_get_tab_pos(NOTEBOOK(v)))
 }
-func (v *Notebook) GetTabReorderable(child WidgetLike) bool {
+func (v *Notebook) GetTabReorderable(child IWidget) bool {
 	return gobool(C.gtk_notebook_get_tab_reorderable(NOTEBOOK(v), child.ToNative()))
 }
-func (v *Notebook) GetTabDetachable(child WidgetLike) bool {
+func (v *Notebook) GetTabDetachable(child IWidget) bool {
 	return gobool(C.gtk_notebook_get_tab_detachable(NOTEBOOK(v), child.ToNative()))
 }
 
@@ -6855,40 +6855,40 @@ func NewTable(rows uint, columns uint, homogeneous bool) *Table {
 func (v *Table) Resize(rows uint, columns uint) {
 	C.gtk_table_resize(TABLE(v), guint(rows), guint(columns))
 }
-func (v *Table) Attach(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint, xoptions AttachOptions, yoptions AttachOptions, xpadding uint, ypadding uint) {
+func (v *Table) Attach(child IWidget, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint, xoptions AttachOptions, yoptions AttachOptions, xpadding uint, ypadding uint) {
 	C.gtk_table_attach(TABLE(v), child.ToNative(), guint(left_attach), guint(right_attach), guint(top_attach), guint(bottom_attach), C.GtkAttachOptions(xoptions), C.GtkAttachOptions(yoptions), guint(xpadding), guint(ypadding))
 }
-func (v *Table) AttachDefaults(child WidgetLike, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
+func (v *Table) AttachDefaults(child IWidget, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
 	C.gtk_table_attach_defaults(TABLE(v), child.ToNative(), guint(left_attach), guint(right_attach), guint(top_attach), guint(bottom_attach))
 }
-func (v *Table) SetRowSpacing(child WidgetLike, row uint, spacing uint) {
+func (v *Table) SetRowSpacing(child IWidget, row uint, spacing uint) {
 	C.gtk_table_set_row_spacing(TABLE(v), guint(row), guint(spacing))
 }
-func (v *Table) SetColSpacing(child WidgetLike, column uint, spacing uint) {
+func (v *Table) SetColSpacing(child IWidget, column uint, spacing uint) {
 	C.gtk_table_set_col_spacing(TABLE(v), guint(column), guint(spacing))
 }
-func (v *Table) SetRowSpacings(child WidgetLike, spacing uint) {
+func (v *Table) SetRowSpacings(child IWidget, spacing uint) {
 	C.gtk_table_set_row_spacings(TABLE(v), guint(spacing))
 }
-func (v *Table) SetColSpacings(child WidgetLike, spacing uint) {
+func (v *Table) SetColSpacings(child IWidget, spacing uint) {
 	C.gtk_table_set_col_spacings(TABLE(v), guint(spacing))
 }
-func (v *Table) SetHomogeneous(child WidgetLike, homogeneous bool) {
+func (v *Table) SetHomogeneous(child IWidget, homogeneous bool) {
 	C.gtk_table_set_homogeneous(TABLE(v), gbool(homogeneous))
 }
-func (v *Table) GetDefaultRowSpacing(child WidgetLike) uint {
+func (v *Table) GetDefaultRowSpacing(child IWidget) uint {
 	return uint(C.gtk_table_get_default_row_spacing(TABLE(v)))
 }
-func (v *Table) GetHomogeneous(child WidgetLike) bool {
+func (v *Table) GetHomogeneous(child IWidget) bool {
 	return gobool(C.gtk_table_get_homogeneous(TABLE(v)))
 }
-func (v *Table) GetRowSpacing(child WidgetLike, row uint) uint {
+func (v *Table) GetRowSpacing(child IWidget, row uint) uint {
 	return uint(C.gtk_table_get_row_spacing(TABLE(v), guint(row)))
 }
-func (v *Table) GetColSpacing(child WidgetLike, column uint) uint {
+func (v *Table) GetColSpacing(child IWidget, column uint) uint {
 	return uint(C.gtk_table_get_col_spacing(TABLE(v), guint(column)))
 }
-func (v *Table) GetDefaultColSpacing(child WidgetLike) uint {
+func (v *Table) GetDefaultColSpacing(child IWidget) uint {
 	return uint(C.gtk_table_get_default_col_spacing(TABLE(v)))
 }
 
@@ -6946,10 +6946,10 @@ func (v *Expander) SetUseMarkup(setting bool) {
 func (v *Expander) GetUseMarkup() bool {
 	return gobool(C.gtk_expander_get_use_markup(EXPANDER(v)))
 }
-func (v *Expander) SetLabelWidget(label_widget LabelLike) {
+func (v *Expander) SetLabelWidget(label_widget ILabel) {
 	C.gtk_expander_set_label_widget(EXPANDER(v), label_widget.ToNative())
 }
-func (v *Expander) GetLabelWidget() LabelLike {
+func (v *Expander) GetLabelWidget() ILabel {
 	return &Label{Widget{
 		C.gtk_expander_get_label_widget(EXPANDER(v))}}
 }
@@ -6992,7 +6992,7 @@ func (v *Frame) SetLabel(label string) {
 	defer cfree(ptr)
 	C.gtk_frame_set_label(FRAME(v), gstring(ptr))
 }
-func (v *Frame) SetLabelWidget(label_widget LabelLike) {
+func (v *Frame) SetLabelWidget(label_widget ILabel) {
 	C.gtk_frame_set_label_widget(FRAME(v), label_widget.ToNative())
 }
 func (v *Frame) SetLabelAlign(xalign, yalign float64) {
@@ -7009,7 +7009,7 @@ func (v *Frame) GetLabelAlign() (xalign, yalign float64) {
 	C.gtk_frame_get_label_align(FRAME(v), &xalign_, &yalign_)
 	return float64(xalign_), float64(yalign_)
 }
-func (v *Frame) GetLabelWidget() LabelLike {
+func (v *Frame) GetLabelWidget() ILabel {
 	return &Label{Widget{
 		C.gtk_frame_get_label_widget(FRAME(v))}}
 }
@@ -7101,7 +7101,7 @@ func (v *ScrolledWindow) GetVAdjustment() *Adjustment {
 func (v *ScrolledWindow) SetPolicy(hscrollbar_policy PolicyType, vscrollbar_policy PolicyType) {
 	C.gtk_scrolled_window_set_policy(SCROLLED_WINDOW(v), C.GtkPolicyType(hscrollbar_policy), C.GtkPolicyType(vscrollbar_policy))
 }
-func (v *ScrolledWindow) AddWithViewPort(w WidgetLike) {
+func (v *ScrolledWindow) AddWithViewPort(w IWidget) {
 	C.gtk_scrolled_window_add_with_viewport(SCROLLED_WINDOW(v), w.ToNative())
 }
 func (v *ScrolledWindow) SetPlacement(window_placement CornerType) {
@@ -7647,10 +7647,10 @@ func (v *SizeGroup) SetIgnoreHidden(ignore_hidden bool) {
 func (v *SizeGroup) GetIgnoreHidden() bool {
 	return gobool(C.gtk_size_group_get_ignore_hidden(v.GSizeGroup))
 }
-func (v *SizeGroup) AddWidget(w WidgetLike) {
+func (v *SizeGroup) AddWidget(w IWidget) {
 	C.gtk_size_group_add_widget(v.GSizeGroup, w.ToNative())
 }
-func (v *SizeGroup) RemoveWidget(w WidgetLike) {
+func (v *SizeGroup) RemoveWidget(w IWidget) {
 	C.gtk_size_group_remove_widget(v.GSizeGroup, w.ToNative())
 }
 func (v *SizeGroup) GetWidgets() *glib.SList {
@@ -7753,7 +7753,7 @@ type Accessible struct {
 func (v *Accessible) ConnectWidgetDestroyed() {
 	C.gtk_accessible_connect_widget_destroyed(ACCESSIBLE(v))
 }
-func (v *Accessible) SetWidget(w WidgetLike) {
+func (v *Accessible) SetWidget(w IWidget) {
 	panic_if_version_older_auto(2, 22, 0)
 	C._gtk_accessible_set_widget(ACCESSIBLE(v), w.ToNative())
 }
@@ -7783,32 +7783,32 @@ const (
 	PACK_END   PackType = 1
 )
 
-type BoxLike interface {
-	ContainerLike
-	PackStart(child WidgetLike, expand bool, fill bool, padding uint)
-	PackEnd(child WidgetLike, expand bool, fill bool, padding uint)
+type IBox interface {
+	IContainer
+	PackStart(child IWidget, expand bool, fill bool, padding uint)
+	PackEnd(child IWidget, expand bool, fill bool, padding uint)
 }
 type Box struct {
 	Container
 }
 
-func (v *Box) PackStart(child WidgetLike, expand bool, fill bool, padding uint) {
+func (v *Box) PackStart(child IWidget, expand bool, fill bool, padding uint) {
 	C.gtk_box_pack_start(BOX(v), child.ToNative(), gbool(expand),
 		gbool(fill), guint(padding))
 }
-func (v *Box) PackEnd(child WidgetLike, expand bool, fill bool, padding uint) {
+func (v *Box) PackEnd(child IWidget, expand bool, fill bool, padding uint) {
 	C.gtk_box_pack_end(BOX(v), child.ToNative(), gbool(expand),
 		gbool(fill), guint(padding))
 }
 
 //Deprecated since 2.14. Use PackStart() instead.
-func (v *Box) PackStartDefaults(child WidgetLike) {
+func (v *Box) PackStartDefaults(child IWidget) {
 	deprecated_since(2, 14, 0, "gtk_box_pack_start_defaults()")
 	C.gtk_box_pack_start_defaults(BOX(v), child.ToNative())
 }
 
 //Deprecated since 2.14. Use PackEnd() instead.
-func (v *Box) PackEndDefaults(child WidgetLike) {
+func (v *Box) PackEndDefaults(child IWidget) {
 	deprecated_since(2, 14, 0, "gtk_box_pack_end_defaults()")
 	C.gtk_box_pack_end_defaults(BOX(v), child.ToNative())
 }
@@ -7824,10 +7824,10 @@ func (v *Box) GetSpacing() int {
 func (v *Box) SetSpacing(spacing int) {
 	C.gtk_box_set_spacing(BOX(v), gint(spacing))
 }
-func (v *Box) ReorderChild(child WidgetLike, position PackType) {
+func (v *Box) ReorderChild(child IWidget, position PackType) {
 	C.gtk_box_reorder_child(BOX(v), child.ToNative(), C.gint(position))
 }
-func (v *Box) QueryChildPacking(child WidgetLike, expand *bool, fill *bool, padding *uint, pack_type *PackType) {
+func (v *Box) QueryChildPacking(child IWidget, expand *bool, fill *bool, padding *uint, pack_type *PackType) {
 	var cexpand, cfill C.gboolean
 	var cpadding C.guint
 	var cpack_type C.GtkPackType
@@ -7837,7 +7837,7 @@ func (v *Box) QueryChildPacking(child WidgetLike, expand *bool, fill *bool, padd
 	*padding = uint(cpadding)
 	*pack_type = PackType(cpack_type)
 }
-func (v *Box) SetChildPacking(child WidgetLike, expand, fill bool, padding uint, pack_type PackType) {
+func (v *Box) SetChildPacking(child IWidget, expand, fill bool, padding uint, pack_type PackType) {
 	C.gtk_box_set_child_packing(BOX(v), child.ToNative(), gbool(expand), gbool(fill), guint(padding), C.GtkPackType(pack_type))
 }
 
@@ -7859,18 +7859,18 @@ func (v *Box) SetChildPacking(child WidgetLike, expand, fill bool, padding uint,
 //-----------------------------------------------------------------------
 // GtkContainer
 //-----------------------------------------------------------------------
-type ContainerLike interface {
-	WidgetLike
-	Add(w WidgetLike)
+type IContainer interface {
+	IWidget
+	Add(w IWidget)
 }
 type Container struct {
 	Widget
 }
 
-func (v *Container) Add(w WidgetLike) {
+func (v *Container) Add(w IWidget) {
 	C.gtk_container_add(CONTAINER(v), w.ToNative())
 }
-func (v *Container) Remove(w WidgetLike) {
+func (v *Container) Remove(w IWidget) {
 	C.gtk_container_remove(CONTAINER(v), w.ToNative())
 }
 
@@ -7982,27 +7982,27 @@ type Object struct {
 //-----------------------------------------------------------------------
 // GtkPaned
 //-----------------------------------------------------------------------
-type PanedLike interface {
-	ContainerLike
-	Add1(child WidgetLike)
-	Add2(child WidgetLike)
-	Pack1(child WidgetLike, expand bool, fill bool)
-	Pack2(child WidgetLike, expand bool, fill bool)
+type IPaned interface {
+	IContainer
+	Add1(child IWidget)
+	Add2(child IWidget)
+	Pack1(child IWidget, expand bool, fill bool)
+	Pack2(child IWidget, expand bool, fill bool)
 }
 type Paned struct {
 	Container
 }
 
-func (v *Paned) Add1(child WidgetLike) {
+func (v *Paned) Add1(child IWidget) {
 	C.gtk_paned_add1(PANED(v), child.ToNative())
 }
-func (v *Paned) Add2(child WidgetLike) {
+func (v *Paned) Add2(child IWidget) {
 	C.gtk_paned_add2(PANED(v), child.ToNative())
 }
-func (v *Paned) Pack1(child WidgetLike, resize bool, shrink bool) {
+func (v *Paned) Pack1(child IWidget, resize bool, shrink bool) {
 	C.gtk_paned_pack1(PANED(v), child.ToNative(), gbool(resize), gbool(shrink))
 }
-func (v *Paned) Pack2(child WidgetLike, resize bool, shrink bool) {
+func (v *Paned) Pack2(child IWidget, resize bool, shrink bool) {
 	C.gtk_paned_pack2(PANED(v), child.ToNative(), gbool(resize), gbool(shrink))
 }
 func (v *Paned) GetChild1() *Widget {
@@ -8185,7 +8185,7 @@ const (
 	STATE_INSENSITIVE StateType = 4
 )
 
-type WidgetLike interface {
+type IWidget interface {
 	ToNative() *C.GtkWidget
 	Hide()
 	HideAll()
@@ -8326,7 +8326,7 @@ func (v *Widget) CanActivateAccel(signal_id uint) bool {
 func (v *Widget) Activate() {
 	C.gtk_widget_activate(v.GWidget)
 }
-func (v *Widget) Reparent(parent WidgetLike) {
+func (v *Widget) Reparent(parent IWidget) {
 	C.gtk_widget_reparent(v.GWidget, parent.ToNative())
 }
 
@@ -8355,7 +8355,7 @@ func (v *Widget) SetState(state StateType) {
 func (v *Widget) SetSensitive(setting bool) {
 	C.gtk_widget_set_sensitive(v.GWidget, gbool(setting))
 }
-func (v *Widget) SetParent(parent WidgetLike) {
+func (v *Widget) SetParent(parent IWidget) {
 	C.gtk_widget_set_parent(v.GWidget, parent.ToNative())
 }
 func (v *Widget) SetParentWindow(parent *gdk.Window) {
