@@ -5781,21 +5781,17 @@ type ToolButton struct {
 	iconWidget, labelWidget *Widget
 }
 
-func NewToolButton(iw *Widget, text string) *ToolButton {
-	p_text := C.CString(text)
-	defer cfree(p_text)	
-	//p_icon_widget := C.toGWidget(unsafe.Pointer(icon_widget))
-	piw := WIDGET(iw)
-	p_tool_button_widget := C.toGWidget(unsafe.Pointer(
-		C.gtk_tool_button_new(piw, gstring(p_text))))
-	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}, nil, nil}
+func NewToolButton(icon *Widget, text string) *ToolButton {
+	ctext := C.CString(text)
+	defer cfree(ctext)
+	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new(WIDGET(icon), gstring(ctext))))
+	return &ToolButton{ToolItem{Bin{Container{Widget{tb}}}}, nil, nil}
 }
 func NewToolButtonFromStock(stock_id string) *ToolButton {
-	p_stock_id := C.CString(stock_id)
-	defer cfree(p_stock_id)
-	p_tool_button_widget := C.toGWidget(unsafe.Pointer(
-		C.gtk_tool_button_new_from_stock(gstring(p_stock_id))))
-	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}, nil, nil}
+	si := C.CString(stock_id)
+	defer cfree(si)
+	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(gstring(si))))
+	return &ToolButton{ToolItem{Bin{Container{Widget{tb}}}}, nil, nil}
 }
 
 func (v *ToolButton) AsToolItem() *ToolItem {
