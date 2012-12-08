@@ -9,13 +9,13 @@ import "reflect"
 var callback_contexts []*CallbackContext
 var sourcefunc_contexts []*SourcefuncContext
 
-func bool2gboolean(b bool) C.gboolean {
+func gbool(b bool) C.gboolean {
 	if b {
 		return C.gboolean(1)
 	}
 	return C.gboolean(0)
 }
-func gboolean2bool(b C.gboolean) bool {
+func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
 	}
@@ -143,7 +143,7 @@ func GetCurrentDir() string {
 // String Convert
 //-----------------------------------------------------------------------
 func Utf8Validate(str []byte, len int, bar **byte) bool {
-	return gboolean2bool(C._g_utf8_validate(unsafe.Pointer(&str[0]),
+	return gobool(C._g_utf8_validate(unsafe.Pointer(&str[0]),
 		C.int(len), unsafe.Pointer(bar)))
 }
 
@@ -500,7 +500,7 @@ func (v *GObject) Set(name string, value interface{}) {
 
 	switch value.(type) {
 	case bool:
-		bval := bool2gboolean(value.(bool))
+		bval := gbool(value.(bool))
 		C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&bval))
 	case byte:
 		bval := C.gchar(value.(byte))
@@ -562,7 +562,7 @@ func GValueFromNative(value interface{}) *C.GValue {
 
 	switch value.(type) {
 	case bool:
-		gv = C.init_gvalue_bool(bool2gboolean(value.(bool)))
+		gv = C.init_gvalue_bool(gbool(value.(bool)))
 		break
 	case byte:
 		gv = C.init_gvalue_byte(C.guchar(value.(byte)))
@@ -636,7 +636,7 @@ func (v *GValue) GetInt() int {
 }
 
 func (v *GValue) GetBool() bool {
-	return gboolean2bool(C.g_value_get_boolean(&v.Value))
+	return gobool(C.g_value_get_boolean(&v.Value))
 }
 
 //-----------------------------------------------------------------------
@@ -690,7 +690,7 @@ func _go_glib_callback(cbi *C.callback_info) {
 	ret := rf.Call(fargs)
 	if len(ret) > 0 {
 		bret, _ := ret[0].Interface().(bool)
-		cbi.ret = bool2gboolean(bret)
+		cbi.ret = gbool(bret)
 	}
 }
 
@@ -765,11 +765,11 @@ func MainContextDefault() *GMainContext {
 }
 
 func (v *GMainContext) Iteration(blocking bool) bool {
-	return gboolean2bool(C.g_main_context_iteration(v.MainContext, bool2gboolean(blocking)))
+	return gobool(C.g_main_context_iteration(v.MainContext, gbool(blocking)))
 }
 
 func (v *GMainContext) Pending() bool {
-	return gboolean2bool(C.g_main_context_pending(v.MainContext))
+	return gobool(C.g_main_context_pending(v.MainContext))
 }
 
 func NewMainLoop(context *GMainContext, is_running bool) *GMainLoop {
@@ -777,7 +777,7 @@ func NewMainLoop(context *GMainContext, is_running bool) *GMainLoop {
 	if context != nil {
 		ctx = context.MainContext
 	}
-	return &GMainLoop{C.g_main_loop_new(ctx, bool2gboolean(is_running))}
+	return &GMainLoop{C.g_main_loop_new(ctx, gbool(is_running))}
 }
 
 func (v *GMainLoop) Ref() *GMainLoop {
@@ -797,7 +797,7 @@ func (v *GMainLoop) Quit() {
 }
 
 func (v *GMainLoop) IsRunning() bool {
-	return gboolean2bool(C.g_main_loop_is_running(v.MainLoop))
+	return gobool(C.g_main_loop_is_running(v.MainLoop))
 }
 
 func (v *GMainLoop) GetContext() *GMainContext {
@@ -822,7 +822,7 @@ func _go_glib_sourcefunc(sfi *C.sourcefunc_info) {
 	ret := rf.Call(fargs)
 	if len(ret) > 0 {
 		bret, _ := ret[0].Interface().(bool)
-		sfi.ret = bool2gboolean(bret)
+		sfi.ret = gbool(bret)
 	}
 }
 
