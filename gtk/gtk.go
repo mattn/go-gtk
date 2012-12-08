@@ -73,7 +73,7 @@ func TOOL_BUTTON(p *ToolButton) *C.GtkToolButton { return C.toGToolButton(p.GWid
 func TOGGLE_TOOL_BUTTON(p *ToggleToolButton) *C.GtkToggleToolButton { return C.toGToggleToolButton(p.GWidget) }
 func SCROLLED_WINDOW(p *ScrolledWindow) *C.GtkScrolledWindow { return C.toGScrolledWindow(p.GWidget) }
 func VIEWPORT(p *Viewport) *C.GtkViewport { return C.toGViewport(p.GWidget) }
-func WIDGET(p unsafe.Pointer) *C.GtkWidget { return C.toGWidget(p) }
+func WIDGET(p *Widget) *C.GtkWidget { return C.toGWidget(unsafe.Pointer(p.GWidget)) }
 func TREE_VIEW(p *TreeView) *C.GtkTreeView { return C.toGTreeView(p.GWidget) }
 func ICON_VIEW(p *IconView) *C.GtkIconView { return C.toGIconView(p.GWidget) }
 func CELL_RENDERER_TEXT(p *CellRendererText) *C.GtkCellRendererText { return C.toGCellRendererText(p.GCellRenderer) }
@@ -5778,22 +5778,24 @@ func (v *SeparatorToolItem) GetDraw() bool {
 
 type ToolButton struct {
 	ToolItem	
+	iconWidget, labelWidget *Widget
 }
 
-func NewToolButton(icon_widget *Widget, text string) *ToolButton {
+func NewToolButton(iw *Widget, text string) *ToolButton {
 	p_text := C.CString(text)
 	defer cfree(p_text)	
-	p_icon_widget := C.toGWidget(unsafe.Pointer(icon_widget))
+	//p_icon_widget := C.toGWidget(unsafe.Pointer(icon_widget))
+	piw := WIDGET(iw)
 	p_tool_button_widget := C.toGWidget(unsafe.Pointer(
-		C.gtk_tool_button_new(p_icon_widget, gstring(p_text))))
-	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}}
+		C.gtk_tool_button_new(piw, gstring(p_text))))
+	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}, nil, nil}
 }
 func NewToolButtonFromStock(stock_id string) *ToolButton {
 	p_stock_id := C.CString(stock_id)
 	defer cfree(p_stock_id)
 	p_tool_button_widget := C.toGWidget(unsafe.Pointer(
 		C.gtk_tool_button_new_from_stock(gstring(p_stock_id))))
-	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}}
+	return &ToolButton{ToolItem{Bin{Container{Widget{p_tool_button_widget}}}}, nil, nil}
 }
 
 func (v *ToolButton) AsToolItem() *ToolItem {
@@ -5838,29 +5840,25 @@ func (v *ToolButton) SetIconWidget(icon_widget *Widget) {
 	p_icon_widget := C.toGWidget(unsafe.Pointer(icon_widget.GWidget))
 	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), p_icon_widget)
 }
-var g_ToolButton_IconWidget *Widget
 func (v *ToolButton) GetIconWidget() *Widget {
-	if g_ToolButton_IconWidget == nil {
-		g_ToolButton_IconWidget = &Widget{C.toGWidget(unsafe.Pointer(
-			C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))))}	
+	if v.iconWidget == nil {
+		v.iconWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))))}		
 	} else {
-		g_ToolButton_IconWidget.GWidget = C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))
+		v.iconWidget.GWidget = C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))
 	}
-	return g_ToolButton_IconWidget
+	return v.iconWidget
 }
 func (v *ToolButton) SetLabelWidget(label_widget *Widget) {
 	p_label_widget := C.toGWidget(unsafe.Pointer(label_widget.GWidget))
 	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), p_label_widget)
 }
-var g_ToolButton_LabelWidget *Widget
 func (v *ToolButton) GetLabelWidget() *Widget {
-	if g_ToolButton_LabelWidget == nil {
-		g_ToolButton_LabelWidget = &Widget{C.toGWidget(unsafe.Pointer(
-			C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))))}	
+	if v.labelWidget == nil {
+		v.labelWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))))}	
 	} else {
-		g_ToolButton_LabelWidget.GWidget = C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))
+		v.labelWidget.GWidget = C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))
 	}
-	return g_ToolButton_LabelWidget
+	return v.labelWidget
 }
 //-----------------------------------------------------------------------
 // GtkMenuToolButton
@@ -5884,13 +5882,13 @@ type ToggleToolButton struct {
 
 func NewToggleToolButton() *ToggleToolButton {		
 	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}, nil, nil}}
 }
 func NewToggleToolButtonFromStock(stock_id string) *ToggleToolButton {		
 	p_stock_id := C.CString(stock_id)
 	defer cfree(p_stock_id)	
 	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(gstring(p_stock_id))))}}}}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(gstring(p_stock_id))))}}}}, nil, nil}}
 }
 
 func (v *ToggleToolButton) AsToolItem() *ToolItem {
@@ -5919,14 +5917,14 @@ type RadioToolButton struct {
 func NewRadioToolButton(group *glib.SList) *RadioToolButton {		
 	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
 		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(
-			C.to_gslist(unsafe.Pointer(group.ToSList())))))}}}}}}}
+			C.to_gslist(unsafe.Pointer(group.ToSList())))))}}}}, nil, nil}}}
 }
 func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolButton {		
 	p_stock_id := C.CString(stock_id)
 	defer cfree(p_stock_id)	
 	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
 		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
-			C.to_gslist(unsafe.Pointer(group.ToSList())), gstring(p_stock_id))))}}}}}}}
+			C.to_gslist(unsafe.Pointer(group.ToSList())), gstring(p_stock_id))))}}}}, nil, nil}}}
 }
 // gtk_radio_tool_button_new_from_widget
 // gtk_radio_tool_button_new_with_stock_from_widget
@@ -8210,13 +8208,13 @@ type Widget struct {
 }
 
 func WidgetFromNative(p unsafe.Pointer) *Widget {
-	return &Widget{WIDGET(p)}
+	return &Widget{C.toGWidget(p)}
 }
 
 //TODO GtkWidget will have GObject as anonymous field.
 func WidgetFromObject(object *glib.GObject) *Widget {
 	//return &Widget{WIDGET(unsafe.Pointer(object.Object))}
-	return &Widget{WIDGET(object.Object)}
+	return &Widget{C.toGWidget(object.Object)}
 }
 func (v *Widget) ToNative() *C.GtkWidget {
 	if v == nil {
