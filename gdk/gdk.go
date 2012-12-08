@@ -5,13 +5,13 @@ package gdk
 import "C"
 import "unsafe"
 
-func bool2gboolean(b bool) C.gboolean {
+func gbool(b bool) C.gboolean {
 	if b {
 		return C.gboolean(1)
 	}
 	return C.gboolean(0)
 }
-func gboolean2bool(b C.gboolean) bool {
+func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
 	}
@@ -289,10 +289,10 @@ func (v *Drawable) DrawLine(gc *GC, x1 int, y1 int, x2 int, y2 int) {
 	C.gdk_draw_line(v.GDrawable, gc.GGC, C.gint(x1), C.gint(y1), C.gint(x2), C.gint(y2))
 }
 func (v *Drawable) DrawRectangle(gc *GC, filled bool, x int, y int, width int, height int) {
-	C.gdk_draw_rectangle(v.GDrawable, gc.GGC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height))
+	C.gdk_draw_rectangle(v.GDrawable, gc.GGC, gbool(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height))
 }
 func (v *Drawable) DrawArc(gc *GC, filled bool, x int, y int, width int, height int, angle1 int, angle2 int) {
-	C.gdk_draw_arc(v.GDrawable, gc.GGC, bool2gboolean(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height), C.gint(angle1), C.gint(angle2))
+	C.gdk_draw_arc(v.GDrawable, gc.GGC, gbool(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height), C.gint(angle1), C.gint(angle2))
 }
 
 // void gdk_draw_polygon (GdkDrawable *drawable, GdkGC *gc, gboolean filled, const GdkPoint *points, gint n_points);
@@ -494,9 +494,9 @@ func (v *Window) Invalidate(rect *Rectangle, invalidate_children bool) {
 		_rect.y = C.gint(rect.Y)
 		_rect.width = C.gint(rect.Width)
 		_rect.height = C.gint(rect.Height)
-		C.gdk_window_invalidate_rect(v.GWindow, &_rect, bool2gboolean(invalidate_children))
+		C.gdk_window_invalidate_rect(v.GWindow, &_rect, gbool(invalidate_children))
 	} else {
-		C.gdk_window_invalidate_rect(v.GWindow, nil, bool2gboolean(invalidate_children))
+		C.gdk_window_invalidate_rect(v.GWindow, nil, gbool(invalidate_children))
 	}
 }
 
