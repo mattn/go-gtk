@@ -8,20 +8,15 @@
 #include <stdarg.h>
 #include <string.h>
 
-static gchar* to_gcharptr(char* s) { return (gchar*)s; }
+static gchar* toGstr(char* s) { return (gchar*)s; }
 
-static void free_string(char* s) { free(s); }
+static void freeCstr(char* s) { free(s); }
 
-static GdkDragContext* to_GtkDragContext(void* l) {
-	return (GdkDragContext*)l;
-}
+static GdkWindow* toGdkWindow(void* w) { return GDK_WINDOW(w); }
+static GdkDragContext* toGdkDragContext(void* l) { return (GdkDragContext*)l; }
 
 static void* _gdk_display_get_default() {
 	return (void*) gdk_display_get_default();
-}
-
-static GdkWindow* to_GdkWindow(void* w) {
-	return GDK_WINDOW(w);
 }
 
 #endif

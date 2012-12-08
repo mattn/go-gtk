@@ -35,10 +35,22 @@ func gslist(l *glib.SList) *C.GSList {
 	return C.to_gslist(unsafe.Pointer(l.ToSList()))
 }
 
+func gbool(b bool) C.gboolean {
+	if b {
+		return C.gboolean(1)
+	}
+	return C.gboolean(0)
+}
+
+func gobool(b C.gboolean) bool {
+	if b != 0 {
+		return true
+	}
+	return false
+}
+
 func cfree(s *C.char) { C.freeCstr(s) }
 
-func GOBJECT(p unsafe.Pointer) *C.GObject           { return C.toGObject(p) }
-func GVALUE(p unsafe.Pointer) *C.GValue             { return C.toGValue(p) }
 func WINDOW(p *Window) *C.GtkWindow                 { return C.toGWindow(p.GWidget) }
 func DIALOG(p *Dialog) *C.GtkDialog                 { return C.toGDialog(p.GWidget) }
 func ABOUT_DIALOG(p *AboutDialog) *C.GtkAboutDialog { return C.toGAboutDialog(p.GWidget) }
@@ -98,7 +110,6 @@ func CELL_RENDERER_TOGGLE(p *CellRendererToggle) *C.GtkCellRendererToggle {
 }
 func SCALE(p *Scale) *C.GtkScale { return C.toGScale(p.GWidget) }
 func RANGE(p *Range) *C.GtkRange { return C.toGRange(p.GWidget) }
-
 //static inline GtkTreeModel* toGTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 //static inline GtkTreeModel* toGTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
 func IMAGE(p *Image) *C.GtkImage                           { return C.toGImage(p.GWidget) }
@@ -112,22 +123,7 @@ func PROGRESS_BAR(p *ProgressBar) *C.GtkProgressBar        { return C.toGProgres
 func FIXED(p *Fixed) *C.GtkFixed                           { return C.toGFixed(p.GWidget) }
 func CHECK_MENU_ITEM(p *CheckMenuItem) *C.GtkCheckMenuItem { return C.toGCheckMenuItem(p.GWidget) }
 func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMenuItem(p.GWidget) }
-
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
-
-func gbool(b bool) C.gboolean {
-	if b {
-		return C.gboolean(1)
-	}
-	return C.gboolean(0)
-}
-
-func gobool(b C.gboolean) bool {
-	if b != 0 {
-		return true
-	}
-	return false
-}
 
 func panic_if_version_older(major int, minor int, micro int, function string) {
 	if C._check_version(C.int(major), C.int(minor), C.int(micro)) == 0 {

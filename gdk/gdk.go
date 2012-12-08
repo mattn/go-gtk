@@ -5,6 +5,9 @@ package gdk
 import "C"
 import "unsafe"
 
+func gint(v int) C.gint          { return C.gint(v) }
+func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
+
 func gbool(b bool) C.gboolean {
 	if b {
 		return C.gboolean(1)
@@ -17,6 +20,10 @@ func gobool(b C.gboolean) bool {
 	}
 	return false
 }
+
+func cfree(s *C.char) { C.freeCstr(s) }
+
+func WINDOW(p *Window) *C.GdkWindow { return C.toGdkWindow(unsafe.Pointer(p.GWindow)) }
 
 //-----------------------------------------------------------------------
 // Types
@@ -172,8 +179,8 @@ type Color struct {
 func NewColor(name string) *Color {
 	var color C.GdkColor
 	ptr := C.CString(name)
-	defer C.free_string(ptr)
-	C.gdk_color_parse(C.to_gcharptr(ptr), &color)
+	defer cfree(ptr)
+	C.gdk_color_parse(gstring(ptr), &color)
 	return &Color{color}
 }
 
@@ -186,16 +193,16 @@ type Font struct {
 
 func FontLoad(name string) *Font {
 	ptr := C.CString(name)
-	defer C.free_string(ptr)
+	defer cfree(ptr)
 	return &Font{
-		C.gdk_font_load(C.to_gcharptr(ptr))}
+		C.gdk_font_load(gstring(ptr))}
 }
 
 func FontsetLoad(name string) *Font {
 	ptr := C.CString(name)
-	defer C.free_string(ptr)
+	defer cfree(ptr)
 	return &Font{
-		C.gdk_fontset_load(C.to_gcharptr(ptr))}
+		C.gdk_fontset_load(gstring(ptr))}
 }
 
 // GdkFont* gdk_font_ref (GdkFont *font);
@@ -283,30 +290,30 @@ type Drawable struct {
 }
 
 func (v *Drawable) DrawPoint(gc *GC, x int, y int) {
-	C.gdk_draw_point(v.GDrawable, gc.GGC, C.gint(x), C.gint(y))
+	C.gdk_draw_point(v.GDrawable, gc.GGC, gint(x), gint(y))
 }
 func (v *Drawable) DrawLine(gc *GC, x1 int, y1 int, x2 int, y2 int) {
-	C.gdk_draw_line(v.GDrawable, gc.GGC, C.gint(x1), C.gint(y1), C.gint(x2), C.gint(y2))
+	C.gdk_draw_line(v.GDrawable, gc.GGC, gint(x1), gint(y1), gint(x2), gint(y2))
 }
 func (v *Drawable) DrawRectangle(gc *GC, filled bool, x int, y int, width int, height int) {
-	C.gdk_draw_rectangle(v.GDrawable, gc.GGC, gbool(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height))
+	C.gdk_draw_rectangle(v.GDrawable, gc.GGC, gbool(filled), gint(x), gint(y), gint(width), gint(height))
 }
 func (v *Drawable) DrawArc(gc *GC, filled bool, x int, y int, width int, height int, angle1 int, angle2 int) {
-	C.gdk_draw_arc(v.GDrawable, gc.GGC, gbool(filled), C.gint(x), C.gint(y), C.gint(width), C.gint(height), C.gint(angle1), C.gint(angle2))
+	C.gdk_draw_arc(v.GDrawable, gc.GGC, gbool(filled), gint(x), gint(y), gint(width), gint(height), gint(angle1), gint(angle2))
 }
 
 // void gdk_draw_polygon (GdkDrawable *drawable, GdkGC *gc, gboolean filled, const GdkPoint *points, gint n_points);
 // void gdk_draw_string (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *string);
 func (v *Drawable) DrawString(font *Font, gc *GC, x int, y int, str string) {
 	ptr := C.CString(str)
-	defer C.free_string(ptr)
-	C.gdk_draw_string(v.GDrawable, font.GFont, gc.GGC, C.gint(x), C.gint(y), C.to_gcharptr(ptr))
+	defer cfree(ptr)
+	C.gdk_draw_string(v.GDrawable, font.GFont, gc.GGC, gint(x), gint(y), gstring(ptr))
 }
 
 // void gdk_draw_text (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const gchar *text, gint text_length);
 // void gdk_draw_text_wc (GdkDrawable *drawable, GdkFont *font, GdkGC *gc, gint x, gint y, const GdkWChar *text, gint text_length);
 func (v *Drawable) DrawDrawable(gc *GC, src *Drawable, xsrc int, ysrc int, xdest int, ydest int, width int, height int) {
-	C.gdk_draw_drawable(v.GDrawable, gc.GGC, src.GDrawable, C.gint(xsrc), C.gint(ysrc), C.gint(xdest), C.gint(ydest), C.gint(width), C.gint(height))
+	C.gdk_draw_drawable(v.GDrawable, gc.GGC, src.GDrawable, gint(xsrc), gint(ysrc), gint(xdest), gint(ydest), gint(width), gint(height))
 }
 
 // void gdk_draw_image (GdkDrawable *drawable, GdkGC *gc, GdkImage *image, gint xsrc, gint ysrc, gint xdest, gint ydest, gint width, gint height);
@@ -467,8 +474,7 @@ type Window struct {
 }
 
 func WindowFromUnsafe(window unsafe.Pointer) *Window {
-	return &Window{
-		C.to_GdkWindow(window)}
+	return &Window{C.toGdkWindow(window)}
 }
 
 func (v *Window) GetPointer(x *int, y *int, mask *ModifierType) *Window {
@@ -490,10 +496,10 @@ func (v *Window) GetDrawable() *Drawable {
 func (v *Window) Invalidate(rect *Rectangle, invalidate_children bool) {
 	if rect != nil {
 		var _rect C.GdkRectangle
-		_rect.x = C.gint(rect.X)
-		_rect.y = C.gint(rect.Y)
-		_rect.width = C.gint(rect.Width)
-		_rect.height = C.gint(rect.Height)
+		_rect.x = gint(rect.X)
+		_rect.y = gint(rect.Y)
+		_rect.width = gint(rect.Width)
+		_rect.height = gint(rect.Height)
 		C.gdk_window_invalidate_rect(v.GWindow, &_rect, gbool(invalidate_children))
 	} else {
 		C.gdk_window_invalidate_rect(v.GWindow, nil, gbool(invalidate_children))
@@ -517,7 +523,7 @@ type Pixmap struct {
 
 func NewPixmap(drawable *Drawable, width int, height int, depth int) *Pixmap {
 	return &Pixmap{
-		C.gdk_pixmap_new(drawable.GDrawable, C.gint(width), C.gint(height), C.gint(depth))}
+		C.gdk_pixmap_new(drawable.GDrawable, gint(width), gint(height), gint(depth))}
 }
 
 // GdkBitmap* gdk_bitmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height);
@@ -2857,7 +2863,7 @@ type DragContext struct {
 }
 
 func DragContextFromNative(l unsafe.Pointer) *DragContext {
-	return &DragContext{C.to_GtkDragContext(l)}
+	return &DragContext{C.toGdkDragContext(l)}
 }
 
 //-----------------------------------------------------------------------
