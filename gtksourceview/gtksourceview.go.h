@@ -19,11 +19,11 @@ static inline void set_string(gchar** strings, int n, gchar* str) {
 	strings[n] = str;
 }
 
-static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
-static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
-static inline char* to_charptr(const gchar* s) { return (char*)s; }
-static inline gchar** next_gcharptr(gchar** s) { return (s+1); }
-static inline void free_string(char* s) { free(s); }
-static GtkSourceView* to_GtkSourceView(void* w) { return GTK_SOURCE_VIEW(w); }
+static inline GObject* toGObject(void* o) { return G_OBJECT(o); }
+static inline gchar* toGstr(const char* s) { return (gchar*)s; }
+static inline char* toCstr(const gchar* s) { return (char*)s; }
+static inline gchar** nextGstr(gchar** s) { return (s+1); }
+static inline void freeCstr(char* s) { free(s); }
+static GtkSourceView* toGtkSourceView(void* w) { return GTK_SOURCE_VIEW(w); }
 
 #endif

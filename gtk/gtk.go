@@ -112,9 +112,6 @@ func CELL_RENDERER_TOGGLE(p *CellRendererToggle) *C.GtkCellRendererToggle {
 }
 func SCALE(p *Scale) *C.GtkScale { return C.toGScale(p.GWidget) }
 func RANGE(p *Range) *C.GtkRange { return C.toGRange(p.GWidget) }
-
-//static inline GtkTreeModel* toGTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
-//static inline GtkTreeModel* toGTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
 func IMAGE(p *Image) *C.GtkImage                           { return C.toGImage(p.GWidget) }
 func NOTEBOOK(p *Notebook) *C.GtkNotebook                  { return C.toGNotebook(p.GWidget) }
 func TABLE(p *Table) *C.GtkTable                           { return C.toGTable(p.GWidget) }
@@ -857,7 +854,7 @@ type SelectionData struct {
 	GSelectionData unsafe.Pointer
 }
 
-func SelectionDataFromNative(l unsafe.Pointer) *SelectionData {
+func NewSelectionDataFromNative(l unsafe.Pointer) *SelectionData {
 	return &SelectionData{l}
 }
 
@@ -995,10 +992,11 @@ const (
 
 type Dialog struct {
 	Window
+	wfr *Widget // WidgetForResponse
 }
 
 func NewDialog() *Dialog {
-	return &Dialog{Window{Bin{Container{Widget{C.gtk_dialog_new()}}}}}
+	return &Dialog{Window{Bin{Container{Widget{C.gtk_dialog_new()}}}}, nil}
 }
 
 // gtk_dialog_new_with_buttons
@@ -1037,7 +1035,9 @@ func (v *Dialog) GetResponseForWidget(w *Widget) int {
 }
 func (v *Dialog) GetWidgetForResponse(id int) *Widget {
 	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response()")
-	return &Widget{C._gtk_dialog_get_widget_for_response(DIALOG(v), gint(id))}
+	w := C._gtk_dialog_get_widget_for_response(DIALOG(v), gint(id))
+	if(v.wfr == nil) { v.wfr = &Widget{w} } else { v.wfr.GWidget = w }
+	return v.wfr
 }
 
 // gtk_dialog_get_action_area
@@ -1088,7 +1088,7 @@ func NewMessageDialog(parent *Window, flag DialogFlags, t MessageType, buttons B
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(buttons),
-			gstring(ptr))}}}}}}
+			gstring(ptr))}}}}, nil}}
 }
 
 func NewMessageDialogWithMarkup(parent *Window, flag DialogFlags, t MessageType, buttons ButtonsType, format string, args ...interface{}) *MessageDialog {
@@ -1098,7 +1098,7 @@ func NewMessageDialogWithMarkup(parent *Window, flag DialogFlags, t MessageType,
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(buttons),
-			nil)}}}}}}
+			nil)}}}}, nil}}
 	r.SetMarkup(fmt.Sprintf(format, args...))
 	return r
 }
@@ -1405,8 +1405,7 @@ type AboutDialog struct {
 }
 
 func NewAboutDialog() *AboutDialog {
-	return &AboutDialog{Dialog{Window{Bin{Container{Widget{
-		C.gtk_about_dialog_new()}}}}}}
+	return &AboutDialog{Dialog{Window{Bin{Container{Widget{C.gtk_about_dialog_new()}}}}, nil}}
 }
 func (v *AboutDialog) GetProgramName() string {
 	return gostring(C.gtk_about_dialog_get_program_name(ABOUT_DIALOG(v)))
@@ -3401,16 +3400,13 @@ func (v *TextBuffer) DeleteMarkByName(name string) {
 func (v *TextBuffer) GetMark(name string) *TextMark {
 	ptr := C.CString(name)
 	defer cfree(ptr)
-	return &TextMark{
-		C.gtk_text_buffer_get_mark(v.GTextBuffer, gstring(ptr))}
+	return &TextMark{C.gtk_text_buffer_get_mark(v.GTextBuffer, gstring(ptr))}
 }
 func (v *TextBuffer) GetInsert() *TextMark {
-	return &TextMark{
-		C.gtk_text_buffer_get_insert(v.GTextBuffer)}
+	return &TextMark{C.gtk_text_buffer_get_insert(v.GTextBuffer)}
 }
 func (v *TextBuffer) GetSelectionBound() *TextMark {
-	return &TextMark{
-		C.gtk_text_buffer_get_selection_bound(v.GTextBuffer)}
+	return &TextMark{C.gtk_text_buffer_get_selection_bound(v.GTextBuffer)}
 }
 func (v *TextBuffer) GetHasSelection() bool {
 	return gobool(C.gtk_text_buffer_get_has_selection(v.GTextBuffer))
@@ -6259,9 +6255,7 @@ func NewFileChooserDialog(title string, parent *Window, file_chooser_action File
 			C.int(file_chooser_action),
 			C.int(button_action),
 			gstring(pbutton))}
-	ret := &FileChooserDialog{
-		Dialog{Window{Bin{Container{widget}}}},
-		FileChooser{FILE_CHOOSER(&widget)}}
+	ret := &FileChooserDialog{Dialog{Window{Bin{Container{widget}}}, nil}, FileChooser{FILE_CHOOSER(&widget)}}
 	text, res := variadicButtonsToArrays(buttons)
 	for i := range text {
 		ret.AddButton(text[i], res[i])
@@ -6404,7 +6398,7 @@ func NewFontSelectionDialog(title string) *FontSelectionDialog {
 	ptitle := C.CString(title)
 	defer cfree(ptitle)
 	return &FontSelectionDialog{Dialog{Window{Bin{Container{Widget{
-		C.gtk_font_selection_dialog_new(gstring(ptitle))}}}}}}
+		C.gtk_font_selection_dialog_new(gstring(ptitle))}}}}, nil}}
 }
 func (v *FontSelectionDialog) GetFontName() string {
 	return gostring(C.gtk_font_selection_dialog_get_font_name(FONT_SELECTION_DIALOG(v)))

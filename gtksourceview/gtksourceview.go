@@ -6,6 +6,10 @@ import "C"
 import "github.com/mattn/go-gtk/gtk"
 import "unsafe"
 
+func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
+func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
+func gostring(s *C.gchar) string { return C.GoString(cstring(s)) }
+
 func gbool(b bool) C.gboolean {
 	if b {
 		return C.gboolean(1)
@@ -18,6 +22,8 @@ func gobool(b C.gboolean) bool {
 	}
 	return false
 }
+
+func cfree(s *C.char) { C.freeCstr(s) }
 
 //-----------------------------------------------------------------------
 // GtkSourceBuffer
@@ -73,7 +79,7 @@ func NewSourceViewWithBuffer(buf *SourceBuffer) *SourceView {
 		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.GSourceBuffer)))}}}
 }
 func (v *SourceView) ToNativeSourceView() *C.GtkSourceView {
-	return C.to_GtkSourceView(unsafe.Pointer(v.GWidget))
+	return C.toGtkSourceView(unsafe.Pointer(v.GWidget))
 }
 func (v *SourceView) SetAutoIndent(enable bool) {
 	C.gtk_source_view_set_auto_indent(v.ToNativeSourceView(), gbool(enable))
@@ -177,28 +183,28 @@ type SourceLanguage struct {
 }
 
 func (v *SourceLanguage) GetId() string {
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_id(v.GSourceLanguage)))
+	return gostring(C.gtk_source_language_get_id(v.GSourceLanguage))
 }
 func (v *SourceLanguage) GetName() string {
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_name(v.GSourceLanguage)))
+	return gostring(C.gtk_source_language_get_name(v.GSourceLanguage))
 }
 func (v *SourceLanguage) GetSection() string {
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_section(v.GSourceLanguage)))
+	return gostring(C.gtk_source_language_get_section(v.GSourceLanguage))
 }
 func (v *SourceLanguage) GetHidden() bool {
 	return gobool(C.gtk_source_language_get_hidden(v.GSourceLanguage))
 }
 func (v *SourceLanguage) GetMetadata(name string) string {
 	cname := C.CString(name)
-	defer C.free_string(cname)
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.GSourceLanguage, C.to_gcharptr(cname))))
+	defer cfree(cname)
+	return gostring(C.gtk_source_language_get_metadata(v.GSourceLanguage, gstring(cname)))
 }
 func (v *SourceLanguage) GetMimeTypes() []string {
 	var types []string
 	ctypes := C.gtk_source_language_get_mime_types(v.GSourceLanguage)
 	for {
-		types = append(types, C.GoString(C.to_charptr(*ctypes)))
-		ctypes = C.next_gcharptr(ctypes)
+		types = append(types, gostring(*ctypes))
+		ctypes = C.nextGstr(ctypes)
 		if *ctypes == nil {
 			break
 		}
@@ -209,8 +215,8 @@ func (v *SourceLanguage) GetGlobs() []string {
 	var globs []string
 	cglobs := C.gtk_source_language_get_globs(v.GSourceLanguage)
 	for {
-		globs = append(globs, C.GoString(C.to_charptr(*cglobs)))
-		cglobs = C.next_gcharptr(cglobs)
+		globs = append(globs, gostring(*cglobs))
+		cglobs = C.nextGstr(cglobs)
 		if *cglobs == nil {
 			break
 		}
@@ -219,15 +225,15 @@ func (v *SourceLanguage) GetGlobs() []string {
 }
 func (v *SourceLanguage) GetStyleName(styleId string) string {
 	cstyleId := C.CString(styleId)
-	defer C.free_string(cstyleId)
-	return C.GoString(C.to_charptr(C.gtk_source_language_get_metadata(v.GSourceLanguage, C.to_gcharptr(cstyleId))))
+	defer cfree(cstyleId)
+	return gostring(C.gtk_source_language_get_metadata(v.GSourceLanguage, gstring(cstyleId)))
 }
 func (v *SourceLanguage) GetStyleIds() []string {
 	var ids []string
 	cids := C.gtk_source_language_get_globs(v.GSourceLanguage)
 	for {
-		ids = append(ids, C.GoString(C.to_charptr(*cids)))
-		cids = C.next_gcharptr(cids)
+		ids = append(ids, gostring(*cids))
+		cids = C.nextGstr(cids)
 		if *cids == nil {
 			break
 		}
@@ -254,8 +260,8 @@ func (v *SourceLanguageManager) SetSearchPath(paths []string) {
 	cpaths := C.make_strings(C.int(len(paths) + 1))
 	for i, path := range paths {
 		ptr := C.CString(path)
-		defer C.free_string(ptr)
-		C.set_string(cpaths, C.int(i), C.to_gcharptr(ptr))
+		defer cfree(ptr)
+		C.set_string(cpaths, C.int(i), gstring(ptr))
 	}
 	C.set_string(cpaths, C.int(len(paths)), nil)
 	C.gtk_source_language_manager_set_search_path(v.GSourceLanguageManager, cpaths)
@@ -265,8 +271,8 @@ func (v *SourceLanguageManager) GetSearchPath() []string {
 	var dirs []string
 	cdirs := C.gtk_source_language_manager_get_search_path(v.GSourceLanguageManager)
 	for {
-		dirs = append(dirs, C.GoString(C.to_charptr(*cdirs)))
-		cdirs = C.next_gcharptr(cdirs)
+		dirs = append(dirs, gostring(*cdirs))
+		cdirs = C.nextGstr(cdirs)
 		if *cdirs == nil {
 			break
 		}
@@ -277,8 +283,8 @@ func (v *SourceLanguageManager) GetLanguageIds() []string {
 	var ids []string
 	cids := C.gtk_source_language_manager_get_language_ids(v.GSourceLanguageManager)
 	for {
-		ids = append(ids, C.GoString(C.to_charptr(*cids)))
-		cids = C.next_gcharptr(cids)
+		ids = append(ids, gostring(*cids))
+		cids = C.nextGstr(cids)
 		if *cids == nil {
 			break
 		}
@@ -287,19 +293,18 @@ func (v *SourceLanguageManager) GetLanguageIds() []string {
 }
 func (v *SourceLanguageManager) GetLanguage(id string) *SourceLanguage {
 	cid := C.CString(id)
-	defer C.free_string(cid)
-	return &SourceLanguage{C.gtk_source_language_manager_get_language(v.GSourceLanguageManager,
-		C.to_gcharptr(cid))}
+	defer cfree(cid)
+	return &SourceLanguage{C.gtk_source_language_manager_get_language(v.GSourceLanguageManager, gstring(cid))}
 }
 func (v *SourceLanguageManager) GuessLanguage(filename string, contentType string) *SourceLanguage {
 	if filename == "" {
 		cct := C.CString(contentType)
-		defer C.free_string(cct)
-		return &SourceLanguage{C.gtk_source_language_manager_guess_language(v.GSourceLanguageManager, nil, C.to_gcharptr(cct))}
+		defer cfree(cct)
+		return &SourceLanguage{C.gtk_source_language_manager_guess_language(v.GSourceLanguageManager, nil, gstring(cct))}
 	}
 	cfn := C.CString(filename)
-	defer C.free_string(cfn)
-	return &SourceLanguage{C.gtk_source_language_manager_guess_language(v.GSourceLanguageManager, C.to_gcharptr(cfn), nil)}
+	defer cfree(cfn)
+	return &SourceLanguage{C.gtk_source_language_manager_guess_language(v.GSourceLanguageManager, gstring(cfn), nil)}
 }
 
 //FINISH
