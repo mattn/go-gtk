@@ -19,14 +19,15 @@ import (
 	"unsafe"
 )
 
-func gint(v int) C.gint          { return C.gint(v) }
-func guint(v uint) C.guint       { return C.guint(v) }
-func guint32(v uint32) C.guint32 { return C.guint32(v) }
-func gsize_t(v C.size_t) C.gint  { return C.gint(v) }
+func gint(v int) C.gint           { return C.gint(v) }
+func guint(v uint) C.guint        { return C.guint(v) }
+func guint32(v uint32) C.guint32  { return C.guint32(v) }
+func gdouble(v float64) C.gdouble { return C.gdouble(v) }
+func gsize_t(v C.size_t) C.gint   { return C.gint(v) }
 
-func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
-func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
-func gostring(s *C.gchar) string { return C.GoString(cstring(s)) }
+func gstring(s *C.char) *C.gchar  { return C.toGstr(s) }
+func cstring(s *C.gchar) *C.char  { return C.toCstr(s) }
+func gostring(s *C.gchar) string  { return C.GoString(cstring(s)) }
 
 func gslist(l *glib.SList) *C.GSList {
 	if l == nil {
@@ -749,7 +750,7 @@ func (s *Settings) SetDoubleProperty(name string, v_double float64, origin strin
 	defer cfree(ptrn)
 	prts := C.CString(origin)
 	defer cfree(prts)
-	C.gtk_settings_set_double_property(s.GSettings, gstring(ptrn), C.gdouble(v_double), gstring(prts))
+	C.gtk_settings_set_double_property(s.GSettings, gstring(ptrn), gdouble(v_double), gstring(prts))
 }
 
 //-----------------------------------------------------------------------
@@ -1956,7 +1957,7 @@ func (v *Label) SetSingleLineMode(single_line bool) {
 	C.gtk_label_set_single_line_mode(LABEL(v), gbool(single_line))
 }
 func (v *Label) SetAngle(angle float64) {
-	C.gtk_label_set_angle(LABEL(v), C.gdouble(angle))
+	C.gtk_label_set_angle(LABEL(v), gdouble(angle))
 }
 func (v *Label) GetCurrentUri() string {
 	panic_if_version_older(2, 18, 0, "gtk_label_get_current_uri()")
@@ -1999,10 +2000,10 @@ func (v *ProgressBar) SetText(show_text string) {
 	C.gtk_progress_bar_set_text(PROGRESS_BAR(v), gstring(ptr))
 }
 func (v *ProgressBar) SetFraction(fraction float64) {
-	C.gtk_progress_bar_set_fraction(PROGRESS_BAR(v), C.gdouble(fraction))
+	C.gtk_progress_bar_set_fraction(PROGRESS_BAR(v), gdouble(fraction))
 }
 func (v *ProgressBar) SetPulseStep(fraction float64) {
-	C.gtk_progress_bar_set_pulse_step(PROGRESS_BAR(v), C.gdouble(fraction))
+	C.gtk_progress_bar_set_pulse_step(PROGRESS_BAR(v), gdouble(fraction))
 }
 func (v *ProgressBar) SetOrientation(i ProgressBarOrientation) {
 	C.gtk_progress_bar_set_orientation(PROGRESS_BAR(v), C.GtkProgressBarOrientation(i))
@@ -2919,7 +2920,7 @@ func NewHScale(adjustment *Adjustment) *Scale {
 }
 func NewHScaleWithRange(min, max, step float64) *Scale {
 	return &Scale{Range{Widget{
-		C.gtk_hscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
+		C.gtk_hscale_new_with_range(gdouble(min), gdouble(max), gdouble(step))}}}
 }
 
 //-----------------------------------------------------------------------
@@ -2929,7 +2930,7 @@ func NewVScale(a *Adjustment) *Scale {
 	return &Scale{Range{Widget{C.gtk_vscale_new(a.GAdjustment)}}}
 }
 func NewVScaleWithRange(min, max, step float64) *Scale {
-	return &Scale{Range{Widget{C.gtk_vscale_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}}}
+	return &Scale{Range{Widget{C.gtk_vscale_new_with_range(gdouble(min), gdouble(max), gdouble(step))}}}
 }
 
 //-----------------------------------------------------------------------
@@ -2959,11 +2960,11 @@ type SpinButton struct {
 }
 
 func NewSpinButton(a *Adjustment, climb float64, digits uint) *SpinButton {
-	w := Widget{C.gtk_spin_button_new(a.GAdjustment, C.gdouble(climb), guint(digits))}
+	w := Widget{C.gtk_spin_button_new(a.GAdjustment, gdouble(climb), guint(digits))}
 	return &SpinButton{Entry{w, Editable{C.toGEditable(w.GWidget)}}}
 }
 func NewSpinButtonWithRange(min, max, step float64) *SpinButton {
-	w := Widget{C.gtk_spin_button_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step))}
+	w := Widget{C.gtk_spin_button_new_with_range(gdouble(min), gdouble(max), gdouble(step))}
 	return &SpinButton{Entry{w, Editable{C.toGEditable(w.GWidget)}}}
 }
 
@@ -2984,7 +2985,7 @@ func (v *SpinButton) OnWrapped(onclick interface{}, datas ...interface{}) int {
 }
 
 func (v *SpinButton) Configure(a *Adjustment, climb_rate float64, digits uint) {
-	C.gtk_spin_button_configure(SPIN_BUTTON(v), a.GAdjustment, C.gdouble(climb_rate), guint(digits))
+	C.gtk_spin_button_configure(SPIN_BUTTON(v), a.GAdjustment, gdouble(climb_rate), guint(digits))
 }
 func (v *SpinButton) SetAdjustment(a *Adjustment) {
 	C.gtk_spin_button_set_adjustment(SPIN_BUTTON(v), a.GAdjustment)
@@ -2996,10 +2997,10 @@ func (v *SpinButton) SetDigits(digits uint) {
 	C.gtk_spin_button_set_digits(SPIN_BUTTON(v), guint(digits))
 }
 func (v *SpinButton) SetIncrements(step, page float64) {
-	C.gtk_spin_button_set_increments(SPIN_BUTTON(v), C.gdouble(step), C.gdouble(page))
+	C.gtk_spin_button_set_increments(SPIN_BUTTON(v), gdouble(step), gdouble(page))
 }
 func (v *SpinButton) SetRange(min, max float64) {
-	C.gtk_spin_button_set_range(SPIN_BUTTON(v), C.gdouble(min), C.gdouble(max))
+	C.gtk_spin_button_set_range(SPIN_BUTTON(v), gdouble(min), gdouble(max))
 }
 func (v *SpinButton) GetValueAsFloat() float64 {
 	return float64(C.gtk_spin_button_get_value_as_float(SPIN_BUTTON(v)))
@@ -3008,7 +3009,7 @@ func (v *SpinButton) GetValueAsInt() int {
 	return int(C.gtk_spin_button_get_value_as_int(SPIN_BUTTON(v)))
 }
 func (v *SpinButton) SetValue(val float64) {
-	C.gtk_spin_button_set_value(SPIN_BUTTON(v), C.gdouble(val))
+	C.gtk_spin_button_set_value(SPIN_BUTTON(v), gdouble(val))
 }
 func (v *SpinButton) SetUpdatePolicy(policy SpinButtonUpdatePolicy) {
 	C.gtk_spin_button_set_update_policy(SPIN_BUTTON(v), C.GtkSpinButtonUpdatePolicy(policy))
@@ -3017,7 +3018,7 @@ func (v *SpinButton) SetNumeric(numeric bool) {
 	C.gtk_spin_button_set_numeric(SPIN_BUTTON(v), gbool(numeric))
 }
 func (v *SpinButton) Spin(direction SpinType, increment float64) {
-	C.gtk_spin_button_spin(SPIN_BUTTON(v), C.GtkSpinType(direction), C.gdouble(increment))
+	C.gtk_spin_button_spin(SPIN_BUTTON(v), C.GtkSpinType(direction), gdouble(increment))
 }
 func (v *SpinButton) SetWrap(wrap bool) {
 	C.gtk_spin_button_set_wrap(SPIN_BUTTON(v), gbool(wrap))
@@ -3654,11 +3655,11 @@ func (v *TextView) GetBuffer() *TextBuffer {
 }
 func (v *TextView) ScrollToMark(mark *TextMark, wm float64, ua bool, xa float64, ya float64) {
 	C.gtk_text_view_scroll_to_mark(TEXT_VIEW(v),
-		mark.GTextMark, C.gdouble(wm), gbool(ua), C.gdouble(xa), C.gdouble(ya))
+		mark.GTextMark, gdouble(wm), gbool(ua), gdouble(xa), gdouble(ya))
 }
 func (v *TextView) ScrollToIter(iter *TextIter, wm float64, ua bool, xa float64, ya float64) bool {
 	return gobool(C.gtk_text_view_scroll_to_iter(TEXT_VIEW(v),
-		&iter.GTextIter, C.gdouble(wm), gbool(ua), C.gdouble(xa), C.gdouble(ya)))
+		&iter.GTextIter, gdouble(wm), gbool(ua), gdouble(xa), gdouble(ya)))
 }
 
 // void gtk_text_view_scroll_mark_onscreen(GtkTextView* text_view, GtkTextMark* mark);
@@ -7467,14 +7468,14 @@ type Adjustment struct {
 
 func NewAdjustment(value, lower, upper, step_increment, page_increment, page_size float64) *Adjustment {
 	return &Adjustment{
-		C.toGAdjustment(C.gtk_adjustment_new(C.gdouble(value), C.gdouble(lower), C.gdouble(upper),
-			C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size)))}
+		C.toGAdjustment(C.gtk_adjustment_new(gdouble(value), gdouble(lower), gdouble(upper),
+			gdouble(step_increment), gdouble(page_increment), gdouble(page_size)))}
 }
 func (v *Adjustment) GetValue() float64 {
 	return float64(C.gtk_adjustment_get_value(v.GAdjustment))
 }
 func (v *Adjustment) SetValue(value float64) {
-	C.gtk_adjustment_set_value(v.GAdjustment, C.gdouble(value))
+	C.gtk_adjustment_set_value(v.GAdjustment, gdouble(value))
 }
 
 // gtk_adjustment_clamp_page
@@ -7483,8 +7484,8 @@ func (v *Adjustment) SetValue(value float64) {
 
 func (v *Adjustment) Configure(value, lower, upper, step_increment, page_increment, page_size float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_configure()")
-	C._gtk_adjustment_configure(v.GAdjustment, C.gdouble(value), C.gdouble(lower), C.gdouble(upper),
-		C.gdouble(step_increment), C.gdouble(page_increment), C.gdouble(page_size))
+	C._gtk_adjustment_configure(v.GAdjustment, gdouble(value), gdouble(lower), gdouble(upper),
+		gdouble(step_increment), gdouble(page_increment), gdouble(page_size))
 }
 func (v *Adjustment) GetLower() float64 {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_get_lower()")
@@ -7508,23 +7509,23 @@ func (v *Adjustment) GetUpper() float64 {
 }
 func (v *Adjustment) SetLower(lower float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_lower()")
-	C._gtk_adjustment_set_lower(v.GAdjustment, C.gdouble(lower))
+	C._gtk_adjustment_set_lower(v.GAdjustment, gdouble(lower))
 }
 func (v *Adjustment) SetPageIncrement(page_increment float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_increment()")
-	C._gtk_adjustment_set_page_increment(v.GAdjustment, C.gdouble(page_increment))
+	C._gtk_adjustment_set_page_increment(v.GAdjustment, gdouble(page_increment))
 }
 func (v *Adjustment) SetPageSize(page_size float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_page_size()")
-	C._gtk_adjustment_set_page_size(v.GAdjustment, C.gdouble(page_size))
+	C._gtk_adjustment_set_page_size(v.GAdjustment, gdouble(page_size))
 }
 func (v *Adjustment) SetStepIncrement(step_increment float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_step_increment()")
-	C._gtk_adjustment_set_step_increment(v.GAdjustment, C.gdouble(step_increment))
+	C._gtk_adjustment_set_step_increment(v.GAdjustment, gdouble(step_increment))
 }
 func (v *Adjustment) SetUpper(upper float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_upper()")
-	C._gtk_adjustment_set_upper(v.GAdjustment, C.gdouble(upper))
+	C._gtk_adjustment_set_upper(v.GAdjustment, gdouble(upper))
 }
 
 //-----------------------------------------------------------------------
@@ -8040,7 +8041,7 @@ func (v *Range) GetShowFillLevel() bool {
 	return gobool(C.gtk_range_get_show_fill_level(RANGE(v)))
 }
 func (v *Range) SetFillLevel(value float64) {
-	C.gtk_range_set_fill_level(RANGE(v), C.gdouble(value))
+	C.gtk_range_set_fill_level(RANGE(v), gdouble(value))
 }
 func (v *Range) SetRestrictToFillLevel(b bool) {
 	C.gtk_range_set_restrict_to_fill_level(RANGE(v), gbool(b))
@@ -8067,10 +8068,10 @@ func (v *Range) SetInverted(b bool) {
 // GtkUpdateType gtk_range_get_update_policy (GtkRange *range); //deprecated since 2.24
 
 func (v *Range) SetIncrements(step, page float64) {
-	C.gtk_range_set_increments(RANGE(v), C.gdouble(step), C.gdouble(page))
+	C.gtk_range_set_increments(RANGE(v), gdouble(step), gdouble(page))
 }
 func (v *Range) SetRange(min, max float64) {
-	C.gtk_range_set_range(RANGE(v), C.gdouble(min), C.gdouble(max))
+	C.gtk_range_set_range(RANGE(v), gdouble(min), gdouble(max))
 }
 func (v *Range) GetValue() float64 {
 	return float64(C.gtk_range_get_value(RANGE(v))) //TODO test
@@ -8079,7 +8080,7 @@ func (v *Range) GetValue() float64 {
 	//return float64(r)
 }
 func (v *Range) SetValue(value float64) {
-	C.gtk_range_set_value(RANGE(v), C.gdouble(value))
+	C.gtk_range_set_value(RANGE(v), gdouble(value))
 }
 
 // gtk_range_get_round_digits //since 2.24
@@ -8151,7 +8152,7 @@ func (v *Scale) GetLayoutOffsets(x *int, y *int) {
 func (v *Scale) AddMark(value float64, position PositionType, markup string) {
 	ptr := C.CString(markup)
 	defer cfree(ptr)
-	C.gtk_scale_add_mark(SCALE(v), C.gdouble(value), C.GtkPositionType(position), gstring(ptr))
+	C.gtk_scale_add_mark(SCALE(v), gdouble(value), C.GtkPositionType(position), gstring(ptr))
 }
 func (v *Scale) ClearMarks() {
 	C.gtk_scale_clear_marks(SCALE(v))
