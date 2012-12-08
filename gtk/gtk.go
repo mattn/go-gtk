@@ -59,7 +59,7 @@ func MESSAGE_DIALOG(p *MessageDialog) *C.GtkMessageDialog  { return C.toGMessage
 func COMBO_BOX_TEXT(p *ComboBoxText) *C.GtkComboBoxText    { return C.toGComboBoxText(p.GWidget) }
 func ACCESSIBLE(p *Accessible) *C.GtkAccessible            { return C.toGAccessible(unsafe.Pointer(p.Object)) }
 func BIN(p *Bin) *C.GtkBin                                 { return C.toGBin(p.GWidget) }
-func STATUS_BAR(p *Statusbar) *C.GtkStatusbar              { return C.toGStatusbar(p.GWidget) }
+func STATUSBAR(p *Statusbar) *C.GtkStatusbar               { return C.toGStatusbar(p.GWidget) }
 func INFO_BAR(p *InfoBar) *C.GtkInfoBar                    { return C.toGInfoBar(p.GWidget) }
 func FRAME(p *Frame) *C.GtkFrame                           { return C.toGFrame(p.GWidget) }
 func BOX(p *Box) *C.GtkBox                                 { return C.toGBox(p.GWidget) }
@@ -2043,27 +2043,27 @@ func NewStatusbar() *Statusbar {
 func (v *Statusbar) GetContextId(content_description string) uint {
 	ptr := C.CString(content_description)
 	defer cfree(ptr)
-	return uint(C.gtk_statusbar_get_context_id(C.toGStatusbar(v.GWidget), gstring(ptr)))
+	return uint(C.gtk_statusbar_get_context_id(STATUSBAR(v), gstring(ptr)))
 }
 func (v *Statusbar) Push(context_id uint, text string) {
 	ptr := C.CString(text)
 	defer cfree(ptr)
-	C.gtk_statusbar_push(C.toGStatusbar(v.GWidget), guint(context_id), gstring(ptr))
+	C.gtk_statusbar_push(STATUSBAR(v), guint(context_id), gstring(ptr))
 }
 func (v *Statusbar) Pop(context_id uint) {
-	C.gtk_statusbar_pop(C.toGStatusbar(v.GWidget), guint(context_id))
+	C.gtk_statusbar_pop(STATUSBAR(v), guint(context_id))
 }
 func (v *Statusbar) Remove(context_id uint, message_id uint) {
-	C.gtk_statusbar_remove(C.toGStatusbar(v.GWidget), guint(context_id), guint(message_id))
+	C.gtk_statusbar_remove(STATUSBAR(v), guint(context_id), guint(message_id))
 }
 
 // gtk_statusbar_remove_all //since 2.22
 
 func (v *Statusbar) SetHasResizeGrip(add_tearoffs bool) {
-	C.gtk_statusbar_set_has_resize_grip(C.toGStatusbar(v.GWidget), gbool(add_tearoffs))
+	C.gtk_statusbar_set_has_resize_grip(STATUSBAR(v), gbool(add_tearoffs))
 }
 func (v *Statusbar) GetHasResizeGrip() bool {
-	return gobool(C.gtk_statusbar_get_has_resize_grip(C.toGStatusbar(v.GWidget)))
+	return gobool(C.gtk_statusbar_get_has_resize_grip(STATUSBAR(v)))
 }
 
 // gtk_statusbar_get_message_area //since 2.20
