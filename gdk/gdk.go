@@ -23,8 +23,6 @@ func gobool(b C.gboolean) bool {
 
 func cfree(s *C.char) { C.freeCstr(s) }
 
-func WINDOW(p *Window) *C.GdkWindow { return C.toGdkWindow(unsafe.Pointer(p.GWindow)) }
-
 //-----------------------------------------------------------------------
 // Types
 //-----------------------------------------------------------------------
@@ -165,8 +163,7 @@ type Cursor struct {
 }
 
 func NewCursor(cursor_type CursorType) *Cursor {
-	return &Cursor{
-		C.gdk_cursor_new(C.GdkCursorType(cursor_type))}
+	return &Cursor{C.gdk_cursor_new(C.GdkCursorType(cursor_type))}
 }
 
 //-----------------------------------------------------------------------
@@ -194,15 +191,13 @@ type Font struct {
 func FontLoad(name string) *Font {
 	ptr := C.CString(name)
 	defer cfree(ptr)
-	return &Font{
-		C.gdk_font_load(gstring(ptr))}
+	return &Font{C.gdk_font_load(gstring(ptr))}
 }
 
 func FontsetLoad(name string) *Font {
 	ptr := C.CString(name)
 	defer cfree(ptr)
-	return &Font{
-		C.gdk_fontset_load(gstring(ptr))}
+	return &Font{C.gdk_fontset_load(gstring(ptr))}
 }
 
 // GdkFont* gdk_font_ref (GdkFont *font);
@@ -239,8 +234,7 @@ type GC struct {
 }
 
 func NewGC(drawable *Drawable) *GC {
-	return &GC{
-		C.gdk_gc_new(drawable.GDrawable)}
+	return &GC{C.gdk_gc_new(drawable.GDrawable)}
 }
 
 // GdkGC *gdk_gc_new_with_values (GdkDrawable *drawable, GdkGCValues *values, GdkGCValuesMask values_mask);
@@ -480,8 +474,7 @@ func WindowFromUnsafe(window unsafe.Pointer) *Window {
 func (v *Window) GetPointer(x *int, y *int, mask *ModifierType) *Window {
 	var cx, cy C.gint
 	var mt C.GdkModifierType
-	ret := &Window{
-		C.gdk_window_get_pointer(v.GWindow, &cx, &cy, &mt)}
+	ret := &Window{C.gdk_window_get_pointer(v.GWindow, &cx, &cy, &mt)}
 	*x = int(cx)
 	*y = int(cy)
 	*mask = ModifierType(mt)
@@ -522,8 +515,7 @@ type Pixmap struct {
 }
 
 func NewPixmap(drawable *Drawable, width int, height int, depth int) *Pixmap {
-	return &Pixmap{
-		C.gdk_pixmap_new(drawable.GDrawable, gint(width), gint(height), gint(depth))}
+	return &Pixmap{C.gdk_pixmap_new(drawable.GDrawable, gint(width), gint(height), gint(depth))}
 }
 
 // GdkBitmap* gdk_bitmap_create_from_data (GdkDrawable *drawable, const gchar *data, gint width, gint height);
@@ -544,8 +536,7 @@ func (v *Pixmap) Unref() {
 	C.g_object_unref(C.gpointer(v.GPixmap))
 }
 func (v *Pixmap) GetDrawable() *Drawable {
-	return &Drawable{
-		(*C.GdkDrawable)(v.GPixmap)}
+	return &Drawable{(*C.GdkDrawable)(v.GPixmap)}
 }
 
 // Subset of gdkkeysyms.h
