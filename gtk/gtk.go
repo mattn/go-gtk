@@ -5694,7 +5694,8 @@ func NewToolItemGroup(label string) *ToolItemGroup {
 	l := C.CString(label)
 	defer cfree(l)
 	return &ToolItemGroup{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_tool_item_group_new(gstring(l))))}},
+		C.gtk_tool_item_group_new(gstring(l))}},
+		//C.toGWidget(unsafe.Pointer(C.gtk_tool_item_group_new(gstring(l))))}},
 		make(map[*C.GtkToolItem]IWidget)}
 }
 func (v *ToolItemGroup) Insert(item IWidget, pos int) {
