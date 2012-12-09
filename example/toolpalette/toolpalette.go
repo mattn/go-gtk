@@ -23,15 +23,12 @@ func main() {
 	group := gtk.NewToolItemGroup("Tools")
 	group.Insert(bnew, -1)
 	group.Insert(bclose, -1)
-	palette.Add(group)
-
-	vbox.PackStart(palette, true, true, 1)
+	palette.Add(group)	
 
 	bcopy := gtk.NewToolButtonFromStock(gtk.STOCK_COPY)
 	bcut := gtk.NewToolButtonFromStock(gtk.STOCK_CUT)
 	bdelete := gtk.NewToolButtonFromStock(gtk.STOCK_DELETE)
-
-	palette = gtk.NewToolPalette()
+	
 	group = gtk.NewToolItemGroup("Stuff")
 	group.Insert(bcopy, -1)
 	group.Insert(bcut, -1)
