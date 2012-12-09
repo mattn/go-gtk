@@ -755,6 +755,7 @@ static inline GtkToolbar* toGToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
 static inline GtkToolItem* toGToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
 static inline GtkSeparatorToolItem* toGSeparatorToolItem(GtkWidget* w) { return GTK_SEPARATOR_TOOL_ITEM(w); }
 static inline GtkToolButton* toGToolButton(GtkWidget* w) { return GTK_TOOL_BUTTON(w); }
+static inline GtkToolItemGroup* toGToolItemGroup(GtkWidget* w) { return GTK_TOOL_ITEM_GROUP(w); }
 static inline GtkMenuToolButton* toGMenuToolButton(GtkWidget* w) { return GTK_MENU_TOOL_BUTTON(w); }
 static inline GtkToggleToolButton* toGToggleToolButton(GtkWidget* w) { return GTK_TOGGLE_TOOL_BUTTON(w); }
 static inline GtkScrolledWindow* toGScrolledWindow(GtkWidget* w) { return GTK_SCROLLED_WINDOW(w); }
@@ -777,7 +778,6 @@ static inline GtkDrawingArea* toGDrawingArea(GtkWidget* w) { return GTK_DRAWING_
 static inline GtkAssistant* toGAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static inline GtkExpander* toGExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 static inline GtkAlignment* toGAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
-static inline GtkTooltip* toGTooltip(GtkWidget* w) { return GTK_TOOLTIP(w); }
 static inline GtkProgressBar* toGProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
 static inline GtkFixed* toGFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static inline GtkCheckMenuItem* toGCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }

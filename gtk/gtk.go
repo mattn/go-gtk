@@ -96,6 +96,7 @@ func SEPARATOR_TOOL_ITEM(p *SeparatorToolItem) *C.GtkSeparatorToolItem {
 	return C.toGSeparatorToolItem(p.GWidget)
 }
 func TOOL_BUTTON(p *ToolButton) *C.GtkToolButton              { return C.toGToolButton(p.GWidget) }
+func TOOL_ITEM_GROUP(p *ToolItemGroup) *C.GtkToolItemGroup    { return C.toGToolItemGroup(p.GWidget) }
 func MENU_TOOL_BUTTON(p *MenuToolButton) *C.GtkMenuToolButton { return C.toGMenuToolButton(p.GWidget) }
 func TOGGLE_TOOL_BUTTON(p *ToggleToolButton) *C.GtkToggleToolButton {
 	return C.toGToggleToolButton(p.GWidget)
@@ -5606,6 +5607,7 @@ func (v *ToolItem) SetExpand(expand bool) {
 func (v *ToolItem) GetExpand() bool {
 	return gobool(C.gtk_tool_item_get_expand(TOOL_ITEM(v)))
 }
+
 // gtk_tool_item_set_tooltip (deprecated since 2.12)
 func (v *ToolItem) SetArrowTooltipText(text string) {
 	pt := C.CString(text)
@@ -5641,6 +5643,7 @@ func (v *ToolItem) GetTextOrientation() Orientation {
 func (v *ToolItem) RebuildMenu() {
 	C.gtk_tool_item_rebuild_menu(TOOL_ITEM(v))
 }
+
 // gtk_tool_item_toolbar_reconfigured
 // gtk_tool_item_get_text_size_group
 
@@ -5653,9 +5656,9 @@ type ToolPalette struct {
 }
 
 func NewToolPalette() *ToolPalette {
-	return &ToolPalette{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_tool_palette_new()))}}}
+	return &ToolPalette{Container{Widget{C.gtk_tool_palette_new()}}}
 }
+
 // gtk_tool_palette_get_exclusive
 // gtk_tool_palette_set_exclusive
 // gtk_tool_palette_get_expand
@@ -5691,13 +5694,15 @@ func NewToolItemGroup(label string) *ToolItemGroup {
 	l := C.CString(label)
 	defer cfree(l)
 	return &ToolItemGroup{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_tool_item_group_new(gstring(l))))}}}
+		C.toGWidget(unsafe.Pointer(C.gtk_tool_item_group_new(gstring(l))))}},
+		make(map[*C.GtkToolItem]IWidget)}
 }
 func (v *ToolItemGroup) Insert(item IWidget, pos int) {
 	pitem := C.toGToolItem(ToNative(item))
+	C.gtk_tool_item_group_insert(TOOL_ITEM_GROUP(v), pitem, gint(pos))
 	v.items[pitem] = item
-	C.gtk_tool_item_group_insert(TOOL_ITEM_GROUP(v), ToNative(item), gint(pos))
 }
+
 // gtk_tool_item_group_get_collapsed
 // gtk_tool_item_group_get_drop_item
 // gtk_tool_item_group_get_ellipsize
@@ -5842,6 +5847,7 @@ func (v *MenuToolButton) SetMenu(menu *Menu) {
 func (v *MenuToolButton) GetMenu() *Menu { // gtk_menu_tool_button_get_menu
 	return v.mw
 }
+
 // gtk_menu_tool_button_set_arrow_tooltip (deprecated since 2.12)
 func (v *MenuToolButton) SetArrowTooltipText(text string) {
 	pt := C.CString(text)

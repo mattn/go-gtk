@@ -16,7 +16,7 @@ func main() {
 	}, "")
 
 	vbox := gtk.NewVBox(false, 0)
-
+	
 	toolbar := gtk.NewToolbar()
 	toolbar.SetStyle(gtk.TOOLBAR_ICONS)
 	vbox.PackStart(toolbar, false, false, 5)
@@ -26,7 +26,7 @@ func main() {
 	separator := gtk.NewSeparatorToolItem()
 	btncustom := gtk.NewToolButton(nil, "Custom")
 	btnmenu := gtk.NewMenuToolButtonFromStock("gtk.STOCK_CLOSE")
-	btnmenu.SetArrowTooltipText("This is a tool tip")	
+	btnmenu.SetArrowTooltipText("This is a tool tip")		
 
 	btnnew.OnClicked(onToolButtonClicked)
 	btnclose.OnClicked(onToolButtonClicked)
@@ -48,7 +48,7 @@ func main() {
 	toolbar.Insert(btnclose, -1)
 	toolbar.Insert(separator, -1)
 	toolbar.Insert(btncustom, -1)
-	toolbar.Insert(btnmenu, -1)
+	toolbar.Insert(btnmenu, -1)	
 
 	hbox := gtk.NewHBox(false, 0)
 	vbox.PackStart(hbox, true, true, 0)
@@ -78,7 +78,7 @@ func main() {
 		case *gtk.SeparatorToolItem:
 			fmt.Printf("toolbar[%d] is a *gtk.SeparatorToolItem\n", i)
 		default:
-			fmt.Printf("toolbar: Item is of unknown type")
+			fmt.Printf("toolbar: Item is of unknown type\n")
 		}
 	}
 
@@ -93,11 +93,11 @@ func main() {
 		case *gtk.SeparatorToolItem:
 			fmt.Printf("toolbar2[%d] is a *gtk.SeparatorToolItem\n", i)
 		default:
-			fmt.Printf("toolbar2: Item is of unknown type")
+			fmt.Printf("toolbar2: Item is of unknown type\n")
 		}
 	}
 
-	window.Add(vbox)
+	window.Add(vbox)	
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()
