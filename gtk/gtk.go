@@ -5488,7 +5488,6 @@ func (v *Toolbar) OnPopupContextMenu(onclick interface{}, datas ...interface{}) 
 func (v *Toolbar) OnStyleChanged(onclick interface{}, datas ...interface{}) int {
 	return v.Connect("style-changed", onclick, datas...)
 }
-
 func (v *Toolbar) Insert(item IWidget, pos int) {
 	p_tool_item := C.toGToolItem(ToNative(item))
 	v.items[p_tool_item] = item
@@ -5607,7 +5606,7 @@ func (v *ToolItem) SetExpand(expand bool) {
 func (v *ToolItem) GetExpand() bool {
 	return gobool(C.gtk_tool_item_get_expand(TOOL_ITEM(v)))
 }
-// gtk_tool_item_set_tooltip
+// gtk_tool_item_set_tooltip (deprecated since 2.12)
 func (v *ToolItem) SetArrowTooltipText(text string) {
 	pt := C.CString(text)
 	defer cfree(pt)
@@ -5649,7 +5648,14 @@ func (v *ToolItem) RebuildMenu() {
 // GtkToolPalette
 //-----------------------------------------------------------------------
 
-// gtk_tool_palette_new
+type ToolPalette struct {
+	Container
+}
+
+func NewToolPalette() *ToolPalette {
+	return &ToolPalette{Container{Widget{
+		C.toGWidget(unsafe.Pointer(C.gtk_tool_palette_new()))}}}
+}
 // gtk_tool_palette_get_exclusive
 // gtk_tool_palette_set_exclusive
 // gtk_tool_palette_get_expand
@@ -5676,8 +5682,22 @@ func (v *ToolItem) RebuildMenu() {
 // GtkToolItemGroup
 //-----------------------------------------------------------------------
 
-// gtk_tool_item_group_new
-// gtk_tool_item_group_insert
+type ToolItemGroup struct {
+	Container
+	items map[*C.GtkToolItem]IWidget
+}
+
+func NewToolItemGroup(label string) *ToolItemGroup {
+	l := C.CString(label)
+	defer cfree(l)
+	return &ToolItemGroup{Container{Widget{
+		C.toGWidget(unsafe.Pointer(C.gtk_tool_item_group_new(gstring(l))))}}}
+}
+func (v *ToolItemGroup) Insert(item IWidget, pos int) {
+	pitem := C.toGToolItem(ToNative(item))
+	v.items[pitem] = item
+	C.gtk_tool_item_group_insert(TOOL_ITEM_GROUP(v), ToNative(item), gint(pos))
+}
 // gtk_tool_item_group_get_collapsed
 // gtk_tool_item_group_get_drop_item
 // gtk_tool_item_group_get_ellipsize
@@ -5822,7 +5842,7 @@ func (v *MenuToolButton) SetMenu(menu *Menu) {
 func (v *MenuToolButton) GetMenu() *Menu { // gtk_menu_tool_button_get_menu
 	return v.mw
 }
-// gtk_menu_tool_button_set_arrow_tooltip
+// gtk_menu_tool_button_set_arrow_tooltip (deprecated since 2.12)
 func (v *MenuToolButton) SetArrowTooltipText(text string) {
 	pt := C.CString(text)
 	defer cfree(pt)
