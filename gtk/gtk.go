@@ -8145,16 +8145,16 @@ type IWidget interface {
 	QueueResize()
 }
 
-type Widget struct {
-	GWidget *C.GtkWidget
-}
-
 func ToNative(w IWidget) *C.GtkWidget {
 	if w == nil {
 		log.Println("Warning: Converting interface (IWidget) from nil")
 		return nil
 	}
 	return w.ToNative()
+}
+
+type Widget struct {
+	GWidget *C.GtkWidget
 }
 
 func WidgetFromNative(p unsafe.Pointer) *Widget {
