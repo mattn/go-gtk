@@ -15,15 +15,11 @@ func main() {
 		gtk.MainQuit()
 	}, "")
 	
-	vbox := gtk.NewVBox(false, 1)
-	hbox := gtk.NewHBox(false, 1)
-
-	//--------------------------------------------------------
-	// GtkToolbar
-	//--------------------------------------------------------
+	vbox := gtk.NewVBox(false, 0)			
+	
 	toolbar := gtk.NewToolbar()
 	toolbar.SetStyle(gtk.TOOLBAR_ICONS)
-	vbox.PackStart(toolbar, false, false, 5)
+	vbox.PackStart(toolbar, false, false, 5)	
 
 	btnnew := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)
 	btnclose := gtk.NewToolButtonFromStock(gtk.STOCK_CLOSE)
@@ -38,6 +34,9 @@ func main() {
 	toolbar.Insert(btnclose, -1)
 	toolbar.Insert(separator, -1)		
 	toolbar.Insert(btncustom, -1)
+
+	hbox := gtk.NewHBox(false, 0)
+	vbox.PackStart(hbox, true, true, 0)
 
 	toolbar2 := gtk.NewToolbar()
 	toolbar2.SetOrientation(gtk.ORIENTATION_VERTICAL)
@@ -80,9 +79,8 @@ func main() {
 		    fmt.Printf("toolbar2: Item is of unknown type")	
 		}
 	}		
-
-	vbox.Add(hbox)
-	window.Add(vbox)	
+	
+	window.Add(vbox)		
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()

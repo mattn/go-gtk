@@ -110,8 +110,8 @@ func CELL_RENDERER_TEXT(p *CellRendererText) *C.GtkCellRendererText {
 func CELL_RENDERER_TOGGLE(p *CellRendererToggle) *C.GtkCellRendererToggle {
 	return C.toGCellRendererToggle(p.GCellRenderer)
 }
-func SCALE(p *Scale) *C.GtkScale { return C.toGScale(p.GWidget) }
-func RANGE(p *Range) *C.GtkRange { return C.toGRange(p.GWidget) }
+func SCALE(p *Scale) *C.GtkScale                           { return C.toGScale(p.GWidget) }
+func RANGE(p *Range) *C.GtkRange                           { return C.toGRange(p.GWidget) }
 func IMAGE(p *Image) *C.GtkImage                           { return C.toGImage(p.GWidget) }
 func NOTEBOOK(p *Notebook) *C.GtkNotebook                  { return C.toGNotebook(p.GWidget) }
 func TABLE(p *Table) *C.GtkTable                           { return C.toGTable(p.GWidget) }
@@ -1036,7 +1036,11 @@ func (v *Dialog) GetResponseForWidget(w *Widget) int {
 func (v *Dialog) GetWidgetForResponse(id int) *Widget {
 	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response()")
 	w := C._gtk_dialog_get_widget_for_response(DIALOG(v), gint(id))
-	if(v.wfr == nil) { v.wfr = &Widget{w} } else { v.wfr.GWidget = w }
+	if v.wfr == nil {
+		v.wfr = &Widget{w}
+	} else {
+		v.wfr.GWidget = w
+	}
 	return v.wfr
 }
 
@@ -5464,11 +5468,11 @@ const (
 
 type Toolbar struct {
 	Container
-	items map[*C.GtkToolItem]IToolItem
+	items map[*C.GtkToolItem]IWidget
 }
 
 func NewToolbar() *Toolbar {
-	return &Toolbar{Container{Widget{C.gtk_toolbar_new()}}, make(map[*C.GtkToolItem]IToolItem)}
+	return &Toolbar{Container{Widget{C.gtk_toolbar_new()}}, make(map[*C.GtkToolItem]IWidget)}
 }
 
 func (v *Toolbar) OnFocusHomeOrEnd(onclick interface{}, datas ...interface{}) int {
@@ -5484,18 +5488,18 @@ func (v *Toolbar) OnStyleChanged(onclick interface{}, datas ...interface{}) int 
 	return v.Connect("style-changed", onclick, datas...)
 }
 
-func (v *Toolbar) Insert(item IToolItem, pos int) {
-	p_tool_item := TOOL_ITEM(item.AsToolItem())
+func (v *Toolbar) Insert(item IWidget, pos int) {
+	p_tool_item := C.toGToolItem(item.ToNative())
 	v.items[p_tool_item] = item
 	C.gtk_toolbar_insert(TOOLBAR(v), p_tool_item, gint(pos))
 }
-func (v *Toolbar) GetItemIndex(item IToolItem) int {
-	return int(C.gtk_toolbar_get_item_index(TOOLBAR(v), TOOL_ITEM(item.AsToolItem())))
+func (v *Toolbar) GetItemIndex(item IWidget) int {
+	return int(C.gtk_toolbar_get_item_index(TOOLBAR(v), C.toGToolItem(item.ToNative())))
 }
 func (v *Toolbar) GetNItems() int {
 	return int(C.gtk_toolbar_get_n_items(TOOLBAR(v)))
 }
-func (v *Toolbar) GetNthItem(n int) IToolItem {
+func (v *Toolbar) GetNthItem(n int) IWidget {
 	p_tool_item := C.gtk_toolbar_get_nth_item(TOOLBAR(v), gint(n))
 	if p_tool_item == nil {
 		panic("Toolbar.GetNthItem: index out of bounds")
@@ -5508,8 +5512,8 @@ func (v *Toolbar) GetNthItem(n int) IToolItem {
 func (v *Toolbar) GetDropIndex(x, y int) int {
 	return int(C.gtk_toolbar_get_drop_index(TOOLBAR(v), gint(x), gint(y)))
 }
-func (v *Toolbar) SetDropHighlightItem(item IToolItem, index int) {
-	C.gtk_toolbar_set_drop_highlight_item(TOOLBAR(v), TOOL_ITEM(item.AsToolItem()), gint(index))
+func (v *Toolbar) SetDropHighlightItem(item IWidget, index int) {
+	C.gtk_toolbar_set_drop_highlight_item(TOOLBAR(v), C.toGToolItem(item.ToNative()), gint(index))
 }
 func (v *Toolbar) SetShowArrow(show_arrow bool) {
 	C.gtk_toolbar_set_show_arrow(TOOLBAR(v), gbool(show_arrow))
@@ -5572,20 +5576,12 @@ func (v *Toolbar) UnsetStyle() {
 // GtkToolItem
 //-----------------------------------------------------------------------
 
-type IToolItem interface {
-	AsToolItem() *ToolItem
-}
-
 type ToolItem struct {
 	Bin
 }
 
 func NewToolItem() *ToolItem {
 	return &ToolItem{Bin{Container{Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
-}
-
-func (v *ToolItem) AsToolItem() *ToolItem {
-	return v
 }
 
 func (v *ToolItem) OnCreateMenuProxy(onclick interface{}, datas ...interface{}) int {
@@ -5707,10 +5703,6 @@ func NewSeparatorToolItem() *SeparatorToolItem {
 		C.toGWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
 }
 
-func (v *SeparatorToolItem) AsToolItem() *ToolItem {
-	return &v.ToolItem
-}
-
 func (v *SeparatorToolItem) SetDraw(draw bool) {
 	C.gtk_separator_tool_item_set_draw(SEPARATOR_TOOL_ITEM(v), gbool(draw))
 }
@@ -5738,10 +5730,6 @@ func NewToolButtonFromStock(stock_id string) *ToolButton {
 	defer cfree(si)
 	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(gstring(si))))
 	return &ToolButton{ToolItem{Bin{Container{Widget{tb}}}}, nil, nil}
-}
-
-func (v *ToolButton) AsToolItem() *ToolItem {
-	return &v.ToolItem
 }
 
 func (v *ToolButton) OnClicked(onclick interface{}, datas ...interface{}) int {
@@ -5832,10 +5820,6 @@ func NewToggleToolButtonFromStock(stock_id string) *ToggleToolButton {
 	defer cfree(p_stock_id)
 	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
 		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(gstring(p_stock_id))))}}}}, nil, nil}}
-}
-
-func (v *ToggleToolButton) AsToolItem() *ToolItem {
-	return &v.ToolButton.ToolItem
 }
 
 func (v *ToggleToolButton) OnToggled(onclick interface{}, datas ...interface{}) int {
