@@ -5798,29 +5798,40 @@ func (v *ToolButton) GetLabelWidget() *Widget {
 
 type MenuToolButton struct {
 	ToolButton
-	//wm *Widget // Proxy for menu widget
+	mw *Menu // Proxy for menu widget
 }
 
 func NewMenuToolButton(icon IWidget, text string) *MenuToolButton {
 	ctext := C.CString(text)
 	defer cfree(ctext)
 	mtb := C.toGWidget(unsafe.Pointer(C.gtk_menu_tool_button_new(ToNative(icon), gstring(ctext))))
-	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}}
+	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}, nil}
 }
 func NewMenuToolButtonFromStock(stock_id string) *MenuToolButton {
 	si := C.CString(stock_id)
 	defer cfree(si)
 	mtb := C.toGWidget(unsafe.Pointer(C.gtk_menu_tool_button_new_from_stock(gstring(si))))
-	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}}
+	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}, nil}
 }
-func (v *MenuToolButton) SetMenu(menu IWidget) {
-	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), ToNative(menu))
+func (v *MenuToolButton) SetMenu(menu *Menu) {
+	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), menu.GWidget)
+	v.mw = menu
+}
+func (v *MenuToolButton) GetMenu() *Menu { // gtk_menu_tool_button_get_menu
+	return v.mw
 }
 
-// gtk_menu_tool_button_get_menu
 // gtk_menu_tool_button_set_arrow_tooltip
-// gtk_menu_tool_button_set_arrow_tooltip_text
-// gtk_menu_tool_button_set_arrow_tooltip_markup
+func (v *MenuToolButton) SetArrowTooltipText(text string) {
+	pt := C.CString(text)
+	defer cfree(pt)
+	C.gtk_menu_tool_button_set_arrow_tooltip_text(MENU_TOOL_BUTTON(v), gstring(pt))
+}
+func (v *MenuToolButton) SetArrowTooltipMarkup(markup string) {
+	pm := C.CString(markup)
+	defer cfree(pm)
+	C.gtk_menu_tool_button_set_arrow_tooltip_text(MENU_TOOL_BUTTON(v), gstring(pm))
+}
 
 //-----------------------------------------------------------------------
 // GtkToggleToolButton

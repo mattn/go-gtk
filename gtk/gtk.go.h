@@ -777,6 +777,7 @@ static inline GtkDrawingArea* toGDrawingArea(GtkWidget* w) { return GTK_DRAWING_
 static inline GtkAssistant* toGAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static inline GtkExpander* toGExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 static inline GtkAlignment* toGAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }
+static inline GtkTooltip* toGTooltip(GtkWidget* w) { return GTK_TOOLTIP(w); }
 static inline GtkProgressBar* toGProgressBar(GtkWidget* w) { return GTK_PROGRESS_BAR(w); }
 static inline GtkFixed* toGFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static inline GtkCheckMenuItem* toGCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
