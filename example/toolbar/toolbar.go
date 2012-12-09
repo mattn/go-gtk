@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"	
+	//"github.com/mattn/go-gtk/gtk"
+	"go-gtk/gtk"
 	"fmt"
 )
 
@@ -15,25 +16,33 @@ func main() {
 		gtk.MainQuit()
 	}, "")
 	
-	vbox := gtk.NewVBox(false, 0)			
+	vbox := gtk.NewVBox(false, 0)	
 	
 	toolbar := gtk.NewToolbar()
 	toolbar.SetStyle(gtk.TOOLBAR_ICONS)
-	vbox.PackStart(toolbar, false, false, 5)	
+	vbox.PackStart(toolbar, false, false, 5)		
 
-	btnnew := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)
+	btnnew := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)	
 	btnclose := gtk.NewToolButtonFromStock(gtk.STOCK_CLOSE)
 	separator := gtk.NewSeparatorToolItem()
-	btncustom := gtk.NewToolButton(nil, "Custom")	
+	btncustom := gtk.NewToolButton(nil, "Custom")		
+	btnmenu := gtk.NewMenuToolButtonFromStock("gtk.STOCK_CLOSE")			
 
 	btnnew.OnClicked(onToolButtonClicked)	
 	btnclose.OnClicked(onToolButtonClicked)	
 	btncustom.OnClicked(onToolButtonClicked)	
 
+	toolmenu := gtk.NewMenu()	
+	menuitem := gtk.NewMenuItemWithMnemonic("C_lick me")	
+	menuitem.Show()
+	toolmenu.Append(menuitem)
+	btnmenu.SetMenu(toolmenu)
+
 	toolbar.Insert(btnnew, -1)	
 	toolbar.Insert(btnclose, -1)
 	toolbar.Insert(separator, -1)		
 	toolbar.Insert(btncustom, -1)
+	toolbar.Insert(btnmenu, -1)	
 
 	hbox := gtk.NewHBox(false, 0)
 	vbox.PackStart(hbox, true, true, 0)
@@ -55,6 +64,8 @@ func main() {
 		switch gti.(type) {
 		case *gtk.ToolButton:
 		    fmt.Printf("toolbar[%d] is a *gtk.ToolButton\n", i)		    
+		    w := gti.(*gtk.ToolButton).GetIconWidget()
+		    gti.(*gtk.ToolButton).SetIconWidget(w)
 		case *gtk.ToggleToolButton:
 		    fmt.Printf("toolbar[%d] is a *gtk.ToggleToolButton\n", i)	
 		    gti.(*gtk.ToggleToolButton).SetActive(true)
@@ -79,7 +90,7 @@ func main() {
 		    fmt.Printf("toolbar2: Item is of unknown type")	
 		}
 	}		
-	
+
 	window.Add(vbox)		
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()

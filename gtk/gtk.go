@@ -95,7 +95,8 @@ func TOOL_ITEM(p *ToolItem) *C.GtkToolItem                 { return C.toGToolIte
 func SEPARATOR_TOOL_ITEM(p *SeparatorToolItem) *C.GtkSeparatorToolItem {
 	return C.toGSeparatorToolItem(p.GWidget)
 }
-func TOOL_BUTTON(p *ToolButton) *C.GtkToolButton { return C.toGToolButton(p.GWidget) }
+func TOOL_BUTTON(p *ToolButton) *C.GtkToolButton              { return C.toGToolButton(p.GWidget) }
+func MENU_TOOL_BUTTON(p *MenuToolButton) *C.GtkMenuToolButton { return C.toGMenuToolButton(p.GWidget) }
 func TOGGLE_TOOL_BUTTON(p *ToggleToolButton) *C.GtkToggleToolButton {
 	return C.toGToggleToolButton(p.GWidget)
 }
@@ -5716,13 +5717,15 @@ func (v *SeparatorToolItem) GetDraw() bool {
 
 type ToolButton struct {
 	ToolItem
-	iw, lw *Widget
+	iw, lw *Widget // Proxies for IconWidget and LabelWidget
 }
 
-func NewToolButton(icon *Widget, text string) *ToolButton {
+func NewToolButton(icon IWidget, text string) *ToolButton {
 	ctext := C.CString(text)
 	defer cfree(ctext)
-	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new(WIDGET(icon), gstring(ctext))))
+	w := icon.ToNative()
+	if w == nil { panic("icon is nil") }
+	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new(w, gstring(ctext))))
 	return &ToolButton{ToolItem{Bin{Container{Widget{tb}}}}, nil, nil}
 }
 func NewToolButtonFromStock(stock_id string) *ToolButton {
@@ -5766,20 +5769,28 @@ func (v *ToolButton) SetIconName(icon_name string) {
 func (v *ToolButton) GetIconName() string {
 	return gostring(C.gtk_tool_button_get_icon_name(TOOL_BUTTON(v)))
 }
-func (v *ToolButton) SetIconWidget(icon_widget *Widget) {	
-	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), icon_widget.GWidget)
+func (v *ToolButton) SetIconWidget(icon_widget IWidget) {
+	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), icon_widget.ToNative())
 }
 func (v *ToolButton) GetIconWidget() *Widget {
 	w := C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))
-	if v.iw == nil { v.iw = &Widget{w} } else { v.iw.GWidget = w }
+	if v.iw == nil {
+		v.iw = &Widget{w}
+	} else {
+		v.iw.GWidget = w
+	}
 	return v.iw
 }
-func (v *ToolButton) SetLabelWidget(label_widget *Widget) {		
-	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), label_widget.GWidget)
+func (v *ToolButton) SetLabelWidget(label_widget IWidget) {
+	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), label_widget.ToNative())
 }
 func (v *ToolButton) GetLabelWidget() *Widget {
 	w := C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))
-	if v.lw == nil { v.lw = &Widget{w} } else { v.lw.GWidget = w }
+	if v.lw == nil {
+		v.lw = &Widget{w}
+	} else {
+		v.lw.GWidget = w
+	}
 	return v.lw
 }
 
@@ -5787,9 +5798,27 @@ func (v *ToolButton) GetLabelWidget() *Widget {
 // GtkMenuToolButton
 //-----------------------------------------------------------------------
 
-// gtk_menu_tool_button_new
-// gtk_menu_tool_button_new_from_stock
-// gtk_menu_tool_button_set_menu
+type MenuToolButton struct {
+	ToolButton
+	//wm *Widget // Proxy for menu widget
+}
+
+func NewMenuToolButton(icon IWidget, text string) *MenuToolButton {
+	ctext := C.CString(text)
+	defer cfree(ctext)
+	mtb := C.toGWidget(unsafe.Pointer(C.gtk_menu_tool_button_new(icon.ToNative(), gstring(ctext))))
+	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}}
+}
+func NewMenuToolButtonFromStock(stock_id string) *MenuToolButton {
+	si := C.CString(stock_id)
+	defer cfree(si)
+	mtb := C.toGWidget(unsafe.Pointer(C.gtk_menu_tool_button_new_from_stock(gstring(si))))
+	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}}
+}
+func (v *MenuToolButton) SetMenu(menu IWidget) {
+	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), menu.ToNative())
+}
+
 // gtk_menu_tool_button_get_menu
 // gtk_menu_tool_button_set_arrow_tooltip
 // gtk_menu_tool_button_set_arrow_tooltip_text
