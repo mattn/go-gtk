@@ -2,47 +2,46 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/glib"
-	//"github.com/mattn/go-gtk/gtk"
-	"go-gtk/gtk"
+	"github.com/mattn/go-gtk/gtk"
 	"fmt"
 )
 
-func main() {	
+func main() {
 	gtk.Init(nil)
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetPosition(gtk.WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
-	window.Connect("destroy", func(ctx *glib.CallbackContext) {		
+	window.Connect("destroy", func(ctx *glib.CallbackContext) {
 		gtk.MainQuit()
 	}, "")
-	
-	vbox := gtk.NewVBox(false, 0)	
-	
+
+	vbox := gtk.NewVBox(false, 0)
+
 	toolbar := gtk.NewToolbar()
 	toolbar.SetStyle(gtk.TOOLBAR_ICONS)
-	vbox.PackStart(toolbar, false, false, 5)		
+	vbox.PackStart(toolbar, false, false, 5)
 
-	btnnew := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)	
+	btnnew := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)
 	btnclose := gtk.NewToolButtonFromStock(gtk.STOCK_CLOSE)
 	separator := gtk.NewSeparatorToolItem()
-	btncustom := gtk.NewToolButton(nil, "Custom")		
-	btnmenu := gtk.NewMenuToolButtonFromStock("gtk.STOCK_CLOSE")			
+	btncustom := gtk.NewToolButton(nil, "Custom")
+	btnmenu := gtk.NewMenuToolButtonFromStock("gtk.STOCK_CLOSE")
 
-	btnnew.OnClicked(onToolButtonClicked)	
-	btnclose.OnClicked(onToolButtonClicked)	
-	btncustom.OnClicked(onToolButtonClicked)	
+	btnnew.OnClicked(onToolButtonClicked)
+	btnclose.OnClicked(onToolButtonClicked)
+	btncustom.OnClicked(onToolButtonClicked)
 
-	toolmenu := gtk.NewMenu()	
-	menuitem := gtk.NewMenuItemWithMnemonic("C_lick me")	
+	toolmenu := gtk.NewMenu()
+	menuitem := gtk.NewMenuItemWithMnemonic("C_lick me")
 	menuitem.Show()
 	toolmenu.Append(menuitem)
 	btnmenu.SetMenu(toolmenu)
 
-	toolbar.Insert(btnnew, -1)	
+	toolbar.Insert(btnnew, -1)
 	toolbar.Insert(btnclose, -1)
-	toolbar.Insert(separator, -1)		
+	toolbar.Insert(separator, -1)
 	toolbar.Insert(btncustom, -1)
-	toolbar.Insert(btnmenu, -1)	
+	toolbar.Insert(btnmenu, -1)
 
 	hbox := gtk.NewHBox(false, 0)
 	vbox.PackStart(hbox, true, true, 0)
@@ -51,28 +50,28 @@ func main() {
 	toolbar2.SetOrientation(gtk.ORIENTATION_VERTICAL)
 	hbox.PackStart(toolbar2, false, false, 5)
 	btnhelp := gtk.NewToolButtonFromStock(gtk.STOCK_HELP)
-	btnhelp.OnClicked(onToolButtonClicked)	
-	toolbar2.Insert(btnhelp, -1)	
+	btnhelp.OnClicked(onToolButtonClicked)
+	toolbar2.Insert(btnhelp, -1)
 
 	btntoggle := gtk.NewToggleToolButton()
 	btntoggle2 := gtk.NewToggleToolButtonFromStock(gtk.STOCK_ITALIC)
-	toolbar2.Insert(btntoggle, -1)	
-	toolbar2.Insert(btntoggle2, -1)		
+	toolbar2.Insert(btntoggle, -1)
+	toolbar2.Insert(btntoggle2, -1)
 
 	for i := 0; i < toolbar.GetNItems(); i++ {
 		gti := toolbar.GetNthItem(i)
 		switch gti.(type) {
 		case *gtk.ToolButton:
-		    fmt.Printf("toolbar[%d] is a *gtk.ToolButton\n", i)		    
-		    w := gti.(*gtk.ToolButton).GetIconWidget()
-		    gti.(*gtk.ToolButton).SetIconWidget(w)
+			fmt.Printf("toolbar[%d] is a *gtk.ToolButton\n", i)
+			w := gti.(*gtk.ToolButton).GetIconWidget()
+			gti.(*gtk.ToolButton).SetIconWidget(w)
 		case *gtk.ToggleToolButton:
-		    fmt.Printf("toolbar[%d] is a *gtk.ToggleToolButton\n", i)	
-		    gti.(*gtk.ToggleToolButton).SetActive(true)
+			fmt.Printf("toolbar[%d] is a *gtk.ToggleToolButton\n", i)
+			gti.(*gtk.ToggleToolButton).SetActive(true)
 		case *gtk.SeparatorToolItem:
-		    fmt.Printf("toolbar[%d] is a *gtk.SeparatorToolItem\n", i)		    
+			fmt.Printf("toolbar[%d] is a *gtk.SeparatorToolItem\n", i)
 		default:
-		    fmt.Printf("toolbar: Item is of unknown type")	
+			fmt.Printf("toolbar: Item is of unknown type")
 		}
 	}
 
@@ -80,23 +79,23 @@ func main() {
 		gti := toolbar2.GetNthItem(i)
 		switch gti.(type) {
 		case *gtk.ToolButton:
-		    fmt.Printf("toolbar2[%d] is a *gtk.ToolButton\n", i)		    		    
+			fmt.Printf("toolbar2[%d] is a *gtk.ToolButton\n", i)
 		case *gtk.ToggleToolButton:
-		    fmt.Printf("toolbar2[%d] is a *gtk.ToggleToolButton\n", i)	
-		    gti.(*gtk.ToggleToolButton).SetActive(true)
+			fmt.Printf("toolbar2[%d] is a *gtk.ToggleToolButton\n", i)
+			gti.(*gtk.ToggleToolButton).SetActive(true)
 		case *gtk.SeparatorToolItem:
-		    fmt.Printf("toolbar2[%d] is a *gtk.SeparatorToolItem\n", i)		    
+			fmt.Printf("toolbar2[%d] is a *gtk.SeparatorToolItem\n", i)
 		default:
-		    fmt.Printf("toolbar2: Item is of unknown type")	
+			fmt.Printf("toolbar2: Item is of unknown type")
 		}
-	}		
+	}
 
-	window.Add(vbox)		
+	window.Add(vbox)
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()
 }
 
 func onToolButtonClicked() {
-	println("ToolButton clicked")			
+	println("ToolButton clicked")
 }

@@ -5722,7 +5722,7 @@ type ToolButton struct {
 
 func NewToolButton(icon IWidget, text string) *ToolButton {
 	ctext := C.CString(text)
-	defer cfree(ctext)		
+	defer cfree(ctext)
 	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new(ToNative(icon), gstring(ctext))))
 	return &ToolButton{ToolItem{Bin{Container{Widget{tb}}}}, nil, nil}
 }
@@ -8151,6 +8151,7 @@ type Widget struct {
 
 func ToNative(w IWidget) *C.GtkWidget {
 	if w == nil {
+		log.Println("Warning: Converting interface (IWidget) from nil")
 		return nil
 	}
 	return w.ToNative()
@@ -8165,7 +8166,7 @@ func WidgetFromObject(object *glib.GObject) *Widget {
 	return &Widget{C.toGWidget(object.Object)}
 }
 
-func (v *Widget) ToNative() *C.GtkWidget {	
+func (v *Widget) ToNative() *C.GtkWidget {
 	return v.GWidget
 }
 
