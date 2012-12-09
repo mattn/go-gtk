@@ -5607,14 +5607,17 @@ func (v *ToolItem) SetExpand(expand bool) {
 func (v *ToolItem) GetExpand() bool {
 	return gobool(C.gtk_tool_item_get_expand(TOOL_ITEM(v)))
 }
-
-/*func (v *GtkToolItem) SetTooltip(tooltips *GtkTooltips, tip_text, tip_private string) { // FIXME
-	p_tip_text := C.CString(tip_text)
-	defer cfree(p_tip_text)	
-	p_tip_private := C.CString(tip_private)
-	defer cfree(p_tip_private)	
-	C.gtk_tool_item_set_tooltip(TOOL_ITEM(v), tooltips.Tooltip, gstring(p_tip_text), gstring(p_tip_private))
-}*/
+// gtk_tool_item_set_tooltip
+func (v *ToolItem) SetArrowTooltipText(text string) {
+	pt := C.CString(text)
+	defer cfree(pt)
+	C.gtk_tool_item_set_tooltip_text(TOOL_ITEM(v), gstring(pt))
+}
+func (v *ToolItem) SetArrowTooltipMarkup(markup string) {
+	pm := C.CString(markup)
+	defer cfree(pm)
+	C.gtk_tool_item_set_tooltip_markup(TOOL_ITEM(v), gstring(pm))
+}
 func (v *ToolItem) SetTooltipMarkup(markup string) {
 	p_markup := C.CString(markup)
 	defer cfree(p_markup)
@@ -5639,7 +5642,6 @@ func (v *ToolItem) GetTextOrientation() Orientation {
 func (v *ToolItem) RebuildMenu() {
 	C.gtk_tool_item_rebuild_menu(TOOL_ITEM(v))
 }
-
 // gtk_tool_item_toolbar_reconfigured
 // gtk_tool_item_get_text_size_group
 
@@ -5674,6 +5676,8 @@ func (v *ToolItem) RebuildMenu() {
 // GtkToolItemGroup
 //-----------------------------------------------------------------------
 
+// gtk_tool_item_group_new
+// gtk_tool_item_group_insert
 // gtk_tool_item_group_get_collapsed
 // gtk_tool_item_group_get_drop_item
 // gtk_tool_item_group_get_ellipsize
@@ -5683,8 +5687,6 @@ func (v *ToolItem) RebuildMenu() {
 // gtk_tool_item_group_get_label_widget
 // gtk_tool_item_group_get_nth_item
 // gtk_tool_item_group_get_header_relief
-// gtk_tool_item_group_insert
-// gtk_tool_item_group_new
 // gtk_tool_item_group_set_collapsed
 // gtk_tool_item_group_set_ellipsize
 // gtk_tool_item_group_set_item_position
@@ -5820,7 +5822,6 @@ func (v *MenuToolButton) SetMenu(menu *Menu) {
 func (v *MenuToolButton) GetMenu() *Menu { // gtk_menu_tool_button_get_menu
 	return v.mw
 }
-
 // gtk_menu_tool_button_set_arrow_tooltip
 func (v *MenuToolButton) SetArrowTooltipText(text string) {
 	pt := C.CString(text)
