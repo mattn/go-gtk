@@ -5716,7 +5716,7 @@ func (v *SeparatorToolItem) GetDraw() bool {
 
 type ToolButton struct {
 	ToolItem
-	iconWidget, labelWidget *Widget
+	iw, lw *Widget
 }
 
 func NewToolButton(icon *Widget, text string) *ToolButton {
@@ -5766,29 +5766,21 @@ func (v *ToolButton) SetIconName(icon_name string) {
 func (v *ToolButton) GetIconName() string {
 	return gostring(C.gtk_tool_button_get_icon_name(TOOL_BUTTON(v)))
 }
-func (v *ToolButton) SetIconWidget(icon_widget *Widget) {
-	p_icon_widget := C.toGWidget(unsafe.Pointer(icon_widget.GWidget))
-	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), p_icon_widget)
+func (v *ToolButton) SetIconWidget(icon_widget *Widget) {	
+	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), icon_widget.GWidget)
 }
 func (v *ToolButton) GetIconWidget() *Widget {
-	if v.iconWidget == nil {
-		v.iconWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))))}
-	} else {
-		v.iconWidget.GWidget = C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))
-	}
-	return v.iconWidget
+	w := C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))
+	if v.iw == nil { v.iw = &Widget{w} } else { v.iw.GWidget = w }
+	return v.iw
 }
-func (v *ToolButton) SetLabelWidget(label_widget *Widget) {
-	p_label_widget := C.toGWidget(unsafe.Pointer(label_widget.GWidget))
-	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), p_label_widget)
+func (v *ToolButton) SetLabelWidget(label_widget *Widget) {		
+	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), label_widget.GWidget)
 }
 func (v *ToolButton) GetLabelWidget() *Widget {
-	if v.labelWidget == nil {
-		v.labelWidget = &Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))))}
-	} else {
-		v.labelWidget.GWidget = C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))
-	}
-	return v.labelWidget
+	w := C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))
+	if v.lw == nil { v.lw = &Widget{w} } else { v.lw.GWidget = w }
+	return v.lw
 }
 
 //-----------------------------------------------------------------------
