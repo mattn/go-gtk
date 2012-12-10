@@ -5845,9 +5845,9 @@ func (v *ToolButton) GetIconWidget() *Widget {
 	}
 	return v.iw
 }
-func (v *ToolButton) SetLabelWidget(label_widget IWidget) {
-	v.lw = label_widget.(*Widget) // TODO
-	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), ToNative(label_widget))
+func (v *ToolButton) SetLabelWidget(label_widget *Widget) {
+	v.lw = label_widget
+	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), label_widget.GWidget)
 }
 func (v *ToolButton) GetLabelWidget() *Widget {
 	if v.lw == nil {
@@ -5879,7 +5879,7 @@ func NewMenuToolButtonFromStock(stock_id string) *MenuToolButton {
 }
 func (v *MenuToolButton) SetMenu(menu *Menu) {
 	v.mw = menu
-	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), ToNative(menu))
+	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), menu.GWidget)
 }
 func (v *MenuToolButton) GetMenu() *Menu {
 	if v.mw == nil {
