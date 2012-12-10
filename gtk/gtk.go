@@ -5883,7 +5883,7 @@ func (v *MenuToolButton) SetMenu(menu *Menu) {
 }
 func (v *MenuToolButton) GetMenu() *Menu {
 	if v.mw == nil {
-		v.mw = &Menu{Container{Widget{C.gtk_menu_tool_button_get_menu(TOOL_BUTTON(v))}}}
+		v.mw = &Menu{Container{Widget{C.gtk_menu_tool_button_get_menu(MENU_TOOL_BUTTON(v))}}}
 	}
 	return v.mw
 }
