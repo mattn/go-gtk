@@ -5835,9 +5835,9 @@ func (v *ToolButton) SetIconName(icon_name string) {
 func (v *ToolButton) GetIconName() string {
 	return gostring(C.gtk_tool_button_get_icon_name(TOOL_BUTTON(v)))
 }
-func (v *ToolButton) SetIconWidget(icon_widget IWidget) {
-	v.iw = icon_widget.(*Widget) // TODO
-	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), ToNative(icon_widget))
+func (v *ToolButton) SetIconWidget(icon_widget *Widget) {
+	v.iw = icon_widget
+	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), icon_widget.GWidget)
 }
 func (v *ToolButton) GetIconWidget() *Widget {
 	if v.iw == nil {
