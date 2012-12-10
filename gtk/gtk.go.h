@@ -755,6 +755,7 @@ static inline GtkToolbar* toGToolbar(GtkWidget* w) { return GTK_TOOLBAR(w); }
 static inline GtkToolItem* toGToolItem(GtkWidget* w) { return GTK_TOOL_ITEM(w); }
 static inline GtkSeparatorToolItem* toGSeparatorToolItem(GtkWidget* w) { return GTK_SEPARATOR_TOOL_ITEM(w); }
 static inline GtkToolButton* toGToolButton(GtkWidget* w) { return GTK_TOOL_BUTTON(w); }
+static inline GtkToolPalette* toGToolPalette(GtkWidget* w) { return GTK_TOOL_PALETTE(w); }
 static inline GtkToolItemGroup* toGToolItemGroup(GtkWidget* w) { return GTK_TOOL_ITEM_GROUP(w); }
 static inline GtkMenuToolButton* toGMenuToolButton(GtkWidget* w) { return GTK_MENU_TOOL_BUTTON(w); }
 static inline GtkToggleToolButton* toGToggleToolButton(GtkWidget* w) { return GTK_TOGGLE_TOOL_BUTTON(w); }

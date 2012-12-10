@@ -96,6 +96,7 @@ func SEPARATOR_TOOL_ITEM(p *SeparatorToolItem) *C.GtkSeparatorToolItem {
 	return C.toGSeparatorToolItem(p.GWidget)
 }
 func TOOL_BUTTON(p *ToolButton) *C.GtkToolButton              { return C.toGToolButton(p.GWidget) }
+func TOOL_PALETTE(p *ToolPalette) *C.GtkToolPalette           { return C.toGToolPalette(p.GWidget) }
 func TOOL_ITEM_GROUP(p *ToolItemGroup) *C.GtkToolItemGroup    { return C.toGToolItemGroup(p.GWidget) }
 func MENU_TOOL_BUTTON(p *MenuToolButton) *C.GtkMenuToolButton { return C.toGMenuToolButton(p.GWidget) }
 func TOGGLE_TOOL_BUTTON(p *ToggleToolButton) *C.GtkToggleToolButton {
@@ -5658,19 +5659,43 @@ type ToolPalette struct {
 func NewToolPalette() *ToolPalette {
 	return &ToolPalette{Container{Widget{C.gtk_tool_palette_new()}}}
 }
+func (v *ToolPalette) GetExclusive(group *ToolItemGroup) bool {
+	return gobool(C.gtk_tool_palette_get_exclusive(TOOL_PALETTE(v), TOOL_ITEM_GROUP(group)))
+}
+func (v *ToolPalette) SetExclusive(group *ToolItemGroup, exclusive bool) {
+	C.gtk_tool_palette_set_exclusive(TOOL_PALETTE(v), TOOL_ITEM_GROUP(group), gbool(exclusive))
+}
+func (v *ToolPalette) GetExpand(group *ToolItemGroup) bool {
+	return gobool(C.gtk_tool_palette_get_expand(TOOL_PALETTE(v), TOOL_ITEM_GROUP(group)))
+}
+func (v *ToolPalette) SetExpand(group *ToolItemGroup, expand bool) {
+	C.gtk_tool_palette_set_expand(TOOL_PALETTE(v), TOOL_ITEM_GROUP(group), gbool(expand))
+}
+func (v *ToolPalette) GetGroupPosition(group *ToolItemGroup) int {
+	return int(C.gtk_tool_palette_get_group_position(TOOL_PALETTE(v), TOOL_ITEM_GROUP(group)))
+}
+func (v *ToolPalette) SetGroupPosition(group *ToolItemGroup, pos int) {
+	C.gtk_tool_palette_set_group_position(TOOL_PALETTE(v), TOOL_ITEM_GROUP(group), gint(pos))
+}
+func (v *ToolPalette) GetIconSize() IconSize {
+	return IconSize(C.gtk_tool_palette_get_icon_size(TOOL_PALETTE(v)))
+}
+func (v *ToolPalette) SetIconSize(size IconSize) {
+	C.gtk_tool_palette_set_icon_size(TOOL_PALETTE(v), C.GtkIconSize(size))
+}
+func (v *ToolPalette) UnsetIconSize() {
+	C.gtk_tool_palette_unset_icon_size(TOOL_PALETTE(v))
+}
+func (v *ToolPalette) GetStyle() ToolbarStyle {
+	return ToolbarStyle(C.gtk_tool_palette_get_style(TOOL_PALETTE(v)))
+}
+func (v *ToolPalette) SetStyle(style ToolbarStyle) {
+	C.gtk_tool_palette_set_style(TOOL_PALETTE(v), C.GtkToolbarStyle(style))
+}
+func (v *ToolPalette) UnsetStyle() {
+	C.gtk_tool_palette_unset_style(TOOL_PALETTE(v))
+}
 
-// gtk_tool_palette_get_exclusive
-// gtk_tool_palette_set_exclusive
-// gtk_tool_palette_get_expand
-// gtk_tool_palette_set_expand
-// gtk_tool_palette_get_group_position
-// gtk_tool_palette_set_group_position
-// gtk_tool_palette_get_icon_size
-// gtk_tool_palette_set_icon_size
-// gtk_tool_palette_unset_icon_size
-// gtk_tool_palette_get_style
-// gtk_tool_palette_set_style
-// gtk_tool_palette_unset_style
 // gtk_tool_palette_add_drag_dest
 // gtk_tool_palette_get_drag_item
 // gtk_tool_palette_get_drag_target_group
@@ -5693,9 +5718,7 @@ type ToolItemGroup struct {
 func NewToolItemGroup(label string) *ToolItemGroup {
 	l := C.CString(label)
 	defer cfree(l)
-	return &ToolItemGroup{Container{Widget{
-		C.gtk_tool_item_group_new(gstring(l))}},
-		//C.toGWidget(unsafe.Pointer(C.gtk_tool_item_group_new(gstring(l))))}},
+	return &ToolItemGroup{Container{Widget{C.gtk_tool_item_group_new(gstring(l))}},
 		make(map[*C.GtkToolItem]IWidget)}
 }
 func (v *ToolItemGroup) Insert(item IWidget, pos int) {
@@ -5703,22 +5726,39 @@ func (v *ToolItemGroup) Insert(item IWidget, pos int) {
 	C.gtk_tool_item_group_insert(TOOL_ITEM_GROUP(v), pitem, gint(pos))
 	v.items[pitem] = item
 }
+func (v *ToolItemGroup) GetCollapsed() bool {
+	return gobool(C.gtk_tool_item_group_get_collapsed(TOOL_ITEM_GROUP(v)))
+}
 
-// gtk_tool_item_group_get_collapsed
 // gtk_tool_item_group_get_drop_item
 // gtk_tool_item_group_get_ellipsize
 // gtk_tool_item_group_get_item_position
 // gtk_tool_item_group_get_n_items
-// gtk_tool_item_group_get_label
+func (v *ToolItemGroup) GetLabel() string {
+	return gostring(C.gtk_tool_item_group_get_label(TOOL_ITEM_GROUP(v)))
+}
+
 // gtk_tool_item_group_get_label_widget
 // gtk_tool_item_group_get_nth_item
-// gtk_tool_item_group_get_header_relief
-// gtk_tool_item_group_set_collapsed
+func (v *ToolItemGroup) GetHeaderRelief() ReliefStyle {
+	return ReliefStyle(C.gtk_tool_item_group_get_header_relief(TOOL_ITEM_GROUP(v)))
+}
+func (v *ToolItemGroup) SetCollapsed(collapsed bool) {
+	C.gtk_tool_item_group_set_collapsed(TOOL_ITEM_GROUP(v), gbool(collapsed))
+}
+
 // gtk_tool_item_group_set_ellipsize
 // gtk_tool_item_group_set_item_position
-// gtk_tool_item_group_set_label
+func (v *ToolItemGroup) SetLabel(label string) {
+	l := C.CString(label)
+	defer cfree(l)
+	C.gtk_tool_item_group_set_label(TOOL_ITEM_GROUP(v), gstring(l))
+}
+
 // gtk_tool_item_group_set_label_widget
-// gtk_tool_item_group_set_header_relief
+func (v *ToolItemGroup) SetHeaderRelief(style ReliefStyle) {
+	C.gtk_tool_item_group_set_header_relief(TOOL_ITEM_GROUP(v), C.GtkReliefStyle(style))
+}
 
 //-----------------------------------------------------------------------
 // GtkSeparatorToolItem
@@ -5796,28 +5836,18 @@ func (v *ToolButton) GetIconName() string {
 	return gostring(C.gtk_tool_button_get_icon_name(TOOL_BUTTON(v)))
 }
 func (v *ToolButton) SetIconWidget(icon_widget IWidget) {
+	v.iw = icon_widget.(*Widget) // TODO
 	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), ToNative(icon_widget))
 }
 func (v *ToolButton) GetIconWidget() *Widget {
-	w := C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))
-	if v.iw == nil {
-		v.iw = &Widget{w}
-	} else {
-		v.iw.GWidget = w
-	}
-	return v.iw
+	return v.iw // gtk_tool_button_get_icon_widget	
 }
 func (v *ToolButton) SetLabelWidget(label_widget IWidget) {
+	v.lw = label_widget.(*Widget) // TODO
 	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), ToNative(label_widget))
 }
 func (v *ToolButton) GetLabelWidget() *Widget {
-	w := C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))
-	if v.lw == nil {
-		v.lw = &Widget{w}
-	} else {
-		v.lw.GWidget = w
-	}
-	return v.lw
+	return v.lw // gtk_tool_button_get_label_widget	
 }
 
 //-----------------------------------------------------------------------
@@ -5842,11 +5872,11 @@ func NewMenuToolButtonFromStock(stock_id string) *MenuToolButton {
 	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}, nil}
 }
 func (v *MenuToolButton) SetMenu(menu *Menu) {
-	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), menu.GWidget)
 	v.mw = menu
+	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), menu.GWidget)
 }
-func (v *MenuToolButton) GetMenu() *Menu { // gtk_menu_tool_button_get_menu
-	return v.mw
+func (v *MenuToolButton) GetMenu() *Menu {
+	return v.mw // gtk_menu_tool_button_get_menu
 }
 
 // gtk_menu_tool_button_set_arrow_tooltip (deprecated since 2.12)
