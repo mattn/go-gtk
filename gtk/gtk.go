@@ -8236,7 +8236,7 @@ type Widget struct {
 }
 
 func WidgetFromNative(p unsafe.Pointer) *Widget {
-	return &Widget{C.toGWidget(p)}
+	return &Widget{C.toGWidget(*(*unsafe.Pointer)(&p))}
 }
 
 //TODO GtkWidget will have GObject as anonymous field.

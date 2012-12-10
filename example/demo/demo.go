@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/glib"	
+	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
 	"os"
 	"os/exec"
@@ -106,6 +106,9 @@ func main() {
 
 	image := gtk.NewImageFromFile(imagefile)
 	framebox1.Add(image)
+
+	ww := gtk.WidgetFromNative(framebox1.GetChildren().NthData(1))
+	println(ww.GetVisible())
 
 	//--------------------------------------------------------
 	// GtkScale
