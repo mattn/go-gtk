@@ -14,7 +14,7 @@ func main() {
 		gtk.MainQuit()
 	}, "")
 
-	vbox := gtk.NewVBox(false, 0)
+	box := gtk.NewHPaned()
 
 	bnew := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)
 	bclose := gtk.NewToolButtonFromStock(gtk.STOCK_CLOSE)
@@ -35,9 +35,14 @@ func main() {
 	group.Insert(bdelete, -1)
 	palette.Add(group)
 
-	vbox.PackStart(palette, true, true, 1)
+	frame := gtk.NewVBox(false, 1)
+	image := gtk.NewImageFromFile("./turkey.jpg")
+	frame.Add(image)
 
-	window.Add(vbox)
+	box.Pack1(palette, true, false)
+	box.Pack2(frame, false, false)
+
+	window.Add(box)
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()
