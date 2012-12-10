@@ -19,6 +19,7 @@ func main() {
 	palette := gtk.NewToolPalette()
 	group := gtk.NewToolItemGroup("Tools")
 	b := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)
+	b.OnClicked(func () { println("You clicked new!") })
 	group.Insert(b, -1)
 	b = gtk.NewToolButtonFromStock(gtk.STOCK_CLOSE)
 	group.Insert(b, -1)
@@ -61,8 +62,10 @@ func main() {
 	palette.Add(group)
 
 	frame := gtk.NewVBox(false, 1)
+	align := gtk.NewAlignment(0, 0, 0, 0)
 	image := gtk.NewImageFromFile("./turkey.jpg")
-	frame.Add(image)
+	align.Add(image)
+	frame.Add(align)
 
 	box.Pack1(palette, true, false)
 	box.Pack2(frame, false, false)
