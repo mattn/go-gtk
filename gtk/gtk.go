@@ -5840,14 +5840,20 @@ func (v *ToolButton) SetIconWidget(icon_widget IWidget) {
 	C.gtk_tool_button_set_icon_widget(TOOL_BUTTON(v), ToNative(icon_widget))
 }
 func (v *ToolButton) GetIconWidget() *Widget {
-	return v.iw // gtk_tool_button_get_icon_widget	
+	if v.iw == nil {
+		v.iw = &Widget{C.gtk_tool_button_get_icon_widget(TOOL_BUTTON(v))}
+	}
+	return v.iw
 }
 func (v *ToolButton) SetLabelWidget(label_widget IWidget) {
 	v.lw = label_widget.(*Widget) // TODO
 	C.gtk_tool_button_set_label_widget(TOOL_BUTTON(v), ToNative(label_widget))
 }
 func (v *ToolButton) GetLabelWidget() *Widget {
-	return v.lw // gtk_tool_button_get_label_widget	
+	if v.lw == nil {
+		v.lw = &Widget{C.gtk_tool_button_get_label_widget(TOOL_BUTTON(v))}
+	}
+	return v.lw
 }
 
 //-----------------------------------------------------------------------
@@ -5873,10 +5879,13 @@ func NewMenuToolButtonFromStock(stock_id string) *MenuToolButton {
 }
 func (v *MenuToolButton) SetMenu(menu *Menu) {
 	v.mw = menu
-	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), menu.GWidget)
+	C.gtk_menu_tool_button_set_menu(MENU_TOOL_BUTTON(v), ToNative(menu))
 }
 func (v *MenuToolButton) GetMenu() *Menu {
-	return v.mw // gtk_menu_tool_button_get_menu
+	if v.mw == nil {
+		v.mw = &Menu{Container{Widget{C.gtk_menu_tool_button_get_menu(TOOL_BUTTON(v))}}}
+	}
+	return v.mw
 }
 
 // gtk_menu_tool_button_set_arrow_tooltip (deprecated since 2.12)
