@@ -23,7 +23,7 @@ func main() {
 	si.SetTitle("StatusIcon Example")
 	si.SetTooltipMarkup("StatusIcon Example")
 	si.Connect("popup-menu", func(cbx *glib.CallbackContext) {
-		nm.Popup(nil, nil, gtk.StatusIconPositionMenu, si, uint(cbx.Args(0)), uint(cbx.Args(1)))
+		nm.Popup(nil, nil, gtk.StatusIconPositionMenu, si, uint(cbx.Args(0)), uint32(cbx.Args(1)))
 	})
 
 	println(`
