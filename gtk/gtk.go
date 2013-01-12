@@ -1191,8 +1191,11 @@ func (v *Window) SetDefaultSize(width int, height int) {
 	C.gtk_window_set_default_size(WINDOW(v), gint(width), gint(height))
 }
 
+func (v *Window) SetGravity(gravity gdk.Gravity) {
+	C.gtk_window_set_gravity(WINDOW(v), C.GdkGravity(gravity))
+}
+
 // gtk_window_set_geometry_hints
-// gtk_window_set_gravity
 // gtk_window_get_gravity
 
 func (v *Window) SetPosition(position WindowPosition) {

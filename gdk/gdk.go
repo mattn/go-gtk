@@ -471,6 +471,21 @@ const (
 	WINDOW_TYPE_HINT_DND           WindowTypeHint = 13
 )
 
+type Gravity int
+
+const (
+	GDK_GRAVITY_NORTH_WEST Gravity = 1
+	GDK_GRAVITY_NORTH      Gravity = 2
+	GDK_GRAVITY_NORTH_EAST Gravity = 3
+	GDK_GRAVITY_WEST       Gravity = 4
+	GDK_GRAVITY_CENTER     Gravity = 5
+	GDK_GRAVITY_EAST       Gravity = 6
+	GDK_GRAVITY_SOUTH_WEST Gravity = 7
+	GDK_GRAVITY_SOUTH      Gravity = 8
+	GDK_GRAVITY_SOUTH_EAST Gravity = 9
+	GDK_GRAVITY_STATIC     Gravity = 10
+)
+
 type Window struct {
 	GWindow *C.GdkWindow
 }
