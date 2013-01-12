@@ -276,12 +276,12 @@ func (v *GC) SetRgbBgColor(color *Color) {
 
 // GdkScreen * gdk_gc_get_screen (GdkGC *gc);
 
-func ScreenWidth() (width uint) {
-	return uint(C.gdk_screen_width())
+func ScreenWidth() (width int) {
+	return int(C.gdk_screen_width())
 }
 
-func ScreenHeight() (height uint) {
-	return uint(C.gdk_screen_height())
+func ScreenHeight() (height int) {
+	return int(C.gdk_screen_height())
 }
 
 //-----------------------------------------------------------------------
