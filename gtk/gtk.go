@@ -8478,7 +8478,7 @@ func (v *Widget) QueueClear() {
 
 // gtk_widget_queue_draw_area
 
-func (v *Widget) SetAppPatintable(setting bool) {
+func (v *Widget) SetAppPaintable(setting bool) {
 	C.gtk_widget_set_app_paintable(v.GWidget, gbool(setting))
 }
 func (v *Widget) SetDoubleBuffered(setting bool) {
