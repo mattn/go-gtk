@@ -2334,7 +2334,12 @@ func NewButtonWithMnemonic(label string) *Button {
 	return &Button{Bin{Container{Widget{C.gtk_button_new_with_mnemonic(gstring(ptr))}}}}
 }
 
-// gtk_button_new_from_stock
+func NewButtonFromStock(stock_id string) *Button {
+	p_stock_id := C.CString(stock_id)
+	defer cfree(p_stock_id)
+	return &Button{Bin{Container{Widget{C.gtk_button_new_from_stock(gstring(p_stock_id))}}}}
+}
+
 
 func (v *Button) Pressed() {
 	deprecated_since(2, 20, 0, "gtk_button_pressed()")
