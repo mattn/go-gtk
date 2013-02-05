@@ -198,6 +198,13 @@ func ColormapFromUnsafe(colormap unsafe.Pointer) *Colormap {
 	return &Colormap{(*C.GdkColormap)(colormap)}
 }
 
+func (v *Colormap) AllocColorRGB(r, g, b uint16) *Color {
+	req := &Color{GColor: C.GdkColor{pixel: 0, red: guint16(r), green: guint16(g), blue: guint16(b)}}
+	C.gdk_colormap_alloc_color(v.GColormap, &req.GColor, gbool(false), gbool(true))
+	// XXX fixme -- should check for failure
+	return req
+}
+
 //-----------------------------------------------------------------------
 // GdkFont
 //-----------------------------------------------------------------------
