@@ -8631,6 +8631,11 @@ func (v *Widget) GetTopLevel() *Widget {
 }
 
 // gtk_widget_get_ancestor
+
+func (v *Widget) GetColormap() *gdk.Colormap {
+	return gdk.ColormapFromUnsafe(unsafe.Pointer(C.gtk_widget_get_colormap(v.GWidget)))
+}
+
 // gtk_widget_get_colormap
 // gtk_widget_set_colormap
 // gtk_widget_get_visual
