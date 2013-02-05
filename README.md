@@ -60,6 +60,10 @@ CONTRIBUTE AUTHORS:
   * matiaslina
   * Dag Robøle
 
+For a less formal discussion about go-gtk, please visit our form at
+http://craigmatthewweber.com/forums/forum/go/go-gtk
+
+
 GOAL:
 -----
 
