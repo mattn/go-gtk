@@ -5,6 +5,7 @@ package gdk
 import "C"
 import "unsafe"
 
+func guint16(v uint16) C.guint16 { return C.guint16(v) }
 func gint(v int) C.gint          { return C.gint(v) }
 func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
 
@@ -178,6 +179,11 @@ func NewColor(name string) *Color {
 	ptr := C.CString(name)
 	defer cfree(ptr)
 	C.gdk_color_parse(gstring(ptr), &color)
+	return &Color{color}
+}
+
+func NewColorRGB(r, g, b uint8) *Color {
+	color := C.GdkColor{red: guint16(uint16(r)<<8), green: guint16(uint16(g)<<8), blue: guint16(uint16(b)<<8)}
 	return &Color{color}
 }
 
