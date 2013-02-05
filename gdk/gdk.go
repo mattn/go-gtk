@@ -188,6 +188,17 @@ func NewColorRGB(r, g, b uint8) *Color {
 }
 
 //-----------------------------------------------------------------------
+// GdkColormap
+// ----------------------------------------------------------------------
+type Colormap struct {
+	GColormap *C.GdkColormap
+}
+
+func ColormapFromUnsafe(colormap unsafe.Pointer) *Colormap {
+	return &Colormap{(*C.GdkColormap)(colormap)}
+}
+
+//-----------------------------------------------------------------------
 // GdkFont
 //-----------------------------------------------------------------------
 type Font struct {
