@@ -7730,6 +7730,9 @@ func (v *Adjustment) SetUpper(upper float64) {
 	panic_if_version_older(2, 14, 0, "gtk_adjustment_set_upper()")
 	C._gtk_adjustment_set_upper(v.GAdjustment, gdouble(upper))
 }
+func (v *Adjustment) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(v.GAdjustment)).Connect(s, f, datas...)
+}
 
 //-----------------------------------------------------------------------
 // GtkArrow
