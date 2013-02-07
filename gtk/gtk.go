@@ -154,28 +154,21 @@ func deprecated_since(major int, minor int, micro int, function string) {
 	}
 }
 
-func variadicButtonsToArrays(buttons []interface{}) ([]string, []int) {
+func variadicButtonsToArrays(buttons []interface{}) ([]string, []ResponseType) {
 	if len(buttons)%2 != 0 {
-		argumentPanic("variadic parameter must be even (couples of string-int (button label - button response)")
+		argumentPanic("variadic parameter must be even (couples of string-ResponseType (button label - button response)")
 	}
 	text := make([]string, len(buttons)/2)
-	res := make([]int, len(buttons)/2)
+	res := make([]ResponseType, len(buttons)/2)
 	for i := 0; i < len(text); i++ {
 		btext, ok := buttons[2*i].(string)
 		if !ok {
 			argumentPanic("button text must be a string")
 		}
-		bresponse := func() int {
-			switch val := buttons[2*i+1].(type) {
-			case int:
-				return val
-			case ResponseType:
-				return int(val)
-			default:
-				argumentPanic("button response must be an int")
-			}
-			panic(nil)
-		}()
+		bresponse, ok := buttons[2*i+1].(ResponseType)
+		if !ok {
+			argumentPanic("button response must be an ResponseType")
+		}
 		text[i] = btext
 		res[i] = bresponse
 	}
@@ -1010,11 +1003,11 @@ func (v *Dialog) Run() ResponseType {
 func (v *Dialog) Response(response interface{}, datas ...interface{}) {
 	v.Connect("response", response, datas...)
 }
-func (v *Dialog) AddButton(button_text string, response_id int) *Button {
+func (v *Dialog) AddButton(button_text string, response_id ResponseType) *Button {
 	ptr := C.CString(button_text)
 	defer cfree(ptr)
 	return &Button{Bin{Container{Widget{
-		C.gtk_dialog_add_button(DIALOG(v), gstring(ptr), gint(response_id))}}}}
+		C.gtk_dialog_add_button(DIALOG(v), gstring(ptr), gint(int(response_id)))}}}}
 }
 
 // gtk_dialog_add_buttons
@@ -2093,16 +2086,16 @@ func NewInfoBarWithButtons(buttons ...interface{}) *InfoBar {
 	return infobar
 }
 
-func (v *InfoBar) AddActionWidget(child IWidget, responseId int) {
+func (v *InfoBar) AddActionWidget(child IWidget, responseId ResponseType) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_add_action_widget(INFO_BAR(v), ToNative(child), gint(responseId))
+	C._gtk_info_bar_add_action_widget(INFO_BAR(v), ToNative(child), gint(int(responseId)))
 }
 
-func (v *InfoBar) AddButton(buttonText string, responseId int) *Widget {
+func (v *InfoBar) AddButton(buttonText string, responseId ResponseType) *Widget {
 	panic_if_version_older_auto(2, 18, 0)
 	ptr := C.CString(buttonText)
 	defer cfree(ptr)
-	return &Widget{C._gtk_info_bar_add_button(INFO_BAR(v), gstring(ptr), gint(responseId))}
+	return &Widget{C._gtk_info_bar_add_button(INFO_BAR(v), gstring(ptr), gint(int(responseId)))}
 }
 
 func (v *InfoBar) AddButtons(buttons ...interface{}) {
@@ -2113,19 +2106,19 @@ func (v *InfoBar) AddButtons(buttons ...interface{}) {
 	}
 }
 
-func (v *InfoBar) SetResponseSensitive(responseId int, setting bool) {
+func (v *InfoBar) SetResponseSensitive(responseId ResponseType, setting bool) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_set_response_sensitive(INFO_BAR(v), gint(responseId), gbool(setting))
+	C._gtk_info_bar_set_response_sensitive(INFO_BAR(v), gint(int(responseId)), gbool(setting))
 }
 
-func (v *InfoBar) SetDefaultResponse(responseId int) {
+func (v *InfoBar) SetDefaultResponse(responseId ResponseType) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_set_default_response(INFO_BAR(v), gint(responseId))
+	C._gtk_info_bar_set_default_response(INFO_BAR(v), gint(int(responseId)))
 }
 
-func (v *InfoBar) Response(responseId int) {
+func (v *InfoBar) Response(responseId ResponseType) {
 	panic_if_version_older_auto(2, 18, 0)
-	C._gtk_info_bar_response(INFO_BAR(v), gint(responseId))
+	C._gtk_info_bar_response(INFO_BAR(v), gint(int(responseId)))
 }
 
 func (v *InfoBar) SetMessageType(messageType MessageType) {
