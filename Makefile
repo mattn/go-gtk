@@ -1,18 +1,10 @@
 all:
-	cd pango && go get -x .
-	cd glib && go get -x .
-	cd gdk && go get -x .
-	cd gdkpixbuf && go get -x .
-	cd gtk && go get -x .
-	cd gtksourceview && go get -x .
-
-install:
-	cd pango && go install -x
-	cd glib && go install -x
-	cd gdk && go install -x
-	cd gdkpixbuf && go install -x
-	cd gtk && go install -x
-	cd gtksourceview && go install -x
+	cd pango && go build && go install github.com/mattn/go-gtk/pango
+	cd glib && go build && go install github.com/mattn/go-gtk/glib
+	cd gdk && go build && go install github.com/mattn/go-gtk/gdk
+	cd gdkpixbuf && go build && go install github.com/mattn/go-gtk/gdkpixbuf
+	cd gtk && go build && go install github.com/mattn/go-gtk/gtk
+	cd gtksourceview && go build && go install github.com/mattn/go-gtk/gtksourceview
 
 fmt:
 	cd pango && go fmt .
