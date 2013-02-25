@@ -2746,7 +2746,7 @@ type EventButton struct {
 	X         float64
 	Y         float64
 	Axes      *float64
-	State     uint
+	State     uint32
 	Button    uint16
 	Device    uintptr
 	XRoot     float64
