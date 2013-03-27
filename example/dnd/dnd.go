@@ -32,7 +32,7 @@ func main() {
 		gdk.ACTION_COPY)
 	dest.DragDestAddUriTargets()
 	dest.Connect("drag-data-received", func(ctx *glib.CallbackContext) {
-		sdata := gtk.SelectionDataFromNative(unsafe.Pointer(ctx.Args(3)))
+		sdata := gtk.NewSelectionDataFromNative(unsafe.Pointer(ctx.Args(3)))
 		if sdata != nil {
 			a := (*[2000]uint8)(sdata.GetData())
 			files := strings.Split(string(a[0:sdata.GetLength()-1]), "\n")
