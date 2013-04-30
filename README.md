@@ -48,7 +48,7 @@ CONTRIBUTE AUTHORS:
   * Mikhail Trushnikov
   * Federico Sogaro
   * Crazy2be
-  * Daniël de Kok
+  * Daniël de Kok
   * Erik Lissel
   * Jeffrey Bolle
   * Leonhard Küper
@@ -60,7 +60,7 @@ CONTRIBUTE AUTHORS:
   * matiaslina
   * Dag Robøle
 
-For a less formal discussion about go-gtk, please visit our form at
+For a less formal discussion about go-gtk, please visit our forum at
 http://craigmatthewweber.com/forums/forum/go/go-gtk
 
 
