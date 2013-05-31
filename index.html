@@ -47,92 +47,190 @@ or
 			<article id="coding">
 				<h2 class="maintitle">Coding Style</h2>
 <blockquote class="code">
-<span class="PreProc">package</span>&nbsp;main<br />
+<span class="Statement">package</span>&nbsp;main<br />
 <br />
-<span class="PreProc">import</span>&nbsp;(<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;os&quot;</span><br />
+<span class="Statement">import</span>&nbsp;(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;github.com/mattn/go-gtk/gdkpixbuf&quot;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;github.com/mattn/go-gtk/glib&quot;</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;github.com/mattn/go-gtk/gtk&quot;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;os&quot;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;os/exec&quot;</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;path&quot;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;regexp&quot;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;sort&quot;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;strings&quot;</span><br />
 )<br />
 <br />
-<span class="Type">func</span>&nbsp;main()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;gtk.Init(&amp;os.Args)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;window := gtk.Window(gtk.GTK_WINDOW_TOPLEVEL)<br />
+<span class="Statement">func</span>&nbsp;uniq(strings []<span class="Type">string</span>) (ret []<span class="Type">string</span>) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span><br />
+}<br />
+<br />
+<span class="Statement">func</span>&nbsp;authors() []<span class="Type">string</span>&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;b, err := exec.Command(<span class="Constant">&quot;git&quot;</span>,&nbsp;<span class="Constant">&quot;log&quot;</span>).Output(); err ==&nbsp;<span class="Statement">nil</span>&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lines := strings.Split(<span class="Type">string</span>(b),&nbsp;<span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">var</span>&nbsp;a []<span class="Type">string</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r := regexp.MustCompile(<span class="Constant">`^Author:\s*([^ &lt;]+).*$`</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">for</span>&nbsp;_, e :=&nbsp;<span class="Statement">range</span>&nbsp;lines {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ms := r.FindStringSubmatch(e)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;ms ==&nbsp;<span class="Statement">nil</span>&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">continue</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a =&nbsp;<span class="Statement">append</span>(a, ms[<span class="Constant">1</span>])<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sort.Strings(a)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">var</span>&nbsp;p&nbsp;<span class="Type">string</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lines = []<span class="Type">string</span>{}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">for</span>&nbsp;_, e :=&nbsp;<span class="Statement">range</span>&nbsp;a {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;p == e {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">continue</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lines =&nbsp;<span class="Statement">append</span>(lines, e)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p = e<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;lines<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;[]<span class="Type">string</span>{<span class="Constant">&quot;Yasuhiro Matsumoto &lt;mattn.jp@gmail.com&gt;&quot;</span>}<br />
+}<br />
+<br />
+<span class="Statement">func</span>&nbsp;main() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">var</span>&nbsp;menuitem *gtk.MenuItem<br />
+&nbsp;&nbsp;&nbsp;&nbsp;gtk.Init(<span class="Statement">nil</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.SetPosition(gtk.WIN_POS_CENTER)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;window.SetTitle(<span class="Constant">&quot;GTK Go!&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;window.Connect(<span class="Constant">&quot;destroy&quot;</span>, <span class="Type">func</span>()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println(<span class="Constant">&quot;got destroy!&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.SetIconName(<span class="Constant">&quot;gtk-dialog-info&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.Connect(<span class="Constant">&quot;destroy&quot;</span>,&nbsp;<span class="Type">func</span>(ctx *glib.CallbackContext) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;got destroy!&quot;</span>, ctx.Data().(<span class="Type">string</span>))<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.MainQuit()<br />
-&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;},&nbsp;<span class="Constant">&quot;foo&quot;</span>)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkVBox</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;vbox := gtk.VBox(<span class="Constant">false</span>, <span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox := gtk.NewVBox(<span class="Statement">false</span>,&nbsp;<span class="Constant">1</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkMenuBar</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;menubar := gtk.NewMenuBar()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.PackStart(menubar,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Constant">0</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkVPaned</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;vpaned := gtk.NewVPaned()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(vpaned)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkFrame</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;frame1 := gtk.NewFrame(<span class="Constant">&quot;Demo&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox1 := gtk.NewVBox(<span class="Statement">false</span>,&nbsp;<span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;frame1.Add(framebox1)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;frame2 := gtk.NewFrame(<span class="Constant">&quot;Demo&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2 := gtk.NewVBox(<span class="Statement">false</span>,&nbsp;<span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;frame2.Add(framebox2)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vpaned.Pack1(frame1,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vpaned.Pack2(frame2,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkImage</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;dir, _ := path.Split(os.Args[<span class="Constant">0</span>])<br />
-&nbsp;&nbsp;&nbsp;&nbsp;imagefile := path.Join(dir, <span class="Constant">&quot;../data/go-gtk-logo.png&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;imagefile := path.Join(dir,&nbsp;<span class="Constant">&quot;../../data/go-gtk-logo.png&quot;</span>)<br />
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;label := gtk.Label(<span class="Constant">&quot;Go Binding for GTK&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vbox.PackStart(label, <span class="Constant">false</span>, <span class="Constant">true</span>, <span class="Constant">0</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;label := gtk.NewLabel(<span class="Constant">&quot;Go Binding for GTK&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;label.ModifyFontEasy(<span class="Constant">&quot;DejaVu Serif 15&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox1.PackStart(label,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">true</span>,&nbsp;<span class="Constant">0</span>)<br />
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;entry := gtk.Entry()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkEntry</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;entry := gtk.NewEntry()<br />
 &nbsp;&nbsp;&nbsp;&nbsp;entry.SetText(<span class="Constant">&quot;Hello world&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(entry)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox1.Add(entry)<br />
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;image := gtk.ImageFromFile(imagefile)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(image)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;image := gtk.NewImageFromFile(imagefile)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox1.Add(image)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkScale</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;scale := gtk.NewHScaleWithRange(<span class="Constant">0</span>,&nbsp;<span class="Constant">100</span>,&nbsp;<span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;scale.Connect(<span class="Constant">&quot;value-changed&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;scale:&quot;</span>,&nbsp;<span class="Type">int</span>(scale.GetValue()))<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2.Add(scale)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkHBox</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;buttons := gtk.HBox(<span class="Constant">false</span>, <span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons := gtk.NewHBox(<span class="Statement">false</span>,&nbsp;<span class="Constant">1</span>)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkButton</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;button := gtk.ButtonWithLabel(<span class="Constant">&quot;Button with label&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;button.Clicked(<span class="Type">func</span>()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;button clicked: &quot;</span>, button.GetLabel(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog := gtk.MessageDialog(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;button := gtk.NewButtonWithLabel(<span class="Constant">&quot;Button with label&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;button.Clicked(<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;button clicked:&quot;</span>, button.GetLabel())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messagedialog := gtk.NewMessageDialog(<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;button.GetTopLevelAsWindow(),<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.GTK_DIALOG_MODAL,<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.GTK_MESSAGE_INFO,<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.GTK_BUTTONS_OK,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.DIALOG_MODAL,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.MESSAGE_INFO,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.BUTTONS_OK,<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry.GetText())<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Response(<span class="Type">func</span>()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println(<span class="Constant">&quot;Dialog OK!&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messagedialog.Response(<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;Dialog OK!&quot;</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkFileChooserDialog</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filechooserdialog := gtk.NewFileChooserDialog(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;Choose File...&quot;</span>,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;button.GetTopLevelAsWindow(),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.FILE_CHOOSER_ACTION_OPEN,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.STOCK_OK,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.RESPONSE_ACCEPT)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filter := gtk.NewFileFilter()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filter.AddPattern(<span class="Constant">&quot;*.go&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filechooserdialog.AddFilter(filter)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filechooserdialog.Response(<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(filechooserdialog.GetFilename())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filechooserdialog.Destroy()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filechooserdialog.Run()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messagedialog.Destroy()<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Run()<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Destroy()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messagedialog.Run()<br />
 &nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(button)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkFontButton</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;fontbutton := gtk.FontButton()<br />
-&nbsp;&nbsp;&nbsp;&nbsp;fontbutton.Connect(<span class="Constant">&quot;font-set&quot;</span>, <span class="Type">func</span>()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;title: &quot;</span>, fontbutton.GetTitle(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;fontname: &quot;</span>, fontbutton.GetFontName(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;use_size: &quot;</span>, fontbutton.GetUseSize(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(<span class="Constant">&quot;show_size: &quot;</span>, fontbutton.GetShowSize(), <span class="Constant">&quot;</span><span class="Special">\n</span><span class="Constant">&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;fontbutton := gtk.NewFontButton()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;fontbutton.Connect(<span class="Constant">&quot;font-set&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;title:&quot;</span>, fontbutton.GetTitle())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;fontname:&quot;</span>, fontbutton.GetFontName())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;use_size:&quot;</span>, fontbutton.GetUseSize())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;show_size:&quot;</span>, fontbutton.GetShowSize())<br />
 &nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(fontbutton)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(buttons)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2.PackStart(buttons,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Constant">0</span>)<br />
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;buttons = gtk.HBox(<span class="Constant">false</span>, <span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons = gtk.NewHBox(<span class="Statement">false</span>,&nbsp;<span class="Constant">1</span>)<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkToggleButton</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;togglebutton := gtk.ToggleButtonWithLabel(<span class="Constant">&quot;ToggleButton with label&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.Connect(<span class="Constant">&quot;toggled&quot;</span>, <span class="Type">func</span>()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;togglebutton.GetActive()&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;togglebutton := gtk.NewToggleButtonWithLabel(<span class="Constant">&quot;ToggleButton with label&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.Connect(<span class="Constant">&quot;toggled&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;togglebutton.GetActive() {<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.SetLabel(<span class="Constant">&quot;ToggleButton ON!&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span class="Statement">else</span>&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="Statement">else</span>&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;togglebutton.SetLabel(<span class="Constant">&quot;ToggleButton OFF!&quot;</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
 &nbsp;&nbsp;&nbsp;&nbsp;})<br />
@@ -141,28 +239,164 @@ or
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkCheckButton</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;checkbutton := gtk.CheckButtonWithLabel(<span class="Constant">&quot;CheckButton with label&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.Connect(<span class="Constant">&quot;toggled&quot;</span>, <span class="Type">func</span>()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;checkbutton.GetActive()&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;checkbutton := gtk.NewCheckButtonWithLabel(<span class="Constant">&quot;CheckButton with label&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.Connect(<span class="Constant">&quot;toggled&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">if</span>&nbsp;checkbutton.GetActive() {<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.SetLabel(<span class="Constant">&quot;CheckButton CHECKED!&quot;</span>)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span class="Statement">else</span>&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="Statement">else</span>&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;checkbutton.SetLabel(<span class="Constant">&quot;CheckButton UNCHECKED!&quot;</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
 &nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(checkbutton)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(buttons)<br />
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;combos := gtk.HBox(<span class="Constant">false</span>, <span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkRadioButton</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttonbox := gtk.NewVBox(<span class="Statement">false</span>,&nbsp;<span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;radiofirst := gtk.NewRadioButtonWithLabel(<span class="Statement">nil</span>,&nbsp;<span class="Constant">&quot;Radio1&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttonbox.Add(radiofirst)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttonbox.Add(gtk.NewRadioButtonWithLabel(radiofirst.GetGroup(),&nbsp;<span class="Constant">&quot;Radio2&quot;</span>))<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttonbox.Add(gtk.NewRadioButtonWithLabel(radiofirst.GetGroup(),&nbsp;<span class="Constant">&quot;Radio3&quot;</span>))<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buttons.Add(buttonbox)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//radiobutton.SetMode(false);</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;radiofirst.SetActive(<span class="Statement">true</span>)<br />
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry := gtk.ComboBoxEntryNewText()<br />
-&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry.Connect(<span class="Constant">&quot;changed&quot;</span>, <span class="Type">func</span>()&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//comboboxentry...</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2.PackStart(buttons,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Constant">0</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkVSeparator</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;vsep := gtk.NewVSeparator()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2.PackStart(vsep,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Constant">0</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkComboBoxEntry</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;combos := gtk.NewHBox(<span class="Statement">false</span>,&nbsp;<span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry := gtk.NewComboBoxEntryNewText()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry.AppendText(<span class="Constant">&quot;Monkey&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry.AppendText(<span class="Constant">&quot;Tiger&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry.AppendText(<span class="Constant">&quot;Elephant&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;comboboxentry.Connect(<span class="Constant">&quot;changed&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;value:&quot;</span>, comboboxentry.GetActiveText())<br />
 &nbsp;&nbsp;&nbsp;&nbsp;})<br />
 &nbsp;&nbsp;&nbsp;&nbsp;combos.Add(comboboxentry)<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vbox.Add(combos)<br />
 <br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkComboBox</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;combobox := gtk.NewComboBoxNewText()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combobox.AppendText(<span class="Constant">&quot;Peach&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combobox.AppendText(<span class="Constant">&quot;Banana&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combobox.AppendText(<span class="Constant">&quot;Apple&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combobox.SetActive(<span class="Constant">1</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combobox.Connect(<span class="Constant">&quot;changed&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;value:&quot;</span>, combobox.GetActiveText())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;combos.Add(combobox)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2.PackStart(combos,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Constant">0</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkTextView</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;swin := gtk.NewScrolledWindow(<span class="Statement">nil</span>,&nbsp;<span class="Statement">nil</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;swin.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;swin.SetShadowType(gtk.SHADOW_IN)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;textview := gtk.NewTextView()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">var</span>&nbsp;start, end gtk.TextIter<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer := textview.GetBuffer()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.GetStartIter(&amp;start)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.Insert(&amp;start,&nbsp;<span class="Constant">&quot;Hello &quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.GetEndIter(&amp;end)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.Insert(&amp;end,&nbsp;<span class="Constant">&quot;World!&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;tag := buffer.CreateTag(<span class="Constant">&quot;bold&quot;</span>,&nbsp;<span class="Type">map</span>[<span class="Type">string</span>]<span class="Type">string</span>{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Constant">&quot;background&quot;</span>:&nbsp;<span class="Constant">&quot;#FF0000&quot;</span>,&nbsp;<span class="Constant">&quot;weight&quot;</span>:&nbsp;<span class="Constant">&quot;700&quot;</span>})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.GetStartIter(&amp;start)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.GetEndIter(&amp;end)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.ApplyTag(tag, &amp;start, &amp;end)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;swin.Add(textview)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2.Add(swin)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;buffer.Connect(<span class="Constant">&quot;changed&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(<span class="Constant">&quot;changed&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkMenuItem</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;cascademenu := gtk.NewMenuItemWithMnemonic(<span class="Constant">&quot;_File&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menubar.Append(cascademenu)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;submenu := gtk.NewMenu()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;cascademenu.SetSubmenu(submenu)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menuitem = gtk.NewMenuItemWithMnemonic(<span class="Constant">&quot;E_xit&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menuitem.Connect(<span class="Constant">&quot;activate&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk.MainQuit()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;submenu.Append(menuitem)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;cascademenu = gtk.NewMenuItemWithMnemonic(<span class="Constant">&quot;_View&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menubar.Append(cascademenu)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;submenu = gtk.NewMenu()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;cascademenu.SetSubmenu(submenu)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;checkmenuitem := gtk.NewCheckMenuItemWithMnemonic(<span class="Constant">&quot;_Disable&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;checkmenuitem.Connect(<span class="Constant">&quot;activate&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vpaned.SetSensitive(!checkmenuitem.GetActive())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;submenu.Append(checkmenuitem)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menuitem = gtk.NewMenuItemWithMnemonic(<span class="Constant">&quot;_Font&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menuitem.Connect(<span class="Constant">&quot;activate&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsd := gtk.NewFontSelectionDialog(<span class="Constant">&quot;Font&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsd.SetFontName(fontbutton.GetFontName())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsd.Response(<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="Statement">println</span>(fsd.GetFontName())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fontbutton.SetFontName(fsd.GetFontName())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsd.Destroy()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsd.SetTransientFor(window)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsd.Run()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;submenu.Append(menuitem)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;cascademenu = gtk.NewMenuItemWithMnemonic(<span class="Constant">&quot;_Help&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menubar.Append(cascademenu)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;submenu = gtk.NewMenu()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;cascademenu.SetSubmenu(submenu)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menuitem = gtk.NewMenuItemWithMnemonic(<span class="Constant">&quot;_About&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;menuitem.Connect(<span class="Constant">&quot;activate&quot;</span>,&nbsp;<span class="Type">func</span>() {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog := gtk.NewAboutDialog()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.SetName(<span class="Constant">&quot;Go-Gtk Demo!&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.SetProgramName(<span class="Constant">&quot;demo&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.SetAuthors(authors())<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dir, _ := path.Split(os.Args[<span class="Constant">0</span>])<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imagefile := path.Join(dir,&nbsp;<span class="Constant">&quot;../../data/mattn-logo.png&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pixbuf, _ := gdkpixbuf.NewFromFile(imagefile)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.SetLogo(pixbuf)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.SetLicense(<span class="Constant">&quot;The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.SetWrapLicense(<span class="Statement">true</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Run()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dialog.Destroy()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;})<br />
+&nbsp;&nbsp;&nbsp;&nbsp;submenu.Append(menuitem)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// GtkStatusbar</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;statusbar := gtk.NewStatusbar()<br />
+&nbsp;&nbsp;&nbsp;&nbsp;context_id := statusbar.GetContextId(<span class="Constant">&quot;go-gtk&quot;</span>)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;statusbar.Push(context_id,&nbsp;<span class="Constant">&quot;GTK binding for Go!&quot;</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;framebox2.PackStart(statusbar,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Statement">false</span>,&nbsp;<span class="Constant">0</span>)<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">// Event</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="Comment">//--------------------------------------------------------</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;window.Add(vbox)<br />
-<br />
+&nbsp;&nbsp;&nbsp;&nbsp;window.SetSizeRequest(<span class="Constant">600</span>,&nbsp;<span class="Constant">600</span>)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;window.ShowAll()<br />
 &nbsp;&nbsp;&nbsp;&nbsp;gtk.Main()<br />
 }<br />
