@@ -183,4 +183,31 @@ static void _g_thread_init(GThreadFunctions *vtable) {
 #endif
 }
 
+#if !GLIB_CHECK_VERSION(2,28,0)
+static const gchar *
+g_get_user_runtime_dir (void)
+{
+#ifndef G_OS_WIN32
+  static const gchar *runtime_dir;
+  static gsize initialised;
+
+  if (g_once_init_enter (&initialised)) {
+    runtime_dir = g_strdup (getenv ("XDG_RUNTIME_DIR"));
+    if (runtime_dir == NULL)
+      g_warning ("XDG_RUNTIME_DIR variable not set. Falling back to XDG cache dir.");
+    g_once_init_leave (&initialised, 1);
+  }
+
+  if (runtime_dir)
+    return runtime_dir;
+
+  /* Both fallback for UNIX and the default
+   * in Windows: use the user cache directory.
+   */
+#endif
+
+  return g_get_user_cache_dir ();
+}
+#endif
+
 #endif
