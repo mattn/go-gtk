@@ -722,6 +722,9 @@ type Settings struct {
 // gtk_rc_property_parse_border
 // gtk_settings_set_property_value
 
+func (s *Settings) ToGObject() *glib.GObject {
+	return &glib.GObject{unsafe.Pointer(s.GSettings)}
+}
 func SettingsGetDefault() *Settings {
 	return &Settings{C.gtk_settings_get_default()}
 }
