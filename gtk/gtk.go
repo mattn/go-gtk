@@ -712,7 +712,6 @@ type Settings struct {
 	GSettings *C.GtkSettings
 }
 
-// gtk_settings_get_default
 // gtk_settings_get_for_screen
 // gtk_settings_install_property
 // gtk_settings_install_property_parser
@@ -723,6 +722,9 @@ type Settings struct {
 // gtk_rc_property_parse_border
 // gtk_settings_set_property_value
 
+func SettingsGetDefault() *Settings {
+	return &Settings{C.gtk_settings_get_default()}
+}
 func (s *Settings) SetStringProperty(name string, v_string string, origin string) {
 	ptrn := C.CString(name)
 	defer cfree(ptrn)
