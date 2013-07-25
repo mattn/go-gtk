@@ -34,8 +34,7 @@ func main() {
 		if pixmap != nil {
 			pixmap.Unref()
 		}
-		var allocation gtk.Allocation
-		drawingarea.GetAllocation(&allocation)
+		allocation := drawingarea.GetAllocation()
 		pixmap = gdk.NewPixmap(drawingarea.GetWindow().GetDrawable(), allocation.Width, allocation.Height, 24)
 		gc = gdk.NewGC(pixmap.GetDrawable())
 		gc.SetRgbFgColor(gdk.NewColor("white"))

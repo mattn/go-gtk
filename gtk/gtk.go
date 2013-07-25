@@ -8598,15 +8598,11 @@ func (v *Widget) GetWindow() *gdk.Window {
 	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_widget_get_window(v.GWidget)))
 }
 
-//TODO get should return something (this function mechanism is not intuitive)
-func (v *Widget) GetAllocation(allocation *Allocation) {
+func (v *Widget) GetAllocation() *Allocation {
 	panic_if_version_older(2, 18, 0, "gtk_widget_get_allocation()")
 	var _allocation C.GtkAllocation
 	C._gtk_widget_get_allocation(v.GWidget, &_allocation)
-	allocation.X = int(_allocation.x)
-	allocation.Y = int(_allocation.y)
-	allocation.Width = int(_allocation.width)
-	allocation.Height = int(_allocation.height)
+	return &Allocation{X: int(_allocation.x), Y: int(_allocation.y), Width: int(_allocation.width), Height: int(_allocation.height)}
 }
 func (v *Widget) SetAllocation(allocation *Allocation) {
 	panic_if_version_older(2, 18, 0, "gtk_widget_set_allocation()")
