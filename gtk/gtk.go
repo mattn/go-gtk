@@ -8451,8 +8451,6 @@ func (v *Widget) HideOnDelete() {
 // gtk_widget_get_composite_name
 // gtk_widget_modify_style
 // gtk_widget_get_modifier_style
-// gtk_widget_modify_fg
-// gtk_widget_modify_bg
 // gtk_widget_modify_text
 // gtk_widget_modify_base
 // gtk_widget_modify_font
@@ -8719,6 +8717,10 @@ func (v *Widget) ModifyFontEasy(desc string) {
 	pdesc := C.CString(desc)
 	defer cfree(pdesc)
 	C.gtk_widget_modify_font(v.GWidget, C.pango_font_description_from_string(pdesc))
+}
+
+func (v *Widget) ModifyFG(state StateType, color *gdk.Color) {
+	C.gtk_widget_modify_fg(v.GWidget, C.GtkStateType(state), (*C.GdkColor)(unsafe.Pointer(&color.GColor)))
 }
 
 func (v *Widget) ModifyBG(state StateType, color *gdk.Color) {

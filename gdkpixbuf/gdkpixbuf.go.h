@@ -15,6 +15,6 @@ static void free_string(char* s) { free(s); }
 
 static gchar* to_gcharptr(char* s) { return (gchar*)s; }
 
-//static void free_string(char* s) { free(s); }
+static inline GdkPixbuf* toGdkPixbuf(void* p) { return GDK_PIXBUF(p); }
 
 #endif
