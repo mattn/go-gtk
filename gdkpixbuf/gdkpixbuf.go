@@ -14,8 +14,17 @@ func gobool(b C.gboolean) bool {
 }
 
 //-----------------------------------------------------------------------
-// 
+// Pixbuf
 //-----------------------------------------------------------------------
+type InterpType int
+
+const (
+	INTERP_NEAREST InterpType = iota
+	INTERP_TILES
+	INTERP_BILINEAR
+	INTERP_HYPER
+)
+
 type Pixbuf struct {
 	GPixbuf *C.GdkPixbuf
 }
@@ -55,6 +64,31 @@ func GetFileInfo(path string, imgW *int, imgH *int) *Format {
 	*imgW = int(w)
 	*imgH = int(h)
 	return format
+}
+
+func Scale(p *Pixbuf, x, y, width, height int, offsetX, offsetY, scaleX, scaleY float64, interp InterpType) *Pixbuf {
+	var scaledPixbuf *C.GdkPixbuf
+	C.gdk_pixbuf_scale(
+		C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)),
+		scaledPixbuf,
+		C.int(x), C.int(y),
+		C.int(width), C.int(height),
+		C.double(offsetX), C.double(offsetY),
+		C.double(scaleX), C.double(scaleY),
+		C.GdkInterpType(interp))
+	return &Pixbuf{GPixbuf:scaledPixbuf}
+}
+
+func ScaleSimple(p *Pixbuf, width, height int, interp InterpType) *Pixbuf {
+	return &Pixbuf{GPixbuf:C.gdk_pixbuf_scale_simple(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)), C.int(width), C.int(height), C.GdkInterpType(interp))}
+}
+
+func (p *Pixbuf) GetWidth() int {
+	return int(C.gdk_pixbuf_get_width(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf))))
+}
+
+func (p *Pixbuf) GetHeight() int {
+	return int(C.gdk_pixbuf_get_height(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf))))
 }
 
 //-----------------------------------------------------------------------
