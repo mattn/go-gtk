@@ -83,6 +83,14 @@ func ScaleSimple(p *Pixbuf, width, height int, interp InterpType) *Pixbuf {
 	return &Pixbuf{GPixbuf:C.gdk_pixbuf_scale_simple(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)), C.int(width), C.int(height), C.GdkInterpType(interp))}
 }
 
+func (p *Pixbuf) GetWidth() int {
+	return int(C.gdk_pixbuf_get_width(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf))))
+}
+
+func (p *Pixbuf) GetHeight() int {
+	return int(C.gdk_pixbuf_get_height(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf))))
+}
+
 //-----------------------------------------------------------------------
 // Animation
 //-----------------------------------------------------------------------
