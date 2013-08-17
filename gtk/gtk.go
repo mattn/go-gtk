@@ -3804,14 +3804,40 @@ func (v *TreePath) IsDescendant(ancestor TreePath) bool {
 //-----------------------------------------------------------------------
 // GtkTreeRowReference
 //-----------------------------------------------------------------------
+type TreeRowReference struct {
+	GTreeRowReference *C.GtkTreeRowReference
+}
 
-// gtk_tree_row_reference_new
+func NewTreeRowReference(model ITreeModel, path *TreePath) *TreeRowReference {
+	var tm *C.GtkTreeModel
+	if model != nil {
+		tm = model.cTreeModel()
+	}
+	return &TreeRowReference{C.gtk_tree_row_reference_new(tm, path.GTreePath)}
+}
+
 // gtk_tree_row_reference_new_proxy
-// gtk_tree_row_reference_get_model
-// gtk_tree_row_reference_get_path
-// gtk_tree_row_reference_valid
-// gtk_tree_row_reference_free
-// gtk_tree_row_reference_copy
+
+func (r *TreeRowReference) GetModel() *TreeModel {
+	return &TreeModel{C.gtk_tree_row_reference_get_model(r.GTreeRowReference)}
+}
+
+func (r *TreeRowReference) GetPath() *TreePath {
+	return &TreePath{C.gtk_tree_row_reference_get_path(r.GTreeRowReference)}
+}
+
+func (r *TreeRowReference) Valid() bool {
+	return gobool(C.gtk_tree_row_reference_valid(r.GTreeRowReference))
+}
+
+func (r *TreeRowReference) Free() {
+	C.gtk_tree_row_reference_free(r.GTreeRowReference)
+}
+
+func (r *TreeRowReference) Copy() *TreeRowReference {
+	return &TreeRowReference{C.gtk_tree_row_reference_copy(r.GTreeRowReference)}
+}
+
 // gtk_tree_row_reference_inserted
 // gtk_tree_row_reference_deleted
 // gtk_tree_row_reference_reordered
