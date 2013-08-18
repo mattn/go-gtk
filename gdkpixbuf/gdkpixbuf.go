@@ -91,6 +91,14 @@ func (p *Pixbuf) GetHeight() int {
 	return int(C.gdk_pixbuf_get_height(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf))))
 }
 
+func (p *Pixbuf) Ref() {
+	C.g_object_ref(C.gpointer(p.GPixbuf))
+}
+
+func (p *Pixbuf) Unref() {
+	C.g_object_unref(C.gpointer(p.GPixbuf))
+}
+
 //-----------------------------------------------------------------------
 // Animation
 //-----------------------------------------------------------------------
