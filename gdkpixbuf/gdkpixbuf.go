@@ -27,13 +27,14 @@ const (
 
 type Pixbuf struct {
 	GPixbuf *C.GdkPixbuf
+	*glib.GObject
 }
 
 func NewFromFile(path string) (pixbuf *Pixbuf, err **glib.Error) {
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
-	pixbuf = &Pixbuf{C.gdk_pixbuf_new_from_file(ptr, &error)}
+	pixbuf = &Pixbuf{C.gdk_pixbuf_new_from_file(ptr, &error), nil}
 	if err != nil && error != nil {
 		*err = glib.ErrorFromNative(unsafe.Pointer(error))
 	}
@@ -44,7 +45,7 @@ func NewFromFileAtSize(path string, imgW int, imgH int) (pixbuf *Pixbuf, err **g
 	var error *C.GError
 	ptr := C.CString(path)
 	defer C.free_string(ptr)
-	pixbuf = &Pixbuf{C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(imgW), C.int(imgH), &error)}
+	pixbuf = &Pixbuf{C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(imgW), C.int(imgH), &error), nil}
 	if err != nil && error != nil {
 		*err = glib.ErrorFromNative(unsafe.Pointer(error))
 	}
@@ -76,11 +77,11 @@ func Scale(p *Pixbuf, x, y, width, height int, offsetX, offsetY, scaleX, scaleY 
 		C.double(offsetX), C.double(offsetY),
 		C.double(scaleX), C.double(scaleY),
 		C.GdkInterpType(interp))
-	return &Pixbuf{GPixbuf:scaledPixbuf}
+	return &Pixbuf{scaledPixbuf, nil}
 }
 
 func ScaleSimple(p *Pixbuf, width, height int, interp InterpType) *Pixbuf {
-	return &Pixbuf{GPixbuf:C.gdk_pixbuf_scale_simple(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)), C.int(width), C.int(height), C.GdkInterpType(interp))}
+	return &Pixbuf{C.gdk_pixbuf_scale_simple(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)), C.int(width), C.int(height), C.GdkInterpType(interp)), nil}
 }
 
 func (p *Pixbuf) GetWidth() int {
@@ -136,7 +137,7 @@ func NewLoaderWithMimeType(mime_type string) (loader *Loader, err *C.GError) {
 }
 func (v Loader) GetPixbuf() *Pixbuf {
 	return &Pixbuf{
-		C.gdk_pixbuf_loader_get_pixbuf(v.GPixbufLoader)}
+		C.gdk_pixbuf_loader_get_pixbuf(v.GPixbufLoader), nil}
 }
 func (v Loader) Write(buf []byte) (ret bool, err *C.GError) {
 	var error *C.GError
