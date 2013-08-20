@@ -2355,7 +2355,6 @@ func NewButtonFromStock(stock_id string) *Button {
 	return &Button{Bin{Container{Widget{C.gtk_button_new_from_stock(gstring(p_stock_id))}}}}
 }
 
-
 func (v *Button) Pressed() {
 	deprecated_since(2, 20, 0, "gtk_button_pressed()")
 	C.gtk_button_pressed(BUTTON(v))

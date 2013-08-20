@@ -20,7 +20,7 @@ func main() {
 	palette := gtk.NewToolPalette()
 	group := gtk.NewToolItemGroup("Tools")
 	b := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)
-	b.OnClicked(func () { fmt.Println("You clicked new!") })
+	b.OnClicked(func() { fmt.Println("You clicked new!") })
 	group.Insert(b, -1)
 	b = gtk.NewToolButtonFromStock(gtk.STOCK_CLOSE)
 	group.Insert(b, -1)
@@ -50,12 +50,12 @@ func main() {
 	group.Insert(b, -1)
 	b = gtk.NewToolButtonFromStock(gtk.STOCK_EXECUTE)
 	group.Insert(b, -1)
-	palette.Add(group)	
+	palette.Add(group)
 
 	bcopy := gtk.NewToolButtonFromStock(gtk.STOCK_COPY)
 	bcut := gtk.NewToolButtonFromStock(gtk.STOCK_CUT)
 	bdelete := gtk.NewToolButtonFromStock(gtk.STOCK_DELETE)
-	
+
 	group = gtk.NewToolItemGroup("Stuff")
 	group.Insert(bcopy, -1)
 	group.Insert(bcut, -1)

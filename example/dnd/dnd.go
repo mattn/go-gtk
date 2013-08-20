@@ -1,10 +1,10 @@
 package main
 
 import (
-	"os"
 	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/glib"	
+	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
+	"os"
 	"strings"
 	"unsafe"
 )
@@ -18,16 +18,16 @@ func main() {
 	vbox := gtk.NewVBox(true, 0)
 	vbox.SetBorderWidth(5)
 
-	targets := []gtk.TargetEntry {
-			{"text/uri-list", 0, 0 },
-			{"STRING", 0, 1 },
-			{"text/plain", 0, 2 },
-		}
+	targets := []gtk.TargetEntry{
+		{"text/uri-list", 0, 0},
+		{"STRING", 0, 1},
+		{"text/plain", 0, 2},
+	}
 	dest := gtk.NewLabel("drop me file")
 	dest.DragDestSet(
-		gtk.DEST_DEFAULT_MOTION |
-		gtk.DEST_DEFAULT_HIGHLIGHT |
-		gtk.DEST_DEFAULT_DROP,
+		gtk.DEST_DEFAULT_MOTION|
+			gtk.DEST_DEFAULT_HIGHLIGHT|
+			gtk.DEST_DEFAULT_DROP,
 		targets,
 		gdk.ACTION_COPY)
 	dest.DragDestAddUriTargets()

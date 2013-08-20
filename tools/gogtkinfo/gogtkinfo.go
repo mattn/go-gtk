@@ -53,21 +53,21 @@ func main() {
 				sectionAlert = true
 			} else {
 				if currentSection != "" {
-				cTot := cDone + cTodo
-				if cTot == 0 {
-					p = 100
-				} else {
-					p = 100 * cDone / cTot
+					cTot := cDone + cTodo
+					if cTot == 0 {
+						p = 100
+					} else {
+						p = 100 * cDone / cTot
+					}
+					s := fmt.Sprintf("%-30s: %3d%% (%3d/%3d)\n", currentSection, p, cDone, cTot)
+					list = append(list, s)
 				}
-				s := fmt.Sprintf("%-30s: %3d%% (%3d/%3d)\n", currentSection, p, cDone, cTot)
-				list = append(list, s)
-			}
-			currentSection = sectionAlertName
-			tDone += cDone
-			tTodo += cTodo
-			cDone = 0
-			cTodo = 0
-			sectionAlertName = ""
+				currentSection = sectionAlertName
+				tDone += cDone
+				tTodo += cTodo
+				cDone = 0
+				cTodo = 0
+				sectionAlertName = ""
 			}
 		} else if sectionAlert {
 			if strings.HasPrefix(l, "//") && len(l) > 3 && !strings.Contains(l, "gtk_") {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"os"
-	"github.com/mattn/go-gtk/gtk"	
 	"fmt"
+	"github.com/mattn/go-gtk/gtk"
+	"os"
 )
 
 func main() {
