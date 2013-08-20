@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"	
 	"strconv"
@@ -12,7 +13,7 @@ func main() {
 	window.SetPosition(gtk.WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
 	window.Connect("destroy", func(ctx *glib.CallbackContext) {
-		println("got destroy!", ctx.Data().(string))
+		fmt.Println("got destroy!", ctx.Data().(string))
 		gtk.MainQuit()
 	}, "foo")
 
@@ -32,10 +33,10 @@ func main() {
 	spinbutton1.OnValueChanged(func() {
 		val := spinbutton1.GetValueAsInt()
 		fval := spinbutton1.GetValue()
-		println("SpinButton changed, new value: " + strconv.Itoa(val) + " | " + strconv.FormatFloat(fval, 'f', 2, 64))
+		fmt.Println("SpinButton changed, new value: " + strconv.Itoa(val) + " | " + strconv.FormatFloat(fval, 'f', 2, 64))
 		min, max := spinbutton1.GetRange()
-		println("Range: " + strconv.FormatFloat(min, 'f', 2, 64) + " " + strconv.FormatFloat(max, 'f', 2, 64))
-		println("Digits: " + strconv.Itoa(int(spinbutton1.GetDigits())))
+		fmt.Println("Range: " + strconv.FormatFloat(min, 'f', 2, 64) + " " + strconv.FormatFloat(max, 'f', 2, 64))
+		fmt.Println("Digits: " + strconv.Itoa(int(spinbutton1.GetDigits())))
 	})
 
 	adjustment := gtk.NewAdjustment(2.0, 1.0, 8.0, 2.0, 0.0, 0.0)

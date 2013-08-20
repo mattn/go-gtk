@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"	
 	"os"
@@ -45,7 +46,7 @@ func main() {
 
 	button := gtk.NewButtonWithLabel("OK")
 	button.Connect("clicked", func() {
-		println(input.GetText())
+		fmt.Println(input.GetText())
 		gtk.MainQuit()
 	})
 	vbox.Add(button)

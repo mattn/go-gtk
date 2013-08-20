@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
 )
@@ -19,7 +20,7 @@ func main() {
 	palette := gtk.NewToolPalette()
 	group := gtk.NewToolItemGroup("Tools")
 	b := gtk.NewToolButtonFromStock(gtk.STOCK_NEW)
-	b.OnClicked(func () { println("You clicked new!") })
+	b.OnClicked(func () { fmt.Println("You clicked new!") })
 	group.Insert(b, -1)
 	b = gtk.NewToolButtonFromStock(gtk.STOCK_CLOSE)
 	group.Insert(b, -1)

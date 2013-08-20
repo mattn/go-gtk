@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"github.com/mattn/go-gtk/glib"	
 	"github.com/mattn/go-gtk/gdk"
@@ -17,12 +18,12 @@ func main() {
 	window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
 		kev := *(**gdk.EventKey)(unsafe.Pointer(&arg))
-		println("key-press-event:", kev.Keyval)
+		fmt.Println("key-press-event:", kev.Keyval)
 	})
 	window.Connect("motion-notify-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
 		mev := *(**gdk.EventMotion)(unsafe.Pointer(&arg))
-		println("motion-notify-event:", int(mev.X), int(mev.Y))
+		fmt.Println("motion-notify-event:", int(mev.X), int(mev.Y))
 	})
 
 	window.SetEvents(int(gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK | gdk.BUTTON_PRESS_MASK))

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mattn/go-gtk/gdkpixbuf"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
@@ -52,7 +53,7 @@ func main() {
 	window.SetTitle("GTK Go!")
 	window.SetIconName("gtk-dialog-info")
 	window.Connect("destroy", func(ctx *glib.CallbackContext) {
-		println("got destroy!", ctx.Data().(string))
+		fmt.Println("got destroy!", ctx.Data().(string))
 		gtk.MainQuit()
 	}, "foo")
 
@@ -112,7 +113,7 @@ func main() {
 	//--------------------------------------------------------
 	scale := gtk.NewHScaleWithRange(0, 100, 1)
 	scale.Connect("value-changed", func() {
-		println("scale:", int(scale.GetValue()))
+		fmt.Println("scale:", int(scale.GetValue()))
 	})
 	framebox2.Add(scale)
 
@@ -126,7 +127,7 @@ func main() {
 	//--------------------------------------------------------
 	button := gtk.NewButtonWithLabel("Button with label")
 	button.Clicked(func() {
-		println("button clicked:", button.GetLabel())
+		fmt.Println("button clicked:", button.GetLabel())
 		messagedialog := gtk.NewMessageDialog(
 			button.GetTopLevelAsWindow(),
 			gtk.DIALOG_MODAL,
@@ -134,7 +135,7 @@ func main() {
 			gtk.BUTTONS_OK,
 			entry.GetText())
 		messagedialog.Response(func() {
-			println("Dialog OK!")
+			fmt.Println("Dialog OK!")
 
 			//--------------------------------------------------------
 			// GtkFileChooserDialog
@@ -149,7 +150,7 @@ func main() {
 			filter.AddPattern("*.go")
 			filechooserdialog.AddFilter(filter)
 			filechooserdialog.Response(func() {
-				println(filechooserdialog.GetFilename())
+				fmt.Println(filechooserdialog.GetFilename())
 				filechooserdialog.Destroy()
 			})
 			filechooserdialog.Run()
@@ -164,10 +165,10 @@ func main() {
 	//--------------------------------------------------------
 	fontbutton := gtk.NewFontButton()
 	fontbutton.Connect("font-set", func() {
-		println("title:", fontbutton.GetTitle())
-		println("fontname:", fontbutton.GetFontName())
-		println("use_size:", fontbutton.GetUseSize())
-		println("show_size:", fontbutton.GetShowSize())
+		fmt.Println("title:", fontbutton.GetTitle())
+		fmt.Println("fontname:", fontbutton.GetFontName())
+		fmt.Println("use_size:", fontbutton.GetUseSize())
+		fmt.Println("show_size:", fontbutton.GetShowSize())
 	})
 	buttons.Add(fontbutton)
 	framebox2.PackStart(buttons, false, false, 0)
@@ -229,7 +230,7 @@ func main() {
 	comboboxentry.AppendText("Tiger")
 	comboboxentry.AppendText("Elephant")
 	comboboxentry.Connect("changed", func() {
-		println("value:", comboboxentry.GetActiveText())
+		fmt.Println("value:", comboboxentry.GetActiveText())
 	})
 	combos.Add(comboboxentry)
 
@@ -242,7 +243,7 @@ func main() {
 	combobox.AppendText("Apple")
 	combobox.SetActive(1)
 	combobox.Connect("changed", func() {
-		println("value:", combobox.GetActiveText())
+		fmt.Println("value:", combobox.GetActiveText())
 	})
 	combos.Add(combobox)
 
@@ -270,7 +271,7 @@ func main() {
 	framebox2.Add(swin)
 
 	buffer.Connect("changed", func() {
-		println("changed")
+		fmt.Println("changed")
 	})
 
 	//--------------------------------------------------------
@@ -303,7 +304,7 @@ func main() {
 		fsd := gtk.NewFontSelectionDialog("Font")
 		fsd.SetFontName(fontbutton.GetFontName())
 		fsd.Response(func() {
-			println(fsd.GetFontName())
+			fmt.Println(fsd.GetFontName())
 			fontbutton.SetFontName(fsd.GetFontName())
 			fsd.Destroy()
 		})

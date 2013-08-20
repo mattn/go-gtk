@@ -120,7 +120,7 @@ func main() {
 				"https://stream.twitter.com/1/statuses/filter.json",
 				url.Values{"track": {"picplz,instagr"}})
 			if err != nil {
-				println(err.Error())
+				fmt.Println(err.Error())
 				return
 			}
 			for ts.Err() == nil {

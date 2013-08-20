@@ -1,9 +1,10 @@
 package main
 
 import (
-	"os"
-	"github.com/mattn/go-gtk/gtk"	
+	"fmt"
 	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/gtk"
+	"os"
 )
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 		nm.Popup(nil, nil, gtk.StatusIconPositionMenu, si, uint(cbx.Args(0)), uint32(cbx.Args(1)))
 	})
 
-	println(`
+	fmt.Println(`
 Can you see statusicon in systray?
 If you don't see it and if you use 'unity', try following.
 

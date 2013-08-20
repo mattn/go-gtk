@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
-	"fmt"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	}, "")
 
 	vbox := gtk.NewVBox(false, 0)
-	
+
 	toolbar := gtk.NewToolbar()
 	toolbar.SetStyle(gtk.TOOLBAR_ICONS)
 	vbox.PackStart(toolbar, false, false, 5)
@@ -26,7 +26,7 @@ func main() {
 	separator := gtk.NewSeparatorToolItem()
 	btncustom := gtk.NewToolButton(nil, "Custom")
 	btnmenu := gtk.NewMenuToolButtonFromStock("gtk.STOCK_CLOSE")
-	btnmenu.SetArrowTooltipText("This is a tool tip")		
+	btnmenu.SetArrowTooltipText("This is a tool tip")
 
 	btnnew.OnClicked(onToolButtonClicked)
 	btnclose.OnClicked(onToolButtonClicked)
@@ -42,13 +42,13 @@ func main() {
 	menuitem = gtk.NewMenuItemWithMnemonic("32")
 	menuitem.Show()
 	toolmenu.Append(menuitem)
-	btnmenu.SetMenu(toolmenu)	
+	btnmenu.SetMenu(toolmenu)
 
 	toolbar.Insert(btnnew, -1)
 	toolbar.Insert(btnclose, -1)
 	toolbar.Insert(separator, -1)
 	toolbar.Insert(btncustom, -1)
-	toolbar.Insert(btnmenu, -1)	
+	toolbar.Insert(btnmenu, -1)
 
 	hbox := gtk.NewHBox(false, 0)
 	vbox.PackStart(hbox, true, true, 0)
@@ -97,12 +97,12 @@ func main() {
 		}
 	}
 
-	window.Add(vbox)	
+	window.Add(vbox)
 	window.SetSizeRequest(600, 600)
 	window.ShowAll()
 	gtk.Main()
 }
 
 func onToolButtonClicked() {
-	println("ToolButton clicked")
+	fmt.Println("ToolButton clicked")
 }
