@@ -1550,7 +1550,11 @@ func (v *AboutDialog) SetTranslatorCredits(translator_credits string) {
 	C.gtk_about_dialog_set_translator_credits(ABOUT_DIALOG(v), gstring(ptr))
 }
 func (v *AboutDialog) GetLogo() *gdkpixbuf.Pixbuf {
-	return &gdkpixbuf.Pixbuf{C.gtk_about_dialog_get_logo(ABOUT_DIALOG(v)), nil}
+	gpixbuf := C.gtk_about_dialog_get_logo(ABOUT_DIALOG(v))
+	return &gdkpixbuf.Pixbuf{
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
 }
 func (v *AboutDialog) SetLogo(logo *gdkpixbuf.Pixbuf) {
 	C.gtk_about_dialog_set_logo(ABOUT_DIALOG(v), logo.GPixbuf)
@@ -1631,15 +1635,21 @@ func (v *Assistant) SetPageHeaderImage(page IWidget, pixbuf *gdkpixbuf.Pixbuf) {
 	C.gtk_assistant_set_page_header_image(ASSISTANT(v), ToNative(page), pixbuf.GPixbuf)
 }
 func (v *Assistant) GetPageHeaderImage(page IWidget) *gdkpixbuf.Pixbuf {
+	gpixbuf := C.gtk_assistant_get_page_header_image(ASSISTANT(v), ToNative(page))
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_assistant_get_page_header_image(ASSISTANT(v), ToNative(page)), nil}
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
 }
 func (v *Assistant) SetPageSideImage(page IWidget, pixbuf *gdkpixbuf.Pixbuf) {
 	C.gtk_assistant_set_page_side_image(ASSISTANT(v), ToNative(page), pixbuf.GPixbuf)
 }
 func (v *Assistant) GetPageSideImage(page IWidget) *gdkpixbuf.Pixbuf {
+	gpixbuf := C.gtk_assistant_get_page_side_image(ASSISTANT(v), ToNative(page))
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_assistant_get_page_side_image(ASSISTANT(v), ToNative(page)), nil}
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
 }
 func (v *Assistant) SetPageComplete(page IWidget, complete bool) {
 	C.gtk_assistant_set_page_complete(ASSISTANT(v), ToNative(page), gbool(complete))
@@ -1752,8 +1762,11 @@ func NewImageFromStock(stock_id string, size IconSize) *Image {
 // gtk_image_new_from_gicon
 
 func (v *Image) GetPixbuf() *gdkpixbuf.Pixbuf {
+	gpixbuf := C.gtk_image_get_pixbuf(IMAGE(v))
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_image_get_pixbuf(IMAGE(v)), nil}
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
 }
 
 func (v *Image) SetFromFile(filename string) {
@@ -2200,7 +2213,11 @@ func (v *StatusIcon) SetFromIconName(icon_name string) {
 //GtkImageType gtk_status_icon_get_storage_type (GtkStatusIcon *status_icon);
 
 func (v *StatusIcon) GetPixbuf() *gdkpixbuf.Pixbuf {
-	return &gdkpixbuf.Pixbuf{C.gtk_status_icon_get_pixbuf(v.GStatusIcon), nil}
+	gpixbuf := C.gtk_status_icon_get_pixbuf(v.GStatusIcon)
+	return &gdkpixbuf.Pixbuf{
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
 }
 func (v *StatusIcon) GetStock() string {
 	return gostring(C.gtk_status_icon_get_stock(v.GStatusIcon))
@@ -8490,8 +8507,11 @@ func (v *Widget) RenderIcon(stock_id string, size IconSize, detail string) *gdkp
 	defer cfree(pstock_id)
 	pdetail := C.CString(detail)
 	defer cfree(pdetail)
+	gpixbuf := C.gtk_widget_render_icon(v.GWidget, gstring(pstock_id), C.GtkIconSize(size), gstring(pdetail))
 	return &gdkpixbuf.Pixbuf{
-		C.gtk_widget_render_icon(v.GWidget, gstring(pstock_id), C.GtkIconSize(size), gstring(pdetail)), nil}
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
 }
 
 // gtk_widget_pop_composite_child
