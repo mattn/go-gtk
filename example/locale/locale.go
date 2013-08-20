@@ -3,16 +3,15 @@ package main
 import "github.com/mattn/go-gtk/gtk"
 import "github.com/mattn/go-gtk/glib"
 import "fmt"
+import "syscall"
 
 func main() {
 	gtk.SetLocale()
 
-	bs := ([]byte)("こんにちわ世界")
-
-	str, bytes_read, bytes_written, error := glib.LocaleToUtf8(bs)
-	if error == nil {
-		fmt.Printf("str=%s, bytes_read=%d, bytes_written=%d\n", str, bytes_read, bytes_written)
+	bs, _, _, err := glib.LocaleFromUtf8("こんにちわ世界\n")
+	if err == nil {
+		syscall.Write(syscall.Stdout, bs)
 	} else {
-		println(error.Message())
+		fmt.Println(err.Message())
 	}
 }
