@@ -139,6 +139,31 @@ static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter
 //}
 
 typedef struct {
+	GtkTreeModel* model;
+	GtkTreeIter* a;
+	GtkTreeIter* b;
+	gpointer data;
+	int ret;
+} _gtk_sort_func_info;
+
+extern void _go_call_sort_func(_gtk_sort_func_info* gsfi);
+static gint sortable_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer data) {
+	gint gret = 0;
+	_gtk_sort_func_info gsfi;
+	gsfi.model = model;
+	gsfi.a = a;
+	gsfi.b = b;
+	gsfi.data = data;
+	_go_call_sort_func(&gsfi);
+	gret = gsfi.ret;
+	return gret;
+}
+
+static void _gtk_tree_sortable_set_sort_func(GtkTreeSortable* ts, gint col, void* f) {
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(ts), col, sortable_sort_func, (gpointer) f, NULL);
+}
+
+typedef struct {
 	GtkMenu *menu;
 	gint x;
 	gint y;
@@ -765,6 +790,7 @@ static inline GtkWidget* toGWidget(void* w) { return GTK_WIDGET(w); }
 static inline GdkWindow* toGdkWindow(void* w) { return GDK_WINDOW(w); }
 static inline GtkTreeView* toGTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
 static inline GtkIconView* toGIconView(GtkWidget* w) { return GTK_ICON_VIEW(w); }
+static inline GtkTreeSortable* toGTreeSortable(GtkTreeModel* m) { return GTK_TREE_SORTABLE(m); }
 static inline GtkEditable* toGEditable(GtkWidget* w) { return GTK_EDITABLE(w); }
 static inline GtkCellRendererText* toGCellRendererText(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TEXT(w); }
 static inline GtkCellRendererToggle* toGCellRendererToggle(GtkCellRenderer* w) { return GTK_CELL_RENDERER_TOGGLE(w); }
