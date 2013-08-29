@@ -8004,10 +8004,7 @@ func (v *Container) Add(w IWidget) {
 func (v *Container) Remove(w IWidget) {
 	C.gtk_container_remove(CONTAINER(v), ToNative(w))
 }
-
 // gtk_container_add_with_properties
-// gtk_container_get_resize_mode
-// gtk_container_set_resize_mode
 func (v *Container) GetResizeMode() ResizeMode {
 	return ResizeMode(C.gtk_container_get_resize_mode(CONTAINER(v)))
 }
