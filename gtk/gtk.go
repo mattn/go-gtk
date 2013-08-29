@@ -7990,6 +7990,14 @@ type Container struct {
 	Widget
 }
 
+type ResizeMode int
+
+const (
+	RESIZE_PARENT	 = ResizeMode(0)
+	RESIZE_QUEUE	 = ResizeMode(1)
+	RESIZE_IMMEDIATE = ResizeMode(2)
+)
+
 func (v *Container) Add(w IWidget) {
 	C.gtk_container_add(CONTAINER(v), ToNative(w))
 }
@@ -8000,7 +8008,12 @@ func (v *Container) Remove(w IWidget) {
 // gtk_container_add_with_properties
 // gtk_container_get_resize_mode
 // gtk_container_set_resize_mode
-
+func (v *Container) GetResizeMode() ResizeMode {
+	return ResizeMode(C.gtk_container_get_resize_mode(CONTAINER(v)))
+}
+func (v *Container) SetResizeMode(resize_mode ResizeMode) {
+	C.gtk_container_set_resize_mode(CONTAINER(v), C.GtkResizeMode(resize_mode))
+}
 func (v *Container) CheckResize() {
 	C.gtk_container_check_resize(CONTAINER(v))
 }
