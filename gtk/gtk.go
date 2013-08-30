@@ -4525,9 +4525,6 @@ func (v *IconView) ScrollToPath(path *TreePath, use bool, ra float64, ca float64
 //-----------------------------------------------------------------------
 type SortType int
 type SortFunc func(m *TreeModel, a *TreeIter, b *TreeIter) int
-type SortFuncInfo struct {
-	f SortFunc
-}
 
 const (
 	SORT_ASCENDING SortType = iota
@@ -4541,6 +4538,7 @@ const (
 
 type TreeSortable struct {
 	GTreeSortable *C.GtkTreeSortable
+	sortFuncs     map[int]SortFunc
 }
 
 func NewTreeSortable(model ITreeModel) *TreeSortable{
@@ -4548,7 +4546,7 @@ func NewTreeSortable(model ITreeModel) *TreeSortable{
 	if model != nil {
 		tm = model.cTreeModel()
 	}
-	return &TreeSortable{C.toGTreeSortable(tm)}
+	return &TreeSortable{C.toGTreeSortable(tm), make(map[int]SortFunc)}
 }
 
 // gtk_tree_sortable_sort_column_changed
@@ -4564,7 +4562,8 @@ func (ts *TreeSortable) SetSortColumnId(id int, order SortType) {
 }
 
 func (ts *TreeSortable) SetSortFunc(col int, fun SortFunc) {
-	C._gtk_tree_sortable_set_sort_func(ts.GTreeSortable, gint(col), unsafe.Pointer(&SortFuncInfo{fun}))
+	ts.sortFuncs[col] = fun
+	C._gtk_tree_sortable_set_sort_func(ts.GTreeSortable, gint(col), unsafe.Pointer(ts))
 }
 
 //export _go_call_sort_func
@@ -4572,11 +4571,11 @@ func _go_call_sort_func(gsfi *C._gtk_sort_func_info) {
 	if gsfi == nil {
 		return
 	}
-	gsfigo := (*SortFuncInfo)(gsfi.data)
-	if gsfigo.f == nil {
+	gots := (*TreeSortable)(gsfi.gots)
+	if gots.sortFuncs[int(gsfi.columnNum)] == nil {
 		return
 	}
-	gsfi.ret = C.int(gsfigo.f(&TreeModel{gsfi.model}, &TreeIter{*gsfi.a}, &TreeIter{*gsfi.b}))
+	gsfi.ret = C.int(gots.sortFuncs[int(gsfi.columnNum)](&TreeModel{gsfi.model}, &TreeIter{*gsfi.a}, &TreeIter{*gsfi.b}))
 }
 
 // gtk_tree_sortable_set_default_sort_func

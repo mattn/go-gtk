@@ -142,25 +142,32 @@ typedef struct {
 	GtkTreeModel* model;
 	GtkTreeIter* a;
 	GtkTreeIter* b;
-	gpointer data;
+	gint columnNum;
+	void* gots;
 	int ret;
 } _gtk_sort_func_info;
 
 extern void _go_call_sort_func(_gtk_sort_func_info* gsfi);
-static gint sortable_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer data) {
+static gint sortable_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer gsfi) {
 	gint gret = 0;
-	_gtk_sort_func_info gsfi;
-	gsfi.model = model;
-	gsfi.a = a;
-	gsfi.b = b;
-	gsfi.data = data;
-	_go_call_sort_func(&gsfi);
-	gret = gsfi.ret;
+	_gtk_sort_func_info* gsfil = (_gtk_sort_func_info*) gsfi;
+	gsfil->model = model;
+	gsfil->a = a;
+	gsfil->b = b;
+	_go_call_sort_func(gsfil);
+	gret = gsfil->ret;
 	return gret;
 }
 
-static void _gtk_tree_sortable_set_sort_func(GtkTreeSortable* ts, gint col, void* f) {
-	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(ts), col, sortable_sort_func, (gpointer) f, NULL);
+static void free_sort_func(gpointer gsfi) {
+	free(gsfi);
+}
+
+static void _gtk_tree_sortable_set_sort_func(GtkTreeSortable* ts, gint col, void* gots) {
+	_gtk_sort_func_info* gsfi = malloc(sizeof(_gtk_sort_func_info));
+	gsfi->columnNum = col;
+	gsfi->gots = gots;
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(ts), col, sortable_sort_func, (gpointer) gsfi, free_sort_func);
 }
 
 typedef struct {
