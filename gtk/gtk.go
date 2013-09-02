@@ -1024,15 +1024,15 @@ func (v *Dialog) SetHasSeparator(f bool) {
 	deprecated_since(2, 22, 0, "gtk_dialog_set_has_separator()")
 	C.gtk_dialog_set_has_separator(DIALOG(v), gbool(f))
 }
-func (v *Dialog) SetDefaultResponse(id int) {
-	C.gtk_dialog_set_default_response(DIALOG(v), gint(id))
+func (v *Dialog) SetDefaultResponse(id ResponseType) {
+	C.gtk_dialog_set_default_response(DIALOG(v), gint(int(id)))
 }
 
 // gtk_dialog_set_has_separator //deprecated since 2.22
 // gtk_dialog_set_response_sensitive
 
-func (v *Dialog) GetResponseForWidget(w *Widget) int {
-	return int(C.gtk_dialog_get_response_for_widget(DIALOG(v), w.GWidget))
+func (v *Dialog) GetResponseForWidget(w *Widget) ResponseType {
+	return ResponseType(int(C.gtk_dialog_get_response_for_widget(DIALOG(v), w.GWidget)))
 }
 func (v *Dialog) GetWidgetForResponse(id int) *Widget {
 	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response()")
