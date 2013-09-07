@@ -126,6 +126,7 @@ func PROGRESS_BAR(p *ProgressBar) *C.GtkProgressBar        { return C.toGProgres
 func FIXED(p *Fixed) *C.GtkFixed                           { return C.toGFixed(p.GWidget) }
 func CHECK_MENU_ITEM(p *CheckMenuItem) *C.GtkCheckMenuItem { return C.toGCheckMenuItem(p.GWidget) }
 func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMenuItem(p.GWidget) }
+func LAYOUT(p *Layout) *C.GtkLayout                        { return C.toGLayout(p.GWidget) }
 
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
@@ -6733,18 +6734,60 @@ func NewVPaned() *VPaned {
 // GtkLayout
 //-----------------------------------------------------------------------
 
-// gtk_layout_new
-// gtk_layout_put
-// gtk_layout_move
-// gtk_layout_set_size
-// gtk_layout_get_size
-// gtk_layout_freeze
-// gtk_layout_thaw
-// gtk_layout_get_hadjustment
-// gtk_layout_get_vadjustment
-// gtk_layout_set_hadjustment
-// gtk_layout_set_vadjustment
-// gtk_layout_get_bin_window
+type Layout struct {
+	Container
+}
+
+func NewLayout(hadjustment *Adjustment, vadjustment *Adjustment) *Layout {
+	var had, vad *C.GtkAdjustment
+	if hadjustment != nil {
+		had = hadjustment.GAdjustment
+	}
+	if vadjustment != nil {
+		vad = vadjustment.GAdjustment
+	}
+	return &Layout{Container{Widget{
+		C.gtk_layout_new(had, vad)}}}
+}
+func (v *Layout) GetHAdjustment() *Adjustment {
+	return &Adjustment{
+		C.gtk_layout_get_hadjustment(LAYOUT(v))}
+}
+func (v *Layout) GetVAdjustment() *Adjustment {
+	return &Adjustment{
+		C.gtk_layout_get_vadjustment(LAYOUT(v))}
+}
+func (v *Layout) SetHAdjustment(hadjustment *Adjustment) {
+	C.gtk_layout_set_hadjustment(LAYOUT(v), hadjustment.GAdjustment)
+}
+func (v *Layout) SetVAdjustment(vadjustment *Adjustment) {
+	C.gtk_layout_set_vadjustment(LAYOUT(v), vadjustment.GAdjustment)
+}
+func (v *Layout) Move(child IWidget x int, y int) {
+	C.gtk_layout_move(LAYOUT(v), ToNative(child), C.gint(x), C.gint(y))
+}
+func (v *Layout) Put(child IWidget x int, y int) {
+	C.gtk_layout_put(LAYOUT(v), ToNative(child), C.gint(x), C.gint(y))
+}
+func (v *Layout) SetSize(width int, height int) {
+	C.gtk_layout_set_size(LAYOUT(v), C.guint(width), C.guint(height))
+}
+func (v *Layout) Freeze() {
+	C.gtk_layout_freeze(LAYOUT(v));
+}
+func (v *Layout) Thaw() {
+	C.gtk_layout_thaw(LAYOUT(v));
+}
+func (v *Layout) GetSize(width *int, height *int) {
+	var cwidth, cheight C.guint
+	C.gtk_layout_get_size(LAYOUT(v), &cwidth, &cheight)
+	*width = int(cwidth)
+	*height = int(cheight)
+}
+func (v *Layout) GetBinWindow() *Window {
+	return &Window{Bin{Container{Widget{
+		C.toGWidget(unsafe.Pointer(C.gtk_layout_get_bin_window(LAYOUT(v))))}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkNotebook
