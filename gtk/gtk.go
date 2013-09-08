@@ -1372,7 +1372,10 @@ func (v *Window) XID() int32 {
 // gtk_window_set_default_icon
 // gtk_window_set_default_icon_from_file
 // gtk_window_set_default_icon_name
-// gtk_window_set_icon
+func (v *Window) SetIcon(icon *gdkpixbuf.Pixbuf) {
+	C.gtk_window_set_icon(WINDOW(v), icon.GPixbuf)
+}
+
 // gtk_window_set_icon_list
 
 func (v *Window) SetIconFromFile(file string) {
@@ -4542,7 +4545,7 @@ type TreeSortable struct {
 	sortFuncs     map[int]SortFunc
 }
 
-func NewTreeSortable(model ITreeModel) *TreeSortable{
+func NewTreeSortable(model ITreeModel) *TreeSortable {
 	var tm *C.GtkTreeModel
 	if model != nil {
 		tm = model.cTreeModel()
@@ -6763,20 +6766,20 @@ func (v *Layout) SetHAdjustment(hadjustment *Adjustment) {
 func (v *Layout) SetVAdjustment(vadjustment *Adjustment) {
 	C.gtk_layout_set_vadjustment(LAYOUT(v), vadjustment.GAdjustment)
 }
-func (v *Layout) Move(child IWidget x int, y int) {
+func (v *Layout) Move(child IWidget, x int, y int) {
 	C.gtk_layout_move(LAYOUT(v), ToNative(child), C.gint(x), C.gint(y))
 }
-func (v *Layout) Put(child IWidget x int, y int) {
+func (v *Layout) Put(child IWidget, x int, y int) {
 	C.gtk_layout_put(LAYOUT(v), ToNative(child), C.gint(x), C.gint(y))
 }
 func (v *Layout) SetSize(width int, height int) {
 	C.gtk_layout_set_size(LAYOUT(v), C.guint(width), C.guint(height))
 }
 func (v *Layout) Freeze() {
-	C.gtk_layout_freeze(LAYOUT(v));
+	C.gtk_layout_freeze(LAYOUT(v))
 }
 func (v *Layout) Thaw() {
-	C.gtk_layout_thaw(LAYOUT(v));
+	C.gtk_layout_thaw(LAYOUT(v))
 }
 func (v *Layout) GetSize(width *int, height *int) {
 	var cwidth, cheight C.guint
@@ -7206,16 +7209,33 @@ func NewVSeparator() *VSeparator {
 }
 
 //-----------------------------------------------------------------------
+// GtkScrollbar
+//-----------------------------------------------------------------------
+type Scrollbar struct {
+	Range
+}
+
+//-----------------------------------------------------------------------
 // GtkHScrollbar
 //-----------------------------------------------------------------------
+type HScrollbar struct {
+	Scrollbar
+}
 
-// gtk_hscrollbar_new
+func NewHScrollbar(ha *Adjustment) *HScrollbar {
+	return &HScrollbar{Scrollbar{Range{Widget{C.gtk_hscrollbar_new(ADJUSTMENT(ha))}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkVScrollbar
 //-----------------------------------------------------------------------
+type VScrollbar struct {
+	Scrollbar
+}
 
-// gtk_vscrollbar_new
+func NewVScrollbar(va *Adjustment) *VScrollbar {
+	return &VScrollbar{Scrollbar{Range{Widget{C.gtk_vscrollbar_new(ADJUSTMENT(va))}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkScrolledWindow
@@ -8035,8 +8055,8 @@ type Container struct {
 type ResizeMode int
 
 const (
-	RESIZE_PARENT	 = ResizeMode(0)
-	RESIZE_QUEUE	 = ResizeMode(1)
+	RESIZE_PARENT    = ResizeMode(0)
+	RESIZE_QUEUE     = ResizeMode(1)
 	RESIZE_IMMEDIATE = ResizeMode(2)
 )
 
@@ -8046,6 +8066,7 @@ func (v *Container) Add(w IWidget) {
 func (v *Container) Remove(w IWidget) {
 	C.gtk_container_remove(CONTAINER(v), ToNative(w))
 }
+
 // gtk_container_add_with_properties
 func (v *Container) GetResizeMode() ResizeMode {
 	return ResizeMode(C.gtk_container_get_resize_mode(CONTAINER(v)))
