@@ -751,6 +751,7 @@ static inline GtkAboutDialog* toGAboutDialog(GtkWidget* w) { return GTK_ABOUT_DI
 static inline GtkContainer* toGContainer(GtkWidget* w) { return GTK_CONTAINER(w); }
 static inline GtkFileChooser* toGFileChooser(GtkWidget* w) { return GTK_FILE_CHOOSER(w); }
 static inline GtkFontSelectionDialog* toGFontSelectionDialog(GtkWidget* w) { return GTK_FONT_SELECTION_DIALOG(w); }
+static inline GtkMisc* toGMisc(GtkWidget* w) { return GTK_MISC(w); }
 static inline GtkLabel* toGLabel(GtkWidget* w) { return GTK_LABEL(w); }
 static inline GtkButton* toGButton(GtkWidget* w) { return GTK_BUTTON(w); }
 static inline GtkSpinButton* toGSpinButton(GtkWidget* w) { return GTK_SPIN_BUTTON(w); }

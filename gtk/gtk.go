@@ -61,6 +61,7 @@ func FILE_CHOOSER(p *Widget) *C.GtkFileChooser      { return C.toGFileChooser(p.
 func FONT_SELECTION_DIALOG(p *FontSelectionDialog) *C.GtkFontSelectionDialog {
 	return C.toGFontSelectionDialog(p.GWidget)
 }
+func MISC(m *Misc) *C.GtkMisc                             { return C.toGMisc(m.GWidget) }
 func LABEL(p *Label) *C.GtkLabel                           { return C.toGLabel(p.GWidget) }
 func BUTTON(p *Button) *C.GtkButton                        { return C.toGButton(p.GWidget) }
 func SPIN_BUTTON(p *SpinButton) *C.GtkSpinButton           { return C.toGSpinButton(p.GWidget) }
@@ -1118,7 +1119,7 @@ func (v *MessageDialog) SetImage(image IWidget) {
 	C.gtk_message_dialog_set_image(MESSAGE_DIALOG(v), ToNative(image))
 }
 func (v *MessageDialog) GetImage() *Image {
-	return &Image{Widget{C.gtk_message_dialog_get_image(MESSAGE_DIALOG(v))}}
+	return &Image{Misc{Widget{C.gtk_message_dialog_get_image(MESSAGE_DIALOG(v))}}}
 }
 
 // gtk_message_dialog_get_message_area //since 2.22
@@ -1733,24 +1734,24 @@ const (
 	IWidget
 }*/
 type Image struct {
-	Widget
+	Misc
 }
 
 func NewImage() *Image {
-	return &Image{Widget{C.gtk_image_new()}}
+	return &Image{Misc{Widget{C.gtk_image_new()}}}
 }
 
 func NewImageFromFile(filename string) *Image {
 	ptr := C.CString(filename)
 	defer cfree(ptr)
-	return &Image{Widget{C.gtk_image_new_from_file(gstring(ptr))}}
+	return &Image{Misc{Widget{C.gtk_image_new_from_file(gstring(ptr))}}}
 }
 
 // gtk_image_new_from_icon_set
 // gtk_image_new_from_image
 
 func NewImageFromPixbuf(pixbuf gdkpixbuf.Pixbuf) *Image {
-	return &Image{Widget{C.gtk_image_new_from_pixbuf(pixbuf.GPixbuf)}}
+	return &Image{Misc{Widget{C.gtk_image_new_from_pixbuf(pixbuf.GPixbuf)}}}
 }
 
 // gtk_image_new_from_pixmap
@@ -1758,7 +1759,7 @@ func NewImageFromPixbuf(pixbuf gdkpixbuf.Pixbuf) *Image {
 func NewImageFromStock(stock_id string, size IconSize) *Image {
 	ptr := C.CString(stock_id)
 	defer cfree(ptr)
-	return &Image{Widget{C.gtk_image_new_from_stock(gstring(ptr), C.GtkIconSize(size))}}
+	return &Image{Misc{Widget{C.gtk_image_new_from_stock(gstring(ptr), C.GtkIconSize(size))}}}
 }
 
 // gtk_image_new_from_animation
@@ -1834,7 +1835,7 @@ type ILabel interface {
 	SetLabel(label string)
 }
 type Label struct {
-	Widget
+	Misc
 }
 
 func (Label) isILabel() {}
@@ -1842,7 +1843,7 @@ func (Label) isILabel() {}
 func NewLabel(label string) *Label {
 	ptr := C.CString(label)
 	defer cfree(ptr)
-	return &Label{Widget{C.gtk_label_new(gstring(ptr))}}
+	return &Label{Misc{Widget{C.gtk_label_new(gstring(ptr))}}}
 }
 func (v *Label) SetText(label string) {
 	ptr := C.CString(label)
@@ -1900,7 +1901,7 @@ func (v *Label) GetText() string {
 func LabelWithMnemonic(label string) *Label {
 	ptr := C.CString(label)
 	defer cfree(ptr)
-	return &Label{Widget{C.gtk_label_new_with_mnemonic(gstring(ptr))}}
+	return &Label{Misc{Widget{C.gtk_label_new_with_mnemonic(gstring(ptr))}}}
 }
 func (v *Label) SelectRegion(start_offset int, end_offset int) {
 	C.gtk_label_select_region(LABEL(v), gint(start_offset), gint(end_offset))
@@ -2427,7 +2428,7 @@ func (v *Button) SetImage(image IWidget) {
 	C.gtk_button_set_image(BUTTON(v), ToNative(image))
 }
 func (v *Button) GetImage() *Image {
-	return &Image{Widget{C.gtk_button_get_image(BUTTON(v))}}
+	return &Image{Misc{Widget{C.gtk_button_get_image(BUTTON(v))}}}
 }
 
 // gtk_button_set_image_position
@@ -7120,8 +7121,8 @@ func (v *Expander) SetLabelWidget(label_widget ILabel) {
 	C.gtk_expander_set_label_widget(EXPANDER(v), ToNative(label_widget))
 }
 func (v *Expander) GetLabelWidget() ILabel {
-	return &Label{Widget{
-		C.gtk_expander_get_label_widget(EXPANDER(v))}}
+	return &Label{Misc{Widget{
+		C.gtk_expander_get_label_widget(EXPANDER(v))}}}
 }
 
 // gtk_expander_set_label_fill //since 2.22
@@ -7179,8 +7180,8 @@ func (v *Frame) GetLabelAlign() (xalign, yalign float64) {
 	return float64(xalign_), float64(yalign_)
 }
 func (v *Frame) GetLabelWidget() ILabel {
-	return &Label{Widget{
-		C.gtk_frame_get_label_widget(FRAME(v))}}
+	return &Label{Misc{Widget{
+		C.gtk_frame_get_label_widget(FRAME(v))}}}
 }
 func (v *Frame) GetShadowType() ShadowType {
 	return ShadowType(C.gtk_frame_get_shadow_type(FRAME(v)))
@@ -8161,10 +8162,31 @@ func (v *Item) Toggle() {
 // GtkMisc
 //-----------------------------------------------------------------------
 
-// gtk_misc_set_alignment
-// gtk_misc_set_padding
-// gtk_misc_get_alignment
-// gtk_misc_get_padding
+type Misc struct {
+	Widget
+}
+
+func (m *Misc) SetAlignment(xalign, yalign float64) {
+	C.gtk_misc_set_alignment(MISC(m), C.gfloat(xalign), C.gfloat(yalign))
+}
+
+func (m *Misc) SetPadding(xpad, ypad int) {
+	C.gtk_misc_set_padding(MISC(m), C.gint(xpad), C.gint(ypad))
+}
+
+func (m *Misc) GetAlignment(xalign, yalign *float64) {
+	var gxalign, gyalign *C.gfloat
+	C.gtk_misc_get_alignment(MISC(m), gxalign, gyalign)
+	*xalign = float64(*gxalign)
+	*yalign = float64(*gyalign)
+}
+
+func (m *Misc) GetPadding(xpad, ypad *int) {
+	var gxpad, gypad *C.gint
+	C.gtk_misc_get_padding(MISC(m), gxpad, gypad)
+	*xpad = int(*gxpad)
+	*ypad = int(*gypad)
+}
 
 //-----------------------------------------------------------------------
 // GtkObject
