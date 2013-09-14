@@ -8423,6 +8423,10 @@ func ToNative(w IWidget) *C.GtkWidget {
 		log.Println("Warning: Converting interface (IWidget) from nil")
 		return nil
 	}
+	_, ok := w.(*Widget)
+	if !ok {
+		return nil
+	}
 	return w.ToNative()
 }
 

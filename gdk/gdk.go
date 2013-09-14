@@ -2760,7 +2760,6 @@ type EventScroll struct {
 	Time      uint32
 	X         float64
 	Y         float64
-	Axes      *float64
 	State     uint
 	Direction int
 	Device    uintptr
