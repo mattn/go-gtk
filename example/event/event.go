@@ -15,16 +15,30 @@ func main() {
 	window.SetTitle("GTK Events")
 	window.Connect("destroy", gtk.MainQuit)
 
+	event := make(chan interface{})
+
 	window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
-		kev := *(**gdk.EventKey)(unsafe.Pointer(&arg))
-		fmt.Println("key-press-event:", kev.Keyval)
+		event <- *(**gdk.EventKey)(unsafe.Pointer(&arg))
 	})
 	window.Connect("motion-notify-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
-		mev := *(**gdk.EventMotion)(unsafe.Pointer(&arg))
-		fmt.Println("motion-notify-event:", int(mev.X), int(mev.Y))
+		event <- *(**gdk.EventMotion)(unsafe.Pointer(&arg))
 	})
+
+	go func() {
+		for {
+			e := <-event
+			switch ev := e.(type) {
+			case *gdk.EventKey:
+				fmt.Println("key-press-event:", ev.Keyval)
+				break
+			case *gdk.EventMotion:
+				fmt.Println("motion-notify-event:", int(ev.X), int(ev.Y))
+				break
+			}
+		}
+	}()
 
 	window.SetEvents(int(gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK | gdk.BUTTON_PRESS_MASK))
 	window.SetSizeRequest(400, 400)
