@@ -668,6 +668,10 @@ func (c *CallbackContext) Data() interface{} {
 	return c.data.Interface()
 }
 
+func (c *CallbackContext) Arg(n int) interface{} {
+	return C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n))
+}
+
 func (c *CallbackContext) Args(n int) CallbackArg {
 	return CallbackArg(C.callback_info_get_arg((*C.callback_info)(c.cbi), C.int(n)))
 }
