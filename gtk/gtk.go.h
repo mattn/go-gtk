@@ -810,6 +810,7 @@ static inline GtkImage* toGImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static inline GtkNotebook* toGNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static inline GtkTable* toGTable(GtkWidget* w) { return GTK_TABLE(w); }
 static inline GtkDrawingArea* toGDrawingArea(GtkWidget* w) { return GTK_DRAWING_AREA(w); }
+static inline GtkSpinner* toGSpinner(GtkWidget* w) { return GTK_SPINNER(w); }
 static inline GtkAssistant* toGAssistant(GtkWidget* w) { return GTK_ASSISTANT(w); }
 static inline GtkExpander* toGExpander(GtkWidget* w) { return GTK_EXPANDER(w); }
 static inline GtkAlignment* toGAlignment(GtkWidget* w) { return GTK_ALIGNMENT(w); }

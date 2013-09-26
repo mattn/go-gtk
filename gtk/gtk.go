@@ -120,6 +120,7 @@ func IMAGE(p *Image) *C.GtkImage                           { return C.toGImage(p
 func NOTEBOOK(p *Notebook) *C.GtkNotebook                  { return C.toGNotebook(p.GWidget) }
 func TABLE(p *Table) *C.GtkTable                           { return C.toGTable(p.GWidget) }
 func DRAWING_AREA(p *DrawingArea) *C.GtkDrawingArea        { return C.toGDrawingArea(p.GWidget) }
+func SPINNER(s *Spinner) *C.GtkSpinner                     { return C.toGSpinner(s.GWidget) }
 func ASSISTANT(p *Assistant) *C.GtkAssistant               { return C.toGAssistant(p.GWidget) }
 func EXPANDER(p *Expander) *C.GtkExpander                  { return C.toGExpander(p.GWidget) }
 func ALIGNMENT(p *Alignment) *C.GtkAlignment               { return C.toGAlignment(p.GWidget) }
@@ -2309,9 +2310,24 @@ func PrintContextFromNative(l unsafe.Pointer) *PrintContext {
 // GtkSpinner
 //-----------------------------------------------------------------------
 
-// gtk_spinner_new //since 2.20
-// gtk_spinner_start //since 2.20
-// gtk_spinner_stop //since 2.20
+type Spinner struct {
+	DrawingArea
+}
+
+func NewSpinner() *Spinner {
+	panic_if_version_older(2, 20, 0, "NewSpinner()")
+	return &Spinner{DrawingArea{Widget{C.gtk_spinner_new()}}}
+}
+
+func (s *Spinner) Start() {
+	panic_if_version_older(2, 20, 0, "SpinnerStart()")
+	C.gtk_spinner_start(SPINNER(s))
+}
+
+func (s *Spinner) Stop() {
+	panic_if_version_older(2, 20, 0, "SpinnerStop()")
+	C.gtk_spinner_stop(SPINNER(s))
+}
 
 //-----------------------------------------------------------------------
 // GtkButton
