@@ -1479,8 +1479,11 @@ func (v *AboutDialog) GetWebsiteLabel() string {
 	return gostring(C.gtk_about_dialog_get_website_label(ABOUT_DIALOG(v)))
 }
 func (v *AboutDialog) SetWebsiteLabel(website_label string) {
-	ptr := C.CString(website_label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(website_label) > 0 {
+		ptr := C.CString(website_label)
+		defer cfree(ptr)
+	}
 	C.gtk_about_dialog_set_website_label(ABOUT_DIALOG(v), gstring(ptr))
 }
 func (v *AboutDialog) GetAuthors() []string {
@@ -1699,8 +1702,11 @@ type AccelLabel struct {
 }
 
 func NewAccelLabel(label string) *AccelLabel {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &AccelLabel{Widget{C.gtk_accel_label_new(gstring(ptr))}}
 }
 
@@ -1845,13 +1851,19 @@ type Label struct {
 func (Label) isILabel() {}
 
 func NewLabel(label string) *Label {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &Label{Misc{Widget{C.gtk_label_new(gstring(ptr))}}}
 }
 func (v *Label) SetText(label string) {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	C.gtk_label_set_text(LABEL(v), gstring(ptr))
 }
 
@@ -1903,8 +1915,11 @@ func (v *Label) GetText() string {
 	return gostring(C.gtk_label_get_text(LABEL(v)))
 }
 func LabelWithMnemonic(label string) *Label {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &Label{Misc{Widget{C.gtk_label_new_with_mnemonic(gstring(ptr))}}}
 }
 func (v *Label) SelectRegion(start_offset int, end_offset int) {
@@ -1968,8 +1983,11 @@ func (v *Label) GetAngle() float64 {
 	return float64(C.gtk_label_get_angle(LABEL(v)))
 }
 func (v *Label) SetLabel(label string) {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	C.gtk_label_set_label(LABEL(v), gstring(ptr))
 }
 func (v *Label) SetUseMarkup(setting bool) {
@@ -2363,13 +2381,19 @@ func NewButton() *Button {
 	return &Button{Bin{Container{Widget{C.gtk_button_new()}}}}
 }
 func NewButtonWithLabel(label string) *Button {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &Button{Bin{Container{Widget{C.gtk_button_new_with_label(gstring(ptr))}}}}
 }
 func NewButtonWithMnemonic(label string) *Button {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &Button{Bin{Container{Widget{C.gtk_button_new_with_mnemonic(gstring(ptr))}}}}
 }
 
@@ -2413,8 +2437,11 @@ func (v *Button) GetLabel() string {
 	return gostring(C.gtk_button_get_label(BUTTON(v)))
 }
 func (v *Button) SetLabel(label string) {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	C.gtk_button_set_label(BUTTON(v), gstring(ptr))
 }
 func (v *Button) GetUseStock() bool {
@@ -2466,14 +2493,20 @@ func NewCheckButton() *CheckButton {
 		C.gtk_check_button_new()}}}}}}
 }
 func NewCheckButtonWithLabel(label string) *CheckButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &CheckButton{ToggleButton{Button{Bin{Container{Widget{
 		C.gtk_check_button_new_with_label(gstring(ptr))}}}}}}
 }
 func NewCheckButtonWithMnemonic(label string) *CheckButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &CheckButton{ToggleButton{Button{Bin{Container{Widget{
 		C.gtk_check_button_new_with_mnemonic(gstring(ptr))}}}}}}
 }
@@ -2494,26 +2527,38 @@ func NewRadioButtonFromWidget(w *RadioButton) *RadioButton {
 		C.gtk_radio_button_new_from_widget(RADIO_BUTTON(w))}}}}}}}
 }
 func NewRadioButtonWithLabel(group *glib.SList, label string) *RadioButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
 		C.gtk_radio_button_new_with_label(gslist(group), gstring(ptr))}}}}}}}
 }
 func NewRadioButtonWithLabelFromWidget(w *RadioButton, label string) *RadioButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
 		C.gtk_radio_button_new_with_label_from_widget(RADIO_BUTTON(w), gstring(ptr))}}}}}}}
 }
 func NewRadioButtonWithMnemonic(group *glib.SList, label string) *RadioButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
 		C.gtk_radio_button_new_with_mnemonic(gslist(group), gstring(ptr))}}}}}}}
 }
 func NewRadioButtonWithMnemonicFromWidget(w *RadioButton, label string) *RadioButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
 		C.gtk_radio_button_new_with_mnemonic_from_widget(RADIO_BUTTON(w), gstring(ptr))}}}}}}}
 }
@@ -2535,13 +2580,19 @@ func NewToggleButton() *ToggleButton {
 	return &ToggleButton{Button{Bin{Container{Widget{C.gtk_toggle_button_new()}}}}}
 }
 func NewToggleButtonWithLabel(label string) *ToggleButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &ToggleButton{Button{Bin{Container{Widget{C.gtk_toggle_button_new_with_label(gstring(ptr))}}}}}
 }
 func NewToggleButtonWithMnemonic(label string) *ToggleButton {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &ToggleButton{Button{Bin{Container{Widget{C.gtk_toggle_button_new_with_mnemonic(gstring(ptr))}}}}}
 }
 func (v *ToggleButton) SetMode(draw_indicator bool) {
@@ -2571,16 +2622,25 @@ type LinkButton struct {
 }
 
 func NewLinkButton(uri string) *LinkButton {
-	ptr := C.CString(uri)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(uri) > 0 {
+		ptr := C.CString(uri)
+		defer cfree(ptr)
+	}
 	return &LinkButton{Button{Bin{Container{Widget{
 		C.gtk_link_button_new(gstring(ptr))}}}}}
 }
 func NewLinkButtonWithLabel(uri string, label string) *LinkButton {
-	puri := C.CString(uri)
-	defer cfree(puri)
-	plabel := C.CString(label)
-	defer cfree(plabel)
+	var puri *C.char
+	if len(uri) > 0 {
+		puri := C.CString(uri)
+		defer cfree(puri)
+	}
+	var plabel *C.char
+	if len(label) > 0 {
+		plabel := C.CString(label)
+		defer cfree(plabel)
+	}
 	return &LinkButton{Button{Bin{Container{Widget{C.gtk_link_button_new_with_label(gstring(puri), gstring(plabel))}}}}}
 }
 func (v *LinkButton) GetUri() string {
@@ -5378,14 +5438,20 @@ func NewMenuItem() *MenuItem {
 	return &MenuItem{Item{Bin{Container{Widget{C.gtk_menu_item_new()}}}}}
 }
 func NewMenuItemWithLabel(label string) *MenuItem {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &MenuItem{Item{Bin{Container{Widget{
 		C.gtk_menu_item_new_with_label(gstring(ptr))}}}}}
 }
 func NewMenuItemWithMnemonic(label string) *MenuItem {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &MenuItem{Item{Bin{Container{Widget{
 		C.gtk_menu_item_new_with_mnemonic(gstring(ptr))}}}}}
 }
@@ -5468,8 +5534,11 @@ func NewRadioMenuItem(group *glib.SList) *RadioMenuItem {
 }
 
 func NewRadioMenuItemWithLabel(group *glib.SList, label string) *RadioMenuItem {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &RadioMenuItem{CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
 		C.gtk_radio_menu_item_new_with_label(gslist(group), gstring(ptr))}}}}}}}
 }
@@ -5501,14 +5570,20 @@ func NewCheckMenuItem() *CheckMenuItem {
 		C.gtk_check_menu_item_new()}}}}}}
 }
 func NewCheckMenuItemWithLabel(label string) *CheckMenuItem {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
 		C.gtk_check_menu_item_new_with_label(gstring(ptr))}}}}}}
 }
 func NewCheckMenuItemWithMnemonic(label string) *CheckMenuItem {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
 		C.gtk_check_menu_item_new_with_mnemonic(gstring(ptr))}}}}}}
 }
@@ -5839,9 +5914,12 @@ type ToolItemGroup struct {
 }
 
 func NewToolItemGroup(label string) *ToolItemGroup {
-	l := C.CString(label)
-	defer cfree(l)
-	return &ToolItemGroup{Container{Widget{C.gtk_tool_item_group_new(gstring(l))}},
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
+	return &ToolItemGroup{Container{Widget{C.gtk_tool_item_group_new(gstring(ptr))}},
 		make(map[*C.GtkToolItem]IWidget)}
 }
 func (v *ToolItemGroup) Insert(item IWidget, pos int) {
@@ -5873,9 +5951,12 @@ func (v *ToolItemGroup) SetCollapsed(collapsed bool) {
 // gtk_tool_item_group_set_ellipsize
 // gtk_tool_item_group_set_item_position
 func (v *ToolItemGroup) SetLabel(label string) {
-	l := C.CString(label)
-	defer cfree(l)
-	C.gtk_tool_item_group_set_label(TOOL_ITEM_GROUP(v), gstring(l))
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
+	C.gtk_tool_item_group_set_label(TOOL_ITEM_GROUP(v), gstring(ptr))
 }
 
 // gtk_tool_item_group_set_label_widget
@@ -5929,9 +6010,12 @@ func (v *ToolButton) OnClicked(onclick interface{}, datas ...interface{}) int {
 }
 
 func (v *ToolButton) SetLabel(label string) {
-	p_label := C.CString(label)
-	defer cfree(p_label)
-	C.gtk_tool_button_set_label(TOOL_BUTTON(v), gstring(p_label))
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
+	C.gtk_tool_button_set_label(TOOL_BUTTON(v), gstring(ptr))
 }
 func (v *ToolButton) GetLabel() string {
 	return gostring(C.gtk_tool_button_get_label(TOOL_BUTTON(v)))
@@ -7094,13 +7178,19 @@ type Expander struct {
 }
 
 func NewExpander(label string) *Expander {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &Expander{Bin{Container{Widget{C.gtk_expander_new(gstring(ptr))}}}}
 }
 func NewExpanderWithMnemonic(label string) *Expander {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &Expander{Bin{Container{Widget{C.gtk_expander_new_with_mnemonic(gstring(ptr))}}}}
 }
 
@@ -7117,8 +7207,11 @@ func (v *Expander) GetSpacing() int {
 	return int(C.gtk_expander_get_spacing(EXPANDER(v)))
 }
 func (v *Expander) SetLabel(label string) {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	C.gtk_expander_set_label(EXPANDER(v), gstring(ptr))
 }
 func (v *Expander) GetLabel() string {
@@ -7172,13 +7265,19 @@ type Frame struct {
 }
 
 func NewFrame(label string) *Frame {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	return &Frame{Bin{Container{Widget{C.gtk_frame_new(gstring(ptr))}}}}
 }
 func (v *Frame) SetLabel(label string) {
-	ptr := C.CString(label)
-	defer cfree(ptr)
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr := C.CString(label)
+		defer cfree(ptr)
+	}
 	C.gtk_frame_set_label(FRAME(v), gstring(ptr))
 }
 func (v *Frame) SetLabelWidget(label_widget ILabel) {
