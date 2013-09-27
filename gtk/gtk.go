@@ -61,7 +61,7 @@ func FILE_CHOOSER(p *Widget) *C.GtkFileChooser      { return C.toGFileChooser(p.
 func FONT_SELECTION_DIALOG(p *FontSelectionDialog) *C.GtkFontSelectionDialog {
 	return C.toGFontSelectionDialog(p.GWidget)
 }
-func MISC(m *Misc) *C.GtkMisc                             { return C.toGMisc(m.GWidget) }
+func MISC(m *Misc) *C.GtkMisc                              { return C.toGMisc(m.GWidget) }
 func LABEL(p *Label) *C.GtkLabel                           { return C.toGLabel(p.GWidget) }
 func BUTTON(p *Button) *C.GtkButton                        { return C.toGButton(p.GWidget) }
 func SPIN_BUTTON(p *SpinButton) *C.GtkSpinButton           { return C.toGSpinButton(p.GWidget) }

@@ -183,7 +183,7 @@ func NewColor(name string) *Color {
 }
 
 func NewColorRGB(r, g, b uint8) *Color {
-	color := C.GdkColor{red: guint16(uint16(r)<<8), green: guint16(uint16(g)<<8), blue: guint16(uint16(b)<<8)}
+	color := C.GdkColor{red: guint16(uint16(r) << 8), green: guint16(uint16(g) << 8), blue: guint16(uint16(b) << 8)}
 	return &Color{color}
 }
 
