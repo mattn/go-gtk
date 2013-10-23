@@ -675,7 +675,7 @@ func (c *CallbackContext) Args(n int) CallbackArg {
 type CallbackArg uintptr
 
 func (c CallbackArg) ToString() string {
-	return C.GoString(C.to_charptr_voidp(unsafe.Pointer(c)))
+	return C.GoString(C.to_charptr_voidp(unsafe.Pointer(uintptr(c))))
 }
 
 //export _go_glib_callback
