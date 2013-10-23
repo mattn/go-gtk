@@ -323,7 +323,7 @@ func NewClipboardGetForDisplay(display *gdk.Display, selection gdk.Atom) *Clipbo
 	if display != nil {
 		cdisplay = display.GDisplay
 	}
-	return &Clipboard{C._gtk_clipboard_get_for_display(cdisplay, unsafe.Pointer(selection))}
+	return &Clipboard{C._gtk_clipboard_get_for_display(cdisplay, unsafe.Pointer(uintptr(selection)))}
 }
 
 func (v *Clipboard) Clear() {
