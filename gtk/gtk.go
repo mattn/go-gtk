@@ -21,6 +21,7 @@ import (
 
 func gint(v int) C.gint           { return C.gint(v) }
 func guint(v uint) C.guint        { return C.guint(v) }
+func guint16(v uint16) C.guint16  { return C.guint16(v) }
 func guint32(v uint32) C.guint32  { return C.guint32(v) }
 func glong(v int32) C.glong       { return C.glong(v) }
 func gdouble(v float64) C.gdouble { return C.gdouble(v) }
@@ -129,6 +130,7 @@ func FIXED(p *Fixed) *C.GtkFixed                           { return C.toGFixed(p
 func CHECK_MENU_ITEM(p *CheckMenuItem) *C.GtkCheckMenuItem { return C.toGCheckMenuItem(p.GWidget) }
 func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMenuItem(p.GWidget) }
 func LAYOUT(p *Layout) *C.GtkLayout                        { return C.toGLayout(p.GWidget) }
+func COLOR_BUTTON(p *ColorButton) *C.GtkColorButton        { return C.toGColorButton(p.GWidget) }
 
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
@@ -6305,16 +6307,56 @@ func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolB
 // GtkColorButton
 //-----------------------------------------------------------------------
 
-// gtk_color_button_new
-// gtk_color_button_new_with_color
-// gtk_color_button_set_color
-// gtk_color_button_get_color
-// gtk_color_button_set_alpha
-// gtk_color_button_get_alpha
-// gtk_color_button_set_use_alpha
-// gtk_color_button_get_use_alpha
-// gtk_color_button_set_title
-// gtk_color_button_get_title
+type ColorButton struct {
+	Button
+}
+
+func NewColorButton() *ColorButton {
+	return &ColorButton{Button{Bin{Container{Widget{
+		C.toGWidget(unsafe.Pointer(C.gtk_color_button_new()))}}}}}
+}
+
+func NewColorButtonWithColor(color *gdk.Color) *ColorButton {
+	v := NewColorButton()
+	v.SetColor(color)
+	return v
+}
+
+func (v *ColorButton) SetColor(color *gdk.Color) {
+	C.gtk_color_button_set_color(COLOR_BUTTON(v), (*C.GdkColor)(unsafe.Pointer(&color.GColor)))
+}
+
+func (v *ColorButton) GetColor() *gdk.Color {
+	c := new(gdk.Color)
+	C.gtk_color_button_get_color(COLOR_BUTTON(v), (*C.GdkColor)(unsafe.Pointer(&c.GColor)))
+	return c
+}
+
+func (v *ColorButton) SetAlpha(alpha uint16) {
+	C.gtk_color_button_set_alpha(COLOR_BUTTON(v), guint16(alpha))
+}
+
+func (v *ColorButton) GetAlpha() uint16 {
+	return uint16(C.gtk_color_button_get_alpha(COLOR_BUTTON(v)))
+}
+
+func (v *ColorButton) SetUseAlpha(use_alpha bool) {
+	C.gtk_color_button_set_use_alpha(COLOR_BUTTON(v), gbool(use_alpha))
+}
+
+func (v *ColorButton) GetUseAlpha() bool {
+	return gobool(C.gtk_color_button_get_use_alpha(COLOR_BUTTON(v)))
+}
+
+func (v *ColorButton) SetTitle(title string) {
+	ptr := C.CString(title)
+	defer cfree(ptr)
+	C.gtk_color_button_set_title(COLOR_BUTTON(v), gstring(ptr))
+}
+
+func (v *ColorButton) GetTitle() string {
+	return gostring(C.gtk_color_button_get_title(COLOR_BUTTON(v)))
+}
 
 //-----------------------------------------------------------------------
 // GtkColorSelectionDialog
