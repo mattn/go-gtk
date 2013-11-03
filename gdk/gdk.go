@@ -187,6 +187,10 @@ func NewColorRGB(r, g, b uint8) *Color {
 	return &Color{color}
 }
 
+func (v Color) Red() uint16   { return uint16(v.GColor.red) }
+func (v Color) Green() uint16 { return uint16(v.GColor.green) }
+func (v Color) Blue() uint16  { return uint16(v.GColor.blue) }
+
 //-----------------------------------------------------------------------
 // GdkColormap
 // ----------------------------------------------------------------------
