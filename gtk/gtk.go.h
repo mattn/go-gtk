@@ -820,5 +820,6 @@ static inline GtkCheckMenuItem* toGCheckMenuItem(GtkWidget* w) { return GTK_CHEC
 static inline GtkRadioMenuItem* toGRadioMenuItem(GtkWidget* w) { return GTK_RADIO_MENU_ITEM(w); }
 static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 static inline GtkLayout* toGLayout(GtkWidget* w) { return GTK_LAYOUT(w); }
+static inline GtkColorButton* toGColorButton(GtkWidget* w) { return GTK_COLOR_BUTTON(w); }
 
 #endif
