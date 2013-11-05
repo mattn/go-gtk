@@ -3872,7 +3872,22 @@ func (v *TreePath) GetDepth() int {
 	return int(C.gtk_tree_path_get_depth(v.GTreePath))
 }
 
-// gtk_tree_path_get_indices
+func (v *TreePath) GetIndices() []int {
+	depth := v.GetDepth()
+	idx := make([]int, depth)
+
+	var gint_size_help C.gint
+	addr := uintptr(unsafe.Pointer(C.gtk_tree_path_get_indices(v.GTreePath)))
+	size := unsafe.Sizeof(gint_size_help)
+
+	for i := 0; i < depth; i++ {
+		idx[i] = int(*((*C.gint)(unsafe.Pointer(addr))))
+		addr += size
+	}
+
+	return idx
+}
+
 // gtk_tree_path_get_indices_with_depth //since 2.22
 
 func (v *TreePath) Free() {
