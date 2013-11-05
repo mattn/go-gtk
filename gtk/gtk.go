@@ -131,6 +131,7 @@ func CHECK_MENU_ITEM(p *CheckMenuItem) *C.GtkCheckMenuItem { return C.toGCheckMe
 func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMenuItem(p.GWidget) }
 func LAYOUT(p *Layout) *C.GtkLayout                        { return C.toGLayout(p.GWidget) }
 func COLOR_BUTTON(p *ColorButton) *C.GtkColorButton        { return C.toGColorButton(p.GWidget) }
+func IMAGE_MENU_ITEM(p *ImageMenuItem) *C.GtkImageMenuItem { return C.toGImageMenuItem(p.GWidget) }
 
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
@@ -5526,12 +5527,40 @@ func (v *MenuItem) ToggleSizeAllocate(i int) {
 // GtkImageMenuItem
 //-----------------------------------------------------------------------
 
-// gtk_image_menu_item_set_image
-// gtk_image_menu_item_get_image
-// gtk_image_menu_item_new
-// gtk_image_menu_item_new_from_stock
-// gtk_image_menu_item_new_with_label
-// gtk_image_menu_item_new_with_mnemonic
+type ImageMenuItem struct {
+	MenuItem
+}
+
+func NewImageMenuItem() *ImageMenuItem {
+	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new()}}}}}}
+}
+
+func NewImageMenuItemFromStock(stock_id string, accel_group *AccelGroup) *ImageMenuItem {
+	p := C.CString(stock_id)
+	defer cfree(p)
+	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new_from_stock(gstring(p), accel_group.GAccelGroup)}}}}}}
+}
+
+func NewImageMenuItemWithLabel(label string) *ImageMenuItem {
+	p := C.CString(label)
+	defer cfree(p)
+	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new_with_label(gstring(p))}}}}}}
+}
+
+func NewImageMenuItemWithMnemonic(label string) *ImageMenuItem {
+	p := C.CString(label)
+	defer cfree(p)
+	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new_with_mnemonic(gstring(p))}}}}}}
+}
+
+func (v *ImageMenuItem) SetImage(image *Widget) {
+	C.gtk_image_menu_item_set_image(IMAGE_MENU_ITEM(v), WIDGET(image))
+}
+
+func (v *ImageMenuItem) GetImage() *Widget {
+	return &Widget{C.gtk_image_menu_item_get_image(IMAGE_MENU_ITEM(v))}
+}
+
 // gtk_image_menu_item_get_use_stock
 // gtk_image_menu_item_set_use_stock
 // gtk_image_menu_item_get_always_show_image
