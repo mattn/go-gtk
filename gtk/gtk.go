@@ -82,6 +82,7 @@ func BOX(p *Box) *C.GtkBox                                 { return C.toGBox(p.G
 func PANED(p *Paned) *C.GtkPaned                           { return C.toGPaned(p.GWidget) }
 func TOGGLE_BUTTON(p *ToggleButton) *C.GtkToggleButton     { return C.toGToggleButton(p.GWidget) }
 func ACCEL_LABEL(p *AccelLabel) *C.GtkAccelLabel           { return C.toGAccelLabel(p.GWidget) }
+func SCALEBUTTON(p *ScaleButton) *C.GtkScaleButton         { return C.toGScaleButton(p.GWidget) }
 func ENTRY(p *Entry) *C.GtkEntry                           { return C.toGEntry(p.GWidget) }
 func ADJUSTMENT(p *Adjustment) *C.GtkAdjustment            { return p.GAdjustment }
 func TEXT_VIEW(p *TextView) *C.GtkTextView                 { return C.toGTextView(p.GWidget) }
@@ -2670,10 +2671,32 @@ func (v *LinkButton) SetVisited(visited bool) {
 // GtkScaleButton
 //-----------------------------------------------------------------------
 
-// gtk_scale_button_new
+const (
+	GTK_ICON_SIZE_INVALID		IconSize = C.GTK_ICON_SIZE_INVALID
+	GTK_ICON_SIZE_MENU			IconSize = C.GTK_ICON_SIZE_MENU
+	GTK_ICON_SIZE_SMALL_TOOLBAR IconSize = C.GTK_ICON_SIZE_SMALL_TOOLBAR
+	GTK_ICON_SIZE_LARGE_TOOLBAR IconSize = C.GTK_ICON_SIZE_LARGE_TOOLBAR
+	GTK_ICON_SIZE_BUTTON		IconSize = C.GTK_ICON_SIZE_BUTTON
+	GTK_ICON_SIZE_DND			IconSize = C.GTK_ICON_SIZE_DND
+	GTK_ICON_SIZE_DIALOG		IconSize = C.GTK_ICON_SIZE_DIALOG
+)
+
+type ScaleButton struct {
+	Bin
+}
+
+func NewScaleButton(size IconSize, min, max, step float64, icons** C.gchar) *ScaleButton {
+	return &ScaleButton{Bin{Container{Widget{
+		C.gtk_scale_button_new(C.GtkIconSize(size), gdouble(min), gdouble(max), gdouble(step), icons)}}}}
+}
+
 // gtk_scale_button_set_adjustment
 // gtk_scale_button_set_icons
-// gtk_scale_button_set_value
+
+func (v *ScaleButton) SetValue( value float64) {
+	C.gtk_scale_button_set_value(SCALEBUTTON(v), gdouble(value))
+}
+
 // gtk_scale_button_get_adjustment
 // gtk_scale_button_get_value
 // gtk_scale_button_get_popup
