@@ -2684,7 +2684,13 @@ func (v *LinkButton) SetVisited(visited bool) {
 // GtkVolumeButton
 //-----------------------------------------------------------------------
 
-// gtk_volume_button_new
+type VolumeButton struct {
+	Bin
+}
+
+func NewVolumeButton() *VolumeButton {
+	return &VolumeButton{Bin{Container{Widget{C.gtk_volume_button_new()}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkEntry
