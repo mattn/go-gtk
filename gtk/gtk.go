@@ -2685,6 +2685,7 @@ type ScaleButton struct {
 	Bin
 }
 
+// TODO: wrapper around icons** C.gchar
 func NewScaleButton(size IconSize, min, max, step float64, icons** C.gchar) *ScaleButton {
 	return &ScaleButton{Bin{Container{Widget{
 		C.gtk_scale_button_new(C.GtkIconSize(size), gdouble(min), gdouble(max), gdouble(step), icons)}}}}
@@ -2693,12 +2694,17 @@ func NewScaleButton(size IconSize, min, max, step float64, icons** C.gchar) *Sca
 // gtk_scale_button_set_adjustment
 // gtk_scale_button_set_icons
 
-func (v *ScaleButton) SetValue( value float64) {
+func (v *ScaleButton) SetValue(value float64) {
 	C.gtk_scale_button_set_value(SCALEBUTTON(v), gdouble(value))
 }
 
 // gtk_scale_button_get_adjustment
 // gtk_scale_button_get_value
+
+func (v *ScaleButton) GetValue() float64 {
+	return float64(C.gtk_scale_button_get_value(SCALEBUTTON(v)))
+}
+
 // gtk_scale_button_get_popup
 // gtk_scale_button_get_plus_button
 // gtk_scale_button_get_minus_button
