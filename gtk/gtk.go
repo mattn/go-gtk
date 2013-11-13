@@ -2690,24 +2690,30 @@ func NewScaleButton(size IconSize, min, max, step float64, icons** C.gchar) *Sca
 	return &ScaleButton{Bin{Container{Widget{
 		C.gtk_scale_button_new(C.GtkIconSize(size), gdouble(min), gdouble(max), gdouble(step), icons)}}}}
 }
-
-// gtk_scale_button_set_adjustment
-// gtk_scale_button_set_icons
-
+func (v *ScaleButton) SetAdjustment(a *Adjustment) {
+	C.gtk_scale_button_set_adjustment(SCALEBUTTON(v), a.GAdjustment)
+}
+func (v *ScaleButton) SetIcons(icons** C.gchar) {
+	C.gtk_scale_button_set_icons(SCALEBUTTON(v), icons)
+}
 func (v *ScaleButton) SetValue(value float64) {
 	C.gtk_scale_button_set_value(SCALEBUTTON(v), gdouble(value))
 }
-
-// gtk_scale_button_get_adjustment
-// gtk_scale_button_get_value
-
+func (v *ScaleButton) GetAdjustment() *Adjustment {
+	return &Adjustment{C.gtk_scale_button_get_adjustment(SCALEBUTTON(v))}
+}
 func (v *ScaleButton) GetValue() float64 {
 	return float64(C.gtk_scale_button_get_value(SCALEBUTTON(v)))
 }
-
-// gtk_scale_button_get_popup
-// gtk_scale_button_get_plus_button
-// gtk_scale_button_get_minus_button
+func (v *ScaleButton) GetPopup() *Widget {
+	return &Widget{C.gtk_scale_button_get_popup(SCALEBUTTON(v))}
+}
+func (v *ScaleButton) GetPlusButton() *Widget {
+	return &Widget{C.gtk_scale_button_get_plus_button(SCALEBUTTON(v))}
+}
+func (v *ScaleButton) GetMinusButton() *Widget {
+	return &Widget{C.gtk_scale_button_get_minus_button(SCALEBUTTON(v))}
+}
 
 //-----------------------------------------------------------------------
 // GtkVolumeButton
