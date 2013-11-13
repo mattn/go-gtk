@@ -776,6 +776,7 @@ static inline GtkPaned* toGPaned(GtkWidget* w) { return GTK_PANED(w); }
 static inline GtkToggleButton* toGToggleButton(GtkWidget* w) { return GTK_TOGGLE_BUTTON(w); }
 static inline GtkAccelLabel* toGAccelLabel(GtkWidget* w) { return GTK_ACCEL_LABEL(w); }
 static inline GtkEntry* toGEntry(GtkWidget* w) { return GTK_ENTRY(w); }
+static inline GtkScaleButton* toGScaleButton(GtkWidget* w) { return GTK_SCALE_BUTTON(w); }
 static inline GtkAdjustment* toGAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 static inline GtkTextView* toGTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
 static inline GtkTextBuffer* toGTextBuffer(void* w) { return GTK_TEXT_BUFFER(w); }
