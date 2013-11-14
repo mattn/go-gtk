@@ -83,6 +83,7 @@ func PANED(p *Paned) *C.GtkPaned                           { return C.toGPaned(p
 func TOGGLE_BUTTON(p *ToggleButton) *C.GtkToggleButton     { return C.toGToggleButton(p.GWidget) }
 func ACCEL_LABEL(p *AccelLabel) *C.GtkAccelLabel           { return C.toGAccelLabel(p.GWidget) }
 func SCALEBUTTON(p *ScaleButton) *C.GtkScaleButton         { return C.toGScaleButton(p.GWidget) }
+func STYLE(p *Style) *C.GtkStyle                           { return p.GStyle }
 func ENTRY(p *Entry) *C.GtkEntry                           { return C.toGEntry(p.GWidget) }
 func ADJUSTMENT(p *Adjustment) *C.GtkAdjustment            { return p.GAdjustment }
 func TEXT_VIEW(p *TextView) *C.GtkTextView                 { return C.toGTextView(p.GWidget) }
@@ -789,23 +790,64 @@ func (s *Settings) SetDoubleProperty(name string, v_double float64, origin strin
 // GtkStyle
 //-----------------------------------------------------------------------
 
-// gtk_style_new
-// gtk_style_copy
-// gtk_style_attach
-// gtk_style_detach
-// gtk_style_ref
-// gtk_style_unref
-// gtk_style_set_background
+type Style struct {
+	GStyle *C.GtkStyle
+}
+
+func NewStyle() *Style {
+	return &Style{C.gtk_style_new()}
+}
+func (v *Style) Copy() *Style {
+	return &Style{C.gtk_style_copy(STYLE(v))}
+}
+func (v *Style) Attach(window* Window) *Style {
+	return &Style{C.gtk_style_attach(STYLE(v), C.toGdkWindow(unsafe.Pointer(window)))}
+}
+func (v *Style) Detach() {
+	C.gtk_style_detach(STYLE(v))
+}
+func (v *Style) SetBackground(window* Window, state StateType) {
+	C.gtk_style_set_background(STYLE(v), C.toGdkWindow(unsafe.Pointer(window)), C.GtkStateType(state))
+}
 // gtk_style_apply_default_background
-// gtk_style_apply_default_pixmap
 // gtk_style_lookup_color
 // gtk_style_lookup_icon_set
 // gtk_style_render_icon
-// gtk_style_get_font
-// gtk_style_set_font
 // gtk_style_get_style_property
 // gtk_style_get_valist
 // gtk_style_get
+// gtk_paint_arrow
+// gtk_paint_box
+// gtk_paint_box_gap
+// gtk_paint_check
+// gtk_paint_diamond
+// gtk_paint_extension
+// gtk_paint_flat_box
+// gtk_paint_focus
+// gtk_paint_handle
+// gtk_paint_hline
+// gtk_paint_option
+// gtk_paint_polygon
+// gtk_paint_shadow
+// gtk_paint_shadow_gap
+// gtk_paint_slider
+// gtk_paint_spinner
+// gtk_paint_tab
+// gtk_paint_vline
+// gtk_paint_expander
+// gtk_paint_layout
+// gtk_paint_resize_grip
+// gtk_draw_insertion_cursor
+// gtk_border_new
+// gtk_border_copy
+// gtk_border_free
+
+// Deprecated:
+// gtk_style_ref
+// gtk_style_unref
+// gtk_style_apply_default_pixmap
+// gtk_style_get_font
+// gtk_style_set_font
 // gtk_draw_hline
 // gtk_draw_vline
 // gtk_draw_shadow
@@ -827,32 +869,7 @@ func (s *Settings) SetDoubleProperty(name string, v_double float64, origin strin
 // gtk_draw_expander
 // gtk_draw_layout
 // gtk_draw_resize_grip
-// gtk_paint_arrow
-// gtk_paint_box
-// gtk_paint_box_gap
-// gtk_paint_check
-// gtk_paint_diamond
-// gtk_paint_extension
-// gtk_paint_flat_box
-// gtk_paint_focus
-// gtk_paint_handle
-// gtk_paint_hline
-// gtk_paint_option
-// gtk_paint_polygon
-// gtk_paint_shadow
-// gtk_paint_shadow_gap
-// gtk_paint_slider
-// gtk_paint_spinner
 // gtk_paint_string
-// gtk_paint_tab
-// gtk_paint_vline
-// gtk_paint_expander
-// gtk_paint_layout
-// gtk_paint_resize_grip
-// gtk_draw_insertion_cursor
-// gtk_border_new
-// gtk_border_copy
-// gtk_border_free
 
 //-----------------------------------------------------------------------
 // Selections
