@@ -7281,34 +7281,34 @@ func (v *Table) Attach(child IWidget, left_attach uint, right_attach uint, top_a
 func (v *Table) AttachDefaults(child IWidget, left_attach uint, right_attach uint, top_attach uint, bottom_attach uint) {
 	C.gtk_table_attach_defaults(TABLE(v), ToNative(child), guint(left_attach), guint(right_attach), guint(top_attach), guint(bottom_attach))
 }
-func (v *Table) SetRowSpacing(child IWidget, row uint, spacing uint) {
+func (v *Table) SetRowSpacing(row uint, spacing uint) {
 	C.gtk_table_set_row_spacing(TABLE(v), guint(row), guint(spacing))
 }
-func (v *Table) SetColSpacing(child IWidget, column uint, spacing uint) {
+func (v *Table) SetColSpacing(column uint, spacing uint) {
 	C.gtk_table_set_col_spacing(TABLE(v), guint(column), guint(spacing))
 }
-func (v *Table) SetRowSpacings(child IWidget, spacing uint) {
+func (v *Table) SetRowSpacings(spacing uint) {
 	C.gtk_table_set_row_spacings(TABLE(v), guint(spacing))
 }
-func (v *Table) SetColSpacings(child IWidget, spacing uint) {
+func (v *Table) SetColSpacings(spacing uint) {
 	C.gtk_table_set_col_spacings(TABLE(v), guint(spacing))
 }
-func (v *Table) SetHomogeneous(child IWidget, homogeneous bool) {
+func (v *Table) SetHomogeneous(homogeneous bool) {
 	C.gtk_table_set_homogeneous(TABLE(v), gbool(homogeneous))
 }
-func (v *Table) GetDefaultRowSpacing(child IWidget) uint {
+func (v *Table) GetDefaultRowSpacing() uint {
 	return uint(C.gtk_table_get_default_row_spacing(TABLE(v)))
 }
-func (v *Table) GetHomogeneous(child IWidget) bool {
+func (v *Table) GetHomogeneous() bool {
 	return gobool(C.gtk_table_get_homogeneous(TABLE(v)))
 }
-func (v *Table) GetRowSpacing(child IWidget, row uint) uint {
+func (v *Table) GetRowSpacing(row uint) uint {
 	return uint(C.gtk_table_get_row_spacing(TABLE(v), guint(row)))
 }
-func (v *Table) GetColSpacing(child IWidget, column uint) uint {
+func (v *Table) GetColSpacing(column uint) uint {
 	return uint(C.gtk_table_get_col_spacing(TABLE(v), guint(column)))
 }
-func (v *Table) GetDefaultColSpacing(child IWidget) uint {
+func (v *Table) GetDefaultColSpacing() uint {
 	return uint(C.gtk_table_get_default_col_spacing(TABLE(v)))
 }
 
