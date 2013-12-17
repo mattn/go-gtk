@@ -3,7 +3,7 @@ package gtksourceview
 // #include "gtksourceview.go.h"
 // #cgo pkg-config: gtksourceview-2.0
 import "C"
-import "github.com/mattn/go-gtk/gtk"
+import "github.com/d2r2/go-gtk/gtk"
 import "unsafe"
 
 func gstring(s *C.char) *C.gchar { return C.toGstr(s) }

@@ -3,7 +3,7 @@ package gdkpixbuf
 // #include "gdkpixbuf.go.h"
 // #cgo pkg-config: gdk-pixbuf-2.0
 import "C"
-import "github.com/mattn/go-gtk/glib"
+import "github.com/d2r2/go-gtk/glib"
 import "unsafe"
 
 func gobool(b C.gboolean) bool {

@@ -1,4 +1,5 @@
 all:
+	cd action && go build -x .
 	cd alignment && go build -x .
 	cd builder && go build -x .
 	cd clipboard && go build -x .

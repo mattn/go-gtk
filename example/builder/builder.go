@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/mattn/go-gtk/example/builder/callback"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/d2r2/go-gtk/example/builder/callback"
+	"github.com/d2r2/go-gtk/gtk"
 	"os"
 )
 

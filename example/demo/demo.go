@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
+	"github.com/d2r2/go-gtk/gdkpixbuf"
+	"github.com/d2r2/go-gtk/glib"
+	"github.com/d2r2/go-gtk/gtk"
 	"os"
 	"os/exec"
 	"path"

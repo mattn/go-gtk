@@ -824,5 +824,12 @@ static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(
 static inline GtkLayout* toGLayout(GtkWidget* w) { return GTK_LAYOUT(w); }
 static inline GtkColorButton* toGColorButton(GtkWidget* w) { return GTK_COLOR_BUTTON(w); }
 static inline GtkImageMenuItem* toGImageMenuItem(GtkWidget* w) { return GTK_IMAGE_MENU_ITEM(w); }
-
+static inline GtkAction* toGAction(void* o) { return GTK_ACTION(o); }
+static inline GtkToggleAction* toGToggleAction(void* o) { return GTK_TOGGLE_ACTION(o); }
+static inline GtkRadioAction* toGRadioAction(void* o) { return GTK_RADIO_ACTION(o); }
+static inline GtkRecentAction* toGRecentAction(void* o) { return GTK_RECENT_ACTION(o); }
+static inline GtkActionGroup* toGActionGroup(void* o) { return GTK_ACTION_GROUP(o); }
+static inline GtkActivatable* toGActivatable(GtkWidget* w) { return GTK_ACTIVATABLE(w); }
+static inline GtkUIManager* toGUIManager(void* o) { return GTK_UI_MANAGER(o); }
+static inline GCallback toGCallback(void* f) { return G_CALLBACK(f); }
 #endif

@@ -1,7 +1,7 @@
 package callback
 
 import "C"
-import "github.com/mattn/go-gtk/gtk"
+import "github.com/d2r2/go-gtk/gtk"
 import "unsafe"
 
 var aboutdialog *gtk.AboutDialog

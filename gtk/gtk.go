@@ -8,10 +8,10 @@ package gtk
 import "C"
 import (
 	"fmt"
-	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/pango"
+	"github.com/d2r2/go-gtk/gdk"
+	"github.com/d2r2/go-gtk/gdkpixbuf"
+	"github.com/d2r2/go-gtk/glib"
+	"github.com/d2r2/go-gtk/pango"
 	"log"
 	"reflect"
 	"runtime"
@@ -134,6 +134,14 @@ func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMe
 func LAYOUT(p *Layout) *C.GtkLayout                        { return C.toGLayout(p.GWidget) }
 func COLOR_BUTTON(p *ColorButton) *C.GtkColorButton        { return C.toGColorButton(p.GWidget) }
 func IMAGE_MENU_ITEM(p *ImageMenuItem) *C.GtkImageMenuItem { return C.toGImageMenuItem(p.GWidget) }
+func ACTION(p *Action) *C.GtkAction 					{ return C.toGAction(p.Object) }
+func TOGGLE_ACTION(p *ToggleAction) *C.GtkToggleAction 	{ return C.toGToggleAction(p.Object) }
+func RADIO_ACTION(p *RadioAction) *C.GtkRadioAction 	{ return C.toGRadioAction(p.Object) }
+func RECENT_ACTION(p *RecentAction) *C.GtkRecentAction 	{ return C.toGRecentAction(p.Object) }
+func ACTION_GROUP(p *ActionGroup) *C.GtkActionGroup 	{ return C.toGActionGroup(p.Object) }
+func ACTIVATABLE(p *Activatable) *C.GtkActivatable 		{ return C.toGActivatable(p.GWidget) }
+func AS_GWIDGET(p unsafe.Pointer) *C.GtkWidget          { return C.toGWidget(p) }
+func UI_MANAGER(p *UIManager) *C.GtkUIManager 			{ return C.toGUIManager(p.Object) }
 
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
@@ -1035,8 +1043,8 @@ func (v *Dialog) Response(response interface{}, datas ...interface{}) {
 func (v *Dialog) AddButton(button_text string, response_id ResponseType) *Button {
 	ptr := C.CString(button_text)
 	defer cfree(ptr)
-	return &Button{Bin{Container{Widget{
-		C.gtk_dialog_add_button(DIALOG(v), gstring(ptr), gint(int(response_id)))}}}}
+	return newButtonInternal(C.gtk_dialog_add_button(
+		DIALOG(v), gstring(ptr), gint(int(response_id))))
 }
 
 // gtk_dialog_add_buttons
@@ -2394,20 +2402,26 @@ const (
 
 type Button struct {
 	Bin
+	Activatable		// implement GtkActivatable interface
 }
 
 func (Button) isILabel() {} // TODO
 
-func NewButton() *Button {
-	return &Button{Bin{Container{Widget{C.gtk_button_new()}}}}
+func newButtonInternal(widget *C.GtkWidget) *Button {
+	return &Button{Bin{Container{Widget{widget}}}, Activatable{widget}}
 }
+
+func NewButton() *Button {
+	return newButtonInternal(C.gtk_button_new())
+}
+
 func NewButtonWithLabel(label string) *Button {
 	var ptr *C.char
 	if len(label) > 0 {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &Button{Bin{Container{Widget{C.gtk_button_new_with_label(gstring(ptr))}}}}
+	return newButtonInternal(C.gtk_button_new_with_label(gstring(ptr)))
 }
 func NewButtonWithMnemonic(label string) *Button {
 	var ptr *C.char
@@ -2415,13 +2429,13 @@ func NewButtonWithMnemonic(label string) *Button {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &Button{Bin{Container{Widget{C.gtk_button_new_with_mnemonic(gstring(ptr))}}}}
+	return newButtonInternal(C.gtk_button_new_with_mnemonic(gstring(ptr)))
 }
 
 func NewButtonFromStock(stock_id string) *Button {
 	p_stock_id := C.CString(stock_id)
 	defer cfree(p_stock_id)
-	return &Button{Bin{Container{Widget{C.gtk_button_new_from_stock(gstring(p_stock_id))}}}}
+	return newButtonInternal(C.gtk_button_new_from_stock(gstring(p_stock_id)))
 }
 
 func (v *Button) Pressed() {
@@ -2510,8 +2524,8 @@ type CheckButton struct {
 }
 
 func NewCheckButton() *CheckButton {
-	return &CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_check_button_new()}}}}}}
+	return &CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_check_button_new())}}
 }
 func NewCheckButtonWithLabel(label string) *CheckButton {
 	var ptr *C.char
@@ -2519,8 +2533,8 @@ func NewCheckButtonWithLabel(label string) *CheckButton {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_check_button_new_with_label(gstring(ptr))}}}}}}
+	return &CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_check_button_new_with_label(gstring(ptr)))}}
 }
 func NewCheckButtonWithMnemonic(label string) *CheckButton {
 	var ptr *C.char
@@ -2528,8 +2542,8 @@ func NewCheckButtonWithMnemonic(label string) *CheckButton {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_check_button_new_with_mnemonic(gstring(ptr))}}}}}}
+	return &CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_check_button_new_with_mnemonic(gstring(ptr)))}}
 }
 
 //-----------------------------------------------------------------------
@@ -2540,12 +2554,12 @@ type RadioButton struct {
 }
 
 func NewRadioButton(group *glib.SList) *RadioButton {
-	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new(gslist(group))}}}}}}}
+	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_radio_button_new(gslist(group)))}}}
 }
 func NewRadioButtonFromWidget(w *RadioButton) *RadioButton {
-	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_from_widget(RADIO_BUTTON(w))}}}}}}}
+	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_radio_button_new_from_widget(RADIO_BUTTON(w)))}}}
 }
 func NewRadioButtonWithLabel(group *glib.SList, label string) *RadioButton {
 	var ptr *C.char
@@ -2553,8 +2567,8 @@ func NewRadioButtonWithLabel(group *glib.SList, label string) *RadioButton {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_label(gslist(group), gstring(ptr))}}}}}}}
+	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_radio_button_new_with_label(gslist(group), gstring(ptr)))}}}
 }
 func NewRadioButtonWithLabelFromWidget(w *RadioButton, label string) *RadioButton {
 	var ptr *C.char
@@ -2562,8 +2576,8 @@ func NewRadioButtonWithLabelFromWidget(w *RadioButton, label string) *RadioButto
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_label_from_widget(RADIO_BUTTON(w), gstring(ptr))}}}}}}}
+	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_radio_button_new_with_label_from_widget(RADIO_BUTTON(w), gstring(ptr)))}}}
 }
 func NewRadioButtonWithMnemonic(group *glib.SList, label string) *RadioButton {
 	var ptr *C.char
@@ -2571,8 +2585,8 @@ func NewRadioButtonWithMnemonic(group *glib.SList, label string) *RadioButton {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_mnemonic(gslist(group), gstring(ptr))}}}}}}}
+	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_radio_button_new_with_mnemonic(gslist(group), gstring(ptr)))}}}
 }
 func NewRadioButtonWithMnemonicFromWidget(w *RadioButton, label string) *RadioButton {
 	var ptr *C.char
@@ -2580,8 +2594,8 @@ func NewRadioButtonWithMnemonicFromWidget(w *RadioButton, label string) *RadioBu
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &RadioButton{CheckButton{ToggleButton{Button{Bin{Container{Widget{
-		C.gtk_radio_button_new_with_mnemonic_from_widget(RADIO_BUTTON(w), gstring(ptr))}}}}}}}
+	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
+		C.gtk_radio_button_new_with_mnemonic_from_widget(RADIO_BUTTON(w), gstring(ptr)))}}}
 }
 func (v *RadioButton) GetGroup() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_button_get_group(RADIO_BUTTON(v))))
@@ -2598,7 +2612,7 @@ type ToggleButton struct {
 }
 
 func NewToggleButton() *ToggleButton {
-	return &ToggleButton{Button{Bin{Container{Widget{C.gtk_toggle_button_new()}}}}}
+	return &ToggleButton{*newButtonInternal(C.gtk_toggle_button_new())}
 }
 func NewToggleButtonWithLabel(label string) *ToggleButton {
 	var ptr *C.char
@@ -2606,7 +2620,7 @@ func NewToggleButtonWithLabel(label string) *ToggleButton {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &ToggleButton{Button{Bin{Container{Widget{C.gtk_toggle_button_new_with_label(gstring(ptr))}}}}}
+	return &ToggleButton{*newButtonInternal(C.gtk_toggle_button_new_with_label(gstring(ptr)))}
 }
 func NewToggleButtonWithMnemonic(label string) *ToggleButton {
 	var ptr *C.char
@@ -2614,7 +2628,7 @@ func NewToggleButtonWithMnemonic(label string) *ToggleButton {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &ToggleButton{Button{Bin{Container{Widget{C.gtk_toggle_button_new_with_mnemonic(gstring(ptr))}}}}}
+	return &ToggleButton{*newButtonInternal(C.gtk_toggle_button_new_with_mnemonic(gstring(ptr)))}
 }
 func (v *ToggleButton) SetMode(draw_indicator bool) {
 	C.gtk_toggle_button_set_mode(TOGGLE_BUTTON(v), gbool(draw_indicator))
@@ -2648,21 +2662,21 @@ func NewLinkButton(uri string) *LinkButton {
 		ptr = C.CString(uri)
 		defer cfree(ptr)
 	}
-	return &LinkButton{Button{Bin{Container{Widget{
-		C.gtk_link_button_new(gstring(ptr))}}}}}
+	return &LinkButton{*newButtonInternal(
+		C.gtk_link_button_new(gstring(ptr)))}
 }
 func NewLinkButtonWithLabel(uri string, label string) *LinkButton {
 	var puri *C.char
 	if len(uri) > 0 {
-		puri := C.CString(uri)
+		puri = C.CString(uri)
 		defer cfree(puri)
 	}
 	var plabel *C.char
 	if len(label) > 0 {
-		plabel := C.CString(label)
+		plabel = C.CString(label)
 		defer cfree(plabel)
 	}
-	return &LinkButton{Button{Bin{Container{Widget{C.gtk_link_button_new_with_label(gstring(puri), gstring(plabel))}}}}}
+	return &LinkButton{*newButtonInternal(C.gtk_link_button_new_with_label(gstring(puri), gstring(plabel)))}
 }
 func (v *LinkButton) GetUri() string {
 	return gostring(C.gtk_link_button_get_uri(LINK_BUTTON(v)))
@@ -5508,10 +5522,15 @@ func (v *MenuBar) Insert(child IWidget, position int) {
 //-----------------------------------------------------------------------
 type MenuItem struct {
 	Item
+	Activatable		// implement GtkActivatable interface
+}
+
+func newMenuItemInternal(widget *C.GtkWidget) *MenuItem {
+	return &MenuItem{Item{Bin{Container{Widget{widget}}}}, Activatable{widget}}
 }
 
 func NewMenuItem() *MenuItem {
-	return &MenuItem{Item{Bin{Container{Widget{C.gtk_menu_item_new()}}}}}
+	return newMenuItemInternal(C.gtk_menu_item_new())
 }
 func NewMenuItemWithLabel(label string) *MenuItem {
 	var ptr *C.char
@@ -5519,8 +5538,8 @@ func NewMenuItemWithLabel(label string) *MenuItem {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &MenuItem{Item{Bin{Container{Widget{
-		C.gtk_menu_item_new_with_label(gstring(ptr))}}}}}
+	return newMenuItemInternal(C.gtk_menu_item_new_with_label(
+		gstring(ptr)))
 }
 func NewMenuItemWithMnemonic(label string) *MenuItem {
 	var ptr *C.char
@@ -5528,8 +5547,8 @@ func NewMenuItemWithMnemonic(label string) *MenuItem {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &MenuItem{Item{Bin{Container{Widget{
-		C.gtk_menu_item_new_with_mnemonic(gstring(ptr))}}}}}
+	return newMenuItemInternal(C.gtk_menu_item_new_with_mnemonic(
+		gstring(ptr)))
 }
 func (v *MenuItem) SetRightJustified(b bool) {
 	C.gtk_menu_item_set_right_justified(MENU_ITEM(v), gbool(b))
@@ -5590,25 +5609,29 @@ type ImageMenuItem struct {
 }
 
 func NewImageMenuItem() *ImageMenuItem {
-	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new()}}}}}}
+	return &ImageMenuItem{*newMenuItemInternal(
+		C.gtk_image_menu_item_new())}
 }
 
 func NewImageMenuItemFromStock(stock_id string, accel_group *AccelGroup) *ImageMenuItem {
 	p := C.CString(stock_id)
 	defer cfree(p)
-	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new_from_stock(gstring(p), accel_group.GAccelGroup)}}}}}}
+	return &ImageMenuItem{*newMenuItemInternal(
+		C.gtk_image_menu_item_new_from_stock(gstring(p), accel_group.GAccelGroup))}
 }
 
 func NewImageMenuItemWithLabel(label string) *ImageMenuItem {
 	p := C.CString(label)
 	defer cfree(p)
-	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new_with_label(gstring(p))}}}}}}
+	return &ImageMenuItem{*newMenuItemInternal(
+		C.gtk_image_menu_item_new_with_label(gstring(p)))}
 }
 
 func NewImageMenuItemWithMnemonic(label string) *ImageMenuItem {
 	p := C.CString(label)
 	defer cfree(p)
-	return &ImageMenuItem{MenuItem{Item{Bin{Container{Widget{C.gtk_image_menu_item_new_with_mnemonic(gstring(p))}}}}}}
+	return &ImageMenuItem{*newMenuItemInternal(
+		C.gtk_image_menu_item_new_with_mnemonic(gstring(p)))}
 }
 
 func (v *ImageMenuItem) SetImage(image *Widget) {
@@ -5633,8 +5656,8 @@ type RadioMenuItem struct {
 }
 
 func NewRadioMenuItem(group *glib.SList) *RadioMenuItem {
-	return &RadioMenuItem{CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_radio_menu_item_new(gslist(group))}}}}}}}
+	return &RadioMenuItem{CheckMenuItem{*newMenuItemInternal(
+		C.gtk_radio_menu_item_new(gslist(group)))}}
 }
 
 func NewRadioMenuItemWithLabel(group *glib.SList, label string) *RadioMenuItem {
@@ -5643,8 +5666,8 @@ func NewRadioMenuItemWithLabel(group *glib.SList, label string) *RadioMenuItem {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &RadioMenuItem{CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_radio_menu_item_new_with_label(gslist(group), gstring(ptr))}}}}}}}
+	return &RadioMenuItem{CheckMenuItem{*newMenuItemInternal(
+		C.gtk_radio_menu_item_new_with_label(gslist(group), gstring(ptr)))}}
 }
 
 // gtk_radio_menu_item_new_with_mnemonic
@@ -5670,8 +5693,8 @@ type CheckMenuItem struct {
 }
 
 func NewCheckMenuItem() *CheckMenuItem {
-	return &CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_check_menu_item_new()}}}}}}
+	return &CheckMenuItem{*newMenuItemInternal(
+		C.gtk_check_menu_item_new())}
 }
 func NewCheckMenuItemWithLabel(label string) *CheckMenuItem {
 	var ptr *C.char
@@ -5679,8 +5702,8 @@ func NewCheckMenuItemWithLabel(label string) *CheckMenuItem {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_check_menu_item_new_with_label(gstring(ptr))}}}}}}
+	return &CheckMenuItem{*newMenuItemInternal(
+		C.gtk_check_menu_item_new_with_label(gstring(ptr)))}
 }
 func NewCheckMenuItemWithMnemonic(label string) *CheckMenuItem {
 	var ptr *C.char
@@ -5688,8 +5711,8 @@ func NewCheckMenuItemWithMnemonic(label string) *CheckMenuItem {
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
-	return &CheckMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_check_menu_item_new_with_mnemonic(gstring(ptr))}}}}}}
+	return &CheckMenuItem{*newMenuItemInternal(
+		C.gtk_check_menu_item_new_with_mnemonic(gstring(ptr)))}
 }
 func (v *CheckMenuItem) GetActive() bool {
 	return gobool(C.gtk_check_menu_item_get_active(CHECK_MENU_ITEM(v)))
@@ -5721,8 +5744,8 @@ type SeparatorMenuItem struct {
 }
 
 func NewSeparatorMenuItem() *SeparatorMenuItem {
-	return &SeparatorMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_separator_menu_item_new()}}}}}}
+	return &SeparatorMenuItem{*newMenuItemInternal(
+		C.gtk_separator_menu_item_new())}
 }
 
 //-----------------------------------------------------------------------
@@ -5733,8 +5756,8 @@ type TearoffMenuItem struct {
 }
 
 func NewTearoffMenuItem() *TearoffMenuItem {
-	return &TearoffMenuItem{MenuItem{Item{Bin{Container{Widget{
-		C.gtk_tearoff_menu_item_new()}}}}}}
+	return &TearoffMenuItem{*newMenuItemInternal(
+		C.gtk_tearoff_menu_item_new())}
 }
 
 //-----------------------------------------------------------------------
@@ -5882,10 +5905,16 @@ func (v *Toolbar) UnsetStyle() {
 
 type ToolItem struct {
 	Bin
+	Activatable		// implement GtkActivatable interface
+}
+
+func newToolItemInternal(widget *C.GtkWidget) *ToolItem {
+	return &ToolItem{Bin{Container{Widget{widget}}}, Activatable{widget}}
 }
 
 func NewToolItem() *ToolItem {
-	return &ToolItem{Bin{Container{Widget{C.toGWidget(unsafe.Pointer(C.gtk_tool_item_new()))}}}}
+	return newToolItemInternal(AS_GWIDGET(
+        unsafe.Pointer(C.gtk_tool_item_new())))
 }
 
 func (v *ToolItem) OnCreateMenuProxy(onclick interface{}, datas ...interface{}) int {
@@ -6076,8 +6105,8 @@ type SeparatorToolItem struct {
 }
 
 func NewSeparatorToolItem() *SeparatorToolItem {
-	return &SeparatorToolItem{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_separator_tool_item_new()))}}}}}
+	return &SeparatorToolItem{*newToolItemInternal(
+		AS_GWIDGET(unsafe.Pointer(C.gtk_separator_tool_item_new())))}
 }
 
 func (v *SeparatorToolItem) SetDraw(draw bool) {
@@ -6099,14 +6128,16 @@ type ToolButton struct {
 func NewToolButton(icon IWidget, text string) *ToolButton {
 	ctext := C.CString(text)
 	defer cfree(ctext)
-	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new(ToNative(icon), gstring(ctext))))
-	return &ToolButton{ToolItem{Bin{Container{Widget{tb}}}}, nil, nil}
+	tb := AS_GWIDGET(unsafe.Pointer(C.gtk_tool_button_new(
+        ToNative(icon), gstring(ctext))))
+	return &ToolButton{*newToolItemInternal(tb), nil, nil}
 }
 func NewToolButtonFromStock(stock_id string) *ToolButton {
 	si := C.CString(stock_id)
 	defer cfree(si)
-	tb := C.toGWidget(unsafe.Pointer(C.gtk_tool_button_new_from_stock(gstring(si))))
-	return &ToolButton{ToolItem{Bin{Container{Widget{tb}}}}, nil, nil}
+	tb := AS_GWIDGET(unsafe.Pointer(
+        C.gtk_tool_button_new_from_stock(gstring(si))))
+	return &ToolButton{*newToolItemInternal(tb), nil, nil}
 }
 
 func (v *ToolButton) OnClicked(onclick interface{}, datas ...interface{}) int {
@@ -6179,14 +6210,16 @@ type MenuToolButton struct {
 func NewMenuToolButton(icon IWidget, text string) *MenuToolButton {
 	ctext := C.CString(text)
 	defer cfree(ctext)
-	mtb := C.toGWidget(unsafe.Pointer(C.gtk_menu_tool_button_new(ToNative(icon), gstring(ctext))))
-	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}, nil}
+	mtb := AS_GWIDGET(unsafe.Pointer(C.gtk_menu_tool_button_new(
+        ToNative(icon), gstring(ctext))))
+	return &MenuToolButton{ToolButton{*newToolItemInternal(mtb), nil, nil}, nil}
 }
 func NewMenuToolButtonFromStock(stock_id string) *MenuToolButton {
 	si := C.CString(stock_id)
 	defer cfree(si)
-	mtb := C.toGWidget(unsafe.Pointer(C.gtk_menu_tool_button_new_from_stock(gstring(si))))
-	return &MenuToolButton{ToolButton{ToolItem{Bin{Container{Widget{mtb}}}}, nil, nil}, nil}
+	mtb := AS_GWIDGET(unsafe.Pointer(
+        C.gtk_menu_tool_button_new_from_stock(gstring(si))))
+	return &MenuToolButton{ToolButton{*newToolItemInternal(mtb), nil, nil}, nil}
 }
 func (v *MenuToolButton) SetMenu(menu *Menu) {
 	v.mw = menu
@@ -6220,14 +6253,15 @@ type ToggleToolButton struct {
 }
 
 func NewToggleToolButton() *ToggleToolButton {
-	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new()))}}}}, nil, nil}}
+	return &ToggleToolButton{ToolButton{*newToolItemInternal(
+		AS_GWIDGET(unsafe.Pointer(C.gtk_toggle_tool_button_new()))), nil, nil}}
 }
 func NewToggleToolButtonFromStock(stock_id string) *ToggleToolButton {
 	p_stock_id := C.CString(stock_id)
 	defer cfree(p_stock_id)
-	return &ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(gstring(p_stock_id))))}}}}, nil, nil}}
+	return &ToggleToolButton{ToolButton{*newToolItemInternal(
+		AS_GWIDGET(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(
+        gstring(p_stock_id))))), nil, nil}}
 }
 
 func (v *ToggleToolButton) OnToggled(onclick interface{}, datas ...interface{}) int {
@@ -6250,15 +6284,17 @@ type RadioToolButton struct {
 }
 
 func NewRadioToolButton(group *glib.SList) *RadioToolButton {
-	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new(gslist(group))))}}}}, nil, nil}}}
+	return &RadioToolButton{ToggleToolButton{ToolButton{*newToolItemInternal(
+		AS_GWIDGET(unsafe.Pointer(C.gtk_radio_tool_button_new(
+        gslist(group))))), nil, nil}}}
 }
+
 func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolButton {
 	p_stock_id := C.CString(stock_id)
 	defer cfree(p_stock_id)
-	return &RadioToolButton{ToggleToolButton{ToolButton{ToolItem{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
-			gslist(group), gstring(p_stock_id))))}}}}, nil, nil}}}
+	return &RadioToolButton{ToggleToolButton{ToolButton{*newToolItemInternal(
+		AS_GWIDGET(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
+        gslist(group), gstring(p_stock_id))))), nil, nil}}}
 }
 
 // gtk_radio_tool_button_new_from_widget
@@ -6270,17 +6306,52 @@ func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolB
 // GtkUIManager
 //-----------------------------------------------------------------------
 
-// gtk_ui_manager_new
+type UIManager struct {
+	glib.GObject
+}
+
+func NewUIManager() *UIManager {
+	return &UIManager{glib.GObject{unsafe.Pointer(
+		C.gtk_ui_manager_new())}}
+}
+
 // gtk_ui_manager_set_add_tearoffs
 // gtk_ui_manager_get_add_tearoffs
-// gtk_ui_manager_insert_action_group
+
+func (v* UIManager) InsertActionGroup(action_group *ActionGroup, pos int) {
+	C.gtk_ui_manager_insert_action_group(UI_MANAGER(v),
+		ACTION_GROUP(action_group), gint(pos))
+}
+
 // gtk_ui_manager_remove_action_group
 // gtk_ui_manager_get_action_groups
-// gtk_ui_manager_get_accel_group
-// gtk_ui_manager_get_widget
+
+func (v *UIManager) GetAccelGroup() *AccelGroup {
+    return &AccelGroup{C.gtk_ui_manager_get_accel_group(UI_MANAGER(v))}
+}
+
+func (v *UIManager) GetWidget(path string) *Widget {
+	ptr := C.CString(path)
+	defer cfree(ptr)
+	return &Widget{C.gtk_ui_manager_get_widget(UI_MANAGER(v), gstring(ptr))}
+}
+
 // gtk_ui_manager_get_toplevels
 // gtk_ui_manager_get_action
-// gtk_ui_manager_add_ui_from_string
+
+func (v *UIManager) AddUIFromString(buffer string) error {
+	ptr := C.CString(buffer)
+	defer cfree(ptr)
+	var gerror *C.GError
+	C.gtk_ui_manager_add_ui_from_string(UI_MANAGER(v), gstring(ptr), -1, &gerror)
+	if gerror != nil {
+		err := glib.ErrorFromNative(unsafe.Pointer(gerror))
+		return err
+	} else {
+		return nil
+	}
+}
+
 // gtk_ui_manager_add_ui_from_file
 // gtk_ui_manager_new_merge_id
 // gtk_ui_manager_add_ui
@@ -6292,17 +6363,83 @@ func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolB
 // GtkActionGroup
 //-----------------------------------------------------------------------
 
-// gtk_action_group_new
-// gtk_action_group_get_name
-// gtk_action_group_get_sensitive
-// gtk_action_group_set_sensitive
-// gtk_action_group_get_visible
-// gtk_action_group_set_visible
-// gtk_action_group_get_action
-// gtk_action_group_list_actions
-// gtk_action_group_add_action
-// gtk_action_group_add_action_with_accel
-// gtk_action_group_remove_action
+type ActionGroup struct {
+	glib.GObject
+}
+
+func NewActionGroup(name string) *ActionGroup {
+	deprecated_since(3, 10, 0, "gtk_action_group_new()")
+	ptr := C.CString(name)
+	defer cfree(ptr)
+	return &ActionGroup{glib.GObject{unsafe.Pointer(
+		C.gtk_action_group_new(gstring(ptr)))}}
+}
+
+func (v *ActionGroup) GetName() string {
+	deprecated_since(3, 10, 0, "gtk_action_group_get_name()")
+	return gostring(C.gtk_action_group_get_name(ACTION_GROUP(v)))
+}
+
+func (v *ActionGroup) GetSensitive() bool {
+	deprecated_since(3, 10, 0, "gtk_action_group_get_sensitive()")
+	return gobool(C.gtk_action_group_get_sensitive(ACTION_GROUP(v)))
+}
+
+func (v *ActionGroup) SetSensitive(sensitive bool) {
+	deprecated_since(3, 10, 0, "gtk_action_group_set_sensitive()")
+	C.gtk_action_group_set_sensitive(ACTION_GROUP(v), gbool(sensitive))
+}
+
+func (v *ActionGroup) GetVisible() bool {
+	deprecated_since(3, 10, 0, "gtk_action_group_get_visible()")
+	return gobool(C.gtk_action_group_get_visible(ACTION_GROUP(v)))
+}
+
+func (v *ActionGroup) SetVisible(visible bool) {
+	deprecated_since(3, 10, 0, "gtk_action_group_set_visible()")
+	C.gtk_action_group_set_visible(ACTION_GROUP(v), gbool(visible))
+}
+
+func (v *ActionGroup) GetAction(action_name string) *Action {
+	deprecated_since(3, 10, 0, "gtk_action_group_get_action()")
+	ptr := C.CString(action_name)
+	defer cfree(ptr)
+	return &Action{glib.GObject{unsafe.Pointer(C.gtk_action_group_get_action(
+		ACTION_GROUP(v), gstring(ptr)))}}
+}
+
+func (v *ActionGroup) ListActions() *glib.List {
+	deprecated_since(3, 10, 0, "gtk_action_group_list_actions()")
+	return glib.ListFromNative(unsafe.Pointer(
+		C.gtk_action_group_list_actions(ACTION_GROUP(v))))
+}
+
+func (v *ActionGroup) AddAction(action interface{}) {
+	deprecated_since(3, 10, 0, "gtk_action_group_add_action()")
+    if a, ok := action.(IAction); ok {
+        C.gtk_action_group_add_action(ACTION_GROUP(v), a.toGAction())
+    } else {
+        log.Panicf("Error calling gtk.AddAction: argument must be " +
+            "an Action object, but %v type provided", reflect.TypeOf(action))
+    }
+}
+
+func (v *ActionGroup) AddActionWithAccel(action *Action, accelerator string) {
+	deprecated_since(3, 10, 0, "gtk_action_group_add_action_with_accel()")
+    var ptr *C.char
+    if len(accelerator) > 0 {
+        ptr = C.CString(accelerator)
+        defer cfree(ptr)
+    }
+	C.gtk_action_group_add_action_with_accel(ACTION_GROUP(v),
+		ACTION(action), gstring(ptr))
+}
+
+func (v *ActionGroup) RemoveAction(action *Action) {
+	deprecated_since(3, 10, 0, "gtk_action_group_remove_action()")
+	C.gtk_action_group_remove_action(ACTION_GROUP(v), ACTION(action))
+}
+
 // gtk_action_group_add_actions
 // gtk_action_group_add_actions_full
 // gtk_action_group_add_toggle_actions
@@ -6317,93 +6454,465 @@ func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolB
 // GtkAction
 //-----------------------------------------------------------------------
 
-// gtk_action_new
-// gtk_action_get_name
-// gtk_action_is_sensitive
-// gtk_action_get_sensitive
-// gtk_action_set_sensitive
-// gtk_action_is_visible
-// gtk_action_get_visible
-// gtk_action_set_visible
-// gtk_action_activate
-// gtk_action_create_icon
-// gtk_action_create_menu_item
-// gtk_action_create_tool_item
-// gtk_action_create_menu
-// gtk_action_connect_proxy
-// gtk_action_disconnect_proxy
-// gtk_action_get_proxies
-// gtk_action_connect_accelerator
-// gtk_action_disconnect_accelerator
-// gtk_action_block_activate
-// gtk_action_unblock_activate
-// gtk_action_block_activate_from
-// gtk_action_unblock_activate_from
-// gtk_action_get_always_show_image
-// gtk_action_set_always_show_image
-// gtk_action_get_accel_path
-// gtk_action_set_accel_path
+type IAction interface {
+    toGAction() *C.GtkAction
+}
+
+type Action struct {
+	glib.GObject
+}
+
+func NewAction(name string, label string, tooltip string, stock_id string) *Action {
+	deprecated_since(3, 10, 0, "gtk_action_new()")
+	name_ptr := C.CString(name)
+	defer cfree(name_ptr)
+	var label_ptr *C.char
+	if len(label) > 0 {
+		label_ptr = C.CString(label)
+		defer cfree(label_ptr)
+	}
+	var tooltip_ptr *C.char
+	if len(tooltip) > 0 {
+		tooltip_ptr = C.CString(tooltip)
+		defer cfree(tooltip_ptr)
+	}
+	var stockid_ptr *C.char
+	if len(stock_id) > 0 {
+		stockid_ptr = C.CString(stock_id)
+		defer cfree(stockid_ptr)
+	}
+	return &Action{glib.GObject{unsafe.Pointer(C.gtk_action_new(gstring(name_ptr),
+		gstring(label_ptr), gstring(tooltip_ptr), gstring(stockid_ptr)))}}
+}
+
+func (v *Action) toGAction() *C.GtkAction {
+    return C.toGAction(v.Object)
+}
+
+func (v *Action) GetName() string {
+	deprecated_since(3, 10, 0, "gtk_action_get_name()")
+	return gostring(C.gtk_action_get_name(ACTION(v)))
+}
+
+func (v *Action) IsSensitive() bool {
+	deprecated_since(3, 10, 0, "gtk_action_is_sensitive()")
+	return gobool(C.gtk_action_is_sensitive(ACTION(v)))
+}
+
+func (v *Action) GetSensitive() bool {
+	deprecated_since(3, 10, 0, "gtk_action_get_sensitive()")
+	return gobool(C.gtk_action_get_sensitive(ACTION(v)))
+}
+
+func (v *Action) SetSensitive(sensitive bool) {
+	deprecated_since(3, 10, 0, "gtk_action_set_sensitive()")
+	C.gtk_action_set_sensitive(ACTION(v), gbool(sensitive))
+}
+
+func (v *Action) IsVisible() bool {
+	deprecated_since(3, 10, 0, "gtk_action_is_visible()")
+	return gobool(C.gtk_action_is_visible(ACTION(v)))
+}
+
+func (v *Action) GetVisible() bool {
+	deprecated_since(3, 10, 0, "gtk_action_get_visible()")
+	return gobool(C.gtk_action_get_visible(ACTION(v)))
+}
+
+func (v *Action) SetVisible(visible bool) {
+	deprecated_since(3, 10, 0, "gtk_action_set_visible()")
+	C.gtk_action_set_visible(ACTION(v), gbool(visible))
+}
+
+func (v *Action) Activate() {
+	deprecated_since(3, 10, 0, "gtk_action_activate()")
+	C.gtk_action_activate(ACTION(v))
+}
+
+func (v *Action) CreateIcon(icon_size IconSize) *Widget {
+	deprecated_since(3, 10, 0, "gtk_action_create_icon()")
+	return &Widget{C.gtk_action_create_icon(ACTION(v), C.GtkIconSize(icon_size))}
+}
+
+func (v *Action) CreateMenuItem() *Widget {
+	deprecated_since(3, 10, 0, "gtk_action_create_menu_item()")
+	return &Widget{C.gtk_action_create_menu_item(ACTION(v))}
+}
+
+func (v *Action) CreateToolItem() *Widget {
+	deprecated_since(3, 10, 0, "gtk_action_create_tool_item()")
+	return &Widget{C.gtk_action_create_tool_item(ACTION(v))}
+}
+
+func (v *Action) CreateMenu() *Widget {
+	deprecated_since(3, 10, 0, "gtk_action_create_menu()")
+	return &Widget{C.gtk_action_create_menu(ACTION(v))}
+}
+
+func (v *Action) ConnectProxy(proxy *Widget) {
+	deprecated_since(2, 16, 0, "gtk_action_connect_proxy()")
+	C.gtk_action_connect_proxy(ACTION(v), WIDGET(proxy))
+}
+
+func (v *Action) DisconnectProxy(proxy *Widget) {
+	deprecated_since(2, 16, 0, "gtk_action_disconnect_proxy()")
+	C.gtk_action_disconnect_proxy(ACTION(v), WIDGET(proxy))
+}
+
+func (v *Action) GetProxies() *glib.SList {
+	deprecated_since(3, 10, 0, "gtk_action_get_proxies()")
+	return glib.SListFromNative(unsafe.Pointer(
+		C.gtk_action_get_proxies(ACTION(v))))
+}
+
+func (v *Action) ConnectAccelerator() {
+	deprecated_since(3, 10, 0, "gtk_action_connect_accelerator()")
+	C.gtk_action_connect_accelerator(ACTION(v))
+}
+
+func (v *Action) DisconnectAccelerator() {
+	deprecated_since(3, 10, 0, "gtk_action_disconnect_accelerator()")
+	C.gtk_action_disconnect_accelerator(ACTION(v))
+}
+
+func (v *Action) BlockActivate() {
+	deprecated_since(3, 10, 0, "gtk_action_block_activate()")
+	C.gtk_action_block_activate(ACTION(v))
+}
+
+func (v *Action) UnblockActivate() {
+	deprecated_since(3, 10, 0, "gtk_action_unblock_activate()")
+	C.gtk_action_unblock_activate(ACTION(v))
+}
+
+func (v *Action) BlockActivateFrom(proxy *Widget) {
+	deprecated_since(2, 16, 0, "gtk_action_block_activate_from()")
+	C.gtk_action_block_activate_from(ACTION(v), WIDGET(proxy))
+}
+
+func (v *Action) UnblockActivateFrom(proxy *Widget) {
+	deprecated_since(2, 16, 0, "gtk_action_unblock_activate_from()")
+	C.gtk_action_unblock_activate_from(ACTION(v), WIDGET(proxy))
+}
+
+func (v *Action) GetAlwaysShowImage() bool {
+	deprecated_since(3, 10, 0, "gtk_action_get_always_show_image()")
+	return gobool(C.gtk_action_get_always_show_image(ACTION(v)))
+}
+
+func (v *Action) SetAlwaysShowImage(always_show bool) {
+	deprecated_since(3, 10, 0, "gtk_action_get_always_show_image()")
+	C.gtk_action_set_always_show_image(ACTION(v), gbool(always_show))
+}
+
+func (v *Action) GetAccelPath() string {
+	deprecated_since(3, 10, 0, "gtk_action_get_accel_path()")
+	return gostring(C.gtk_action_get_accel_path(ACTION(v)))
+}
+
+func (v *Action) SetAccelPath(accel_path string) {
+	deprecated_since(3, 10, 0, "gtk_action_set_accel_path()")
+	ptr := C.CString(accel_path)
+	C.gtk_action_set_accel_path(ACTION(v), gstring(ptr))
+}
+
 // gtk_action_get_accel_closure
-// gtk_action_set_accel_group
-// gtk_action_set_label
-// gtk_action_get_label
-// gtk_action_set_short_label
-// gtk_action_get_short_label
-// gtk_action_set_tooltip
-// gtk_action_get_tooltip
-// gtk_action_set_stock_id
-// gtk_action_get_stock_id
+
+func (v *Action) SetAccelGroup(accel_group *AccelGroup) {
+	deprecated_since(3, 10, 0, "gtk_action_set_accel_group()")
+	C.gtk_action_set_accel_group(ACTION(v), accel_group.GAccelGroup)
+}
+
+func (v *Action) SetLable(label string) {
+	deprecated_since(3, 10, 0, "gtk_action_set_label()")
+	ptr := C.CString(label)
+	defer cfree(ptr)
+	C.gtk_action_set_label(ACTION(v), gstring(ptr))
+}
+
+func (v *Action) GetLabel() string {
+	deprecated_since(3, 10, 0, "gtk_action_get_label()")
+	return gostring(C.gtk_action_get_label(ACTION(v)))
+}
+
+func (v *Action) SetShortLabel(short_label string) {
+	deprecated_since(3, 10, 0, "gtk_action_set_short_label()")
+	ptr := C.CString(short_label)
+	defer cfree(ptr)
+	C.gtk_action_set_short_label(ACTION(v), gstring(ptr))
+}
+
+func (v *Action) GetShortLabel() string {
+	deprecated_since(3, 10, 0, "gtk_action_get_short_label()")
+	return gostring(C.gtk_action_get_short_label(ACTION(v)))
+}
+
+func (v *Action) SetTooltip(tooltip string) {
+	deprecated_since(3, 10, 0, "gtk_action_set_tooltip()")
+	ptr := C.CString(tooltip)
+	defer cfree(ptr)
+	C.gtk_action_set_tooltip(ACTION(v), gstring(ptr))
+}
+
+func (v *Action) GetTooltip() string {
+	deprecated_since(3, 10, 0, "gtk_action_get_tooltip()")
+	return gostring(C.gtk_action_get_tooltip(ACTION(v)))
+}
+
+func (v *Action) SetStockId(stock_id string) {
+	deprecated_since(3, 10, 0, "gtk_action_set_stock_id()")
+	ptr := C.CString(stock_id)
+	defer cfree(ptr)
+	C.gtk_action_set_stock_id(ACTION(v), gstring(ptr))
+}
+
+func (v *Action) GetStockId() string {
+	deprecated_since(3, 10, 0, "gtk_action_get_stock_id()")
+	return gostring(C.gtk_action_get_stock_id(ACTION(v)))
+}
+
 // gtk_action_set_gicon
 // gtk_action_get_gicon
-// gtk_action_set_icon_name
-// gtk_action_get_icon_name
-// gtk_action_set_visible_horizontal
-// gtk_action_get_visible_horizontal
-// gtk_action_set_visible_vertical
-// gtk_action_get_visible_vertical
-// gtk_action_set_is_important
-// gtk_action_get_is_important
+
+func (v *Action) SetIconName(icon_name string) {
+	deprecated_since(3, 10, 0, "gtk_action_set_icon_name()")
+	ptr := C.CString(icon_name)
+	defer cfree(ptr)
+	C.gtk_action_set_icon_name(ACTION(v), gstring(ptr))
+}
+
+func (v *Action) GetIconName() string {
+	deprecated_since(3, 10, 0, "gtk_action_get_icon_name()")
+	return gostring(C.gtk_action_get_icon_name(ACTION(v)))
+}
+
+func (v *Action) SetVisibleHorizontal(visible_horizontal bool) {
+	deprecated_since(3, 10, 0, "gtk_action_set_visible_horizontal()")
+	C.gtk_action_set_visible_horizontal(ACTION(v), gbool(visible_horizontal))
+}
+
+func (v *Action) GetVisibleHorizontal() bool {
+	deprecated_since(3, 10, 0, "gtk_action_get_visible_horizontal()")
+	return gobool(C.gtk_action_get_visible_horizontal(ACTION(v)))
+}
+
+func (v *Action) SetVisibleVertical(visible_vertical bool) {
+	deprecated_since(3, 10, 0, "gtk_action_set_visible_vertical()")
+	C.gtk_action_set_visible_vertical(ACTION(v), gbool(visible_vertical))
+}
+
+func (v *Action) GetVisibleVertical() bool {
+	deprecated_since(3, 10, 0, "gtk_action_get_visible_vertical()")
+	return gobool(C.gtk_action_get_visible_vertical(ACTION(v)))
+}
+
+func (v *Action) SetIsImportant(is_important bool) {
+	deprecated_since(3, 10, 0, "gtk_action_set_is_important()")
+	C.gtk_action_set_is_important(ACTION(v), gbool(is_important))
+}
+
+func (v *Action) GetIsImportant() bool {
+	deprecated_since(3, 10, 0, "gtk_action_get_is_important()")
+	return gobool(C.gtk_action_get_is_important(ACTION(v)))
+}
 
 //-----------------------------------------------------------------------
 // GtkToggleAction
 //-----------------------------------------------------------------------
 
-// gtk_toggle_action_new
-// gtk_toggle_action_toggled
-// gtk_toggle_action_set_active
-// gtk_toggle_action_get_active
-// gtk_toggle_action_set_draw_as_radio
-// gtk_toggle_action_get_draw_as_radio
+type ToggleAction struct {
+	Action
+}
+
+func NewToggleAction(name string, label string, tooltip string,
+		stock_id string) *ToggleAction {
+	deprecated_since(3, 10, 0, "gtk_toggle_action_new()")
+	name_ptr := C.CString(name)
+	defer cfree(name_ptr)
+	var label_ptr *C.char
+	if len(label) > 0 {
+		label_ptr = C.CString(label)
+		defer cfree(label_ptr)
+	}
+	var tooltip_ptr *C.char
+	if len(tooltip) > 0 {
+		tooltip_ptr = C.CString(tooltip)
+		defer cfree(tooltip_ptr)
+	}
+	var stockid_ptr *C.char
+	if len(stock_id) > 0 {
+		stockid_ptr = C.CString(stock_id)
+		defer cfree(stockid_ptr)
+	}
+	return &ToggleAction{Action{glib.GObject{unsafe.Pointer(C.gtk_toggle_action_new(gstring(name_ptr),
+		gstring(label_ptr), gstring(tooltip_ptr), gstring(stockid_ptr)))}}}
+}
+
+func (v *ToggleAction) Toggled() {
+	deprecated_since(3, 10, 0, "gtk_toggle_action_toggled()")
+	C.gtk_toggle_action_toggled(TOGGLE_ACTION(v))
+}
+
+func (v *ToggleAction) SetActive(is_active bool) {
+	deprecated_since(3, 10, 0, "gtk_toggle_action_set_active()")
+	C.gtk_toggle_action_set_active(TOGGLE_ACTION(v), gbool(is_active))
+}
+
+func (v *ToggleAction) GetActive() bool {
+	deprecated_since(3, 10, 0, "gtk_toggle_action_get_active()")
+	return gobool(C.gtk_toggle_action_get_active(TOGGLE_ACTION(v)))
+}
+
+func (v *ToggleAction) SetDrawAsRadio(draw_as_radio bool) {
+	deprecated_since(3, 10, 0, "gtk_toggle_action_set_draw_as_radio()")
+	C.gtk_toggle_action_set_draw_as_radio(TOGGLE_ACTION(v),
+		gbool(draw_as_radio))
+}
+
+func (v *ToggleAction) GetDrawAsRadio() bool {
+	deprecated_since(3, 10, 0, "gtk_toggle_action_get_draw_as_radio()")
+	return gobool(C.gtk_toggle_action_get_draw_as_radio(TOGGLE_ACTION(v)))
+}
 
 //-----------------------------------------------------------------------
 // GtkRadioAction
 //-----------------------------------------------------------------------
 
-// gtk_radio_action_new
-// gtk_radio_action_get_group
-// gtk_radio_action_set_group
-// gtk_radio_action_get_current_value
-// gtk_radio_action_set_current_value
+type RadioAction struct {
+	ToggleAction
+}
+
+func NewRadioAction(name string, label string, tooltip string,
+		stock_id string, value int) *RadioAction {
+	deprecated_since(3, 10, 0, "gtk_radio_action_new()")
+	name_ptr := C.CString(name)
+	defer cfree(name_ptr)
+	var label_ptr *C.char
+	if len(label) > 0 {
+		label_ptr = C.CString(label)
+		defer cfree(label_ptr)
+	}
+	var tooltip_ptr *C.char
+	if len(tooltip) > 0 {
+		tooltip_ptr = C.CString(tooltip)
+		defer cfree(tooltip_ptr)
+	}
+	var stockid_ptr *C.char
+	if len(stock_id) > 0 {
+		stockid_ptr = C.CString(stock_id)
+		defer cfree(stockid_ptr)
+	}
+	return &RadioAction{ToggleAction{Action{glib.GObject{unsafe.Pointer(
+		C.gtk_radio_action_new(gstring(name_ptr), gstring(label_ptr),
+		gstring(tooltip_ptr), gstring(stockid_ptr), gint(value)))}}}}
+}
+
+func (v *RadioAction) GetGroup() *glib.SList {
+	deprecated_since(3, 10, 0, "gtk_radio_action_get_group()")
+	return glib.SListFromNative(unsafe.Pointer(
+		C.gtk_radio_action_get_group(RADIO_ACTION(v))))
+}
+
+func (v *RadioAction) SetGroup(group *glib.SList) {
+	deprecated_since(3, 10, 0, "gtk_radio_action_set_group()")
+	C.gtk_radio_action_set_group(RADIO_ACTION(v), gslist(group))
+}
+
+func (v *RadioAction) GetCurrentValue() int {
+	deprecated_since(3, 10, 0, "gtk_radio_action_get_current_value()")
+	return int(C.gtk_radio_action_get_current_value(RADIO_ACTION(v)))
+}
+
+func (v *RadioAction) SetCurrentValue(current_value int) {
+	deprecated_since(3, 10, 0, "gtk_radio_action_set_current_value()")
+	C.gtk_radio_action_set_current_value(RADIO_ACTION(v), gint(current_value))
+}
 
 //-----------------------------------------------------------------------
 // GtkRecentAction
 //-----------------------------------------------------------------------
 
-// gtk_recent_action_new
+type RecentAction struct {
+	Action
+}
+
+func NewRecentAction(name string, label string, tooltip string,
+		stock_id string) *RecentAction {
+	deprecated_since(3, 10, 0, "gtk_recent_action_new()")
+	name_ptr := C.CString(name)
+	defer cfree(name_ptr)
+	var label_ptr *C.char
+	if len(label) > 0 {
+		label_ptr = C.CString(label)
+		defer cfree(label_ptr)
+	}
+	var tooltip_ptr *C.char
+	if len(tooltip) > 0 {
+		tooltip_ptr = C.CString(tooltip)
+		defer cfree(tooltip_ptr)
+	}
+	var stockid_ptr *C.char
+	if len(stock_id) > 0 {
+		stockid_ptr = C.CString(stock_id)
+		defer cfree(stockid_ptr)
+	}
+	return &RecentAction{Action{glib.GObject{unsafe.Pointer(
+		C.gtk_recent_action_new(gstring(name_ptr), gstring(label_ptr),
+		gstring(tooltip_ptr), gstring(stockid_ptr)))}}}
+}
+
 // gtk_recent_action_new_for_manager
-// gtk_recent_action_get_show_numbers
-// gtk_recent_action_set_show_numbers
+
+func (v *RecentAction) GetShowNumbers() bool {
+	deprecated_since(3, 10, 0, "gtk_recent_action_get_show_numbers()")
+	return gobool(C.gtk_recent_action_get_show_numbers(RECENT_ACTION(v)))
+}
+
+func (v *RecentAction) SetShowNumbers(show_numbers bool) {
+	deprecated_since(3, 10, 0, "gtk_recent_action_set_show_numbers()")
+	C.gtk_recent_action_set_show_numbers(RECENT_ACTION(v), gbool(show_numbers))
+}
 
 //-----------------------------------------------------------------------
 // GtkActivatable
 //-----------------------------------------------------------------------
 
+// Known Implementations for GtkActivatable interface:
+// GtkActivatable is implemented by GtkButton, GtkCheckButton,
+// GtkCheckMenuItem, GtkColorButton, GtkFontButton, GtkImageMenuItem,
+// GtkLinkButton, GtkLockButton, GtkMenuItem, GtkMenuToolButton,
+// GtkRadioButton, GtkRadioMenuItem, GtkRadioToolButton,
+// GtkRecentChooserMenu, GtkScaleButton, GtkSeparatorMenuItem,
+// GtkSeparatorToolItem, GtkSwitch, GtkTearoffMenuItem, GtkToggleButton,
+// GtkToggleToolButton, GtkToolButton, GtkToolItem and GtkVolumeButton.
+type Activatable struct {
+	GWidget *C.GtkWidget
+}
+
 // gtk_activatable_do_set_related_action
-// gtk_activatable_get_related_action
-// gtk_activatable_get_use_action_appearance
+
+func (v *Activatable) GetRelatedAction() *Action {
+	deprecated_since(3, 10, 0, "gtk_activatable_get_related_action()")
+	return &Action{glib.GObject{unsafe.Pointer(C.gtk_activatable_get_related_action(ACTIVATABLE(v)))}}
+}
+
+func (v *Activatable) GetUseActionAppearance() bool {
+	deprecated_since(3, 10, 0, "gtk_activatable_get_use_action_appearance()")
+	return gobool(C.gtk_activatable_get_use_action_appearance(ACTIVATABLE(v)))
+}
+
 // gtk_activatable_sync_action_properties
-// gtk_activatable_set_related_action
-// gtk_activatable_set_use_action_appearance
+
+func (v *Activatable) SetRelatedAction(action *Action) {
+	deprecated_since(3, 10, 0, "gtk_activatable_set_related_action()")
+	C.gtk_activatable_set_related_action(ACTIVATABLE(v), ACTION(action))
+}
+
+func (v *Activatable) SetUseActionAppearance(use_appearance bool) {
+	deprecated_since(3, 10, 0, "gtk_activatable_set_use_action_appearance()")
+	C.gtk_activatable_set_use_action_appearance(ACTIVATABLE(v),
+		gbool(use_appearance))
+}
 
 //-----------------------------------------------------------------------
 // GtkColorButton
@@ -6414,8 +6923,8 @@ type ColorButton struct {
 }
 
 func NewColorButton() *ColorButton {
-	return &ColorButton{Button{Bin{Container{Widget{
-		C.toGWidget(unsafe.Pointer(C.gtk_color_button_new()))}}}}}
+	return &ColorButton{*newButtonInternal(
+		AS_GWIDGET(unsafe.Pointer(C.gtk_color_button_new())))}
 }
 
 func NewColorButtonWithColor(color *gdk.Color) *ColorButton {
@@ -6754,20 +7263,23 @@ type FontButton struct {
 }
 
 func NewFontButton() *FontButton {
-	return &FontButton{Button{Bin{Container{Widget{
-		C.gtk_font_button_new()}}}}}
+	return &FontButton{*newButtonInternal(
+		C.gtk_font_button_new())}
 }
+
 func NewFontButtonWithFont(fontname string) *FontButton {
 	ptr := C.CString(fontname)
 	defer cfree(ptr)
-	return &FontButton{Button{Bin{Container{Widget{
-		C.gtk_font_button_new_with_font(gstring(ptr))}}}}}
+	return &FontButton{*newButtonInternal(
+		C.gtk_font_button_new_with_font(gstring(ptr)))}
 }
+
 func (v *FontButton) SetFontName(fontname string) {
 	ptr := C.CString(fontname)
 	defer cfree(ptr)
 	C.gtk_font_button_set_font_name(FONT_BUTTON(v), gstring(ptr))
 }
+
 func (v *FontButton) GetFontName() string {
 	return gostring(C.gtk_font_button_get_font_name(FONT_BUTTON(v)))
 }
@@ -8681,6 +9193,7 @@ type IWidget interface {
 	GetTopLevelAsWindow() *Window
 	HideOnDelete()
 	QueueResize()
+    GetName() string
 }
 
 func ToNative(w IWidget) *C.GtkWidget {
@@ -8833,12 +9346,12 @@ func (v *Widget) GrabFocus() {
 func (v *Widget) GrabDefault() {
 	C.gtk_widget_grab_default(v.GWidget)
 }
-func (v *Window) SetName(name string) {
+func (v *Widget) SetName(name string) {
 	ptr := C.CString(name)
 	defer cfree(ptr)
 	C.gtk_widget_set_name(v.GWidget, gstring(ptr))
 }
-func (v *Window) GetName() string {
+func (v *Widget) GetName() string {
 	return gostring(C.gtk_widget_get_name(v.GWidget))
 }
 func (v *Widget) SetState(state StateType) {
