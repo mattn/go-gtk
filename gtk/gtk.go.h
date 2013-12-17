@@ -831,5 +831,4 @@ static inline GtkRecentAction* toGRecentAction(void* o) { return GTK_RECENT_ACTI
 static inline GtkActionGroup* toGActionGroup(void* o) { return GTK_ACTION_GROUP(o); }
 static inline GtkActivatable* toGActivatable(GtkWidget* w) { return GTK_ACTIVATABLE(w); }
 static inline GtkUIManager* toGUIManager(void* o) { return GTK_UI_MANAGER(o); }
-static inline GCallback toGCallback(void* f) { return G_CALLBACK(f); }
 #endif
