@@ -17,7 +17,7 @@ INSTALL:
   To experiment with go-gtk, you can just compile and run the example
   program:
 
-    git clone  https://github.com/d2r2/go-gtk
+    git clone  https://github.com/mattn/go-gtk
     cd go-gtk
     make install
     make example

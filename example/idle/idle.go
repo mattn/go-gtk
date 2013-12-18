@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/d2r2/go-gtk/glib"
+	"github.com/mattn/go-gtk/glib"
 	"time"
 )
 

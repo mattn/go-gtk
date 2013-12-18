@@ -1,7 +1,7 @@
 package main
 
-import "github.com/d2r2/go-gtk/gtk"
-import "github.com/d2r2/go-gtk/glib"
+import "github.com/mattn/go-gtk/gtk"
+import "github.com/mattn/go-gtk/glib"
 import "fmt"
 import "syscall"
 

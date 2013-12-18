@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/d2r2/go-gtk/gdk"
-	"github.com/d2r2/go-gtk/glib"
-	"github.com/d2r2/go-gtk/gtk"
+	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/gtk"
 	"os"
 	"strings"
 	"unsafe"
