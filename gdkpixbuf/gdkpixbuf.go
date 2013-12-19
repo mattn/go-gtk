@@ -6,6 +6,13 @@ import "C"
 import "github.com/mattn/go-gtk/glib"
 import "unsafe"
 
+func gbool(b bool) C.gboolean {
+	if b {
+		return C.gboolean(1)
+	}
+	return C.gboolean(0)
+}
+
 func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
@@ -30,48 +37,66 @@ type Pixbuf struct {
 	*glib.GObject
 }
 
-func NewFromFile(path string) (pixbuf *Pixbuf, err **glib.Error) {
+func NewFromFile(filename string) (*Pixbuf, *glib.Error) {
 	var error *C.GError
-	ptr := C.CString(path)
+	ptr := C.CString(filename)
 	defer C.free_string(ptr)
 	gpixbuf := C.gdk_pixbuf_new_from_file(ptr, &error)
-	pixbuf = &Pixbuf{
+	if error != nil {
+		err := glib.ErrorFromNative(unsafe.Pointer(error))
+		return nil, err
+	}
+	pixbuf := &Pixbuf{
 		GPixbuf: gpixbuf,
 		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
-	if err != nil && error != nil {
-		*err = glib.ErrorFromNative(unsafe.Pointer(error))
-	}
-	return
+	return pixbuf, nil
 }
 
-func NewFromFileAtSize(path string, imgW int, imgH int) (pixbuf *Pixbuf, err **glib.Error) {
+func NewFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error) {
 	var error *C.GError
-	ptr := C.CString(path)
+	ptr := C.CString(filename)
 	defer C.free_string(ptr)
-	gpixbuf := C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(imgW), C.int(imgH), &error)
-	pixbuf = &Pixbuf{
+	gpixbuf := C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(width), C.int(heigth), &error)
+	if error != nil {
+		err := glib.ErrorFromNative(unsafe.Pointer(error))
+		return nil, err
+	}
+	pixbuf := &Pixbuf{
 		GPixbuf: gpixbuf,
 		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
-	if err != nil && error != nil {
-		*err = glib.ErrorFromNative(unsafe.Pointer(error))
+	return pixbuf, nil
+}
+
+func NewFromFileAtScale(filename string, width, height int, preserve_aspect_ratio bool) (*Pixbuf, *glib.Error) {
+	var error *C.GError
+	ptr := C.CString(filename)
+	defer C.free_string(ptr)
+	gpixbuf := C.gdk_pixbuf_new_from_file_at_scale(ptr, C.int(width), C.int(height), gbool(preserve_aspect_ratio), &error)
+	if error != nil {
+		err := glib.ErrorFromNative(unsafe.Pointer(error))
+		return nil, err
 	}
-	return
+	pixbuf := &Pixbuf{
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
+	return pixbuf, nil
 }
 
 func GetType() int {
 	return int(C.gdk_pixbuf_get_type())
 }
 
-func GetFileInfo(path string, imgW *int, imgH *int) *Format {
-	ptr := C.CString(path)
+func GetFileInfo(filename string, width, height *int) *Format {
+	ptr := C.CString(filename)
 	defer C.free_string(ptr)
 
 	var w, h C.gint
 	format := &Format{C.gdk_pixbuf_get_file_info(C.to_gcharptr(ptr), &w, &h)}
-	*imgW = int(w)
-	*imgH = int(h)
+	*width = int(w)
+	*height = int(h)
 	return format
 }
 
@@ -93,6 +118,31 @@ func Scale(p *Pixbuf, x, y, width, height int, offsetX, offsetY, scaleX, scaleY 
 
 func ScaleSimple(p *Pixbuf, width, height int, interp InterpType) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_scale_simple(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)), C.int(width), C.int(height), C.GdkInterpType(interp))
+	return &Pixbuf{
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
+}
+
+type PixbufRotation int
+
+const (
+	PIXBUF_ROTATE_NONE             PixbufRotation = 0
+	PIXBUF_ROTATE_COUNTERCLOCKWISE PixbufRotation = 90
+	PIXBUF_ROTATE_UPSIDEDOWN       PixbufRotation = 180
+	PIXBUF_ROTATE_CLOCKWISE        PixbufRotation = 270
+)
+
+func RotateSimple(p *Pixbuf, angle PixbufRotation) *Pixbuf {
+	gpixbuf := C.gdk_pixbuf_rotate_simple(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)), C.GdkPixbufRotation(angle))
+	return &Pixbuf{
+		GPixbuf: gpixbuf,
+		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
+}
+
+func Flip(p *Pixbuf, horizontal bool) *Pixbuf {
+	gpixbuf := C.gdk_pixbuf_flip(C.toGdkPixbuf(unsafe.Pointer(p.GPixbuf)), gbool(horizontal))
 	return &Pixbuf{
 		GPixbuf: gpixbuf,
 		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
