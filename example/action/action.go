@@ -146,12 +146,12 @@ func AddFileMenuActions(action_group *gtk.ActionGroup) {
 
     action_filenewmenu := gtk.NewAction("FileNew", "", "", gtk.STOCK_NEW)
     action_group.AddAction(action_filenewmenu)
-    
+
     action_new := gtk.NewAction("FileNewStandard", "_New",
             "Create a new file", gtk.STOCK_NEW)
     action_new.Connect("activate", OnMenuFileNewGeneric)
     action_group.AddActionWithAccel(action_new, "")
-    
+
     action_new_foo := gtk.NewAction("FileNewFoo", "New Foo",
             "Create new foo", gtk.STOCK_NEW)
     action_new_foo.Connect("activate", OnMenuFileNewGeneric)
@@ -169,7 +169,7 @@ func AddFileMenuActions(action_group *gtk.ActionGroup) {
 
 func AddEditMenuActions(action_group *gtk.ActionGroup) {
     action_group.AddAction(gtk.NewAction("EditMenu", "Edit", "", ""))
-    
+
     action_editcopy := gtk.NewAction("EditCopy", "", "", gtk.STOCK_COPY)
     action_editcopy.Connect("activate", OnMenuOther)
     action_group.AddActionWithAccel(action_editcopy, "")
@@ -185,24 +185,24 @@ func AddEditMenuActions(action_group *gtk.ActionGroup) {
 
 func AddChoicesMenuActions(action_group *gtk.ActionGroup) {
     action_group.AddAction(gtk.NewAction("ChoicesMenu", "Choices", "", ""))
-    
+
     var ra_list []*gtk.RadioAction
     ra_one := gtk.NewRadioAction("ChoiceOne", "One", "", "", 1)
     ra_list = append(ra_list, ra_one)
 
     ra_two := gtk.NewRadioAction("ChoiceTwo", "Two", "", "", 2)
     ra_list = append(ra_list, ra_two)
-    
+
     ra_three := gtk.NewRadioAction("ChoiceThree", "Three", "", "", 2)
     ra_list = append(ra_list, ra_three)
-    
+
     var sl *glib.SList
     for _, ra := range ra_list {
         ra.SetGroup(sl)
         sl = ra.GetGroup()
-        action_group.AddAction(ra) 
+        action_group.AddAction(ra)
     }
-    
+
     ra_last := gtk.NewToggleAction("ChoiceToggle", "Toggle", "", "")
     ra_last.SetActive(true)
     action_group.AddAction(ra_last)
