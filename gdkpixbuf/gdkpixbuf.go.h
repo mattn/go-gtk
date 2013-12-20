@@ -11,10 +11,20 @@
 //static const gchar* to_gcharptr(const char* s) { return (const gchar*)s; }
 static guchar* to_gucharptr(void* s) { return (guchar*)s; }
 
-static void free_string(char* s) { free(s); }
-
-static gchar* to_gcharptr(char* s) { return (gchar*)s; }
-
 static inline GdkPixbuf* toGdkPixbuf(void* p) { return GDK_PIXBUF(p); }
+
+static inline gchar* toGstr(const char* s) { return (gchar*)s; }
+static inline char* toCstr(const gchar* s) { return (char*)s; }
+
+static inline void freeCstr(char* s) { free(s); }
+
+static inline char** makeCstrv(int count) {
+	return (char**)malloc(sizeof(char*) * count);
+}
+
+static inline void freeCstrv(char** cstrv) { free(cstrv); }
+static inline char* getCstr(char** cstrv, int n) { return cstrv[n]; }
+static inline void setCstr(char** cstrv, int n, char* str) { cstrv[n] = str; }
+static inline gchar* getGstr(gchar** gstrv, int n) { return gstrv[n]; }
 
 #endif
