@@ -6347,9 +6347,8 @@ func (v *UIManager) AddUIFromString(buffer string) error {
 	if gerror != nil {
 		err := glib.ErrorFromNative(unsafe.Pointer(gerror))
 		return err
-	} else {
-		return nil
-	}
+	} 
+	return nil
 }
 
 // gtk_ui_manager_add_ui_from_file
