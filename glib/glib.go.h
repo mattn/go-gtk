@@ -6,9 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-static GError* to_error(void* err) {
-	return (GError*)err;
-}
+
 static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
 
 static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
