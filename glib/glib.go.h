@@ -6,9 +6,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-static GSList* to_slist(void* sl) {
-	return (GSList*)sl;
-}
 static GError* to_error(void* err) {
 	return (GError*)err;
 }
