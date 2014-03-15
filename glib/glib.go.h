@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline GObject* to_GObject(void* o) { return G_OBJECT(o); }
-
 static inline gchar* to_gcharptr(const char* s) { return (gchar*)s; }
 
 static inline char* to_charptr(const gchar* s) { return (char*)s; }
@@ -31,12 +29,6 @@ static gchar* _g_locale_to_utf8(void* opsysstring, int len, int* bytes_read, int
 
 static gchar* _g_locale_from_utf8(char* utf8string, int len, int* bytes_read, int* bytes_written, GError** error) {
 	return g_locale_from_utf8((const gchar*)utf8string, (gssize)len, (gsize*)bytes_read, (gsize*)bytes_written, error);
-}
-static void _g_object_set_ptr(gpointer object, const gchar *property_name, void* value) {
-	g_object_set(object, property_name, value, NULL);
-}
-static void _g_object_set_addr(gpointer object, const gchar *property_name, void* value) {
-	g_object_set(object, property_name, *(gpointer**)value, NULL);
 }
 //static void _g_object_get(gpointer object, const gchar *property_name, void* value) {
 //  g_object_get(object, property_name, value, NULL);
