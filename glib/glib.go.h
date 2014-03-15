@@ -6,9 +6,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-static GList* to_list(void* l) {
-	return (GList*)l;
-}
 static GSList* to_slist(void* sl) {
 	return (GSList*)sl;
 }
