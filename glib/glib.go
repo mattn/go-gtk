@@ -753,7 +753,7 @@ func NewMainContext() *GMainContext {
 }
 
 func (v *GMainContext) Ref() *GMainContext {
-	return &GMainContext{C.g_main_loop_ref(v.MainContext)}
+	return &GMainContext{C.g_main_context_ref(v.MainContext)}
 }
 
 func (v *GMainContext) Unref() {
