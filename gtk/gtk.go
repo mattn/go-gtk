@@ -8,15 +8,16 @@ package gtk
 import "C"
 import (
 	"fmt"
-	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/pango"
 	"log"
 	"reflect"
 	"runtime"
 	"strings"
 	"unsafe"
+
+	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/gdkpixbuf"
+	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/pango"
 )
 
 func gint(v int) C.gint           { return C.gint(v) }
@@ -134,14 +135,14 @@ func RADIO_MENU_ITEM(p *RadioMenuItem) *C.GtkRadioMenuItem { return C.toGRadioMe
 func LAYOUT(p *Layout) *C.GtkLayout                        { return C.toGLayout(p.GWidget) }
 func COLOR_BUTTON(p *ColorButton) *C.GtkColorButton        { return C.toGColorButton(p.GWidget) }
 func IMAGE_MENU_ITEM(p *ImageMenuItem) *C.GtkImageMenuItem { return C.toGImageMenuItem(p.GWidget) }
-func ACTION(p *Action) *C.GtkAction 					{ return C.toGAction(p.Object) }
-func TOGGLE_ACTION(p *ToggleAction) *C.GtkToggleAction 	{ return C.toGToggleAction(p.Object) }
-func RADIO_ACTION(p *RadioAction) *C.GtkRadioAction 	{ return C.toGRadioAction(p.Object) }
-func RECENT_ACTION(p *RecentAction) *C.GtkRecentAction 	{ return C.toGRecentAction(p.Object) }
-func ACTION_GROUP(p *ActionGroup) *C.GtkActionGroup 	{ return C.toGActionGroup(p.Object) }
-func ACTIVATABLE(p *Activatable) *C.GtkActivatable 		{ return C.toGActivatable(p.GWidget) }
-func AS_GWIDGET(p unsafe.Pointer) *C.GtkWidget          { return C.toGWidget(p) }
-func UI_MANAGER(p *UIManager) *C.GtkUIManager 			{ return C.toGUIManager(p.Object) }
+func ACTION(p *Action) *C.GtkAction                        { return C.toGAction(p.Object) }
+func TOGGLE_ACTION(p *ToggleAction) *C.GtkToggleAction     { return C.toGToggleAction(p.Object) }
+func RADIO_ACTION(p *RadioAction) *C.GtkRadioAction        { return C.toGRadioAction(p.Object) }
+func RECENT_ACTION(p *RecentAction) *C.GtkRecentAction     { return C.toGRecentAction(p.Object) }
+func ACTION_GROUP(p *ActionGroup) *C.GtkActionGroup        { return C.toGActionGroup(p.Object) }
+func ACTIVATABLE(p *Activatable) *C.GtkActivatable         { return C.toGActivatable(p.GWidget) }
+func AS_GWIDGET(p unsafe.Pointer) *C.GtkWidget             { return C.toGWidget(p) }
+func UI_MANAGER(p *UIManager) *C.GtkUIManager              { return C.toGUIManager(p.Object) }
 
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
@@ -351,7 +352,7 @@ func (v *Clipboard) SetText(text string) {
 }
 
 func (v *Clipboard) SetImage(pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_clipboard_set_image(v.GClipboard, pixbuf.GPixbuf)
+	C.gtk_clipboard_set_image(v.GClipboard, (*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))
 }
 
 func (v *Clipboard) Store() {
@@ -808,15 +809,16 @@ func NewStyle() *Style {
 func (v *Style) Copy() *Style {
 	return &Style{C.gtk_style_copy(STYLE(v))}
 }
-func (v *Style) Attach(window* Window) *Style {
+func (v *Style) Attach(window *Window) *Style {
 	return &Style{C.gtk_style_attach(STYLE(v), C.toGdkWindow(unsafe.Pointer(window)))}
 }
 func (v *Style) Detach() {
 	C.gtk_style_detach(STYLE(v))
 }
-func (v *Style) SetBackground(window* Window, state StateType) {
+func (v *Style) SetBackground(window *Window, state StateType) {
 	C.gtk_style_set_background(STYLE(v), C.toGdkWindow(unsafe.Pointer(window)), C.GtkStateType(state))
 }
+
 // gtk_style_apply_default_background
 // gtk_style_lookup_color
 // gtk_style_lookup_icon_set
@@ -1407,7 +1409,7 @@ func (v *Window) XID() int32 {
 // gtk_window_set_default_icon_from_file
 // gtk_window_set_default_icon_name
 func (v *Window) SetIcon(icon *gdkpixbuf.Pixbuf) {
-	C.gtk_window_set_icon(WINDOW(v), icon.GPixbuf)
+	C.gtk_window_set_icon(WINDOW(v), (*C.GdkPixbuf)(unsafe.Pointer(icon.GPixbuf)))
 }
 
 // gtk_window_set_icon_list
@@ -1593,12 +1595,12 @@ func (v *AboutDialog) SetTranslatorCredits(translator_credits string) {
 func (v *AboutDialog) GetLogo() *gdkpixbuf.Pixbuf {
 	gpixbuf := C.gtk_about_dialog_get_logo(ABOUT_DIALOG(v))
 	return &gdkpixbuf.Pixbuf{
-		GPixbuf: gpixbuf,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
 func (v *AboutDialog) SetLogo(logo *gdkpixbuf.Pixbuf) {
-	C.gtk_about_dialog_set_logo(ABOUT_DIALOG(v), logo.GPixbuf)
+	C.gtk_about_dialog_set_logo(ABOUT_DIALOG(v), (*C.GdkPixbuf)(unsafe.Pointer(logo.GPixbuf)))
 }
 func (v *AboutDialog) GetLogoIconName() string {
 	return gostring(C.gtk_about_dialog_get_logo_icon_name(ABOUT_DIALOG(v)))
@@ -1673,23 +1675,23 @@ func (v *Assistant) GetPageTitle(page IWidget) string {
 	return gostring(C.gtk_assistant_get_page_title(ASSISTANT(v), ToNative(page)))
 }
 func (v *Assistant) SetPageHeaderImage(page IWidget, pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_assistant_set_page_header_image(ASSISTANT(v), ToNative(page), pixbuf.GPixbuf)
+	C.gtk_assistant_set_page_header_image(ASSISTANT(v), ToNative(page), (*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))
 }
 func (v *Assistant) GetPageHeaderImage(page IWidget) *gdkpixbuf.Pixbuf {
 	gpixbuf := C.gtk_assistant_get_page_header_image(ASSISTANT(v), ToNative(page))
 	return &gdkpixbuf.Pixbuf{
-		GPixbuf: gpixbuf,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
 func (v *Assistant) SetPageSideImage(page IWidget, pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_assistant_set_page_side_image(ASSISTANT(v), ToNative(page), pixbuf.GPixbuf)
+	C.gtk_assistant_set_page_side_image(ASSISTANT(v), ToNative(page), (*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))
 }
 func (v *Assistant) GetPageSideImage(page IWidget) *gdkpixbuf.Pixbuf {
 	gpixbuf := C.gtk_assistant_get_page_side_image(ASSISTANT(v), ToNative(page))
 	return &gdkpixbuf.Pixbuf{
-		GPixbuf: gpixbuf,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
 func (v *Assistant) SetPageComplete(page IWidget, complete bool) {
@@ -1790,7 +1792,7 @@ func NewImageFromFile(filename string) *Image {
 // gtk_image_new_from_image
 
 func NewImageFromPixbuf(pixbuf gdkpixbuf.Pixbuf) *Image {
-	return &Image{Misc{Widget{C.gtk_image_new_from_pixbuf(pixbuf.GPixbuf)}}}
+	return &Image{Misc{Widget{C.gtk_image_new_from_pixbuf((*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))}}}
 }
 
 // gtk_image_new_from_pixmap
@@ -1808,8 +1810,8 @@ func NewImageFromStock(stock_id string, size IconSize) *Image {
 func (v *Image) GetPixbuf() *gdkpixbuf.Pixbuf {
 	gpixbuf := C.gtk_image_get_pixbuf(IMAGE(v))
 	return &gdkpixbuf.Pixbuf{
-		GPixbuf: gpixbuf,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
 
@@ -1823,7 +1825,7 @@ func (v *Image) SetFromFile(filename string) {
 // gtk_image_set_from_image
 
 func (v *Image) SetFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_image_set_from_pixbuf(IMAGE(v), pixbuf.GPixbuf)
+	C.gtk_image_set_from_pixbuf(IMAGE(v), (*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))
 }
 
 // gtk_image_set_from_pixmap
@@ -2226,7 +2228,7 @@ func NewStatusIcon() *StatusIcon {
 	return &StatusIcon{C.gtk_status_icon_new()}
 }
 func NewStatusIconFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) *StatusIcon {
-	return &StatusIcon{C.gtk_status_icon_new_from_pixbuf(pixbuf.GPixbuf)}
+	return &StatusIcon{C.gtk_status_icon_new_from_pixbuf((*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))}
 }
 func NewStatusIconFromFile(filename string) *StatusIcon {
 	ptr := C.CString(filename)
@@ -2247,7 +2249,7 @@ func NewStatusIconFromIconName(icon_name string) *StatusIcon {
 //GtkStatusIcon *gtk_status_icon_new_from_gicon(GIcon *icon);
 
 func (v *StatusIcon) SetFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_status_icon_set_from_pixbuf(v.GStatusIcon, pixbuf.GPixbuf)
+	C.gtk_status_icon_set_from_pixbuf(v.GStatusIcon, (*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))
 }
 func (v *StatusIcon) SetFromFile(filename string) {
 	ptr := C.CString(filename)
@@ -2271,8 +2273,8 @@ func (v *StatusIcon) SetFromIconName(icon_name string) {
 func (v *StatusIcon) GetPixbuf() *gdkpixbuf.Pixbuf {
 	gpixbuf := C.gtk_status_icon_get_pixbuf(v.GStatusIcon)
 	return &gdkpixbuf.Pixbuf{
-		GPixbuf: gpixbuf,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
 func (v *StatusIcon) GetStock() string {
@@ -2402,7 +2404,7 @@ const (
 
 type Button struct {
 	Bin
-	Activatable		// implement GtkActivatable interface
+	Activatable // implement GtkActivatable interface
 }
 
 func (Button) isILabel() {} // TODO
@@ -2703,13 +2705,13 @@ func (v *LinkButton) SetVisited(visited bool) {
 //-----------------------------------------------------------------------
 
 const (
-	GTK_ICON_SIZE_INVALID		IconSize = C.GTK_ICON_SIZE_INVALID
-	GTK_ICON_SIZE_MENU			IconSize = C.GTK_ICON_SIZE_MENU
+	GTK_ICON_SIZE_INVALID       IconSize = C.GTK_ICON_SIZE_INVALID
+	GTK_ICON_SIZE_MENU          IconSize = C.GTK_ICON_SIZE_MENU
 	GTK_ICON_SIZE_SMALL_TOOLBAR IconSize = C.GTK_ICON_SIZE_SMALL_TOOLBAR
 	GTK_ICON_SIZE_LARGE_TOOLBAR IconSize = C.GTK_ICON_SIZE_LARGE_TOOLBAR
-	GTK_ICON_SIZE_BUTTON		IconSize = C.GTK_ICON_SIZE_BUTTON
-	GTK_ICON_SIZE_DND			IconSize = C.GTK_ICON_SIZE_DND
-	GTK_ICON_SIZE_DIALOG		IconSize = C.GTK_ICON_SIZE_DIALOG
+	GTK_ICON_SIZE_BUTTON        IconSize = C.GTK_ICON_SIZE_BUTTON
+	GTK_ICON_SIZE_DND           IconSize = C.GTK_ICON_SIZE_DND
+	GTK_ICON_SIZE_DIALOG        IconSize = C.GTK_ICON_SIZE_DIALOG
 )
 
 type ScaleButton struct {
@@ -2717,14 +2719,14 @@ type ScaleButton struct {
 }
 
 // TODO: wrapper around icons** C.gchar
-func NewScaleButton(size IconSize, min, max, step float64, icons** C.gchar) *ScaleButton {
+func NewScaleButton(size IconSize, min, max, step float64, icons **C.gchar) *ScaleButton {
 	return &ScaleButton{Bin{Container{Widget{
 		C.gtk_scale_button_new(C.GtkIconSize(size), gdouble(min), gdouble(max), gdouble(step), icons)}}}}
 }
 func (v *ScaleButton) SetAdjustment(a *Adjustment) {
 	C.gtk_scale_button_set_adjustment(SCALEBUTTON(v), a.GAdjustment)
 }
-func (v *ScaleButton) SetIcons(icons** C.gchar) {
+func (v *ScaleButton) SetIcons(icons **C.gchar) {
 	C.gtk_scale_button_set_icons(SCALEBUTTON(v), icons)
 }
 func (v *ScaleButton) SetValue(value float64) {
@@ -3552,7 +3554,7 @@ func (v *TextBuffer) GetSlice(start *TextIter, end *TextIter, include_hidden_cha
 	return C.GoString(pchar)
 }
 func (v *TextBuffer) InsertPixbuf(iter *TextIter, pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_text_buffer_insert_pixbuf(v.GTextBuffer, &iter.GTextIter, pixbuf.GPixbuf)
+	C.gtk_text_buffer_insert_pixbuf(v.GTextBuffer, &iter.GTextIter, (*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))
 }
 
 // gtk_text_buffer_insert_child_anchor
@@ -5522,7 +5524,7 @@ func (v *MenuBar) Insert(child IWidget, position int) {
 //-----------------------------------------------------------------------
 type MenuItem struct {
 	Item
-	Activatable		// implement GtkActivatable interface
+	Activatable // implement GtkActivatable interface
 }
 
 func newMenuItemInternal(widget *C.GtkWidget) *MenuItem {
@@ -5905,7 +5907,7 @@ func (v *Toolbar) UnsetStyle() {
 
 type ToolItem struct {
 	Bin
-	Activatable		// implement GtkActivatable interface
+	Activatable // implement GtkActivatable interface
 }
 
 func newToolItemInternal(widget *C.GtkWidget) *ToolItem {
@@ -5914,7 +5916,7 @@ func newToolItemInternal(widget *C.GtkWidget) *ToolItem {
 
 func NewToolItem() *ToolItem {
 	return newToolItemInternal(AS_GWIDGET(
-        unsafe.Pointer(C.gtk_tool_item_new())))
+		unsafe.Pointer(C.gtk_tool_item_new())))
 }
 
 func (v *ToolItem) OnCreateMenuProxy(onclick interface{}, datas ...interface{}) int {
@@ -6129,14 +6131,14 @@ func NewToolButton(icon IWidget, text string) *ToolButton {
 	ctext := C.CString(text)
 	defer cfree(ctext)
 	tb := AS_GWIDGET(unsafe.Pointer(C.gtk_tool_button_new(
-        ToNative(icon), gstring(ctext))))
+		ToNative(icon), gstring(ctext))))
 	return &ToolButton{*newToolItemInternal(tb), nil, nil}
 }
 func NewToolButtonFromStock(stock_id string) *ToolButton {
 	si := C.CString(stock_id)
 	defer cfree(si)
 	tb := AS_GWIDGET(unsafe.Pointer(
-        C.gtk_tool_button_new_from_stock(gstring(si))))
+		C.gtk_tool_button_new_from_stock(gstring(si))))
 	return &ToolButton{*newToolItemInternal(tb), nil, nil}
 }
 
@@ -6211,14 +6213,14 @@ func NewMenuToolButton(icon IWidget, text string) *MenuToolButton {
 	ctext := C.CString(text)
 	defer cfree(ctext)
 	mtb := AS_GWIDGET(unsafe.Pointer(C.gtk_menu_tool_button_new(
-        ToNative(icon), gstring(ctext))))
+		ToNative(icon), gstring(ctext))))
 	return &MenuToolButton{ToolButton{*newToolItemInternal(mtb), nil, nil}, nil}
 }
 func NewMenuToolButtonFromStock(stock_id string) *MenuToolButton {
 	si := C.CString(stock_id)
 	defer cfree(si)
 	mtb := AS_GWIDGET(unsafe.Pointer(
-        C.gtk_menu_tool_button_new_from_stock(gstring(si))))
+		C.gtk_menu_tool_button_new_from_stock(gstring(si))))
 	return &MenuToolButton{ToolButton{*newToolItemInternal(mtb), nil, nil}, nil}
 }
 func (v *MenuToolButton) SetMenu(menu *Menu) {
@@ -6261,7 +6263,7 @@ func NewToggleToolButtonFromStock(stock_id string) *ToggleToolButton {
 	defer cfree(p_stock_id)
 	return &ToggleToolButton{ToolButton{*newToolItemInternal(
 		AS_GWIDGET(unsafe.Pointer(C.gtk_toggle_tool_button_new_from_stock(
-        gstring(p_stock_id))))), nil, nil}}
+			gstring(p_stock_id))))), nil, nil}}
 }
 
 func (v *ToggleToolButton) OnToggled(onclick interface{}, datas ...interface{}) int {
@@ -6286,7 +6288,7 @@ type RadioToolButton struct {
 func NewRadioToolButton(group *glib.SList) *RadioToolButton {
 	return &RadioToolButton{ToggleToolButton{ToolButton{*newToolItemInternal(
 		AS_GWIDGET(unsafe.Pointer(C.gtk_radio_tool_button_new(
-        gslist(group))))), nil, nil}}}
+			gslist(group))))), nil, nil}}}
 }
 
 func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolButton {
@@ -6294,7 +6296,7 @@ func NewRadioToolButtonFromStock(group *glib.SList, stock_id string) *RadioToolB
 	defer cfree(p_stock_id)
 	return &RadioToolButton{ToggleToolButton{ToolButton{*newToolItemInternal(
 		AS_GWIDGET(unsafe.Pointer(C.gtk_radio_tool_button_new_from_stock(
-        gslist(group), gstring(p_stock_id))))), nil, nil}}}
+			gslist(group), gstring(p_stock_id))))), nil, nil}}}
 }
 
 // gtk_radio_tool_button_new_from_widget
@@ -6318,7 +6320,7 @@ func NewUIManager() *UIManager {
 // gtk_ui_manager_set_add_tearoffs
 // gtk_ui_manager_get_add_tearoffs
 
-func (v* UIManager) InsertActionGroup(action_group *ActionGroup, pos int) {
+func (v *UIManager) InsertActionGroup(action_group *ActionGroup, pos int) {
 	C.gtk_ui_manager_insert_action_group(UI_MANAGER(v),
 		ACTION_GROUP(action_group), gint(pos))
 }
@@ -6327,7 +6329,7 @@ func (v* UIManager) InsertActionGroup(action_group *ActionGroup, pos int) {
 // gtk_ui_manager_get_action_groups
 
 func (v *UIManager) GetAccelGroup() *AccelGroup {
-    return &AccelGroup{C.gtk_ui_manager_get_accel_group(UI_MANAGER(v))}
+	return &AccelGroup{C.gtk_ui_manager_get_accel_group(UI_MANAGER(v))}
 }
 
 func (v *UIManager) GetWidget(path string) *Widget {
@@ -6347,7 +6349,7 @@ func (v *UIManager) AddUIFromString(buffer string) error {
 	if gerror != nil {
 		err := glib.ErrorFromNative(unsafe.Pointer(gerror))
 		return err
-	} 
+	}
 	return nil
 }
 
@@ -6415,21 +6417,21 @@ func (v *ActionGroup) ListActions() *glib.List {
 
 func (v *ActionGroup) AddAction(action interface{}) {
 	deprecated_since(3, 10, 0, "gtk_action_group_add_action()")
-    if a, ok := action.(IAction); ok {
-        C.gtk_action_group_add_action(ACTION_GROUP(v), a.toGAction())
-    } else {
-        log.Panicf("Error calling gtk.AddAction: argument must be " +
-            "an Action object, but %v type provided", reflect.TypeOf(action))
-    }
+	if a, ok := action.(IAction); ok {
+		C.gtk_action_group_add_action(ACTION_GROUP(v), a.toGAction())
+	} else {
+		log.Panicf("Error calling gtk.AddAction: argument must be "+
+			"an Action object, but %v type provided", reflect.TypeOf(action))
+	}
 }
 
 func (v *ActionGroup) AddActionWithAccel(action *Action, accelerator string) {
 	deprecated_since(3, 10, 0, "gtk_action_group_add_action_with_accel()")
-    var ptr *C.char
-    if len(accelerator) > 0 {
-        ptr = C.CString(accelerator)
-        defer cfree(ptr)
-    }
+	var ptr *C.char
+	if len(accelerator) > 0 {
+		ptr = C.CString(accelerator)
+		defer cfree(ptr)
+	}
 	C.gtk_action_group_add_action_with_accel(ACTION_GROUP(v),
 		ACTION(action), gstring(ptr))
 }
@@ -6454,7 +6456,7 @@ func (v *ActionGroup) RemoveAction(action *Action) {
 //-----------------------------------------------------------------------
 
 type IAction interface {
-    toGAction() *C.GtkAction
+	toGAction() *C.GtkAction
 }
 
 type Action struct {
@@ -6485,7 +6487,7 @@ func NewAction(name string, label string, tooltip string, stock_id string) *Acti
 }
 
 func (v *Action) toGAction() *C.GtkAction {
-    return C.toGAction(v.Object)
+	return C.toGAction(v.Object)
 }
 
 func (v *Action) GetName() string {
@@ -6724,7 +6726,7 @@ type ToggleAction struct {
 }
 
 func NewToggleAction(name string, label string, tooltip string,
-		stock_id string) *ToggleAction {
+	stock_id string) *ToggleAction {
 	deprecated_since(3, 10, 0, "gtk_toggle_action_new()")
 	name_ptr := C.CString(name)
 	defer cfree(name_ptr)
@@ -6782,7 +6784,7 @@ type RadioAction struct {
 }
 
 func NewRadioAction(name string, label string, tooltip string,
-		stock_id string, value int) *RadioAction {
+	stock_id string, value int) *RadioAction {
 	deprecated_since(3, 10, 0, "gtk_radio_action_new()")
 	name_ptr := C.CString(name)
 	defer cfree(name_ptr)
@@ -6803,7 +6805,7 @@ func NewRadioAction(name string, label string, tooltip string,
 	}
 	return &RadioAction{ToggleAction{Action{glib.GObject{unsafe.Pointer(
 		C.gtk_radio_action_new(gstring(name_ptr), gstring(label_ptr),
-		gstring(tooltip_ptr), gstring(stockid_ptr), gint(value)))}}}}
+			gstring(tooltip_ptr), gstring(stockid_ptr), gint(value)))}}}}
 }
 
 func (v *RadioAction) GetGroup() *glib.SList {
@@ -6836,7 +6838,7 @@ type RecentAction struct {
 }
 
 func NewRecentAction(name string, label string, tooltip string,
-		stock_id string) *RecentAction {
+	stock_id string) *RecentAction {
 	deprecated_since(3, 10, 0, "gtk_recent_action_new()")
 	name_ptr := C.CString(name)
 	defer cfree(name_ptr)
@@ -6857,7 +6859,7 @@ func NewRecentAction(name string, label string, tooltip string,
 	}
 	return &RecentAction{Action{glib.GObject{unsafe.Pointer(
 		C.gtk_recent_action_new(gstring(name_ptr), gstring(label_ptr),
-		gstring(tooltip_ptr), gstring(stockid_ptr)))}}}
+			gstring(tooltip_ptr), gstring(stockid_ptr)))}}}
 }
 
 // gtk_recent_action_new_for_manager
@@ -8638,7 +8640,7 @@ func (v *Tooltip) SetText(text string) {
 	C.gtk_tooltip_set_text(v.GTooltip, gstring(ptr))
 }
 func (v *Tooltip) SetIcon(pixbuf *gdkpixbuf.Pixbuf) {
-	C.gtk_tooltip_set_icon(v.GTooltip, pixbuf.GPixbuf)
+	C.gtk_tooltip_set_icon(v.GTooltip, (*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))
 }
 func (v *Tooltip) SetIconFromStock(stock_id string, size IconSize) {
 	ptr := C.CString(stock_id)
@@ -9192,7 +9194,7 @@ type IWidget interface {
 	GetTopLevelAsWindow() *Window
 	HideOnDelete()
 	QueueResize()
-    GetName() string
+	GetName() string
 }
 
 func ToNative(w IWidget) *C.GtkWidget {
@@ -9441,8 +9443,8 @@ func (v *Widget) RenderIcon(stock_id string, size IconSize, detail string) *gdkp
 	defer cfree(pdetail)
 	gpixbuf := C.gtk_widget_render_icon(v.GWidget, gstring(pstock_id), C.GtkIconSize(size), gstring(pdetail))
 	return &gdkpixbuf.Pixbuf{
-		GPixbuf: gpixbuf,
-		GObject: glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
 
