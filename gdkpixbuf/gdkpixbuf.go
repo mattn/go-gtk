@@ -43,7 +43,7 @@ func argumentPanic(message string) {
 // Pixbuf
 //-----------------------------------------------------------------------
 type Pixbuf struct {
-	GdkPixbuf
+	*GdkPixbuf
 	*glib.GObject
 }
 
@@ -51,8 +51,8 @@ type GdkPixbuf struct {
 	GPixbuf *C.GdkPixbuf
 }
 
-func NewGdkPixbuf(p unsafe.Pointer) GdkPixbuf {
-	return GdkPixbuf{(*C.GdkPixbuf)(p)}
+func NewGdkPixbuf(p unsafe.Pointer) *GdkPixbuf {
+	return &GdkPixbuf{(*C.GdkPixbuf)(p)}
 }
 
 // File Loading
@@ -67,7 +67,7 @@ func NewFromFile(filename string) (*Pixbuf, *glib.Error) {
 		return nil, err
 	}
 	pixbuf := &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 	return pixbuf, nil
@@ -83,7 +83,7 @@ func NewFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error
 		return nil, err
 	}
 	pixbuf := &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 	return pixbuf, nil
@@ -99,7 +99,7 @@ func NewFromFileAtScale(filename string, width, height int, preserve_aspect_rati
 		return nil, err
 	}
 	pixbuf := &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 	return pixbuf, nil
@@ -134,7 +134,7 @@ const (
 func ScaleSimple(p *Pixbuf, width, height int, interp InterpType) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_scale_simple(p.GPixbuf, C.int(width), C.int(height), C.GdkInterpType(interp))
 	return &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
@@ -150,7 +150,7 @@ func Scale(p *Pixbuf, x, y, width, height int, offsetX, offsetY, scaleX, scaleY 
 		C.double(scaleX), C.double(scaleY),
 		C.GdkInterpType(interp))
 	return &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
@@ -171,7 +171,7 @@ const (
 func RotateSimple(p *Pixbuf, angle PixbufRotation) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_rotate_simple(p.GPixbuf, C.GdkPixbufRotation(angle))
 	return &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
@@ -179,7 +179,7 @@ func RotateSimple(p *Pixbuf, angle PixbufRotation) *Pixbuf {
 func Flip(p *Pixbuf, horizontal bool) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_flip(p.GPixbuf, gbool(horizontal))
 	return &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
@@ -367,7 +367,7 @@ func NewLoaderWithMimeType(mime_type string) (loader *Loader, err *C.GError) {
 func (v Loader) GetPixbuf() *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_loader_get_pixbuf(v.GPixbufLoader)
 	return &Pixbuf{
-		GdkPixbuf: GdkPixbuf{gpixbuf},
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
