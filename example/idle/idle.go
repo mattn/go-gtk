@@ -16,5 +16,5 @@ func main() {
 		return true
 	})
 
-	glib.MainLoopNew(nil, false).Run()
+	glib.NewMainLoop(nil, false).Run()
 }
