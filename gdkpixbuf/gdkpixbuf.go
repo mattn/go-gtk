@@ -58,51 +58,45 @@ func NewGdkPixbuf(p unsafe.Pointer) *GdkPixbuf {
 // File Loading
 
 func NewFromFile(filename string) (*Pixbuf, *glib.Error) {
-	var error *C.GError
+	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
-	gpixbuf := C.gdk_pixbuf_new_from_file(ptr, &error)
-	if error != nil {
-		err := glib.ErrorFromNative(unsafe.Pointer(error))
-		return nil, err
+	gpixbuf := C.gdk_pixbuf_new_from_file(ptr, &err)
+	if err != nil {
+		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
 	}
-	pixbuf := &Pixbuf{
+	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
-	}
-	return pixbuf, nil
+	}, nil
 }
 
 func NewFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error) {
-	var error *C.GError
+	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
-	gpixbuf := C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(width), C.int(heigth), &error)
-	if error != nil {
-		err := glib.ErrorFromNative(unsafe.Pointer(error))
-		return nil, err
+	gpixbuf := C.gdk_pixbuf_new_from_file_at_size(ptr, C.int(width), C.int(heigth), &err)
+	if err != nil {
+		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
 	}
-	pixbuf := &Pixbuf{
+	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
-	}
-	return pixbuf, nil
+	}, nil
 }
 
 func NewFromFileAtScale(filename string, width, height int, preserve_aspect_ratio bool) (*Pixbuf, *glib.Error) {
-	var error *C.GError
+	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
-	gpixbuf := C.gdk_pixbuf_new_from_file_at_scale(ptr, C.int(width), C.int(height), gbool(preserve_aspect_ratio), &error)
-	if error != nil {
-		err := glib.ErrorFromNative(unsafe.Pointer(error))
-		return nil, err
+	gpixbuf := C.gdk_pixbuf_new_from_file_at_scale(ptr, C.int(width), C.int(height), gbool(preserve_aspect_ratio), &err)
+	if err != nil {
+		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
 	}
-	pixbuf := &Pixbuf{
+	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
-	}
-	return pixbuf, nil
+	}, nil
 }
 
 func GetType() int {
@@ -346,22 +340,24 @@ func NewLoader() *Loader {
 	return &Loader{
 		C.gdk_pixbuf_loader_new()}
 }
-func NewLoaderWithType(image_type string) (loader *Loader, err *C.GError) {
-	var error *C.GError
+func NewLoaderWithType(image_type string) (loader *Loader, err *glib.Error) {
+	var gerr *C.GError
 	ptr := C.CString(image_type)
 	defer cfree(ptr)
 	loader = &Loader{
-		C.gdk_pixbuf_loader_new_with_type(ptr, &error)}
-	err = error
+		C.gdk_pixbuf_loader_new_with_type(ptr, &gerr)}
+	if gerr != nil {
+		err = glib.ErrorFromNative(unsafe.Pointer(gerr))
+	}
 	return
 }
-func NewLoaderWithMimeType(mime_type string) (loader *Loader, err *C.GError) {
+func NewLoaderWithMimeType(mime_type string) (loader *Loader, err *glib.Error) {
 	var error *C.GError
 	ptr := C.CString(mime_type)
 	defer cfree(ptr)
 	loader = &Loader{
 		C.gdk_pixbuf_loader_new_with_mime_type(ptr, &error)}
-	err = error
+	err = glib.ErrorFromNative(unsafe.Pointer(error))
 	return
 }
 func (v Loader) GetPixbuf() *Pixbuf {
@@ -371,19 +367,23 @@ func (v Loader) GetPixbuf() *Pixbuf {
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
-func (v Loader) Write(buf []byte) (ret bool, err *C.GError) {
-	var error *C.GError
+func (v Loader) Write(buf []byte) (bool, *glib.Error) {
+	var err *C.GError
 	var pbuf *byte
 	pbuf = &buf[0]
-	ret = gobool(C.gdk_pixbuf_loader_write(v.GPixbufLoader, C.to_gucharptr(unsafe.Pointer(pbuf)), C.gsize(len(buf)), &error))
-	err = error
-	return
+	ret := gobool(C.gdk_pixbuf_loader_write(v.GPixbufLoader, C.to_gucharptr(unsafe.Pointer(pbuf)), C.gsize(len(buf)), &err))
+	if err != nil {
+		return ret, glib.ErrorFromNative(unsafe.Pointer(err))
+	}
+	return ret, nil
 }
-func (v Loader) Close() (ret bool, err *C.GError) {
-	var error *C.GError
-	ret = gobool(C.gdk_pixbuf_loader_close(v.GPixbufLoader, &error))
-	err = error
-	return
+func (v Loader) Close() (bool, *glib.Error) {
+	var err *C.GError
+	ret := gobool(C.gdk_pixbuf_loader_close(v.GPixbufLoader, &err))
+	if err != nil {
+		return ret, glib.ErrorFromNative(unsafe.Pointer(err))
+	}
+	return ret, nil
 }
 
 //func (v Loader) GetPixbufAnimation() *Animation {
