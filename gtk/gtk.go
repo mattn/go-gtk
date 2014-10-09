@@ -2560,8 +2560,12 @@ func NewRadioButton(group *glib.SList) *RadioButton {
 		C.gtk_radio_button_new(gslist(group)))}}}
 }
 func NewRadioButtonFromWidget(w *RadioButton) *RadioButton {
+	var widget *C.GtkRadioButton
+	if w != nil {
+		widget = RADIO_BUTTON(w)
+	}
 	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
-		C.gtk_radio_button_new_from_widget(RADIO_BUTTON(w)))}}}
+		C.gtk_radio_button_new_from_widget(widget))}}}
 }
 func NewRadioButtonWithLabel(group *glib.SList, label string) *RadioButton {
 	var ptr *C.char
@@ -2578,8 +2582,12 @@ func NewRadioButtonWithLabelFromWidget(w *RadioButton, label string) *RadioButto
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
+	var widget *C.GtkRadioButton
+	if w != nil {
+		widget = RADIO_BUTTON(w)
+	}
 	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
-		C.gtk_radio_button_new_with_label_from_widget(RADIO_BUTTON(w), gstring(ptr)))}}}
+		C.gtk_radio_button_new_with_label_from_widget(widget, gstring(ptr)))}}}
 }
 func NewRadioButtonWithMnemonic(group *glib.SList, label string) *RadioButton {
 	var ptr *C.char
@@ -2596,8 +2604,12 @@ func NewRadioButtonWithMnemonicFromWidget(w *RadioButton, label string) *RadioBu
 		ptr = C.CString(label)
 		defer cfree(ptr)
 	}
+	var widget *C.GtkRadioButton
+	if w != nil {
+		widget = RADIO_BUTTON(w)
+	}
 	return &RadioButton{CheckButton{ToggleButton{*newButtonInternal(
-		C.gtk_radio_button_new_with_mnemonic_from_widget(RADIO_BUTTON(w), gstring(ptr)))}}}
+		C.gtk_radio_button_new_with_mnemonic_from_widget(widget, gstring(ptr)))}}}
 }
 func (v *RadioButton) GetGroup() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_radio_button_get_group(RADIO_BUTTON(v))))
