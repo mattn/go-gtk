@@ -3,7 +3,11 @@ package gdk
 // #include "gdk.go.h"
 // #cgo pkg-config: gdk-2.0 gthread-2.0
 import "C"
-import "unsafe"
+import (
+	"unsafe"
+
+	"github.com/mattn/go-gtk/gdkpixbuf"
+)
 
 func guint16(v uint16) C.guint16 { return C.guint16(v) }
 func gint(v int) C.gint          { return C.gint(v) }
@@ -350,7 +354,32 @@ func (v *Drawable) DrawDrawable(gc *GC, src *Drawable, xsrc int, ysrc int, xdest
 // void gdk_draw_points (GdkDrawable *drawable, GdkGC *gc, const GdkPoint *points, gint n_points);
 // void gdk_draw_segments (GdkDrawable *drawable, GdkGC *gc, const GdkSegment *segs, gint n_segs);
 // void gdk_draw_lines (GdkDrawable *drawable, GdkGC *gc, const GdkPoint *points, gint n_points);
-// void gdk_draw_pixbuf (GdkDrawable *drawable, GdkGC *gc, const GdkPixbuf *pixbuf, gint src_x, gint src_y, gint dest_x, gint dest_y, gint width, gint height, GdkRgbDither dither, gint x_dither, gint y_dither);
+
+type GdkRgbDither int
+
+const (
+	//Never use dithering.
+	RGB_DITHER_NONE GdkRgbDither = C.GDK_RGB_DITHER_NONE
+
+	// Use dithering in 8 bits per pixel (and below) only.
+	RGB_DITHER_NORMAL GdkRgbDither = C.GDK_RGB_DITHER_NORMAL
+
+	// Use dithering in 16 bits per pixel and below.
+	RGB_DITHER_MAX GdkRgbDither = C.GDK_RGB_DITHER_MAX
+)
+
+// void gdk_draw_pixbuf (GdkDrawable *drawable, GdkGC *gc, const GdkPixbuf *pixbuf,
+//                       gint src_x, gint src_y, gint dest_x, gint dest_y, gint width, gint height,
+//                       GdkRgbDither dither, gint x_dither, gint y_dither);
+func (v *Drawable) DrawPixbuf(gc *GC, pixbuf *gdkpixbuf.Pixbuf,
+	src_x, src_y, dest_x, dest_y, width, height int,
+	dither GdkRgbDither, x_dither, y_dither int,
+) {
+	C.gdk_draw_pixbuf(v.GDrawable, gc.GGC, (*C.struct__GdkPixbuf)(pixbuf.GdkPixbuf.GPixbuf),
+		gint(src_x), gint(src_y), gint(dest_x), gint(dest_y), gint(width), gint(height),
+		C.GdkRgbDither(dither), gint(x_dither), gint(y_dither))
+}
+
 // void gdk_draw_glyphs (GdkDrawable *drawable, GdkGC *gc, PangoFont *font, gint x, gint y, PangoGlyphString *glyphs);
 // void gdk_draw_layout_line (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayoutLine *line);
 // void gdk_draw_layout (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayout *layout);
