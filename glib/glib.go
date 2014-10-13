@@ -573,6 +573,9 @@ func GValueFromNative(value interface{}) *C.GValue {
 	case uint:
 		gv = C.init_gvalue_uint(C.guint(value.(uint)))
 		break
+	case int64:
+		gv = C.init_gvalue_int64(C.gint64(value.(int64)))
+		break
 	case float32:
 		gv = C.init_gvalue_double(C.gdouble(value.(float32)))
 		break
