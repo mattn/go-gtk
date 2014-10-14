@@ -57,7 +57,7 @@ func NewGdkPixbuf(p unsafe.Pointer) *GdkPixbuf {
 
 // File Loading
 // GdkPixbuf * gdk_pixbuf_new (GdkColorspace colorspace, gboolean has_alpha, int bits_per_sample, int width, int height);
-func New(colorspace Colorspace, hasAlpha bool, bitsPerSample, width, height int) *Pixbuf {
+func NewPixbuf(colorspace Colorspace, hasAlpha bool, bitsPerSample, width, height int) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_new(
 		C.GdkColorspace(colorspace),
 		gbool(hasAlpha),
@@ -72,7 +72,7 @@ func New(colorspace Colorspace, hasAlpha bool, bitsPerSample, width, height int)
 	}
 }
 
-func NewFromFile(filename string) (*Pixbuf, *glib.Error) {
+func NewPixbufFromFile(filename string) (*Pixbuf, *glib.Error) {
 	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
@@ -86,7 +86,7 @@ func NewFromFile(filename string) (*Pixbuf, *glib.Error) {
 	}, nil
 }
 
-func NewFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error) {
+func NewPixbufFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error) {
 	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
@@ -100,7 +100,7 @@ func NewFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error
 	}, nil
 }
 
-func NewFromFileAtScale(filename string, width, height int, preserve_aspect_ratio bool) (*Pixbuf, *glib.Error) {
+func NewPixbufFromFileAtScale(filename string, width, height int, preserve_aspect_ratio bool) (*Pixbuf, *glib.Error) {
 	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
