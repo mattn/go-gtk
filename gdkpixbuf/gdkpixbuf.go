@@ -56,8 +56,23 @@ func NewGdkPixbuf(p unsafe.Pointer) *GdkPixbuf {
 }
 
 // File Loading
+// GdkPixbuf * gdk_pixbuf_new (GdkColorspace colorspace, gboolean has_alpha, int bits_per_sample, int width, int height);
+func NewPixbuf(colorspace Colorspace, hasAlpha bool, bitsPerSample, width, height int) *Pixbuf {
+	gpixbuf := C.gdk_pixbuf_new(
+		C.GdkColorspace(colorspace),
+		gbool(hasAlpha),
+		C.int(bitsPerSample),
+		C.int(width),
+		C.int(height),
+	)
 
-func NewFromFile(filename string) (*Pixbuf, *glib.Error) {
+	return &Pixbuf{
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
+}
+
+func NewPixbufFromFile(filename string) (*Pixbuf, *glib.Error) {
 	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
@@ -71,7 +86,7 @@ func NewFromFile(filename string) (*Pixbuf, *glib.Error) {
 	}, nil
 }
 
-func NewFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error) {
+func NewPixbufFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error) {
 	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
@@ -85,7 +100,7 @@ func NewFromFileAtSize(filename string, width, heigth int) (*Pixbuf, *glib.Error
 	}, nil
 }
 
-func NewFromFileAtScale(filename string, width, height int, preserve_aspect_ratio bool) (*Pixbuf, *glib.Error) {
+func NewPixbufFromFileAtScale(filename string, width, height int, preserve_aspect_ratio bool) (*Pixbuf, *glib.Error) {
 	var err *C.GError
 	ptr := C.CString(filename)
 	defer cfree(ptr)
@@ -178,6 +193,10 @@ func Flip(p *Pixbuf, horizontal bool) *Pixbuf {
 	}
 }
 
+func (p *Pixbuf) Fill(pixel uint32) {
+	C.gdk_pixbuf_fill(p.GPixbuf, C.guint32(pixel))
+}
+
 // The GdkPixbuf Structure
 
 type Colorspace int
@@ -209,8 +228,17 @@ func (p *Pixbuf) GetBitsPerSample() int {
 	return int(C.gdk_pixbuf_get_bits_per_sample(p.GPixbuf))
 }
 
-// gdk_pixbuf_get_pixels
-// gdk_pixbuf_get_pixels_with_length
+// guchar * gdk_pixbuf_get_pixels_with_length (const GdkPixbuf *pixbuf, guint *length);
+//
+// Retuns a slice of byte backed by a C array of pixbuf data.
+func (p *Pixbuf) GetPixels() []byte {
+	length := C.guint(0)
+	ptr := C.gdk_pixbuf_get_pixels_with_length(
+		p.GPixbuf,
+		&length,
+	)
+	return (*[1 << 30]byte)(unsafe.Pointer(ptr))[:length]
+}
 
 func (p *Pixbuf) GetWidth() int {
 	return int(C.gdk_pixbuf_get_width(p.GPixbuf))
