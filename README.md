@@ -1,18 +1,14 @@
-go-gtk
-======
+# go-gtk
 
-WHATS:
-------
+## WHATS
 
   Go bindings for GTK 
 
-SCREENSHOT:
------------
+## SCREENSHOT
 
 ![Go GTK!](https://github.com/mattn/go-gtk/raw/gh-pages/static/images/screenshot.png "Go GTK!")
 
-INSTALL:
---------
+## INSTALL
 
   To experiment with go-gtk, you can just compile and run the example
   program:
@@ -29,18 +25,22 @@ INSTALL:
 
   Don't forget, that you need the GTK-Development-Packages.
 
-LICENSE:
---------
+  If you use linux, you should install `libgtk+-2.0` and packages that depend on gtk.
+
+  If you use windows, find gtk binary packages from here:
+
+  * http://www.gtk.org/download/win32.php
+  * http://www.gtk.org/download/win64.php
+
+## LICENSE
 
   The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.
 
-AUTHOR:
--------
+## AUTHOR
 
   * Yasuhiro Matsumoto
 
-CONTRIBUTE AUTHORS:
--------------------
+## CONTRIBUTE AUTHORS
 
   * David Roundy
   * Mark Andrew Gerads
@@ -65,8 +65,7 @@ For a less formal discussion about go-gtk, please visit our forum at
 http://craigmatthewweber.com/forums/forum/go/go-gtk
 
 
-GOAL:
------
+## GOAL
 
   Hopefully support following widgets and methods enough to run general application. 
 
