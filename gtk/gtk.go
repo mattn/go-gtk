@@ -3667,13 +3667,20 @@ func (v *TextBuffer) GetIterAtChildAnchor(i *TextIter, a *TextChildAnchor) {
 	C.gtk_text_buffer_get_iter_at_child_anchor(v.GTextBuffer, &i.GTextIter, a.GTextChildAnchor)
 }
 func (v *TextBuffer) GetStartIter(iter *TextIter) {
-	C.gtk_text_buffer_get_start_iter(v.GTextBuffer, &iter.GTextIter)
+	var i C.GtkTextIter
+	C.gtk_text_buffer_get_start_iter(v.GTextBuffer, &i)
+	iter.GTextIter = i
 }
 func (v *TextBuffer) GetEndIter(iter *TextIter) {
-	C.gtk_text_buffer_get_end_iter(v.GTextBuffer, &iter.GTextIter)
+	var i C.GtkTextIter
+	C.gtk_text_buffer_get_end_iter(v.GTextBuffer, &i)
+	iter.GTextIter = i
 }
 func (v *TextBuffer) GetBounds(start *TextIter, end *TextIter) {
-	C.gtk_text_buffer_get_bounds(v.GTextBuffer, &start.GTextIter, &end.GTextIter)
+	var i1, i2 C.GtkTextIter
+	C.gtk_text_buffer_get_bounds(v.GTextBuffer, &i1, &i2)
+	start.GTextIter = i1
+	end.GTextIter = i2
 }
 func (v *TextBuffer) GetModified() bool {
 	return gobool(C.gtk_text_buffer_get_modified(v.GTextBuffer))
