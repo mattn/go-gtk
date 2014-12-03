@@ -5101,7 +5101,9 @@ func (v *TreeStore) SetValue(iter *TreeIter, column int, a interface{}) {
 			C._gtk_tree_store_set_ptr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(pv))
 		} else {
 			av := reflect.ValueOf(a)
-			if av.CanAddr() {
+			if av.Kind() == reflect.Ptr {
+				C._gtk_tree_store_set_ptr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.Pointer()))
+			} else if av.CanAddr() {
 				C._gtk_tree_store_set_addr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.UnsafeAddr()))
 			} else {
 				C._gtk_tree_store_set_addr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(&a))
