@@ -30,6 +30,31 @@ func gobool(b C.gboolean) bool {
 
 func cfree(s *C.char) { C.freeCstr(s) }
 
+func panic_if_version_older(major int, minor int, micro int, function string) {
+	if C._check_version(C.int(major), C.int(minor), C.int(micro)) == 0 {
+		log.Panicf("%s is not provided on your Glib, version %d.%d is required\n", function, major, minor)
+	}
+}
+
+func panic_if_version_older_auto(major, minor, micro int) {
+	if C._check_version(C.int(major), C.int(minor), C.int(micro)) != 0 {
+		return
+	}
+	formatStr := "%s is not provided on your Glib, version %d.%d is required\n"
+	if pc, _, _, ok := runtime.Caller(1); ok {
+		log.Panicf(formatStr, runtime.FuncForPC(pc).Name(), major, minor)
+	} else {
+		log.Panicf("Glib version %d.%d is required (unknown caller, see stack)\n",
+			major, minor)
+	}
+}
+
+func deprecated_since(major int, minor int, micro int, function string) {
+	if C._check_version(C.int(major), C.int(minor), C.int(micro)) != 0 {
+		log.Printf("\nWarning: %s is deprecated since glib %d.%d\n", function, major, minor)
+	}
+}
+
 func argumentPanic(message string) {
 	if pc, _, _, ok := runtime.Caller(2); ok {
 		log.Panicf("Arguments error: %s : %s\n",
@@ -228,12 +253,20 @@ func (p *Pixbuf) GetBitsPerSample() int {
 	return int(C.gdk_pixbuf_get_bits_per_sample(p.GPixbuf))
 }
 
+func (p *Pixbuf) GetPixels() []byte {
+	ptr := C.gdk_pixbuf_get_pixels(
+		p.GPixbuf,
+	)
+	return (*[1 << 30]byte)(unsafe.Pointer(ptr))[:]
+}
+
 // guchar * gdk_pixbuf_get_pixels_with_length (const GdkPixbuf *pixbuf, guint *length);
 //
 // Retuns a slice of byte backed by a C array of pixbuf data.
-func (p *Pixbuf) GetPixels() []byte {
+func (p *Pixbuf) GetPixelsWithLength() []byte {
+	panic_if_version_older(2, 26, 0, "gdk_pixbuf_get_pixels_with_length()")
 	length := C.guint(0)
-	ptr := C.gdk_pixbuf_get_pixels_with_length(
+	ptr := C._gdk_pixbuf_get_pixels_with_length(
 		p.GPixbuf,
 		&length,
 	)
