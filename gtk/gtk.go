@@ -5002,7 +5002,9 @@ func (v *ListStore) SetValue(iter *TreeIter, column int, a interface{}) {
 			C._gtk_list_store_set_ptr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(pv))
 		} else {
 			av := reflect.ValueOf(a)
-			if av.CanAddr() {
+			if av.Kind() == reflect.Ptr {
+				C._gtk_list_store_set_ptr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.Pointer()))
+			} else if av.CanAddr() {
 				C._gtk_list_store_set_addr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.UnsafeAddr()))
 			} else {
 				C._gtk_list_store_set_addr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(&a))
