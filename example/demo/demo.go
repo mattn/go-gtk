@@ -48,6 +48,7 @@ func authors() []string {
 func main() {
 	var menuitem *gtk.MenuItem
 	gtk.Init(nil)
+
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetPosition(gtk.WIN_POS_CENTER)
 	window.SetTitle("GTK Go!")
@@ -326,7 +327,7 @@ func main() {
 		dialog.SetAuthors(authors())
 		dir, _ := path.Split(os.Args[0])
 		imagefile := path.Join(dir, "../../data/mattn-logo.png")
-		pixbuf, _ := gdkpixbuf.NewFromFile(imagefile)
+		pixbuf, _ := gdkpixbuf.NewPixbufFromFile(imagefile)
 		dialog.SetLogo(pixbuf)
 		dialog.SetLicense("The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.")
 		dialog.SetWrapLicense(true)
