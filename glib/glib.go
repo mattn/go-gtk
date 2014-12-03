@@ -530,10 +530,12 @@ func (v *GObject) Set(name string, value interface{}) {
 			C._g_object_set_ptr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(pv))
 		} else {
 			av := reflect.ValueOf(value)
-			if av.CanAddr() {
-				C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(reflect.ValueOf(value).UnsafeAddr()))
+			if av.Kind() == reflect.Ptr {
+				C._g_object_set_ptr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(av.Pointer()))
+			} else if av.CanAddr() {
+				C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(av.UnsafeAddr()))
 			} else {
-				C._g_object_set_ptr(C.gpointer(v.Object), C.to_gcharptr(ptr), value.(unsafe.Pointer))
+				C._g_object_set_addr(C.gpointer(v.Object), C.to_gcharptr(ptr), unsafe.Pointer(&value))
 			}
 		}
 	}
