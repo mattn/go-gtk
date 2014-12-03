@@ -7,7 +7,7 @@ import (
 	"github.com/mattn/go-gtk/gtk"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -46,7 +46,6 @@ func authors() []string {
 }
 
 func main() {
-	var menuitem *gtk.MenuItem
 	gtk.Init(nil)
 
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
@@ -92,8 +91,8 @@ func main() {
 	//--------------------------------------------------------
 	// GtkImage
 	//--------------------------------------------------------
-	dir, _ := path.Split(os.Args[0])
-	imagefile := path.Join(dir, "../../data/go-gtk-logo.png")
+	dir, _ := filepath.Split(os.Args[0])
+	imagefile := filepath.Join(dir, "../../data/go-gtk-logo.png")
 
 	label := gtk.NewLabel("Go Binding for GTK")
 	label.ModifyFontEasy("DejaVu Serif 15")
@@ -283,6 +282,7 @@ func main() {
 	submenu := gtk.NewMenu()
 	cascademenu.SetSubmenu(submenu)
 
+	var menuitem *gtk.MenuItem
 	menuitem = gtk.NewMenuItemWithMnemonic("E_xit")
 	menuitem.Connect("activate", func() {
 		gtk.MainQuit()
@@ -325,8 +325,8 @@ func main() {
 		dialog.SetName("Go-Gtk Demo!")
 		dialog.SetProgramName("demo")
 		dialog.SetAuthors(authors())
-		dir, _ := path.Split(os.Args[0])
-		imagefile := path.Join(dir, "../../data/mattn-logo.png")
+		dir, _ := filepath.Split(os.Args[0])
+		imagefile := filepath.Join(dir, "../../data/mattn-logo.png")
 		pixbuf, _ := gdkpixbuf.NewPixbufFromFile(imagefile)
 		dialog.SetLogo(pixbuf)
 		dialog.SetLicense("The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.")
