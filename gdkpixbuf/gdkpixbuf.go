@@ -139,6 +139,20 @@ func NewPixbufFromFileAtScale(filename string, width, height int, preserve_aspec
 	}, nil
 }
 
+func NewPixbufFromXpmData(data **byte) (*Pixbuf, *glib.Error) {
+	var err *C.GError
+	gpixbuf := C.gdk_pixbuf_new_from_xpm_data(
+		(**C.char)(unsafe.Pointer(data)),
+	)
+	if err != nil {
+		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
+	}
+	return &Pixbuf{
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}, nil
+}
+
 func GetType() int {
 	return int(C.gdk_pixbuf_get_type())
 }
