@@ -693,6 +693,8 @@ static const gchar* _gtk_notebook_get_group_name(GtkNotebook* notebook) {
 	return gtk_notebook_get_group_name(notebook);
 }
 #else //GTK_CHECK_VERSION(2,24,0)
+typedef GtkComboBox GtkComboBoxText;
+
 static GtkWidget* _gtk_combo_box_new_with_entry(void) {
 	return NULL;
 }
@@ -705,15 +707,15 @@ static GtkWidget* _gtk_combo_box_text_new(void) {
 static GtkWidget* _gtk_combo_box_text_new_with_entry(void) {
 	return NULL;
 }
-static void _gtk_combo_box_text_append_text(GtkWidget *combo_box, const gchar *text) {
+static void _gtk_combo_box_text_append_text(GtkComboBoxText *combo_box, const gchar *text) {
 }
-static void  _gtk_combo_box_text_insert_text(GtkWidget *combo_box, gint position, const gchar *text) {
+static void  _gtk_combo_box_text_insert_text(GtkComboBoxText *combo_box, gint position, const gchar *text) {
 }
-static void _gtk_combo_box_text_prepend_text(GtkWidget *combo_box, const gchar *text) {
+static void _gtk_combo_box_text_prepend_text(GtkComboBoxText *combo_box, const gchar *text) {
 }
-static void _gtk_combo_box_text_remove(GtkWidget *combo_box, gint position) {
+static void _gtk_combo_box_text_remove(GtkComboBoxText *combo_box, gint position) {
 }
-static gchar* _gtk_combo_box_text_get_active_text(GtkWidget *combo_box) {
+static gchar* _gtk_combo_box_text_get_active_text(GtkComboBoxText *combo_box) {
 	return NULL;
 }
 static void _gtk_notebook_set_group_name(GtkNotebook* notebook, const gchar* group_name) {
@@ -764,7 +766,7 @@ static inline GtkMessageDialog* toGMessageDialog(GtkWidget* w) { return GTK_MESS
 #if GTK_CHECK_VERSION(2,24,0)
 static inline GtkComboBoxText* toGComboBoxText(GtkWidget* w) { return GTK_COMBO_BOX_TEXT(w); }
 #else
-static inline GtkWidget* toGComboBoxText(GtkWidget* w) { return w; }
+static inline GtkComboBoxText* toGComboBoxText(GtkWidget* w) { return w; }
 #endif
 static inline GtkAccessible* toGAccessible(void* w) { return GTK_ACCESSIBLE(w); }
 static inline GtkBin* toGBin(GtkWidget* w) { return GTK_BIN(w); }
