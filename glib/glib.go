@@ -300,7 +300,7 @@ func (v List) Reverse() *List {
 func (v List) Concat(link List) *List {
 	return &List{C.g_list_concat(v.GList, link.GList)}
 }
-func (v List) ForEach(callback func(interface{}, interface{}), user_datas ...interface{}) {
+func (v List) ForEach(callback func(unsafe.Pointer, interface{}), user_datas ...interface{}) {
 	var user_data interface{}
 	if len(user_datas) > 0 {
 		user_data = user_datas[0]
@@ -319,8 +319,8 @@ func (v List) Last() *List {
 func (v List) Nth(n uint) *List {
 	return &List{C.g_list_nth(v.GList, C.guint(n))}
 }
-func (v List) NthData(n uint) interface{} {
-	return C.g_list_nth_data(v.GList, C.guint(n))
+func (v List) NthData(n uint) unsafe.Pointer {
+	return unsafe.Pointer(C.g_list_nth_data(v.GList, C.guint(n)))
 }
 func (v List) NthPrev(n uint) *List {
 	return &List{C.g_list_nth_prev(v.GList, C.guint(n))}
@@ -353,8 +353,8 @@ func SListFromNative(sl unsafe.Pointer) *SList {
 func (v SList) ToSList() *C.GSList {
 	return v.GSList
 }
-func (v SList) Data() interface{} {
-	return v.GSList.data
+func (v SList) Data() unsafe.Pointer {
+	return unsafe.Pointer(v.GSList.data)
 }
 func GSListAlloc() *SList {
 	return &SList{C.g_slist_alloc()}
@@ -419,7 +419,7 @@ func (v SList) Last() *SList {
 func (v SList) Length() uint {
 	return uint(C.g_slist_length(v.GSList))
 }
-func (v SList) ForEach(callback func(interface{}, interface{}), user_datas ...interface{}) {
+func (v SList) ForEach(callback func(unsafe.Pointer, interface{}), user_datas ...interface{}) {
 	var user_data interface{}
 	if len(user_datas) > 0 {
 		user_data = user_datas[0]
@@ -431,8 +431,8 @@ func (v SList) ForEach(callback func(interface{}, interface{}), user_datas ...in
 
 // GSList* g_slist_sort (GSList *list, GCompareFunc compare_func) G_GNUC_WARN_UNUSED_RESULT;
 // GSList* g_slist_sort_with_data (GSList *list, GCompareDataFunc compare_func, gpointer user_data) G_GNUC_WARN_UNUSED_RESULT;
-func (v SList) NthData(n uint) interface{} {
-	return C.g_slist_nth_data(v.GSList, C.guint(n))
+func (v SList) NthData(n uint) unsafe.Pointer {
+	return unsafe.Pointer(C.g_slist_nth_data(v.GSList, C.guint(n)))
 }
 
 //-----------------------------------------------------------------------
@@ -482,6 +482,19 @@ func (v *GObject) Ref() {
 }
 func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
+}
+
+func (v *GObject) SetData(s string, p unsafe.Pointer) {
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	C.g_object_set_data((*C.GObject)(v.Object), C.to_gcharptr(ptr), (C.gpointer)(p))
+}
+
+func (v *GObject) GetData(s string) unsafe.Pointer {
+	ptr := C.CString(s)
+	defer C.free_string(ptr)
+	p := C.g_object_get_data((*C.GObject)(v.Object), C.to_gcharptr(ptr))
+	return unsafe.Pointer(p)
 }
 
 func (v *GObject) Set(name string, value interface{}) {
