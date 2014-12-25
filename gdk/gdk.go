@@ -531,16 +531,25 @@ const (
 type Gravity int
 
 const (
-	GDK_GRAVITY_NORTH_WEST Gravity = 1
-	GDK_GRAVITY_NORTH      Gravity = 2
-	GDK_GRAVITY_NORTH_EAST Gravity = 3
-	GDK_GRAVITY_WEST       Gravity = 4
-	GDK_GRAVITY_CENTER     Gravity = 5
-	GDK_GRAVITY_EAST       Gravity = 6
-	GDK_GRAVITY_SOUTH_WEST Gravity = 7
-	GDK_GRAVITY_SOUTH      Gravity = 8
-	GDK_GRAVITY_SOUTH_EAST Gravity = 9
-	GDK_GRAVITY_STATIC     Gravity = 10
+	GRAVITY_NORTH_WEST Gravity = 1
+	GRAVITY_NORTH      Gravity = 2
+	GRAVITY_NORTH_EAST Gravity = 3
+	GRAVITY_WEST       Gravity = 4
+	GRAVITY_CENTER     Gravity = 5
+	GRAVITY_EAST       Gravity = 6
+	GRAVITY_SOUTH_WEST Gravity = 7
+	GRAVITY_SOUTH      Gravity = 8
+	GRAVITY_SOUTH_EAST Gravity = 9
+	GRAVITY_STATIC     Gravity = 10
+)
+
+type ScrollDirection int
+
+const (
+	SCROLL_UP    ScrollDirection = 0
+	SCROLL_Down  ScrollDirection = 1
+	SCROLL_LEFT  ScrollDirection = 2
+	SCROLL_RIGHT ScrollDirection = 3
 )
 
 type Window struct {
