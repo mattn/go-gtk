@@ -202,6 +202,16 @@ static void _gtk_menu_popup(GtkWidget *menu, GtkWidget *parent_menu_shell, GtkWi
 	gtk_menu_popup(GTK_MENU(menu), parent_menu_shell, parent_menu_item, _c_gtk_menu_position_func, (gpointer) data, button, activate_time);
 }
 
+extern gboolean _go_gtk_tree_selection_select_func(gpointer sel, gpointer model, gpointer path, gboolean selected, gpointer payload);
+
+static gboolean _c_gtk_tree_selection_select_func(GtkTreeSelection *sel, GtkTreeModel *model, GtkTreePath *path, gboolean selected, gpointer payload) {
+  return _go_gtk_tree_selection_select_func(sel, model, path, selected, payload);
+}
+
+static void _go_gtk_tree_selection_set_select_function(GtkTreeSelection *sel, void * payload) {
+  gtk_tree_selection_set_select_function(sel, _c_gtk_tree_selection_select_func, payload, NULL);
+}
+
 static inline GType* make_gtypes(int count) {
 	return g_new0(GType, count);
 }
@@ -824,6 +834,9 @@ static inline GtkFixed* toGFixed(GtkWidget* w) { return GTK_FIXED(w); }
 static inline GtkCheckMenuItem* toGCheckMenuItem(GtkWidget* w) { return GTK_CHECK_MENU_ITEM(w); }
 static inline GtkRadioMenuItem* toGRadioMenuItem(GtkWidget* w) { return GTK_RADIO_MENU_ITEM(w); }
 static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
+static inline GtkTreePath* to_GTreePath(gpointer p) { return (GtkTreePath *)p; }
+static inline GtkTreeSelection* to_GTreeSelection(void *p) { return GTK_TREE_SELECTION(p); }
+static inline GtkTreeModel* to_GTreeModel(void *p) { return GTK_TREE_MODEL(p); }
 static inline GtkLayout* toGLayout(GtkWidget* w) { return GTK_LAYOUT(w); }
 static inline GtkColorButton* toGColorButton(GtkWidget* w) { return GTK_COLOR_BUTTON(w); }
 static inline GtkImageMenuItem* toGImageMenuItem(GtkWidget* w) { return GTK_IMAGE_MENU_ITEM(w); }
