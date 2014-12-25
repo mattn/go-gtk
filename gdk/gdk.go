@@ -2799,7 +2799,7 @@ const (
 )
 
 type EventAny struct {
-	Type      int
+	Type      EventType
 	Window    unsafe.Pointer
 	SendEvent int8
 }
