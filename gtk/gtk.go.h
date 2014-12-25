@@ -781,6 +781,7 @@ static inline GtkStyle* toGStyle(GtkObject* o) { return GTK_STYLE(o); }
 static inline GtkAdjustment* toGAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
 static inline GtkTextView* toGTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
 static inline GtkTextBuffer* toGTextBuffer(void* w) { return GTK_TEXT_BUFFER(w); }
+static inline GtkTextTag* toGTextTag(void* o) { return GTK_TEXT_TAG(o); }
 static inline GtkMenu* toGMenu(GtkWidget* w) { return GTK_MENU(w); }
 static inline GtkMenuBar* toGMenuBar(GtkWidget* w) { return GTK_MENU_BAR(w); }
 static inline GtkMenuShell* toGMenuShell(GtkWidget* w) { return GTK_MENU_SHELL(w); }

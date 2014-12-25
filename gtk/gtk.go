@@ -89,6 +89,7 @@ func ENTRY(p *Entry) *C.GtkEntry                           { return C.toGEntry(p
 func ADJUSTMENT(p *Adjustment) *C.GtkAdjustment            { return p.GAdjustment }
 func TEXT_VIEW(p *TextView) *C.GtkTextView                 { return C.toGTextView(p.GWidget) }
 func TEXT_BUFFER(p unsafe.Pointer) *C.GtkTextBuffer        { return C.toGTextBuffer(p) }
+func TEXT_TAG(p unsafe.Pointer) *C.GtkTextTag              { return C.toGTextTag(p) }
 func MENU(p *Menu) *C.GtkMenu                              { return C.toGMenu(p.GWidget) }
 func MENU_BAR(p *MenuBar) *C.GtkMenuBar                    { return C.toGMenuBar(p.GWidget) }
 func MENU_SHELL(p *Menu) *C.GtkMenuShell                   { return C.toGMenuShell(p.GWidget) } // TODO (GtkMenuShell receiver)
@@ -3352,13 +3353,16 @@ func (v *TextIter) GetMarks() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_text_iter_get_marks(&v.GTextIter)))
 }
 
+func (v *TextIter) GetTags() *glib.SList {
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_text_iter_get_tags(&v.GTextIter)))
+}
+
 // gtk_text_iter_get_toggled_tags
 // gtk_text_iter_get_child_anchor
 // gtk_text_iter_begins_tag
 // gtk_text_iter_ends_tag
 // gtk_text_iter_toggles_tag
 // gtk_text_iter_has_tag
-// gtk_text_iter_get_tags
 // gtk_text_iter_editable
 // gtk_text_iter_can_insert
 // gtk_text_iter_starts_word
@@ -3480,8 +3484,8 @@ func newTextBuffer(buffer *C.GtkTextBuffer) *TextBuffer { // TODO
 		GObject:     glib.ObjectFromNative(unsafe.Pointer(buffer)),
 	}
 }
-func NewTextBufferFromPointer(v unsafe.Pointer) TextBuffer {
-	return *newTextBuffer(TEXT_BUFFER(v))
+func NewTextBufferFromPointer(v unsafe.Pointer) *TextBuffer {
+	return newTextBuffer(TEXT_BUFFER(v))
 }
 func NewTextBuffer(tagtable *TextTagTable) *TextBuffer {
 	return newTextBuffer(C.gtk_text_buffer_new(tagtable.GTextTagTable))
@@ -3646,7 +3650,7 @@ func (v *TextBuffer) CreateTag(tag_name string, props map[string]string) *TextTa
 		cfree(pprop)
 		cfree(pval)
 	}
-	return &TextTag{tag}
+	return newTextTag(tag)
 }
 func (v *TextBuffer) GetIterAtLineOffset(iter *TextIter, line_number int, char_offset int) {
 	C.gtk_text_buffer_get_iter_at_line_offset(v.GTextBuffer, &iter.GTextIter, gint(line_number), gint(char_offset))
@@ -3724,12 +3728,13 @@ func (v *TextBuffer) GetSelectionBounds(be, en *TextIter) bool {
 //-----------------------------------------------------------------------
 type TextTag struct {
 	GTextTag *C.GtkTextTag
+	*glib.GObject
 }
 
 func NewTextTag(name string) *TextTag {
 	ptr := C.CString(name)
 	defer cfree(ptr)
-	return &TextTag{C.gtk_text_tag_new(gstring(ptr))}
+	return newTextTag(C.gtk_text_tag_new(gstring(ptr)))
 }
 func (v *TextTag) SetPriority(priority int) {
 	C.gtk_text_tag_set_priority(v.GTextTag, gint(priority))
@@ -3739,6 +3744,17 @@ func (v *TextTag) GetPriority() int {
 }
 
 // gtk_text_tag_event
+
+func newTextTag(tag *C.GtkTextTag) *TextTag { // TODO
+	return &TextTag{
+		GTextTag: tag,
+		GObject:  glib.ObjectFromNative(unsafe.Pointer(tag)),
+	}
+}
+
+func NewTextTagFromPointer(v unsafe.Pointer) *TextTag {
+	return newTextTag(TEXT_TAG(v))
+}
 
 //-----------------------------------------------------------------------
 // GtkTextAttributes
@@ -3782,7 +3798,7 @@ func (v *TextTagTable) Remove(tag *TextTag) {
 func (v *TextTagTable) Lookup(name string) *TextTag {
 	ptr := C.CString(name)
 	defer cfree(ptr)
-	return &TextTag{C.gtk_text_tag_table_lookup(v.GTextTagTable, gstring(ptr))}
+	return newTextTag(C.gtk_text_tag_table_lookup(v.GTextTagTable, gstring(ptr)))
 }
 
 // gtk_text_tag_table_foreach
@@ -3849,7 +3865,9 @@ func (v *TextView) GetLineYrange(iter *TextIter, y *int, h *int) {
 	*h = int(hh)
 }
 
-// void gtk_text_view_get_iter_at_location(GtkTextView* text_view, GtkTextIter* iter, gint x, gint y);
+func (v *TextView) GetIterAtLocation(iter *TextIter, x int, y int) {
+	C.gtk_text_view_get_iter_at_location(TEXT_VIEW(v), &iter.GTextIter, gint(x), gint(y))
+}
 
 func (v *TextView) GetIterAtPosition(iter *TextIter, trailing *int, x int, y int) {
 	if nil != trailing {
