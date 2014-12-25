@@ -61,10 +61,6 @@
   * Dag Robøle
   * Denis Dyakov
 
-For a less formal discussion about go-gtk, please visit our forum at
-http://craigmatthewweber.com/forums/forum/go/go-gtk
-
-
 ## GOAL
 
   Hopefully support following widgets and methods enough to run general application. 
