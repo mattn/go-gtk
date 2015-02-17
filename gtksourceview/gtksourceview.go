@@ -30,7 +30,7 @@ func cfree(s *C.char) { C.freeCstr(s) }
 //-----------------------------------------------------------------------
 type SourceBuffer struct {
 	GSourceBuffer *C.GtkSourceBuffer
-	gtk.TextBuffer
+	*gtk.TextBuffer
 }
 
 func NewSourceBuffer() *SourceBuffer {
