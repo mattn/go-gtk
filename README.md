@@ -16,8 +16,9 @@
     git clone  https://github.com/mattn/go-gtk
     cd go-gtk
     make install
-    make example
-    ./example/demo/demo
+    cd example
+    make
+    ./demo/demo
 
   Or
 
