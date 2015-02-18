@@ -360,6 +360,14 @@ func (v *Clipboard) Store() {
 	C.gtk_clipboard_store(v.GClipboard)
 }
 
+func (v *Clipboard) WaitForImage() *gdkpixbuf.Pixbuf {
+	gpixbuf := C.gtk_clipboard_wait_for_image(v.GClipboard)
+	return &gdkpixbuf.Pixbuf{
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
+}
+
 func (v *Clipboard) WaitForText() string {
 	return gostring(C.gtk_clipboard_wait_for_text(v.GClipboard))
 }
