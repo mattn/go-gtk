@@ -361,7 +361,11 @@ func (v *Clipboard) Store() {
 }
 
 func (v *Clipboard) WaitForImage() *gdkpixbuf.Pixbuf {
-	return (*gdkpixbuf.Pixbuf)(unsafe.Pointer(C.gtk_clipboard_wait_for_image(v.GClipboard)))
+	gpixbuf := C.gtk_clipboard_wait_for_image(v.GClipboard)
+	return &gdkpixbuf.Pixbuf{
+		GdkPixbuf: gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(gpixbuf)),
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}
 }
 
 func (v *Clipboard) WaitForText() string {
