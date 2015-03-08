@@ -2826,8 +2826,8 @@ func (v *Entry) GetTextLength() int {
 func (v *Entry) SetVisibility(setting bool) {
 	C.gtk_entry_set_visibility(ENTRY(v), gbool(setting))
 }
-func (v *Entry) SetInvisibleChar(ch uint8) {
-	C.gtk_entry_set_invisible_char(ENTRY(v), C.gunichar(ch))
+func (v *Entry) SetInvisibleChar(ch rune) {
+	C.gtk_entry_set_invisible_char(ENTRY(v), C.gunichar(uint8(ch)))
 }
 func (v *Entry) UnsetInvisibleChar() {
 	C.gtk_entry_unset_invisible_char(ENTRY(v))
@@ -2859,8 +2859,8 @@ func (v *Entry) SetHasFrame(setting bool) {
 func (v *Entry) SetWidthChars(i int) {
 	C.gtk_entry_set_width_chars(ENTRY(v), gint(i))
 }
-func (v *Entry) GetInvisibleChar() uint8 {
-	return uint8(C.gtk_entry_get_invisible_char(ENTRY(v)))
+func (v *Entry) GetInvisibleChar() rune {
+	return rune(C.gtk_entry_get_invisible_char(ENTRY(v)))
 }
 func (v *Entry) SetAlignment(xalign float64) {
 	C.gtk_entry_set_alignment(ENTRY(v), C.gfloat(xalign))
