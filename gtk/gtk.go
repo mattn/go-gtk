@@ -4307,7 +4307,7 @@ func NewTreeViewColumnWithAttributes2(title string, cell ICellRenderer, attribut
 			log.Panic("Error calling gtk.TreeViewColumnWithAttributes: property name must be a string")
 		}
 		ptrAttribute := C.CString(attribute)
-		column, ok := attributes[2*i].(int)
+		column, ok := attributes[2*i+1].(int)
 		if !ok {
 			log.Panic("Error calling gtk.TreeViewColumnWithAttributes: attributes column must be an int")
 		}
