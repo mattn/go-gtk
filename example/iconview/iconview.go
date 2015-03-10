@@ -5,6 +5,7 @@ import (
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
 	"os"
+	"unsafe"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 	iconview.SetTextColumn(1)
 	swin.Add(iconview)
 
-	gtk.StockListIDs().ForEach(func(d interface{}, v interface{}) {
+	gtk.StockListIDs().ForEach(func(d unsafe.Pointer, v interface{}) {
 		id := glib.GPtrToString(d)
 		var iter gtk.TreeIter
 		store.Append(&iter)

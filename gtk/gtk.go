@@ -1800,7 +1800,7 @@ func NewImageFromFile(filename string) *Image {
 // gtk_image_new_from_icon_set
 // gtk_image_new_from_image
 
-func NewImageFromPixbuf(pixbuf gdkpixbuf.Pixbuf) *Image {
+func NewImageFromPixbuf(pixbuf *gdkpixbuf.Pixbuf) *Image {
 	return &Image{Misc{Widget{C.gtk_image_new_from_pixbuf((*C.GdkPixbuf)(unsafe.Pointer(pixbuf.GPixbuf)))}}}
 }
 
@@ -4211,9 +4211,9 @@ type GtkTreeSelecter interface {
 func _go_gtk_tree_selection_select_func(selection unsafe.Pointer, model unsafe.Pointer, path unsafe.Pointer, selected C.gboolean, payload unsafe.Pointer) C.gboolean {
 	cb := (*GtkTreeSelecter)(payload)
 	rv := (*cb).Select(&TreeSelection{C.to_GTreeSelection(selection)},
-	&TreeModel{C.to_GTreeModel(model)},
-	&TreePath{C.to_GTreePath((C.gpointer)(path))},
-	gobool(selected))
+		&TreeModel{C.to_GTreeModel(model)},
+		&TreePath{C.to_GTreePath((C.gpointer)(path))},
+		gobool(selected))
 	return gbool(rv)
 }
 
