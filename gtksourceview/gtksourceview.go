@@ -50,8 +50,8 @@ func (v *SourceBuffer) SetHighlightSyntax(highlight bool) {
 func (v *SourceBuffer) GetHighlightSyntax() bool {
 	return gobool(C.gtk_source_buffer_get_highlight_syntax(v.GSourceBuffer))
 }
-func (v *SourceBuffer) SetHighlightMatchinBrackets(hl bool) {
-    C.gtk_source_buffer_set_highlight_matching_brackets(v.GSourceBuffer, hl))
+func (v *SourceBuffer) SetHighlightMatchingBrackets(hl bool) {
+    C.gtk_source_buffer_set_highlight_matching_brackets(v.GSourceBuffer, gbool(hl))
 }
 func (v *SourceBuffer) SetLanguage(lang *SourceLanguage) {
 	C.gtk_source_buffer_set_language(v.GSourceBuffer, lang.GSourceLanguage)
