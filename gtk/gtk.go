@@ -3393,11 +3393,16 @@ func (v *TextIter) ForwardChar() bool {
 	return gobool(C.gtk_text_iter_forward_char(&v.GTextIter))
 }
 
-// gtk_text_iter_backward_char
-// gtk_text_iter_forward_chars
+func (v *TextIter) BackwardChar() bool {
+	return gobool(C.gtk_text_iter_backward_char(&v.GTextIter))
+}
+
+func (v *TextIter) ForwardChars(count int) bool {
+	return gobool(C.gtk_text_iter_forward_chars(&v.GTextIter, gint(count)))
+}
 
 func (v *TextIter) BackwardChars(count int) bool {
-    return gobool(C.gtk_text_iter_backward_chars(&v.GTextIter, gint(count)))
+	return gobool(C.gtk_text_iter_backward_chars(&v.GTextIter, gint(count)))
 }
 
 // gtk_text_iter_forward_line
