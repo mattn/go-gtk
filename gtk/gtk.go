@@ -3395,7 +3395,11 @@ func (v *TextIter) ForwardChar() bool {
 
 // gtk_text_iter_backward_char
 // gtk_text_iter_forward_chars
-// gtk_text_iter_backward_chars
+
+func (v *TextIter) BackwardChars(count int) bool {
+    return gobool(C.gtk_text_iter_backward_chars(&v.GTextIter, gint(count)))
+}
+
 // gtk_text_iter_forward_line
 // gtk_text_iter_backward_line
 // gtk_text_iter_forward_lines
