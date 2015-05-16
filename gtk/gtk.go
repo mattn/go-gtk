@@ -9513,6 +9513,10 @@ func (v *Widget) HideOnDelete() {
 // gtk_widget_modify_cursor
 // gtk_widget_create_pango_context
 // gtk_widget_get_pango_context
+func (v *Widget) GetPangoContext() *pango.Context {
+	return pango.ContextFromUnsafe(unsafe.Pointer(C.gtk_widget_get_pango_context((*C.GtkWidget)(v.GWidget))))
+}
+
 // gtk_widget_create_pango_layout
 
 func (v *Widget) RenderIcon(stock_id string, size IconSize, detail string) *gdkpixbuf.Pixbuf {
