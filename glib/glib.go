@@ -37,7 +37,8 @@ func toSlice(ar **C.gchar) []string {
 }
 
 func GPtrToString(p interface{}) string {
-	return C.GoString(C.to_charptr_from_gpointer(p.(C.gpointer)))
+	pp := (C.gpointer)(p.(unsafe.Pointer))
+	return C.GoString(C.to_charptr_from_gpointer(pp))
 }
 
 //-----------------------------------------------------------------------
