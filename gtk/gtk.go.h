@@ -821,6 +821,7 @@ static inline GtkScale* toGScale(GtkWidget* w) { return GTK_SCALE(w); }
 static inline GtkRange* toGRange(GtkWidget* w) { return GTK_RANGE(w); }
 static inline GtkTreeModel* toGTreeModelFromListStore(GtkListStore* w) { return GTK_TREE_MODEL(w); }
 static inline GtkTreeModel* toGTreeModelFromTreeStore(GtkTreeStore* w) { return GTK_TREE_MODEL(w); }
+static inline GtkListStore* toGListStore(void* w) { return GTK_LIST_STORE(w); }
 static inline GtkImage* toGImage(GtkWidget* w) { return GTK_IMAGE(w); }
 static inline GtkNotebook* toGNotebook(GtkWidget* w) { return GTK_NOTEBOOK(w); }
 static inline GtkTable* toGTable(GtkWidget* w) { return GTK_TABLE(w); }

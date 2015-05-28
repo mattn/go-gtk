@@ -5049,13 +5049,19 @@ func NewListStore(v ...interface{}) *ListStore {
 	return &ListStore{TreeModel{C.toGTreeModelFromListStore(cliststore)}, cliststore}
 }
 
+func NewListStoreFromNative(l unsafe.Pointer) *ListStore {
+	cliststore := C.toGListStore(l)
+	return &ListStore{TreeModel{C.toGTreeModelFromListStore(cliststore)}, cliststore}
+}
+
 //void gtk_list_store_set_column_types (GtkListStore *list_store, gint n_columns, GType *types);
 
 func (v *ListStore) Set(iter *TreeIter, a ...interface{}) {
-	for r := range a {
-		v.SetValue(iter, r, a[r])
+	for i := 0; i < len(a); i += 2 {
+		v.SetValue(iter, a[i].(int), a[i+1])
 	}
 }
+
 func (v *ListStore) SetValue(iter *TreeIter, column int, a interface{}) {
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
