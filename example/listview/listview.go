@@ -1,10 +1,12 @@
 package main
 
 import (
+	"os"
+	"unsafe"
+
 	"github.com/mattn/go-gtk/gdkpixbuf"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
-	"os"
 )
 
 func main() {
@@ -24,11 +26,15 @@ func main() {
 	treeview.AppendColumn(gtk.NewTreeViewColumnWithAttributes("check", gtk.NewCellRendererToggle(), "active", 1))
 	treeview.AppendColumn(gtk.NewTreeViewColumnWithAttributes("icon", gtk.NewCellRendererPixbuf(), "pixbuf", 2))
 	n := 0
-	gtk.StockListIDs().ForEach(func(d interface{}, v interface{}) {
+	gtk.StockListIDs().ForEach(func(d unsafe.Pointer, v interface{}) {
 		id := glib.GPtrToString(d)
 		var iter gtk.TreeIter
 		store.Append(&iter)
-		store.Set(&iter, id, (n == 1), gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf)
+		store.Set(&iter,
+			0, id,
+			1, (n == 1),
+			2, gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf,
+		)
 		n = 1 - n
 	})
 

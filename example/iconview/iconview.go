@@ -1,11 +1,12 @@
 package main
 
 import (
+	"os"
+	"unsafe"
+
 	"github.com/mattn/go-gtk/gdkpixbuf"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/gtk"
-	"os"
-	"unsafe"
 )
 
 func main() {
@@ -27,8 +28,8 @@ func main() {
 		var iter gtk.TreeIter
 		store.Append(&iter)
 		store.Set(&iter,
-			gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf,
-			id)
+			0, gtk.NewImage().RenderIcon(id, gtk.ICON_SIZE_SMALL_TOOLBAR, "").GPixbuf,
+			1, id)
 	})
 
 	window.Add(swin)
