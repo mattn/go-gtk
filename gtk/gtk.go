@@ -1409,10 +1409,6 @@ func (v *Window) Resize(width int, height int) {
 	C.gtk_window_resize(WINDOW(v), gint(width), gint(height))
 }
 
-func (v *Window) XID() int32 {
-	return gdk.WindowFromUnsafe(unsafe.Pointer(v.GWidget.window)).GetNativeWindowID()
-}
-
 // gtk_window_set_default_icon_list
 // gtk_window_set_default_icon
 // gtk_window_set_default_icon_from_file
