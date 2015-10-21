@@ -3,11 +3,55 @@ package glib
 // #include "glib.go.h"
 // #cgo pkg-config: glib-2.0 gobject-2.0
 import "C"
-import "unsafe"
-import "reflect"
+import (
+	"reflect"
+	"sync"
+	"unsafe"
+)
 
-var callback_contexts []*CallbackContext
-var sourcefunc_contexts []*SourcefuncContext
+type ContextStorage struct {
+	lastId int
+	m      sync.Mutex
+	values map[int]interface{}
+}
+
+func NewContextStorage() *ContextStorage {
+	return &ContextStorage{values: make(map[int]interface{})}
+}
+
+func (c *ContextStorage) Add(value interface{}) int {
+	c.m.Lock()
+	newId := c.lastId
+	c.values[newId] = value
+	c.lastId++
+	c.m.Unlock()
+	return newId
+}
+
+func (c *ContextStorage) Get(id int) (value interface{}, found bool) {
+	c.m.Lock()
+	value, found = c.values[id]
+	c.m.Unlock()
+	return
+}
+
+func (c *ContextStorage) Remove(id int) {
+	c.m.Lock()
+	delete(c.values, id)
+	c.m.Unlock()
+}
+
+func (c *ContextStorage) Len() int {
+	c.m.Lock()
+	result := len(c.values)
+	c.m.Unlock()
+	return result
+}
+
+var (
+	sourcefunc_contexts = NewContextStorage()
+	callback_contexts   = NewContextStorage()
+)
 
 func gbool(b bool) C.gboolean {
 	if b {
@@ -699,7 +743,11 @@ func (c CallbackArg) ToString() string {
 
 //export _go_glib_callback
 func _go_glib_callback(cbi *C.callback_info) {
-	context := callback_contexts[int(cbi.func_no)]
+	value, found := callback_contexts.Get(int(cbi.func_no))
+	if !found {
+		return
+	}
+	context := value.(*CallbackContext)
 	t := context.f.Type()
 	fargs := make([]reflect.Value, t.NumIn())
 	if len(fargs) > 0 {
@@ -723,9 +771,9 @@ func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) int {
 	ctx := &CallbackContext{reflect.ValueOf(f), nil, reflect.ValueOf(v), reflect.ValueOf(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
-	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(len(callback_contexts))))
-	callback_contexts = append(callback_contexts, ctx)
-	return len(callback_contexts) - 1
+	id := callback_contexts.Add(ctx)
+	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(id)))
+	return id
 }
 
 func (v *GObject) StopEmission(s string) {
@@ -741,18 +789,34 @@ func (v *GObject) Emit(s string) {
 }
 
 func (v *GObject) HandlerBlock(call_id int) {
-	c_call_id := C._g_signal_callback_id((*C.callback_info)(callback_contexts[call_id].cbi))
+	value, found := callback_contexts.Get(call_id)
+	if !found {
+		return
+	}
+	context := value.(*CallbackContext)
+	c_call_id := C._g_signal_callback_id((*C.callback_info)(context.cbi))
 	C.g_signal_handler_block((C.gpointer)(v.Object), c_call_id)
 }
 
 func (v *GObject) HandlerUnblock(call_id int) {
-	c_call_id := C._g_signal_callback_id((*C.callback_info)(callback_contexts[call_id].cbi))
+	value, found := callback_contexts.Get(call_id)
+	if !found {
+		return
+	}
+	context := value.(*CallbackContext)
+	c_call_id := C._g_signal_callback_id((*C.callback_info)(context.cbi))
 	C.g_signal_handler_unblock((C.gpointer)(v.Object), c_call_id)
 }
 
 func (v *GObject) HandlerDisconnect(call_id int) {
-	c_call_id := C._g_signal_callback_id((*C.callback_info)(callback_contexts[call_id].cbi))
+	value, found := callback_contexts.Get(call_id)
+	if !found {
+		return
+	}
+	context := value.(*CallbackContext)
+	c_call_id := C._g_signal_callback_id((*C.callback_info)(context.cbi))
 	C.g_signal_handler_disconnect((C.gpointer)(v.Object), c_call_id)
+	callback_contexts.Remove(call_id)
 }
 
 //-----------------------------------------------------------------------
@@ -824,13 +888,17 @@ func (v *GMainLoop) GetContext() *GMainContext {
 
 type SourcefuncContext struct {
 	f    reflect.Value
-	sfi  unsafe.Pointer
 	data reflect.Value
 }
 
 //export _go_glib_sourcefunc
 func _go_glib_sourcefunc(sfi *C.sourcefunc_info) {
-	context := sourcefunc_contexts[int(sfi.func_no)]
+	id := int(sfi.func_no)
+	value, found := sourcefunc_contexts.Get(id)
+	if !found {
+		return
+	}
+	context := value.(*SourcefuncContext)
 	t := context.f.Type()
 	fargs := make([]reflect.Value, t.NumIn())
 	if len(fargs) > 0 {
@@ -841,6 +909,9 @@ func _go_glib_sourcefunc(sfi *C.sourcefunc_info) {
 		bret, _ := ret[0].Interface().(bool)
 		sfi.ret = gbool(bret)
 	}
+	if !gobool(sfi.ret) {
+		sourcefunc_contexts.Remove(id)
+	}
 }
 
 func IdleAdd(f interface{}, datas ...interface{}) {
@@ -848,9 +919,9 @@ func IdleAdd(f interface{}, datas ...interface{}) {
 	if len(datas) > 0 {
 		data = datas[0]
 	}
-	ctx := &SourcefuncContext{reflect.ValueOf(f), nil, reflect.ValueOf(data)}
-	ctx.sfi = unsafe.Pointer(C._g_idle_add(C.int(len(sourcefunc_contexts))))
-	sourcefunc_contexts = append(sourcefunc_contexts, ctx)
+	ctx := &SourcefuncContext{reflect.ValueOf(f), reflect.ValueOf(data)}
+	id := sourcefunc_contexts.Add(ctx)
+	C._g_idle_add(C.int(id))
 }
 
 func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
@@ -858,9 +929,9 @@ func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
 	if len(datas) > 0 {
 		data = datas[0]
 	}
-	ctx := &SourcefuncContext{reflect.ValueOf(f), nil, reflect.ValueOf(data)}
-	ctx.sfi = unsafe.Pointer(C._g_timeout_add(C.guint(interval), C.int(len(sourcefunc_contexts))))
-	sourcefunc_contexts = append(sourcefunc_contexts, ctx)
+	ctx := &SourcefuncContext{reflect.ValueOf(f), reflect.ValueOf(data)}
+	id := sourcefunc_contexts.Add(ctx)
+	C._g_timeout_add(C.guint(interval), C.int(id))
 }
 
 //-----------------------------------------------------------------------
