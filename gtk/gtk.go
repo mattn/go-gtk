@@ -219,7 +219,8 @@ func SetLocale() {
 func Init(args *[]string) {
 	if args != nil {
 		var argc C.int = C.int(len(*args))
-		cargs := make([]*C.char, argc)
+		ptr := C.malloc(C.size_t(int(unsafe.Sizeof((*C.char)(nil))) * len(*args)))
+		cargs := *(*[]*C.char)(unsafe.Pointer(&ptr))
 		for i, arg := range *args {
 			cargs[i] = C.CString(arg)
 		}
@@ -231,6 +232,7 @@ func Init(args *[]string) {
 		for i := 0; i < int(argc); i++ {
 			cfree(cargs[i])
 		}
+		cfree(ptr)
 		*args = goargs
 	} else {
 		C._gtk_init(nil, nil)
