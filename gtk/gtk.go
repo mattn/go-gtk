@@ -232,7 +232,7 @@ func Init(args *[]string) {
 		for i := 0; i < int(argc); i++ {
 			cfree(cargs[i])
 		}
-		cfree(ptr)
+		C.free(ptr)
 		*args = goargs
 	} else {
 		C._gtk_init(nil, nil)
