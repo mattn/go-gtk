@@ -1,3 +1,5 @@
+// +build !cgocheck
+
 /*
 Go Bindings for Gtk+ 2. Support version 2.16 and later.
 */
@@ -218,20 +220,19 @@ func SetLocale() {
 
 func Init(args *[]string) {
 	if args != nil {
-		as := *args
-		var argc C.int = C.int(len(as))
-		ptr := C.malloc(C.size_t(int(unsafe.Sizeof((*C.char)(nil))) * len(as)))
-		cargs := *(*[]*C.char)(unsafe.Pointer(&ptr))
-		for i, arg := range as {
+		var argc C.int = C.int(len(*args))
+		cargs := make([]*C.char, argc)
+		for i, arg := range *args {
 			cargs[i] = C.CString(arg)
 		}
 		C._gtk_init(unsafe.Pointer(&argc), unsafe.Pointer(&cargs))
 		goargs := make([]string, argc)
 		for i := 0; i < int(argc); i++ {
 			goargs[i] = C.GoString(cargs[i])
+		}
+		for i := 0; i < int(argc); i++ {
 			cfree(cargs[i])
 		}
-		C.free(ptr)
 		*args = goargs
 	} else {
 		C._gtk_init(nil, nil)
