@@ -1,3 +1,5 @@
+// +build !cgocheck
+
 package gtkgl
 
 // #include "gtkgl.go.h"

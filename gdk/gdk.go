@@ -1,3 +1,5 @@
+// +build !cgocheck
+
 package gdk
 
 // #include "gdk.go.h"
@@ -291,13 +293,14 @@ func (v *GC) SetBackground(color *Color) {
 // void gdk_gc_set_clip_origin (GdkGC *gc, gint x, gint y);
 // void gdk_gc_set_clip_mask (GdkGC *gc, GdkBitmap *mask);
 func (v *GC) SetClipRectangle(x, y, width, height int) {
-  var r C.GdkRectangle
-  r.x = C.gint(x)
-  r.y = C.gint(y)
-  r.width = C.gint(width)
-  r.height = C.gint(height)
-  C.gdk_gc_set_clip_rectangle(v.GGC, &r)
+	var r C.GdkRectangle
+	r.x = C.gint(x)
+	r.y = C.gint(y)
+	r.width = C.gint(width)
+	r.height = C.gint(height)
+	C.gdk_gc_set_clip_rectangle(v.GGC, &r)
 }
+
 // void gdk_gc_set_clip_region (GdkGC *gc, const GdkRegion *region);
 // void gdk_gc_set_subwindow (GdkGC *gc, GdkSubwindowMode mode);
 // void gdk_gc_set_exposures (GdkGC *gc, gboolean exposures);
@@ -308,7 +311,7 @@ func (v *GC) SetClipRectangle(x, y, width, height int) {
 // void gdk_gc_set_colormap (GdkGC *gc, GdkColormap *colormap);
 // GdkColormap *gdk_gc_get_colormap (GdkGC *gc);
 func (v *GC) GetColormap() *Colormap {
-  return &Colormap{C.gdk_gc_get_colormap(v.GGC)}
+	return &Colormap{C.gdk_gc_get_colormap(v.GGC)}
 }
 
 func (v *GC) SetRgbFgColor(color *Color) {
@@ -396,8 +399,9 @@ func (v *Drawable) DrawPixbuf(gc *GC, pixbuf *gdkpixbuf.Pixbuf,
 // void gdk_draw_layout_line (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayoutLine *line);
 // void gdk_draw_layout (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayout *layout);
 func (v *Drawable) DrawLayout(gc *GC, x, y int, layout *pango.Layout) {
-  C.gdk_draw_layout(v.GDrawable, gc.GGC, C.gint(x), C.gint(y), (*C.PangoLayout)(layout.GLayout))
+	C.gdk_draw_layout(v.GDrawable, gc.GGC, C.gint(x), C.gint(y), (*C.PangoLayout)(layout.GLayout))
 }
+
 // void gdk_draw_layout_line_with_colors (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayoutLine *line, const GdkColor *foreground, const GdkColor *background);
 // void gdk_draw_layout_with_colors (GdkDrawable *drawable, GdkGC *gc, gint x, gint y, PangoLayout *layout, const GdkColor *foreground, const GdkColor *background);
 // void gdk_draw_glyphs_transformed (GdkDrawable *drawable, GdkGC	 *gc, const PangoMatrix *matrix, PangoFont *font, gint x, gint y, PangoGlyphString *glyphs);

@@ -1,3 +1,5 @@
+// +build !cgocheck
+
 package pango
 
 // #include "pango.go.h"

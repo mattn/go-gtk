@@ -1,3 +1,5 @@
+// +build !cgocheck
+
 package gdkpixbuf
 
 // #include "gdkpixbuf.go.h"

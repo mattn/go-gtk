@@ -1,3 +1,5 @@
+// +build !cgocheck
+
 package glib
 
 // #include "glib.go.h"
