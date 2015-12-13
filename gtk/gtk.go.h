@@ -6,7 +6,9 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <gdk/gdkx.h>
+//Why is this necessary?
+//#include <gdk/gdkx.h>
+//#include <gdk/gdkquartz.h>
 #endif
 #include <unistd.h>
 #include <stdlib.h>
