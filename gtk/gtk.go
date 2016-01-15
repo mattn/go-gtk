@@ -710,7 +710,12 @@ func StockListIDs() *glib.SList {
 // gtk_rc_add_widget_name_style
 // gtk_rc_add_widget_class_style
 // gtk_rc_add_class_style
-// gtk_rc_parse
+
+
+func RCParse(file string) {
+	C.gtk_rc_parse((*C.gchar)(C.CString(file)))
+}
+
 // gtk_rc_parse_string
 // gtk_rc_reparse_all
 // gtk_rc_reparse_all_for_settings
