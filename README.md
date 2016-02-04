@@ -34,7 +34,7 @@
 
 ## LICENSE
 
-  The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.
+  The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (GNU Lesser General Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.
 
 ## AUTHOR
 
