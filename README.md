@@ -30,8 +30,7 @@
 
   If you use windows, find gtk binary packages from here:
 
-  * http://www.gtk.org/download/win32.php
-  * http://www.gtk.org/download/win64.php
+  * http://www.gtk.org/download/windows.php
 
 ## LICENSE
 
