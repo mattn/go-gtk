@@ -90,3 +90,11 @@ func (v *FontDescription) Free() {
 func (v *FontDescription) SetSize(size int) {
 	C.pango_font_description_set_size(v.GFontDescription, C.gint(size))
 }
+
+func (v *FontDescription) Copy() *FontDescription {
+	return &FontDescription{C.pango_font_description_copy(v.GFontDescription)}
+}
+
+func (f *FontDescription) GetSize() int {
+	return int(C.pango_font_description_get_size(f.GFontDescription))
+}
