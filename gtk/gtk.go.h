@@ -813,6 +813,7 @@ static inline GtkScrolledWindow* toGScrolledWindow(GtkWidget* w) { return GTK_SC
 static inline GtkViewport* toGViewport(GtkWidget* w) { return GTK_VIEWPORT(w); }
 static inline GtkWidget* toGWidget(void* w) { return GTK_WIDGET(w); }
 static inline GdkWindow* toGdkWindow(void* w) { return GDK_WINDOW(w); }
+static inline GdkScreen* toGdkScreen(void* s) { return GDK_SCREEN(s); }
 static inline GtkTreeView* toGTreeView(GtkWidget* w) { return GTK_TREE_VIEW(w); }
 static inline GtkIconView* toGIconView(GtkWidget* w) { return GTK_ICON_VIEW(w); }
 static inline GtkTreeSortable* toGTreeSortable(GtkTreeModel* m) { return GTK_TREE_SORTABLE(m); }

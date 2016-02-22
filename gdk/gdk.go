@@ -321,7 +321,18 @@ func (v *GC) SetRgbBgColor(color *Color) {
 	C.gdk_gc_set_rgb_bg_color(v.GGC, &color.GColor)
 }
 
+//-----------------------------------------------------------------------
+// GdkScreen
+//-----------------------------------------------------------------------
+type Screen struct {
+	GScreen *C.GdkScreen
+}
+
 // GdkScreen * gdk_gc_get_screen (GdkGC *gc);
+
+func GetDefaultScreen() (screen *Screen) {
+	return &Screen{GScreen: C.gdk_screen_get_default()}
+}
 
 func ScreenWidth() (width int) {
 	return int(C.gdk_screen_width())

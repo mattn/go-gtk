@@ -711,15 +711,22 @@ func StockListIDs() *glib.SList {
 // gtk_rc_add_widget_class_style
 // gtk_rc_add_class_style
 
-
 func RCParse(file string) {
 	C.gtk_rc_parse((*C.gchar)(C.CString(file)))
 }
 
 // gtk_rc_parse_string
-// gtk_rc_reparse_all
+
+func RCReparseAll() bool {
+	return gobool(C.gtk_rc_reparse_all())
+}
+
 // gtk_rc_reparse_all_for_settings
-// gtk_rc_reset_styles
+
+func RCResetStyles(settings *Settings) {
+	C.gtk_rc_reset_styles(settings.GSettings)
+}
+
 // gtk_rc_add_default_file
 // gtk_rc_get_default_files
 // gtk_rc_set_default_files
@@ -746,6 +753,11 @@ type Settings struct {
 }
 
 // gtk_settings_get_for_screen
+func GetSettingsForScreen(screen gdk.Screen) *Settings {
+	gScreen := C.toGdkScreen(unsafe.Pointer(screen.GScreen))
+	return &Settings{GSettings: C.gtk_settings_get_for_screen(gScreen)}
+}
+
 // gtk_settings_install_property
 // gtk_settings_install_property_parser
 // gtk_rc_property_parse_color
@@ -4241,8 +4253,10 @@ func (v *TreeSelection) GetSelected(i *TreeIter) bool {
 }
 
 //gtk_tree_selection_selected_foreach (GtkTreeSelection *selection, GtkTreeSelectionForeachFunc func, gpointer data);
-//gtk_tree_selection_get_selected_rows (GtkTreeSelection *selection, GtkTreeModel **model);
 
+func (v *TreeSelection) GetSelectedRows(model *TreeModel) *C.GList {
+	return C.gtk_tree_selection_get_selected_rows(v.GTreeSelection, &model.GTreeModel)
+}
 func (v *TreeSelection) CountSelectedRows() int {
 	return int(C.gtk_tree_selection_count_selected_rows(v.GTreeSelection))
 }
@@ -4483,8 +4497,11 @@ func NewTreeView() *TreeView {
 //void gtk_tree_view_set_level_indentation (GtkTreeView *tree_view, gint indentation);
 //void gtk_tree_view_set_show_expanders (GtkTreeView *tree_view, gboolean enabled);
 //GtkWidget *gtk_tree_view_new_with_model (GtkTreeModel *model);
-//GtkTreeModel *gtk_tree_view_get_model (GtkTreeView *tree_view);
 
+func (v *TreeView) GetModel() *TreeModel {
+	var tm = C.gtk_tree_view_get_model(TREE_VIEW(v))
+	return &TreeModel{GTreeModel: tm}
+}
 func (v *TreeView) SetModel(model ITreeModel) {
 	var tm *C.GtkTreeModel
 	if model != nil {
@@ -9061,6 +9078,13 @@ type Object struct {
 	glib.GObject
 }
 
+func (v *Object) Ref() {
+	C.g_object_ref(C.gpointer(v.GObject.Object))
+}
+func (v *Object) Unref() {
+	C.g_object_unref(C.gpointer(v.GObject.Object))
+}
+
 //deprecated since 2.20
 
 //-----------------------------------------------------------------------
@@ -9336,17 +9360,13 @@ func (v *Widget) HandlerDisconnect(id int) {
 
 // gtk_widget_new
 
-//Deprecated since 2.12. Use g_object_ref() instead. //TODO gobject
 func (v *Widget) Ref() {
-	deprecated_since(2, 12, 0, "gtk_widget_ref()")
-	C.gtk_widget_ref(v.GWidget)
+	C.g_object_ref(C.gpointer(v.GWidget))
+}
+func (v *Widget) Unref() {
+	C.g_object_unref(C.gpointer(v.GWidget))
 }
 
-//Deprecated since 2.12. Use g_object_ref() instead. //TODO gobject
-func (v *Widget) Unref() {
-	deprecated_since(2, 12, 0, "gtk_widget_unref()")
-	C.gtk_widget_unref(v.GWidget)
-}
 func (v *Widget) Destroy() {
 	C.gtk_widget_destroy(v.GWidget)
 }
