@@ -24,7 +24,7 @@ type GtkSpell struct {
 	Spell *C.GtkSpell
 }
 
-func New(textview *gtk.GtkTextView, language string) (*GtkSpell, *glib.Error) {
+func New(textview *gtk.TextView, language string) (*GtkSpell, *glib.Error) {
 	var lang *C.char
 	if len(language) > 0 {
 		lang = C.CString(language)
@@ -32,7 +32,7 @@ func New(textview *gtk.GtkTextView, language string) (*GtkSpell, *glib.Error) {
 	}
 
 	var gerror *C.GError
-	v := C.gtkspell_new_attach(C.to_GtkTextView(unsafe.Pointer(textview.Widget)), C.to_gcharptr(lang), &gerror)
+	v := C.gtkspell_new_attach(C.to_GtkTextView(unsafe.Pointer(&textview.Widget)), C.to_gcharptr(lang), &gerror)
 	if gerror != nil {
 		return nil, glib.ErrorFromNative(unsafe.Pointer(gerror))
 	}

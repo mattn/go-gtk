@@ -271,7 +271,11 @@ func EventsPending() bool {
 // gtk_key_snooper_install
 // gtk_key_snooper_remove
 // gtk_get_current_event
-// gtk_get_current_event_time
+
+func GetCurrentEventTime() uint32 {
+	return uint32(C.gtk_get_current_event_time())
+}
+
 // gtk_get_current_event_state
 // gtk_get_event_widget
 // gtk_propagate_event
@@ -1828,7 +1832,12 @@ func NewImageFromStock(stock_id string, size IconSize) *Image {
 }
 
 // gtk_image_new_from_animation
-// gtk_image_new_from_icon_name
+
+func NewImageFromIconName(stock_id string, size IconSize) *Image {
+	ptr := C.CString(stock_id)
+	defer cfree(ptr)
+	return &Image{Misc{Widget{C.gtk_image_new_from_icon_name(gstring(ptr), C.GtkIconSize(size))}}}
+}
 // gtk_image_new_from_gicon
 
 func (v *Image) GetPixbuf() *gdkpixbuf.Pixbuf {
