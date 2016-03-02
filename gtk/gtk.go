@@ -271,7 +271,11 @@ func EventsPending() bool {
 // gtk_key_snooper_install
 // gtk_key_snooper_remove
 // gtk_get_current_event
-// gtk_get_current_event_time
+
+func GetCurrentEventTime() uint32 {
+	return uint32(C.gtk_get_current_event_time())
+}
+
 // gtk_get_current_event_state
 // gtk_get_event_widget
 // gtk_propagate_event
