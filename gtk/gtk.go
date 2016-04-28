@@ -304,7 +304,19 @@ func NewAccelGroup() *AccelGroup {
 // gtk_accel_groups_from_object
 // gtk_accel_group_find
 // gtk_accelerator_valid
-// gtk_accelerator_parse
+
+// Parse string representing an accelerator
+// and return the key code and the modifier masks.
+func AcceleratorParse(accelerator string) (uint, gdk.ModifierType) {
+	ptrn := C.CString(accelerator)
+	defer cfree(ptrn)
+
+	var key C.guint
+	var mods C.GdkModifierType
+	C.gtk_accelerator_parse(gstring(ptrn), &key, &mods)
+	return uint(key), gdk.ModifierType(mods)
+}
+
 // gtk_accelerator_name
 // gtk_accelerator_get_label
 // gtk_accelerator_set_default_mod_mask
