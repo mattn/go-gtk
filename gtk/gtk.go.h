@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
-static void _gtk_init(void* argc, void* argv) {
+static void _gtk_init(int* argc, char*** argv) {
 	gtk_init((int*)argc, (char***)argv);
 }
 

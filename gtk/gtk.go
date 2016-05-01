@@ -221,18 +221,20 @@ func SetLocale() {
 func Init(args *[]string) {
 	if args != nil {
 		var argc C.int = C.int(len(*args))
-		cargs := make([]*C.char, argc)
+		ptr := uintptr(C.malloc(C.size_t(int(unsafe.Sizeof((*C.char)(nil))) * len(*args))))
+		cargs := (***C.char)(unsafe.Pointer(ptr))
 		for i, arg := range *args {
-			cargs[i] = C.CString(arg)
+			(*(**[1 << 22]*C.char)(unsafe.Pointer(&cargs)))[i] = C.CString(arg)
 		}
-		C._gtk_init(unsafe.Pointer(&argc), unsafe.Pointer(&cargs))
+		C.gtk_init(&argc, cargs)
 		goargs := make([]string, argc)
 		for i := 0; i < int(argc); i++ {
-			goargs[i] = C.GoString(cargs[i])
+			goargs[i] = C.GoString((*(**[1 << 22]*C.char)(unsafe.Pointer(&cargs)))[i])
 		}
 		for i := 0; i < int(argc); i++ {
-			cfree(cargs[i])
+			cfree(((*(**[1 << 22]*C.char)(unsafe.Pointer(&cargs)))[i]))
 		}
+		C.free(unsafe.Pointer(ptr))
 		*args = goargs
 	} else {
 		C._gtk_init(nil, nil)
@@ -1838,6 +1840,7 @@ func NewImageFromIconName(stock_id string, size IconSize) *Image {
 	defer cfree(ptr)
 	return &Image{Misc{Widget{C.gtk_image_new_from_icon_name(gstring(ptr), C.GtkIconSize(size))}}}
 }
+
 // gtk_image_new_from_gicon
 
 func (v *Image) GetPixbuf() *gdkpixbuf.Pixbuf {

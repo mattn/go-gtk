@@ -46,7 +46,7 @@ func authors() []string {
 }
 
 func main() {
-	gtk.Init(nil)
+	gtk.Init(&os.Args)
 
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 	window.SetPosition(gtk.WIN_POS_CENTER)
