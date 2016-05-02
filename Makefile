@@ -22,3 +22,7 @@ fmt:
 	cd gtksourceview && go fmt .
 	#cd gtkgl && go fmt .
 	#cd gtkspell && go fmt .
+
+.PHONY: clean
+clean: clean-example
+	@true
