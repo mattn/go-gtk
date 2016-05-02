@@ -20,6 +20,7 @@ import (
 	"github.com/mattn/go-gtk/gdkpixbuf"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/pango"
+	"github.com/mattn/go-pointer"
 )
 
 func gint(v int) C.gint           { return C.gint(v) }
@@ -5514,7 +5515,7 @@ func (v *Menu) Popup(parent_menu_shell, parent_menu_item IWidget, f MenuPosition
 	if parent_menu_item != nil {
 		pmi = ToNative(parent_menu_item)
 	}
-	C._gtk_menu_popup(v.GWidget, pms, pmi, unsafe.Pointer(&MenuPositionFuncInfo{v, f, data}), guint(button), guint32(active_item))
+	C._gtk_menu_popup(v.GWidget, pms, pmi, pointer.Save(&MenuPositionFuncInfo{v, f, data}), guint(button), guint32(active_item))
 }
 
 // void gtk_menu_set_accel_group (GtkMenu *menu, GtkAccelGroup *accel_group);
@@ -5576,7 +5577,7 @@ func _go_gtk_menu_position_func(gmpfi *C._gtk_menu_position_func_info) {
 	if gmpfi == nil {
 		return
 	}
-	gmpfigo := (*MenuPositionFuncInfo)(gmpfi.data)
+	gmpfigo := pointer.Restore(uintptr(gmpfi.data)).(*MenuPositionFuncInfo)
 	if gmpfigo.f == nil {
 		return
 	}
