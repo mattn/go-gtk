@@ -425,9 +425,9 @@ type DestDefaults int
 
 const (
 	DEST_DEFAULT_MOTION    DestDefaults = 1 << 0 /* respond to "drag_motion" */
-	DEST_DEFAULT_HIGHLIGHT DestDefaults = 1 << 1 /* auto-highlight */
-	DEST_DEFAULT_DROP      DestDefaults = 1 << 2 /* respond to "drag_drop" */
-	DEST_DEFAULT_ALL       DestDefaults = 0x07
+	DEST_DEFAULT_HIGHLIGHT              = 1 << 1 /* auto-highlight */
+	DEST_DEFAULT_DROP                   = 1 << 2 /* respond to "drag_drop" */
+	DEST_DEFAULT_ALL                    = 0x07
 )
 
 type TargetEntry struct {
@@ -1043,24 +1043,24 @@ type DialogFlags int
 
 const (
 	DIALOG_MODAL               DialogFlags = 1 << 0 /* call gtk_window_set_modal (win, TRUE) */
-	DIALOG_DESTROY_WITH_PARENT DialogFlags = 1 << 1 /* call gtk_window_set_destroy_with_parent () */
-	DIALOG_NO_SEPARATOR        DialogFlags = 1 << 2 /* no separator bar above buttons */
+	DIALOG_DESTROY_WITH_PARENT             = 1 << 1 /* call gtk_window_set_destroy_with_parent () */
+	DIALOG_NO_SEPARATOR                    = 1 << 2 /* no separator bar above buttons */
 )
 
 type ResponseType int
 
 const (
 	RESPONSE_NONE         ResponseType = -1
-	RESPONSE_REJECT       ResponseType = -2
-	RESPONSE_ACCEPT       ResponseType = -3
-	RESPONSE_DELETE_EVENT ResponseType = -4
-	RESPONSE_OK           ResponseType = -5
-	RESPONSE_CANCEL       ResponseType = -6
-	RESPONSE_CLOSE        ResponseType = -7
-	RESPONSE_YES          ResponseType = -8
-	RESPONSE_NO           ResponseType = -9
-	RESPONSE_APPLY        ResponseType = -10
-	RESPONSE_HELP         ResponseType = -11
+	RESPONSE_REJECT                    = -2
+	RESPONSE_ACCEPT                    = -3
+	RESPONSE_DELETE_EVENT              = -4
+	RESPONSE_OK                        = -5
+	RESPONSE_CANCEL                    = -6
+	RESPONSE_CLOSE                     = -7
+	RESPONSE_YES                       = -8
+	RESPONSE_NO                        = -9
+	RESPONSE_APPLY                     = -10
+	RESPONSE_HELP                      = -11
 )
 
 /*type IDialog interface {
@@ -1139,22 +1139,22 @@ func (v *Dialog) GetVBox() *VBox {
 type MessageType int
 
 const (
-	MESSAGE_INFO     = 0
-	MESSAGE_WARNING  = 1
-	MESSAGE_QUESTION = 2
-	MESSAGE_ERROR    = 3
-	MESSAGE_OTHER    = 4
+	MESSAGE_INFO MessageType = iota
+	MESSAGE_WARNING
+	MESSAGE_QUESTION
+	MESSAGE_ERROR
+	MESSAGE_OTHER
 )
 
 type ButtonsType int
 
 const (
-	BUTTONS_NONE      = 0
-	BUTTONS_OK        = 1
-	BUTTONS_CLOSE     = 2
-	BUTTONS_CANCEL    = 3
-	BUTTONS_YES_NO    = 4
-	BUTTONS_OK_CANCEL = 5
+	BUTTONS_NONE ButtonsType = iota
+	BUTTONS_OK
+	BUTTONS_CLOSE
+	BUTTONS_CANCEL
+	BUTTONS_YES_NO
+	BUTTONS_OK_CANCEL
 )
 
 type MessageDialog struct {
@@ -1208,18 +1208,18 @@ func (v *MessageDialog) GetImage() *Image {
 type WindowType int
 
 const (
-	WINDOW_TOPLEVEL WindowType = 0
-	WINDOW_POPUP    WindowType = 1
+	WINDOW_TOPLEVEL WindowType = iota
+	WINDOW_POPUP
 )
 
 type WindowPosition int
 
 const (
-	WIN_POS_NONE             WindowPosition = 0
-	WIN_POS_CENTER           WindowPosition = 1
-	WIN_POS_MOUSE            WindowPosition = 2
-	WIN_POS_CENTER_ALWAYS    WindowPosition = 3
-	WIN_POS_CENTER_ON_PARENT WindowPosition = 4
+	WIN_POS_NONE WindowPosition = iota
+	WIN_POS_CENTER
+	WIN_POS_MOUSE
+	WIN_POS_CENTER_ALWAYS
+	WIN_POS_CENTER_ON_PARENT
 )
 
 /*type IWindow interface {
@@ -1661,11 +1661,11 @@ func (v *AboutDialog) SetLogoIconName(icon_name string) {
 type AssistantPageType int
 
 const (
-	ASSISTANT_PAGE_CONTENT  AssistantPageType = 0
-	ASSISTANT_PAGE_INTRO    AssistantPageType = 1
-	ASSISTANT_PAGE_CONFIRM  AssistantPageType = 2
-	ASSISTANT_PAGE_SUMMARY  AssistantPageType = 3
-	ASSISTANT_PAGE_PROGRESS AssistantPageType = 4
+	ASSISTANT_PAGE_CONTENT AssistantPageType = iota
+	ASSISTANT_PAGE_INTRO
+	ASSISTANT_PAGE_CONFIRM
+	ASSISTANT_PAGE_SUMMARY
+	ASSISTANT_PAGE_PROGRESS
 )
 
 type Assistant struct {
@@ -1802,13 +1802,13 @@ func (v *AccelLabel) Refetch() bool {
 type IconSize int
 
 const (
-	ICON_SIZE_INVALID       IconSize = 0
-	ICON_SIZE_MENU          IconSize = 1
-	ICON_SIZE_SMALL_TOOLBAR IconSize = 2
-	ICON_SIZE_LARGE_TOOLBAR IconSize = 3
-	ICON_SIZE_BUTTON        IconSize = 4
-	ICON_SIZE_DND           IconSize = 5
-	ICON_SIZE_DIALOG        IconSize = 6
+	ICON_SIZE_INVALID IconSize = iota
+	ICON_SIZE_MENU
+	ICON_SIZE_SMALL_TOOLBAR
+	ICON_SIZE_LARGE_TOOLBAR
+	ICON_SIZE_BUTTON
+	ICON_SIZE_DND
+	ICON_SIZE_DIALOG
 )
 
 /*type IImage interface {
@@ -1909,10 +1909,10 @@ func (v *Image) Clear() {
 type Justification int
 
 const (
-	JUSTIFY_LEFT   Justification = 0
-	JUSTIFY_RIGHT  Justification = 1
-	JUSTIFY_CENTER Justification = 2
-	JUSTIFY_FILL   Justification = 3
+	JUSTIFY_LEFT Justification = iota
+	JUSTIFY_RIGHT
+	JUSTIFY_CENTER
+	JUSTIFY_FILL
 )
 
 type ILabel interface {
@@ -2098,10 +2098,10 @@ func (v *Label) GetTrackVisitedLinks() bool {
 type ProgressBarOrientation int
 
 const (
-	PROGRESS_LEFT_TO_RIGHT ProgressBarOrientation = 0
-	PROGRESS_RIGHT_TO_LEFT ProgressBarOrientation = 1
-	PROGRESS_BOTTOM_TO_TOP ProgressBarOrientation = 2
-	PROGRESS_TOP_TO_BOTTOM ProgressBarOrientation = 3
+	PROGRESS_LEFT_TO_RIGHT ProgressBarOrientation = iota
+	PROGRESS_RIGHT_TO_LEFT
+	PROGRESS_BOTTOM_TO_TOP
+	PROGRESS_TOP_TO_BOTTOM
 )
 
 type ProgressBar struct {
@@ -2443,9 +2443,9 @@ func (s *Spinner) Stop() {
 type ReliefStyle int
 
 const (
-	RELIEF_NORMAL ReliefStyle = 0
-	RELIEF_HALF   ReliefStyle = 1
-	RELIEF_NONE   ReliefStyle = 2
+	RELIEF_NORMAL ReliefStyle = iota
+	RELIEF_HALF
+	RELIEF_NONE
 )
 
 type Button struct {
@@ -3158,20 +3158,20 @@ func NewVScaleWithRange(min, max, step float64) *Scale {
 type SpinButtonUpdatePolicy int
 
 const (
-	UPDATE_ALWAYS   = 0
-	UPDATE_IF_VALID = 1
+	UPDATE_ALWAYS SpinButtonUpdatePolicy = iota
+	UPDATE_IF_VALID
 )
 
 type SpinType int
 
 const (
-	SPIN_STEP_FORWARD  = 0
-	SPIN_STEP_BACKWARD = 1
-	SPIN_PAGE_FORWARD  = 2
-	SPIN_PAGE_BACKWARD = 3
-	SPIN_HOME          = 4
-	SPIN_END           = 5
-	SPIN_USER_DEFINED  = 6
+	SPIN_STEP_FORWARD SpinType = iota
+	SPIN_STEP_BACKWARD
+	SPIN_PAGE_FORWARD
+	SPIN_PAGE_BACKWARD
+	SPIN_HOME
+	SPIN_END
+	SPIN_USER_DEFINED
 )
 
 type SpinButton struct {
@@ -3341,8 +3341,8 @@ type TextSearchFlags int
 
 const (
 	TEXT_SEARCH_VISIBLE_ONLY     TextSearchFlags = 1 << 0
-	TEXT_SEARCH_TEXT_ONLY        TextSearchFlags = 1 << 1
-	TEXT_SEARCH_CASE_INSENSITIVE TextSearchFlags = 1 << 2
+	TEXT_SEARCH_TEXT_ONLY                        = 1 << 1
+	TEXT_SEARCH_CASE_INSENSITIVE                 = 1 << 2
 )
 
 func (v *TextIter) GetBuffer() *TextBuffer {
@@ -3867,10 +3867,10 @@ func (v *TextTagTable) GetSize() int {
 type WrapMode int
 
 const (
-	WRAP_NONE      WrapMode = 0
-	WRAP_CHAR      WrapMode = 1
-	WRAP_WORD      WrapMode = 2
-	WRAP_WORD_CHAR WrapMode = 3
+	WRAP_NONE WrapMode = iota
+	WRAP_CHAR
+	WRAP_WORD
+	WRAP_WORD_CHAR
 )
 
 type TextChildAnchor struct {
@@ -4143,7 +4143,7 @@ type TreeModelFlags int
 
 const (
 	TREE_MODEL_ITERS_PERSIST TreeModelFlags = 1 << 0
-	TREE_MODEL_LIST_ONLY     TreeModelFlags = 1 << 1
+	TREE_MODEL_LIST_ONLY                    = 1 << 1
 )
 
 type ITreeModel interface {
@@ -4226,11 +4226,11 @@ type TreeSelection struct {
 type SelectionMode int
 
 const (
-	SELECTION_NONE     SelectionMode = 0
-	SELECTION_SINGLE   SelectionMode = 1
-	SELECTION_BROWSE   SelectionMode = 2
-	SELECTION_MULTIPLE SelectionMode = 3
-	SELECTION_EXTENDED               = SELECTION_MULTIPLE
+	SELECTION_NONE SelectionMode = iota
+	SELECTION_SINGLE
+	SELECTION_BROWSE
+	SELECTION_MULTIPLE
+	SELECTION_EXTENDED = SELECTION_MULTIPLE
 )
 
 func (v *TreeSelection) Connect(s string, f interface{}, datas ...interface{}) int {
@@ -4319,9 +4319,9 @@ func (v *TreeSelection) UnselectRange(start_path *TreePath, end_path *TreePath) 
 type TreeViewColumnSizing int
 
 const (
-	TREE_VIEW_COLUMN_GROW_ONLY TreeViewColumnSizing = 0
-	TREE_VIEW_COLUMN_AUTOSIZE  TreeViewColumnSizing = 1
-	TREE_VIEW_COLUMN_FIXED     TreeViewColumnSizing = 2
+	TREE_VIEW_COLUMN_GROW_ONLY TreeViewColumnSizing = iota
+	TREE_VIEW_COLUMN_AUTOSIZE
+	TREE_VIEW_COLUMN_FIXED
 )
 
 type TreeViewColumn struct {
@@ -5605,10 +5605,10 @@ func _go_gtk_menu_position_func(gmpfi *C._gtk_menu_position_func_info) {
 type PackDirection int
 
 const (
-	PACK_DIRECTION_LTR PackDirection = 0
-	PACK_DIRECTION_RTL PackDirection = 1
-	PACK_DIRECTION_TTB PackDirection = 2
-	PACK_DIRECTION_BTT PackDirection = 3
+	PACK_DIRECTION_LTR PackDirection = iota
+	PACK_DIRECTION_RTL
+	PACK_DIRECTION_TTB
+	PACK_DIRECTION_BTT
 )
 
 type MenuBar struct {
@@ -5910,17 +5910,17 @@ func NewTearoffMenuItem() *TearoffMenuItem {
 type Orientation int
 
 const (
-	ORIENTATION_HORIZONTAL = 0
-	ORIENTATION_VERTICAL   = 1
+	ORIENTATION_HORIZONTAL Orientation = iota
+	ORIENTATION_VERTICAL
 )
 
 type ToolbarStyle int
 
 const (
-	TOOLBAR_ICONS      = 0
-	TOOLBAR_TEXT       = 1
-	TOOLBAR_BOTH       = 2
-	TOOLBAR_BOTH_HORIZ = 3
+	TOOLBAR_ICONS ToolbarStyle = iota
+	TOOLBAR_TEXT
+	TOOLBAR_BOTH
+	TOOLBAR_BOTH_HORIZ
 )
 
 type Toolbar struct {
@@ -7163,10 +7163,10 @@ func (v *ColorButton) GetTitle() string {
 type FileChooserAction int
 
 const (
-	FILE_CHOOSER_ACTION_OPEN          FileChooserAction = 0
-	FILE_CHOOSER_ACTION_SAVE          FileChooserAction = 1
-	FILE_CHOOSER_ACTION_SELECT_FOLDER FileChooserAction = 2
-	FILE_CHOOSER_ACTION_CREATE_FOLDER FileChooserAction = 3
+	FILE_CHOOSER_ACTION_OPEN FileChooserAction = iota
+	FILE_CHOOSER_ACTION_SAVE
+	FILE_CHOOSER_ACTION_SELECT_FOLDER
+	FILE_CHOOSER_ACTION_CREATE_FOLDER
 )
 
 type FileChooser struct {
@@ -8051,11 +8051,11 @@ func (v *Expander) GetLabelWidget() ILabel {
 type ShadowType int
 
 const (
-	SHADOW_NONE       ShadowType = 0
-	SHADOW_IN         ShadowType = 1
-	SHADOW_OUT        ShadowType = 2
-	SHADOW_ETCHED_IN  ShadowType = 3
-	SHADOW_ETCHED_OUT ShadowType = 4
+	SHADOW_NONE ShadowType = iota
+	SHADOW_IN
+	SHADOW_OUT
+	SHADOW_ETCHED_IN
+	SHADOW_ETCHED_OUT
 )
 
 type Frame struct {
@@ -8160,18 +8160,18 @@ func NewVScrollbar(va *Adjustment) *VScrollbar {
 type PolicyType int
 
 const (
-	POLICY_ALWAYS    = 0
-	POLICY_AUTOMATIC = 1
-	POLICY_NEVER     = 2
+	POLICY_ALWAYS PolicyType = iota
+	POLICY_AUTOMATIC
+	POLICY_NEVER
 )
 
 type CornerType int
 
 const (
-	CORNER_TOP_LEFT     CornerType = 0
-	CORNER_BOTTOM_LEFT  CornerType = 1
-	CORNER_TOP_RIGHT    CornerType = 2
-	CORNER_BOTTOM_RIGHT CornerType = 3
+	CORNER_TOP_LEFT CornerType = iota
+	CORNER_BOTTOM_LEFT
+	CORNER_TOP_RIGHT
+	CORNER_BOTTOM_RIGHT
 )
 
 type ScrolledWindow struct {
@@ -8246,19 +8246,19 @@ type PrintOperation struct {
 type PrintOperationResult int
 
 const (
-	PRINT_OPERATION_RESULT_ERROR       PrintOperationResult = 0
-	PRINT_OPERATION_RESULT_APPLY       PrintOperationResult = 1
-	PRINT_OPERATION_RESULT_CANCEL      PrintOperationResult = 2
-	PRINT_OPERATION_RESULT_IN_PROGRESS PrintOperationResult = 3
+	PRINT_OPERATION_RESULT_ERROR PrintOperationResult = iota
+	PRINT_OPERATION_RESULT_APPLY
+	PRINT_OPERATION_RESULT_CANCEL
+	PRINT_OPERATION_RESULT_IN_PROGRESS
 )
 
 type PrintOperationAction int
 
 const (
-	PRINT_OPERATION_ACTION_PRINT_DIALOG PrintOperationAction = 0
-	PRINT_OPERATION_ACTION_PRINT        PrintOperationAction = 1
-	PRINT_OPERATION_ACTION_PREVIEW      PrintOperationAction = 2
-	PRINT_OPERATION_ACTION_EXPOR        PrintOperationAction = 3
+	PRINT_OPERATION_ACTION_PRINT_DIALOG PrintOperationAction = iota
+	PRINT_OPERATION_ACTION_PRINT
+	PRINT_OPERATION_ACTION_PREVIEW
+	PRINT_OPERATION_ACTION_EXPOR
 )
 
 func NewPrintOperation() *PrintOperation {
@@ -8750,10 +8750,10 @@ func NewEventBox() *EventBox {
 type SizeGroupMode int
 
 const (
-	SIZE_GROUP_NONE       SizeGroupMode = 0
-	SIZE_GROUP_HORIZONTAL SizeGroupMode = 1
-	SIZE_GROUP_VERTICAL   SizeGroupMode = 2
-	SIZE_GROUP_BOTH       SizeGroupMode = 3
+	SIZE_GROUP_NONE SizeGroupMode = iota
+	SIZE_GROUP_HORIZONTAL
+	SIZE_GROUP_VERTICAL
+	SIZE_GROUP_BOTH
 )
 
 type SizeGroup struct {
@@ -8907,8 +8907,8 @@ func (v *Bin) GetChild() *Widget {
 type PackType int
 
 const (
-	PACK_START PackType = 0
-	PACK_END   PackType = 1
+	PACK_START PackType = iota
+	PACK_END
 )
 
 type IBox interface {
@@ -9275,10 +9275,10 @@ func (v *Range) SetFlippable(b bool) {
 type PositionType int
 
 const (
-	POS_LEFT   PositionType = 0
-	POS_RIGHT  PositionType = 1
-	POS_TOP    PositionType = 2
-	POS_BOTTOM PositionType = 3
+	POS_LEFT PositionType = iota
+	POS_RIGHT
+	POS_TOP
+	POS_BOTTOM
 )
 
 type Scale struct {
@@ -9337,18 +9337,18 @@ type AccelFlags int
 
 const (
 	ACCEL_VISIBLE AccelFlags = 1 << 0
-	ACCEL_LOCKED  AccelFlags = 1 << 1
-	ACCEL_MASK    AccelFlags = 0x07
+	ACCEL_LOCKED             = 1 << 1
+	ACCEL_MASK               = 0x07
 )
 
 type StateType int
 
 const (
-	STATE_NORMAL      StateType = 0
-	STATE_ACTIVE      StateType = 1
-	STATE_PRELIGHT    StateType = 2
-	STATE_SELECTED    StateType = 3
-	STATE_INSENSITIVE StateType = 4
+	STATE_NORMAL StateType = iota
+	STATE_ACTIVE
+	STATE_PRELIGHT
+	STATE_SELECTED
+	STATE_INSENSITIVE
 )
 
 type IWidget interface {
