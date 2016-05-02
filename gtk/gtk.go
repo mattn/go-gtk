@@ -90,6 +90,7 @@ func SCALEBUTTON(p *ScaleButton) *C.GtkScaleButton         { return C.toGScaleBu
 func STYLE(p *Style) *C.GtkStyle                           { return p.GStyle }
 func ENTRY(p *Entry) *C.GtkEntry                           { return C.toGEntry(p.GWidget) }
 func ADJUSTMENT(p *Adjustment) *C.GtkAdjustment            { return p.GAdjustment }
+func ARROW(p *Arrow) *C.GtkArrow                           { return C.toGArrow(p.GWidget) }
 func TEXT_VIEW(p *TextView) *C.GtkTextView                 { return C.toGTextView(p.GWidget) }
 func TEXT_BUFFER(p unsafe.Pointer) *C.GtkTextBuffer        { return C.toGTextBuffer(p) }
 func TEXT_TAG(p unsafe.Pointer) *C.GtkTextTag              { return C.toGTextTag(p) }
@@ -8638,8 +8639,30 @@ func (v *Adjustment) Connect(s string, f interface{}, datas ...interface{}) int 
 // GtkArrow
 //-----------------------------------------------------------------------
 
-// gtk_arrow_new
-// gtk_arrow_set
+type Arrow struct {
+	Widget
+}
+
+type ArrowType int
+
+const (
+	ARROW_UP ArrowType = iota
+	ARROW_DOWN
+	ARROW_LEFT
+	ARROW_RIGHT
+	ARROW_NONE
+)
+
+// Draw arrowhead facing in given direction with a shadow.
+// Like gtk.Label it does not emit signals.
+func NewArrow(at ArrowType, st ShadowType) *Arrow {
+	return &Arrow{Widget{C.gtk_arrow_new(C.GtkArrowType(at), C.GtkShadowType(st))}}
+}
+
+// Change the arrows direction and shadow.
+func (a *Arrow) Set(at ArrowType, st ShadowType) {
+	C.gtk_arrow_set(ARROW(a), C.GtkArrowType(at), C.GtkShadowType(st))
+}
 
 //-----------------------------------------------------------------------
 // GtkCalendar
