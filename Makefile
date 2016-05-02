@@ -1,6 +1,7 @@
 include example/example.mk
 
 .DEFAULT_GOAL := all
+.PHONY: all
 all:
 	cd pango && go get -x
 	cd glib && go get -x
@@ -11,6 +12,7 @@ all:
 	#cd gtkgl && go get -x .
 	#cd gtkspell && go get -x .
 
+.PHONY: all
 fmt:
 	cd pango && go fmt .
 	cd glib && go fmt .
