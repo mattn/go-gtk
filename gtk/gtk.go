@@ -6087,6 +6087,20 @@ func (v *ToolItem) SetTooltipMarkup(markup string) {
 	defer cfree(p_markup)
 	C.gtk_tool_item_set_tooltip_markup(TOOL_ITEM(v), gstring(p_markup))
 }
+
+// Mark a tool item as important or non-important.
+//
+// When a gtk.Toolbar’s style is gtk.TOOLBAR_BOTH_HORIZ,
+// labels are only displayed for tool item buttons considered important.
+// This is an effect known as “priority text”.
+func (v *ToolItem) SetIsImportant(b bool) {
+	C.gtk_tool_item_set_is_important(TOOL_ITEM(v), gbool(b))
+}
+
+func (v *ToolItem) GetIsImportant() bool {
+	return gobool(C.gtk_tool_item_get_is_important(TOOL_ITEM(v)))
+}
+
 func (v *ToolItem) GetToolbarStyle() ToolbarStyle {
 	return ToolbarStyle(C.gtk_tool_item_get_toolbar_style(TOOL_ITEM(v)))
 }
