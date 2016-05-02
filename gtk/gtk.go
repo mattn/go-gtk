@@ -307,7 +307,19 @@ func NewAccelGroup() *AccelGroup {
 // gtk_accel_groups_from_object
 // gtk_accel_group_find
 // gtk_accelerator_valid
-// gtk_accelerator_parse
+
+// Parse string representing an accelerator
+// and return the key code and the modifier masks.
+func AcceleratorParse(accelerator string) (uint, gdk.ModifierType) {
+	ptrn := C.CString(accelerator)
+	defer cfree(ptrn)
+
+	var key C.guint
+	var mods C.GdkModifierType
+	C.gtk_accelerator_parse(gstring(ptrn), &key, &mods)
+	return uint(key), gdk.ModifierType(mods)
+}
+
 // gtk_accelerator_name
 // gtk_accelerator_get_label
 // gtk_accelerator_set_default_mod_mask
@@ -6076,6 +6088,20 @@ func (v *ToolItem) SetTooltipMarkup(markup string) {
 	defer cfree(p_markup)
 	C.gtk_tool_item_set_tooltip_markup(TOOL_ITEM(v), gstring(p_markup))
 }
+
+// Mark a tool item as important or non-important.
+//
+// When a gtk.Toolbar’s style is gtk.TOOLBAR_BOTH_HORIZ,
+// labels are only displayed for tool item buttons considered important.
+// This is an effect known as “priority text”.
+func (v *ToolItem) SetIsImportant(b bool) {
+	C.gtk_tool_item_set_is_important(TOOL_ITEM(v), gbool(b))
+}
+
+func (v *ToolItem) GetIsImportant() bool {
+	return gobool(C.gtk_tool_item_get_is_important(TOOL_ITEM(v)))
+}
+
 func (v *ToolItem) GetToolbarStyle() ToolbarStyle {
 	return ToolbarStyle(C.gtk_tool_item_get_toolbar_style(TOOL_ITEM(v)))
 }
