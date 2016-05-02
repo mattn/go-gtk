@@ -793,6 +793,7 @@ static inline GtkEntry* toGEntry(GtkWidget* w) { return GTK_ENTRY(w); }
 static inline GtkScaleButton* toGScaleButton(GtkWidget* w) { return GTK_SCALE_BUTTON(w); }
 static inline GtkStyle* toGStyle(GtkObject* o) { return GTK_STYLE(o); }
 static inline GtkAdjustment* toGAdjustment(GtkObject* o) { return GTK_ADJUSTMENT(o); }
+static inline GtkArrow* toGArrow(GtkWidget* w) { return GTK_ARROW(w); }
 static inline GtkTextView* toGTextView(GtkWidget* w) { return GTK_TEXT_VIEW(w); }
 static inline GtkTextBuffer* toGTextBuffer(void* w) { return GTK_TEXT_BUFFER(w); }
 static inline GtkTextTag* toGTextTag(void* o) { return GTK_TEXT_TAG(o); }
