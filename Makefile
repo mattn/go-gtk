@@ -1,3 +1,6 @@
+include example/example.mk
+
+.DEFAULT_GOAL := all
 all:
 	cd pango && go get -x
 	cd glib && go get -x
