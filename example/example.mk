@@ -4,6 +4,7 @@ EXAMPLES := \
 	example/builder/builder \
 	example/clipboard/clipboard \
 	example/demo/demo \
+	example/allow/allow \
 	example/dnd/dnd \
 	example/drawable/drawable \
 	example/event/event \
