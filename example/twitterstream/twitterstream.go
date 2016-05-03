@@ -19,6 +19,10 @@ import (
 	"github.com/mattn/go-gtk/gtk"
 )
 
+var (
+	alive = true
+)
+
 func readURL(url string) ([]byte, *http.Response) {
 	r, err := http.Get(url)
 	if err != nil {
@@ -76,6 +80,96 @@ type tweet struct {
 	}
 }
 
+func stream(client *oauth.Client, cred *oauth.Credentials, f func(*tweet)) {
+	param := make(url.Values)
+	uri := "https://userstream.twitter.com/1.1/user.json"
+	client.SignParam(cred, "GET", uri, param)
+	uri = uri + "?" + param.Encode()
+	res, err := http.Get(uri)
+	if err != nil {
+		log.Fatal("failed to get tweets:", err)
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		log.Fatal("failed to get tweets:", err)
+	}
+	var buf *bufio.Reader
+	if res.Header.Get("Content-Encoding") == "gzip" {
+		gr, err := gzip.NewReader(res.Body)
+		if err != nil {
+			log.Fatal("failed to make gzip decoder:", err)
+		}
+		buf = bufio.NewReader(gr)
+	} else {
+		buf = bufio.NewReader(res.Body)
+	}
+	var last []byte
+	for alive {
+		b, _, err := buf.ReadLine()
+		last = append(last, b...)
+		var t tweet
+		err = json.Unmarshal(last, &t)
+		if err != nil {
+			continue
+		}
+		last = []byte{}
+		if t.Text == "" {
+			continue
+		}
+		f(&t)
+	}
+}
+
+func post(client *oauth.Client, cred *oauth.Credentials, s string) {
+	param := make(url.Values)
+	param.Set("status", s)
+	uri := "https://api.twitter.com/1.1/statuses/update.json"
+	client.SignParam(cred, "POST", uri, param)
+	res, err := http.PostForm(uri, url.Values(param))
+	if err != nil {
+		log.Println("failed to post tweet:", err)
+		return
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		log.Println("failed to get timeline:", err)
+		return
+	}
+}
+
+func display(t *tweet, buffer *gtk.TextBuffer, tag *gtk.TextTag) {
+	var iter gtk.TextIter
+	pixbufbytes, resp := readURL(t.User.ProfileImageUrl)
+	buffer.GetStartIter(&iter)
+	if resp != nil {
+		buffer.InsertPixbuf(&iter, bytes2pixbuf(pixbufbytes, resp.Header.Get("Content-Type")))
+	}
+	buffer.Insert(&iter, " ")
+	buffer.InsertWithTag(&iter, t.User.ScreenName, tag)
+	buffer.Insert(&iter, ":"+t.Text+"\n")
+	gtk.MainIterationDo(false)
+}
+
+func show(client *oauth.Client, cred *oauth.Credentials, f func(t *tweet)) {
+	param := make(url.Values)
+	uri := "https://api.twitter.com/1.1/statuses/home_timeline.json"
+	client.SignParam(cred, "GET", uri, param)
+	uri = uri + "?" + param.Encode()
+	res, err := http.Get(uri)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		return
+	}
+	var tweets []tweet
+	json.NewDecoder(res.Body).Decode(&tweets)
+	for _, t := range tweets {
+		f(&t)
+	}
+}
+
 func main() {
 	b, err := ioutil.ReadFile("settings.json")
 	if err != nil {
@@ -107,9 +201,7 @@ func main() {
 	vbox.Add(scrolledwin)
 
 	buffer := textview.GetBuffer()
-
-	tag := buffer.CreateTag("blue", map[string]string{
-		"foreground": "#0000FF", "weight": "700"})
+	tag := buffer.CreateTag("blue", map[string]string{"foreground": "#0000FF", "weight": "700"})
 
 	hbox := gtk.NewHBox(false, 1)
 	vbox.PackEnd(hbox, false, true, 5)
@@ -122,85 +214,36 @@ func main() {
 	text.Connect("activate", func() {
 		t := text.GetText()
 		text.SetText("")
-
-		param := make(url.Values)
-		param.Set("status", t)
-		uri := "https://api.twitter.com/1.1/statuses/update.json"
-		client.SignParam(cred, "POST", uri, param)
-		res, err := http.PostForm(uri, url.Values(param))
-		if err != nil {
-			log.Println("failed to post tweet:", err)
-			return
-		}
-		defer res.Body.Close()
-		if res.StatusCode != 200 {
-			log.Println("failed to get timeline:", err)
-			return
-		}
+		post(client, cred, t)
 	})
 
 	window.Add(vbox)
 	window.SetSizeRequest(800, 500)
 	window.ShowAll()
 
-	var m sync.Mutex
-	alive := true
+	var mutex sync.Mutex
 
 	go func() {
-		param := make(url.Values)
-		uri := "https://userstream.twitter.com/1.1/user.json"
-		client.SignParam(cred, "GET", uri, param)
-		uri = uri + "?" + param.Encode()
-		res, err := http.Get(uri)
-		if err != nil {
-			log.Fatal("failed to get tweets:", err)
-		}
-		defer res.Body.Close()
-		if res.StatusCode != 200 {
-			log.Fatal("failed to get tweets:", err)
-		}
-		var buf *bufio.Reader
-		if res.Header.Get("Content-Encoding") == "gzip" {
-			gr, err := gzip.NewReader(res.Body)
-			if err != nil {
-				log.Fatal("failed to make gzip decoder:", err)
-			}
-			buf = bufio.NewReader(gr)
-		} else {
-			buf = bufio.NewReader(res.Body)
-		}
-		var last []byte
-		for alive {
-			b, _, err := buf.ReadLine()
-			last = append(last, b...)
-			var t tweet
-			err = json.Unmarshal(last, &t)
-			if err != nil {
-				continue
-			}
-			last = []byte{}
-			if t.Text == "" {
-				continue
-			}
-			var iter gtk.TextIter
-			pixbufbytes, resp := readURL(t.User.ProfileImageUrl)
-			m.Lock()
-			buffer.GetStartIter(&iter)
-			if resp != nil {
-				buffer.InsertPixbuf(&iter, bytes2pixbuf(pixbufbytes, resp.Header.Get("Content-Type")))
-			}
-			buffer.Insert(&iter, " ")
-			buffer.InsertWithTag(&iter, t.User.ScreenName, tag)
-			buffer.Insert(&iter, ":"+t.Text+"\n")
-			gtk.MainIterationDo(false)
-			m.Unlock()
-		}
+		show(client, cred, func(t *tweet) {
+			mutex.Lock()
+			display(t, buffer, tag)
+			mutex.Unlock()
+		})
+
+		stream(client, cred, func(t *tweet) {
+			mutex.Lock()
+			display(t, buffer, tag)
+			var start, end gtk.TextIter
+			buffer.GetIterAtLine(&start, buffer.GetLineCount()-2)
+			buffer.GetEndIter(&end)
+			buffer.Delete(&start, &end)
+			mutex.Unlock()
+		})
 	}()
 
 	for alive {
-		m.Lock()
+		mutex.Lock()
 		alive = gtk.MainIterationDo(false)
-		m.Unlock()
+		mutex.Unlock()
 	}
-	gtk.Main()
 }
