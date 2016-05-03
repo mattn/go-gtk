@@ -10,15 +10,13 @@
 
 ## INSTALL
 
-  To experiment with go-gtk, you can just compile and run the example
-  program:
+  You can experiment with go-gtk
+  by running the various example programs:
 
     git clone  https://github.com/mattn/go-gtk
     cd go-gtk
-    make install
-    cd example
-    make
-    ./demo/demo
+    make example
+    ./example/demo/demo
 
   Or
 
