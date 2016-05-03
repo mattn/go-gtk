@@ -38,6 +38,11 @@ func main() {
 	box.PackStart(left, false, false, 3)
 	box.PackStart(right, false, false, 3)
 
+	up.Clicked(func() { println("↑") })
+	down.Clicked(func() { println("↓") })
+	left.Clicked(func() { println("←") })
+	right.Clicked(func() { println("→") })
+
 	window.Show()
 	gtk.Main()
 }
