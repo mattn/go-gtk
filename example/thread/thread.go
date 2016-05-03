@@ -1,11 +1,14 @@
 package main
 
-import "github.com/mattn/go-gtk/glib"
-import "github.com/mattn/go-gtk/gdk"
-import "github.com/mattn/go-gtk/gtk"
-import "strconv"
-import "time"
-import "runtime"
+import (
+	"runtime"
+	"strconv"
+	"time"
+
+	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/gtk"
+)
 
 func main() {
 	runtime.GOMAXPROCS(10)
