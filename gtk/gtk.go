@@ -424,10 +424,10 @@ func (v *Clipboard) Connect(s string, f interface{}, datas ...interface{}) int {
 type DestDefaults int
 
 const (
-	DEST_DEFAULT_MOTION    DestDefaults = 1 << 0 /* respond to "drag_motion" */
-	DEST_DEFAULT_HIGHLIGHT              = 1 << 1 /* auto-highlight */
-	DEST_DEFAULT_DROP                   = 1 << 2 /* respond to "drag_drop" */
-	DEST_DEFAULT_ALL                    = 0x07
+	DEST_DEFAULT_MOTION    DestDefaults = 1 << iota /* respond to "drag_motion" */
+	DEST_DEFAULT_HIGHLIGHT                          /* auto-highlight */
+	DEST_DEFAULT_DROP                               /* respond to "drag_drop" */
+	DEST_DEFAULT_ALL       = 0x07
 )
 
 type TargetEntry struct {
@@ -1042,25 +1042,25 @@ func (v *SelectionData) GetText() string {
 type DialogFlags int
 
 const (
-	DIALOG_MODAL               DialogFlags = 1 << 0 /* call gtk_window_set_modal (win, TRUE) */
-	DIALOG_DESTROY_WITH_PARENT             = 1 << 1 /* call gtk_window_set_destroy_with_parent () */
-	DIALOG_NO_SEPARATOR                    = 1 << 2 /* no separator bar above buttons */
+	DIALOG_MODAL               DialogFlags = 1 << iota /* call gtk_window_set_modal (win, TRUE) */
+	DIALOG_DESTROY_WITH_PARENT                         /* call gtk_window_set_destroy_with_parent () */
+	DIALOG_NO_SEPARATOR                                /* no separator bar above buttons */
 )
 
 type ResponseType int
 
 const (
-	RESPONSE_NONE         ResponseType = -1
-	RESPONSE_REJECT                    = -2
-	RESPONSE_ACCEPT                    = -3
-	RESPONSE_DELETE_EVENT              = -4
-	RESPONSE_OK                        = -5
-	RESPONSE_CANCEL                    = -6
-	RESPONSE_CLOSE                     = -7
-	RESPONSE_YES                       = -8
-	RESPONSE_NO                        = -9
-	RESPONSE_APPLY                     = -10
-	RESPONSE_HELP                      = -11
+	RESPONSE_NONE ResponseType = -iota - 1
+	RESPONSE_REJECT
+	RESPONSE_ACCEPT
+	RESPONSE_DELETE_EVENT
+	RESPONSE_OK
+	RESPONSE_CANCEL
+	RESPONSE_CLOSE
+	RESPONSE_YES
+	RESPONSE_NO
+	RESPONSE_APPLY
+	RESPONSE_HELP
 )
 
 /*type IDialog interface {
@@ -3340,9 +3340,9 @@ type TextIter struct {
 type TextSearchFlags int
 
 const (
-	TEXT_SEARCH_VISIBLE_ONLY     TextSearchFlags = 1 << 0
-	TEXT_SEARCH_TEXT_ONLY                        = 1 << 1
-	TEXT_SEARCH_CASE_INSENSITIVE                 = 1 << 2
+	TEXT_SEARCH_VISIBLE_ONLY TextSearchFlags = 1 << iota
+	TEXT_SEARCH_TEXT_ONLY
+	TEXT_SEARCH_CASE_INSENSITIVE
 )
 
 func (v *TextIter) GetBuffer() *TextBuffer {
@@ -4142,8 +4142,8 @@ func (v *TreeIter) Assign(to *TreeIter) {
 type TreeModelFlags int
 
 const (
-	TREE_MODEL_ITERS_PERSIST TreeModelFlags = 1 << 0
-	TREE_MODEL_LIST_ONLY                    = 1 << 1
+	TREE_MODEL_ITERS_PERSIST TreeModelFlags = 1 << iota
+	TREE_MODEL_LIST_ONLY
 )
 
 type ITreeModel interface {
@@ -7913,9 +7913,9 @@ func (v *Notebook) GetGroupName() string {
 type AttachOptions int
 
 const (
-	EXPAND AttachOptions = 1 << 0
-	SHRINK AttachOptions = 1 << 1
-	FILL   AttachOptions = 1 << 2
+	EXPAND AttachOptions = 1 << iota
+	SHRINK
+	FILL
 )
 
 type Table struct {
