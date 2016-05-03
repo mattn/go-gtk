@@ -9336,9 +9336,9 @@ type Allocation gdk.Rectangle
 type AccelFlags int
 
 const (
-	ACCEL_VISIBLE AccelFlags = 1 << 0
-	ACCEL_LOCKED             = 1 << 1
-	ACCEL_MASK               = 0x07
+	ACCEL_VISIBLE AccelFlags = 1 << iota
+	ACCEL_LOCKED
+	ACCEL_MASK = 0x07
 )
 
 type StateType int
