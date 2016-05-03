@@ -4,7 +4,7 @@ EXAMPLES := \
 	example/builder/builder \
 	example/clipboard/clipboard \
 	example/demo/demo \
-	example/allow/allow \
+	example/arrow/arrow \
 	example/dnd/dnd \
 	example/drawable/drawable \
 	example/event/event \
@@ -21,8 +21,7 @@ EXAMPLES := \
 	example/thread/thread \
 	example/toolbar/toolbar \
 	example/treeview/treeview \
-	example/twitterstream/twitterstream \
-	example/twitter/twitter
+	example/twitterstream/twitterstream
 
 .PHONY: example
 example: $(EXAMPLES)
@@ -40,6 +39,7 @@ example/alignment/alignment: example/alignment/alignment.go
 example/builder/builder: example/builder/builder.go
 example/clipboard/clipboard: example/clipboard/clipboard.go
 example/demo/demo: example/demo/demo.go
+example/arrow/arrow: example/arrow/arrow.go
 example/dnd/dnd: example/dnd/dnd.go
 example/drawable/drawable: example/drawable/drawable.go
 example/event/event: example/event/event.go
@@ -57,4 +57,3 @@ example/thread/thread: example/thread/thread.go
 example/toolbar/toolbar: example/toolbar/toolbar.go
 example/treeview/treeview: example/treeview/treeview.go
 example/twitterstream/twitterstream: example/twitterstream/twitterstream.go
-example/twitter/twitter: example/twitter/twitter.go
