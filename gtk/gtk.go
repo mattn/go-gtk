@@ -4019,6 +4019,9 @@ func NewTreePathFromString(path string) *TreePath {
 	defer cfree(ptr)
 	return &TreePath{C.gtk_tree_path_new_from_string(gstring(ptr))}
 }
+func TreePathFromNative(value unsafe.Pointer) *TreePath {
+	return &TreePath{C.to_GTreePath(value)}
+}
 func NewTreePathNewFirst() *TreePath {
 	return &TreePath{C.gtk_tree_path_new_first()}
 }
