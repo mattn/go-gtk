@@ -5589,7 +5589,7 @@ func _go_gtk_menu_position_func(gmpfi *C._gtk_menu_position_func_info) {
 	if gmpfi == nil {
 		return
 	}
-	gmpfigo := pointer.Restore(uintptr(gmpfi.data)).(*MenuPositionFuncInfo)
+	gmpfigo := pointer.Restore(unsafe.Pointer(gmpfi.data)).(*MenuPositionFuncInfo)
 	if gmpfigo.f == nil {
 		return
 	}
