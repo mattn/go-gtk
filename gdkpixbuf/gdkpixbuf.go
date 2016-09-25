@@ -181,7 +181,7 @@ const (
 	INTERP_HYPER
 )
 
-func ScaleSimple(p *Pixbuf, width, height int, interp InterpType) *Pixbuf {
+func (p *Pixbuf) ScaleSimple(width, height int, interp InterpType) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_scale_simple(p.GPixbuf, C.int(width), C.int(height), C.GdkInterpType(interp))
 	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},
@@ -189,7 +189,7 @@ func ScaleSimple(p *Pixbuf, width, height int, interp InterpType) *Pixbuf {
 	}
 }
 
-func Scale(p *Pixbuf, x, y, width, height int, offsetX, offsetY, scaleX, scaleY float64, interp InterpType) *Pixbuf {
+func (p *Pixbuf) Scale(x, y, width, height int, offsetX, offsetY, scaleX, scaleY float64, interp InterpType) *Pixbuf {
 	var gpixbuf *C.GdkPixbuf
 	C.gdk_pixbuf_scale(
 		p.GPixbuf,
@@ -218,7 +218,7 @@ const (
 	PIXBUF_ROTATE_CLOCKWISE        PixbufRotation = 270
 )
 
-func RotateSimple(p *Pixbuf, angle PixbufRotation) *Pixbuf {
+func (p *Pixbuf) RotateSimple(angle PixbufRotation) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_rotate_simple(p.GPixbuf, C.GdkPixbufRotation(angle))
 	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},
@@ -226,7 +226,7 @@ func RotateSimple(p *Pixbuf, angle PixbufRotation) *Pixbuf {
 	}
 }
 
-func Flip(p *Pixbuf, horizontal bool) *Pixbuf {
+func (p *Pixbuf) Flip(horizontal bool) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_flip(p.GPixbuf, gbool(horizontal))
 	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},

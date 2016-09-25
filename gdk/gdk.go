@@ -189,8 +189,8 @@ func NewColor(name string) *Color {
 	return &Color{color}
 }
 
-func NewColorRGB(r, g, b uint8) *Color {
-	color := C.GdkColor{red: guint16(uint16(r) << 8), green: guint16(uint16(g) << 8), blue: guint16(uint16(b) << 8)}
+func NewColorRGB(r, g, b uint16) *Color {
+	color := C.GdkColor{red: C.guint16(r), green: C.guint16(g), blue: C.guint16(b)}
 	return &Color{color}
 }
 
