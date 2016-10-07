@@ -4553,6 +4553,9 @@ func (v *TreeView) SetHeadersVisible(flag bool) {
 //void gtk_tree_view_columns_autosize (GtkTreeView *tree_view);
 //gboolean gtk_tree_view_get_headers_clickable (GtkTreeView *tree_view);
 //void gtk_tree_view_set_headers_clickable (GtkTreeView *tree_view, gboolean setting);
+func (v *TreeView) SetHeadersClickable(flag bool) {
+    C.gtk_tree_view_set_headers_clickable(TREE_VIEW(v), gbool(flag))
+}
 //void gtk_tree_view_set_rules_hint (GtkTreeView *tree_view, gboolean setting);
 //gboolean gtk_tree_view_get_rules_hint (GtkTreeView *tree_view);
 
@@ -4569,7 +4572,14 @@ func (v *TreeView) GetColumn(n int) *TreeViewColumn {
 	return newTreeViewColumn(C.gtk_tree_view_get_column(TREE_VIEW(v), gint(n)))
 }
 
-//GList *gtk_tree_view_get_columns (GtkTreeView *tree_view);
+func (v *TreeView) GetColumns() []*TreeViewColumn {
+	var columns []*TreeViewColumn
+	raw_columns := glib.ListFromNative(unsafe.Pointer(C.gtk_tree_view_get_columns(TREE_VIEW(v))))
+	raw_columns.ForEach(func(p unsafe.Pointer, i interface{}) {
+		columns = append(columns, newTreeViewColumn((*C.GtkTreeViewColumn)(unsafe.Pointer(uintptr(p)))))
+	})
+	return columns
+}
 //void gtk_tree_view_move_column_after (GtkTreeView *tree_view, GtkTreeViewColumn *column, GtkTreeViewColumn *base_column);
 //void gtk_tree_view_set_expander_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
 //GtkTreeViewColumn *gtk_tree_view_get_expander_column (GtkTreeView *tree_view);
