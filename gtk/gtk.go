@@ -1573,10 +1573,12 @@ func (v *AboutDialog) SetAuthors(authors []string) {
 	cauthors := C.make_strings(C.int(len(authors) + 1))
 	for i, author := range authors {
 		ptr := C.CString(author)
+		defer cfree(ptr)
 		C.set_string(cauthors, C.int(i), gstring(ptr))
 	}
 	C.set_string(cauthors, C.int(len(authors)), nil)
 	C.gtk_about_dialog_set_authors(ABOUT_DIALOG(v), cauthors)
+	C.destroy_strings(cauthors)
 }
 func (v *AboutDialog) GetArtists() []string {
 	var artists []string
@@ -1591,13 +1593,15 @@ func (v *AboutDialog) GetArtists() []string {
 	return artists
 }
 func (v *AboutDialog) SetArtists(artists []string) {
-	cartists := C.make_strings(C.int(len(artists)))
+	cartists := C.make_strings(C.int(len(artists)) + 1)
 	for i, author := range artists {
 		ptr := C.CString(author)
+		defer cfree(ptr)
 		C.set_string(cartists, C.int(i), gstring(ptr))
 	}
 	C.set_string(cartists, C.int(len(artists)), nil)
 	C.gtk_about_dialog_set_artists(ABOUT_DIALOG(v), cartists)
+	C.destroy_strings(cartists)
 }
 func (v *AboutDialog) GetDocumenters() []string {
 	var documenters []string
@@ -1612,13 +1616,15 @@ func (v *AboutDialog) GetDocumenters() []string {
 	return documenters
 }
 func (v *AboutDialog) SetDocumenters(documenters []string) {
-	cdocumenters := C.make_strings(C.int(len(documenters)))
+	cdocumenters := C.make_strings(C.int(len(documenters)) + 1)
 	for i, author := range documenters {
 		ptr := C.CString(author)
+		defer cfree(ptr)
 		C.set_string(cdocumenters, C.int(i), gstring(ptr))
 	}
 	C.set_string(cdocumenters, C.int(len(documenters)), nil)
 	C.gtk_about_dialog_set_documenters(ABOUT_DIALOG(v), cdocumenters)
+	C.destroy_strings(cdocumenters)
 }
 func (v *AboutDialog) GetTranslatorCredits() string {
 	return gostring(C.gtk_about_dialog_get_translator_credits(ABOUT_DIALOG(v)))
