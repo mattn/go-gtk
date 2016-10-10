@@ -4554,8 +4554,9 @@ func (v *TreeView) SetHeadersVisible(flag bool) {
 //gboolean gtk_tree_view_get_headers_clickable (GtkTreeView *tree_view);
 //void gtk_tree_view_set_headers_clickable (GtkTreeView *tree_view, gboolean setting);
 func (v *TreeView) SetHeadersClickable(flag bool) {
-    C.gtk_tree_view_set_headers_clickable(TREE_VIEW(v), gbool(flag))
+	C.gtk_tree_view_set_headers_clickable(TREE_VIEW(v), gbool(flag))
 }
+
 //void gtk_tree_view_set_rules_hint (GtkTreeView *tree_view, gboolean setting);
 //gboolean gtk_tree_view_get_rules_hint (GtkTreeView *tree_view);
 
@@ -4580,6 +4581,7 @@ func (v *TreeView) GetColumns() []*TreeViewColumn {
 	})
 	return columns
 }
+
 //void gtk_tree_view_move_column_after (GtkTreeView *tree_view, GtkTreeViewColumn *column, GtkTreeViewColumn *base_column);
 //void gtk_tree_view_set_expander_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
 //GtkTreeViewColumn *gtk_tree_view_get_expander_column (GtkTreeView *tree_view);
@@ -8966,7 +8968,7 @@ func (v *Box) GetSpacing() int {
 func (v *Box) SetSpacing(spacing int) {
 	C.gtk_box_set_spacing(BOX(v), gint(spacing))
 }
-func (v *Box) ReorderChild(child IWidget, position PackType) {
+func (v *Box) ReorderChild(child IWidget, position int) {
 	C.gtk_box_reorder_child(BOX(v), ToNative(child), C.gint(position))
 }
 func (v *Box) QueryChildPacking(child IWidget, expand *bool, fill *bool, padding *uint, pack_type *PackType) {
