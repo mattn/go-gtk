@@ -4881,7 +4881,7 @@ func _go_call_sort_func(gsfi *C._gtk_sort_func_info) {
 	if gsfi == nil {
 		return
 	}
-	gots := pointer.Restore(unsafe.Pointer(gsfi.gots)).(*TreeSortable)
+	gots := *(pointer.Restore(unsafe.Pointer(gsfi.gots)).(**TreeSortable))
 	if gots.sortFuncs[int(gsfi.columnNum)] == nil {
 		return
 	}
