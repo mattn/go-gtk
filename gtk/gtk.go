@@ -10126,7 +10126,30 @@ func (v *Builder) ConnectSignals(user_data interface{}) {
 	C.gtk_builder_connect_signals(v.GBuilder, nil)
 }
 
-// void gtk_builder_connect_signals_full (GtkBuilder *builder, GtkBuilderConnectFunc func, gpointer user_data);
+type BuilderConnectFunc func(builder *Builder, obj *glib.GObject, sig, handler string, conn *glib.GObject, flags glib.ConnectFlags, user_data interface{})
+
+type BuilderConnectInfo struct {
+	cb        BuilderConnectFunc
+	user_data interface{}
+}
+
+func (v *Builder) ConnectSignalsFull(f BuilderConnectFunc, user_data interface{}) {
+	C._gtk_builder_connect_signals_full(v.GBuilder, pointer.Save(&BuilderConnectInfo{f, user_data}))
+}
+
+//export _go_gtk_builder_connect_signals_full_cb
+func _go_gtk_builder_connect_signals_full_cb(builder unsafe.Pointer, obj unsafe.Pointer, signal_name *C.gchar, handler_name *C.gchar, connect_object unsafe.Pointer, flags C.int, user_data unsafe.Pointer) {
+	ci := pointer.Restore(user_data).(*BuilderConnectInfo)
+	ci.cb(
+		&Builder{(*C.GtkBuilder)(builder)},
+		glib.ObjectFromNative(obj),
+		gostring(signal_name),
+		gostring(handler_name),
+		glib.ObjectFromNative(connect_object),
+		glib.ConnectFlags(flags),
+		ci.user_data,
+	)
+}
 
 func (v *Builder) SetTranslationDomain(domain string) {
 	ptr := C.CString(domain)

@@ -119,7 +119,7 @@ static void free_callback_info(gpointer data, GClosure *closure) {
 	g_slice_free(callback_info, data);
 }
 
-static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
+static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no, int flags) {
 	GSignalQuery query;
 	callback_info* cbi;
 	guint signal_id = g_signal_lookup(name, G_OBJECT_TYPE(obj));
@@ -130,9 +130,14 @@ static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no) {
 	cbi->args = NULL;
 	cbi->target = obj;
 	cbi->args_no = query.n_params;
-	cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), cbi, free_callback_info, G_CONNECT_SWAPPED);
+	if (((GConnectFlags)flags) == G_CONNECT_AFTER)
+		//cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), (gpointer)cbi, free_callback_info, G_CONNECT_AFTER);
+		cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), (gpointer)cbi, free_callback_info, G_CONNECT_SWAPPED);
+	else
+		cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), (gpointer)cbi, free_callback_info, G_CONNECT_SWAPPED);
 	return cbi;
 }
+
 static void _g_signal_emit_by_name(gpointer instance, const gchar *detailed_signal) {
 	g_signal_emit_by_name(instance, detailed_signal);
 }

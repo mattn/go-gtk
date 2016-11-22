@@ -137,6 +137,13 @@ func GetUserRuntimeDir() string {
 	return C.GoString(C.to_charptr(C.g_get_user_runtime_dir()))
 }
 
+type ConnectFlags C.GConnectFlags
+
+const (
+	ConnectAfter   ConnectFlags = C.G_CONNECT_AFTER
+	ConnectSwapped ConnectFlags = C.G_CONNECT_SWAPPED
+)
+
 type UserDirectory C.GUserDirectory
 
 const (
@@ -770,12 +777,32 @@ func (v *GObject) Connect(s string, f interface{}, datas ...interface{}) int {
 	if len(datas) > 0 {
 		data = datas[0]
 	}
+	return v.SignalConnect(s, f, data, ConnectSwapped)
+}
+
+func (v *GObject) SignalConnect(s string, f interface{}, data interface{}, flags ConnectFlags) int {
 	ctx := &CallbackContext{reflect.ValueOf(f), nil, reflect.ValueOf(v), reflect.ValueOf(data)}
 	ptr := C.CString(s)
 	defer C.free_string(ptr)
 	id := callback_contexts.Add(ctx)
-	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(id)))
+	ctx.cbi = unsafe.Pointer(C._g_signal_connect(unsafe.Pointer(v.Object), C.to_gcharptr(ptr), C.int(id), C.int(flags)))
 	return id
+}
+
+func (v *GObject) SignalConnectAfter(s string, f interface{}, datas ...interface{}) int {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	return v.SignalConnect(s, f, data, ConnectAfter)
+}
+
+func (v *GObject) SignalConnectSwapped(s string, f interface{}, datas ...interface{}) int {
+	var data interface{}
+	if len(datas) > 0 {
+		data = datas[0]
+	}
+	return v.SignalConnect(s, f, data, ConnectSwapped)
 }
 
 func (v *GObject) StopEmission(s string) {

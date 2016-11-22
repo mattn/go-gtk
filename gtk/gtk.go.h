@@ -172,6 +172,11 @@ static void _gtk_tree_sortable_set_sort_func(GtkTreeSortable* ts, gint col, void
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(ts), col, sortable_sort_func, (gpointer) gsfi, free_sort_func);
 }
 
+extern void _go_gtk_builder_connect_signals_full_cb(void*  builder, void* object, gchar *signal_name, gchar *handler_name, void* connect_object, int flags, void* user_data);
+static void _gtk_builder_connect_signals_full(GtkBuilder *builder, void* user_data) {
+  gtk_builder_connect_signals_full(builder, (GtkBuilderConnectFunc)_go_gtk_builder_connect_signals_full_cb, user_data);
+}
+
 typedef struct {
 	GtkMenu *menu;
 	gint x;
