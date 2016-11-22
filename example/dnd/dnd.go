@@ -1,18 +1,19 @@
 package main
 
 import (
-	"github.com/mattn/go-gtk/gdk"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
 	"os"
 	"strings"
 	"unsafe"
+
+	"github.com/mattn/go-gtk/gdk"
+	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/gtk"
 )
 
 func main() {
 	gtk.Init(&os.Args)
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
-	window.SetTitle("GTK DrawingArea")
+	window.SetTitle("GTK DND")
 	window.Connect("destroy", gtk.MainQuit)
 
 	vbox := gtk.NewVBox(true, 0)
