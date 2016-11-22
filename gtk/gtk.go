@@ -3642,7 +3642,6 @@ func (v *TextBuffer) MoveMark(mark *TextMark, where *TextIter) {
 }
 func (v *TextBuffer) MoveMarkByName(name string, where *TextIter) {
 	ptr := C.CString(name)
-	defer cfree(ptr)
 	C.gtk_text_buffer_move_mark_by_name(v.GTextBuffer, gstring(ptr), &where.GTextIter)
 }
 func (v *TextBuffer) AddMark(mark *TextMark, where *TextIter) {
@@ -4134,11 +4133,18 @@ func (r *TreeRowReference) Copy() *TreeRowReference {
 // GtkTreeIter
 //-----------------------------------------------------------------------
 type TreeIter struct {
-	GTreeIter C.GtkTreeIter
+	GTreeIter *C.GtkTreeIter
+}
+
+func (v *TreeIter) ready() {
+	if v.GTreeIter == nil {
+		v.GTreeIter = C._gtk_tree_iter_new()
+	}
 }
 
 func (v *TreeIter) Assign(to *TreeIter) {
-	C._gtk_tree_iter_assign(unsafe.Pointer(&v.GTreeIter), unsafe.Pointer(&to.GTreeIter))
+	v.ready()
+	C._gtk_tree_iter_assign(unsafe.Pointer(v.GTreeIter), unsafe.Pointer(to.GTreeIter))
 }
 
 //-----------------------------------------------------------------------
@@ -4172,42 +4178,55 @@ func (v *TreeModel) GetNColumns() int {
 
 // gtk_tree_model_get_column_type
 func (v *TreeModel) GetIter(iter *TreeIter, path *TreePath) bool {
-	return gobool(C.gtk_tree_model_get_iter(v.GTreeModel, &iter.GTreeIter, path.GTreePath))
+	iter.ready()
+	return gobool(C.gtk_tree_model_get_iter(v.GTreeModel, iter.GTreeIter, path.GTreePath))
 }
 func (v *TreeModel) GetIterFromString(iter *TreeIter, path_string string) bool {
+	iter.ready()
 	ptr := C.CString(path_string)
 	defer cfree(ptr)
-	return gobool(C.gtk_tree_model_get_iter_from_string(v.GTreeModel, &iter.GTreeIter, gstring(ptr)))
+	return gobool(C.gtk_tree_model_get_iter_from_string(v.GTreeModel, iter.GTreeIter, gstring(ptr)))
 }
 func (v *TreeModel) GetIterFirst(iter *TreeIter) bool {
-	return gobool(C.gtk_tree_model_get_iter_first(v.GTreeModel, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_tree_model_get_iter_first(v.GTreeModel, iter.GTreeIter))
 }
 func (v *TreeModel) GetPath(iter *TreeIter) *TreePath {
-	return &TreePath{C._gtk_tree_model_get_path(v.GTreeModel, &iter.GTreeIter)}
+	iter.ready()
+	return &TreePath{C._gtk_tree_model_get_path(v.GTreeModel, iter.GTreeIter)}
 }
 func (v *TreeModel) GetValue(iter *TreeIter, col int, val *glib.GValue) {
-	C.gtk_tree_model_get_value(v.GTreeModel, &iter.GTreeIter, gint(col), C.toGValue(unsafe.Pointer(&val.Value)))
+	iter.ready()
+	C.gtk_tree_model_get_value(v.GTreeModel, iter.GTreeIter, gint(col), C.toGValue(unsafe.Pointer(&val.Value)))
 }
 func (v *TreeModel) IterNext(iter *TreeIter) bool {
-	return gobool(C.gtk_tree_model_iter_next(v.GTreeModel, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_tree_model_iter_next(v.GTreeModel, iter.GTreeIter))
 }
 func (v *TreeModel) IterChildren(iter *TreeIter, parent *TreeIter) bool {
-	return gobool(C.gtk_tree_model_iter_children(v.GTreeModel, &iter.GTreeIter, &parent.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_tree_model_iter_children(v.GTreeModel, iter.GTreeIter, parent.GTreeIter))
 }
 func (v *TreeModel) IterHasChild(iter *TreeIter) bool {
-	return gobool(C.gtk_tree_model_iter_has_child(v.GTreeModel, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_tree_model_iter_has_child(v.GTreeModel, iter.GTreeIter))
 }
 func (v *TreeModel) IterNChildren(iter *TreeIter) int {
-	return int(C.gtk_tree_model_iter_n_children(v.GTreeModel, &iter.GTreeIter))
+	iter.ready()
+	return int(C.gtk_tree_model_iter_n_children(v.GTreeModel, iter.GTreeIter))
 }
 func (v *TreeModel) IterNthChild(iter *TreeIter, parent *TreeIter, n int) bool {
-	return gobool(C.gtk_tree_model_iter_nth_child(v.GTreeModel, &iter.GTreeIter, &parent.GTreeIter, gint(n)))
+	iter.ready()
+	return gobool(C.gtk_tree_model_iter_nth_child(v.GTreeModel, iter.GTreeIter, parent.GTreeIter, gint(n)))
 }
 func (v *TreeModel) IterParent(iter *TreeIter, child *TreeIter) bool {
-	return gobool(C.gtk_tree_model_iter_parent(v.GTreeModel, &iter.GTreeIter, &child.GTreeIter))
+	iter.ready()
+	child.ready()
+	return gobool(C.gtk_tree_model_iter_parent(v.GTreeModel, iter.GTreeIter, child.GTreeIter))
 }
-func (v *TreeModel) GetStringFromIter(i *TreeIter) string {
-	return gostring(C.gtk_tree_model_get_string_from_iter(v.GTreeModel, &i.GTreeIter))
+func (v *TreeModel) GetStringFromIter(iter *TreeIter) string {
+	iter.ready()
+	return gostring(C.gtk_tree_model_get_string_from_iter(v.GTreeModel, iter.GTreeIter))
 }
 
 // gtk_tree_model_ref_node
@@ -4275,8 +4294,9 @@ func (v *TreeSelection) SetSelectFunction(selecter *GtkTreeSelecter) {
 	C._go_gtk_tree_selection_set_select_function(v.GTreeSelection, unsafe.Pointer(selecter))
 }
 
-func (v *TreeSelection) GetSelected(i *TreeIter) bool {
-	return gobool(C.gtk_tree_selection_get_selected(v.GTreeSelection, nil, &i.GTreeIter))
+func (v *TreeSelection) GetSelected(iter *TreeIter) bool {
+	iter.ready()
+	return gobool(C.gtk_tree_selection_get_selected(v.GTreeSelection, nil, iter.GTreeIter))
 }
 
 //gtk_tree_selection_selected_foreach (GtkTreeSelection *selection, GtkTreeSelectionForeachFunc func, gpointer data);
@@ -4297,13 +4317,16 @@ func (v *TreeSelection) PathIsSelected(path *TreePath) bool {
 	return gobool(C.gtk_tree_selection_path_is_selected(v.GTreeSelection, path.GTreePath))
 }
 func (v *TreeSelection) SelectIter(iter *TreeIter) {
-	C.gtk_tree_selection_select_iter(v.GTreeSelection, &iter.GTreeIter)
+	iter.ready()
+	C.gtk_tree_selection_select_iter(v.GTreeSelection, iter.GTreeIter)
 }
 func (v *TreeSelection) UnselectIter(iter *TreeIter) {
-	C.gtk_tree_selection_unselect_iter(v.GTreeSelection, &iter.GTreeIter)
+	iter.ready()
+	C.gtk_tree_selection_unselect_iter(v.GTreeSelection, iter.GTreeIter)
 }
 func (v *TreeSelection) IterIsSelected(iter *TreeIter) bool {
-	return gobool(C.gtk_tree_selection_iter_is_selected(v.GTreeSelection, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_tree_selection_iter_is_selected(v.GTreeSelection, iter.GTreeIter))
 }
 func (v *TreeSelection) SelectAll() {
 	C.gtk_tree_selection_select_all(v.GTreeSelection)
@@ -4885,7 +4908,10 @@ func _go_call_sort_func(gsfi *C._gtk_sort_func_info) {
 	if gots.sortFuncs[int(gsfi.columnNum)] == nil {
 		return
 	}
-	gsfi.ret = C.int(gots.sortFuncs[int(gsfi.columnNum)](&TreeModel{gsfi.model}, &TreeIter{*gsfi.a}, &TreeIter{*gsfi.b}))
+	var a, b TreeIter
+	a.GTreeIter = gsfi.a
+	b.GTreeIter = gsfi.b
+	gsfi.ret = C.int(gots.sortFuncs[int(gsfi.columnNum)](&TreeModel{gsfi.model}, &a, &b))
 }
 
 // gtk_tree_sortable_set_default_sort_func
@@ -5122,52 +5148,62 @@ func (v *ListStore) Set(iter *TreeIter, a ...interface{}) {
 }
 
 func (v *ListStore) SetValue(iter *TreeIter, column int, a interface{}) {
+	iter.ready()
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_list_store_set_value(v.GListStore, &iter.GTreeIter, gint(column), C.toGValue(unsafe.Pointer(gv)))
+		C.gtk_list_store_set_value(v.GListStore, iter.GTreeIter, gint(column), C.toGValue(unsafe.Pointer(gv)))
 	} else {
 		if pv, ok := a.(*[0]uint8); ok {
-			C._gtk_list_store_set_ptr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(pv))
+			C._gtk_list_store_set_ptr(v.GListStore, iter.GTreeIter, gint(column), unsafe.Pointer(pv))
 		} else {
 			av := reflect.ValueOf(a)
 			if av.Kind() == reflect.Ptr {
-				C._gtk_list_store_set_ptr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.Pointer()))
+				C._gtk_list_store_set_ptr(v.GListStore, iter.GTreeIter, gint(column), unsafe.Pointer(av.Pointer()))
 			} else if av.CanAddr() {
-				C._gtk_list_store_set_addr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.UnsafeAddr()))
+				C._gtk_list_store_set_addr(v.GListStore, iter.GTreeIter, gint(column), unsafe.Pointer(av.UnsafeAddr()))
 			} else {
-				C._gtk_list_store_set_addr(v.GListStore, &iter.GTreeIter, gint(column), unsafe.Pointer(&a))
+				C._gtk_list_store_set_addr(v.GListStore, iter.GTreeIter, gint(column), unsafe.Pointer(&a))
 			}
 		}
 	}
 }
 func (v *ListStore) Remove(iter *TreeIter) bool {
-	return gobool(C.gtk_list_store_remove(v.GListStore, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_list_store_remove(v.GListStore, iter.GTreeIter))
 }
 func (v *ListStore) Insert(iter *TreeIter, position int) {
-	C.gtk_list_store_insert(v.GListStore, &iter.GTreeIter, gint(position))
+	iter.ready()
+	C.gtk_list_store_insert(v.GListStore, iter.GTreeIter, gint(position))
 }
 func (v *ListStore) InsertBefore(iter *TreeIter, sibling *TreeIter) {
-	C.gtk_list_store_insert_before(v.GListStore, &iter.GTreeIter, &sibling.GTreeIter)
+	iter.ready()
+	sibling.ready()
+	C.gtk_list_store_insert_before(v.GListStore, iter.GTreeIter, sibling.GTreeIter)
 }
 func (v *ListStore) InsertAfter(iter *TreeIter, sibling *TreeIter) {
-	C.gtk_list_store_insert_after(v.GListStore, &iter.GTreeIter, &sibling.GTreeIter)
+	iter.ready()
+	sibling.ready()
+	C.gtk_list_store_insert_after(v.GListStore, iter.GTreeIter, sibling.GTreeIter)
 }
 
 //void gtk_list_store_insert_with_values (GtkListStore *list_store, GtkTreeIter *iter, gint position, ...);
 //void gtk_list_store_insert_with_valuesv (GtkListStore *list_store, GtkTreeIter *iter, gint position, gint *columns, GValue *values, gint n_values);
 
 func (v *ListStore) Prepend(iter *TreeIter) {
-	C.gtk_list_store_prepend(v.GListStore, &iter.GTreeIter)
+	iter.ready()
+	C.gtk_list_store_prepend(v.GListStore, iter.GTreeIter)
 }
 func (v *ListStore) Append(iter *TreeIter) {
-	C.gtk_list_store_append(v.GListStore, &iter.GTreeIter)
+	iter.ready()
+	C.gtk_list_store_append(v.GListStore, iter.GTreeIter)
 }
 func (v *ListStore) Clear() {
 	C.gtk_list_store_clear(v.GListStore)
 }
 func (v *ListStore) IterIsValid(iter *TreeIter) bool {
 	log.Println("Warning: ListStore.IterIsValid: This function is slow. Only use it for debugging and/or testing purposes.")
-	return gobool(C.gtk_list_store_iter_is_valid(v.GListStore, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_list_store_iter_is_valid(v.GListStore, iter.GTreeIter))
 }
 func (v *ListStore) Reorder(i *int) {
 	gi := gint(*i)
@@ -5175,13 +5211,19 @@ func (v *ListStore) Reorder(i *int) {
 	*i = int(gi)
 }
 func (v *ListStore) Swap(a *TreeIter, b *TreeIter) {
-	C.gtk_list_store_swap(v.GListStore, &a.GTreeIter, &b.GTreeIter)
+	a.ready()
+	b.ready()
+	C.gtk_list_store_swap(v.GListStore, a.GTreeIter, b.GTreeIter)
 }
 func (v *ListStore) MoveBefore(iter *TreeIter, position *TreeIter) {
-	C.gtk_list_store_move_before(v.GListStore, &iter.GTreeIter, &position.GTreeIter)
+	iter.ready()
+	position.ready()
+	C.gtk_list_store_move_before(v.GListStore, iter.GTreeIter, position.GTreeIter)
 }
 func (v *ListStore) MoveAfter(iter *TreeIter, position *TreeIter) {
-	C.gtk_list_store_move_after(v.GListStore, &iter.GTreeIter, &position.GTreeIter)
+	iter.ready()
+	position.ready()
+	C.gtk_list_store_move_after(v.GListStore, iter.GTreeIter, position.GTreeIter)
 }
 
 //TODO instead of using this methods to change between treemodel and liststore, is better to usa an interface ITreeModel
@@ -5221,52 +5263,66 @@ func (v *TreeStore) Set(iter *TreeIter, a ...interface{}) {
 	}
 }
 func (v *TreeStore) SetValue(iter *TreeIter, column int, a interface{}) {
+	iter.ready()
 	gv := glib.GValueFromNative(a)
 	if gv != nil {
-		C.gtk_tree_store_set_value(v.GTreeStore, &iter.GTreeIter, gint(column), C.toGValue(unsafe.Pointer(gv)))
+		C.gtk_tree_store_set_value(v.GTreeStore, iter.GTreeIter, gint(column), C.toGValue(unsafe.Pointer(gv)))
 	} else {
 		if pv, ok := a.(*[0]uint8); ok {
-			C._gtk_tree_store_set_ptr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(pv))
+			C._gtk_tree_store_set_ptr(v.GTreeStore, iter.GTreeIter, gint(column), unsafe.Pointer(pv))
 		} else {
 			av := reflect.ValueOf(a)
 			if av.Kind() == reflect.Ptr {
-				C._gtk_tree_store_set_ptr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.Pointer()))
+				C._gtk_tree_store_set_ptr(v.GTreeStore, iter.GTreeIter, gint(column), unsafe.Pointer(av.Pointer()))
 			} else if av.CanAddr() {
-				C._gtk_tree_store_set_addr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(av.UnsafeAddr()))
+				C._gtk_tree_store_set_addr(v.GTreeStore, iter.GTreeIter, gint(column), unsafe.Pointer(av.UnsafeAddr()))
 			} else {
-				C._gtk_tree_store_set_addr(v.GTreeStore, &iter.GTreeIter, gint(column), unsafe.Pointer(&a))
+				C._gtk_tree_store_set_addr(v.GTreeStore, iter.GTreeIter, gint(column), unsafe.Pointer(&a))
 			}
 		}
 	}
 }
 func (v *TreeStore) Remove(iter *TreeIter) bool {
-	return gobool(C.gtk_tree_store_remove(v.GTreeStore, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_tree_store_remove(v.GTreeStore, iter.GTreeIter))
 }
 func (v *TreeStore) Insert(iter *TreeIter, parent *TreeIter, position int) {
-	C.gtk_tree_store_insert(v.GTreeStore, &iter.GTreeIter, &parent.GTreeIter, gint(position))
+	iter.ready()
+	parent.ready()
+	C.gtk_tree_store_insert(v.GTreeStore, iter.GTreeIter, parent.GTreeIter, gint(position))
 }
 func (v *TreeStore) InsertBefore(iter *TreeIter, parent *TreeIter, sibling *TreeIter) {
-	C.gtk_tree_store_insert_before(v.GTreeStore, &iter.GTreeIter, &parent.GTreeIter, &sibling.GTreeIter)
+	iter.ready()
+	parent.ready()
+	sibling.ready()
+	C.gtk_tree_store_insert_before(v.GTreeStore, iter.GTreeIter, parent.GTreeIter, sibling.GTreeIter)
 }
 func (v *TreeStore) InsertAfter(iter *TreeIter, parent *TreeIter, sibling *TreeIter) {
-	C.gtk_tree_store_insert_after(v.GTreeStore, &iter.GTreeIter, &parent.GTreeIter, &sibling.GTreeIter)
+	iter.ready()
+	parent.ready()
+	sibling.ready()
+	C.gtk_tree_store_insert_after(v.GTreeStore, iter.GTreeIter, parent.GTreeIter, sibling.GTreeIter)
 }
 
 // void gtk_tree_store_insert_with_values (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, ...);
 // void gtk_tree_store_insert_with_valuesv (GtkTreeStore *tree_store, GtkTreeIter *iter, GtkTreeIter *parent, gint position, gint *columns, GValue *values, gint n_values);
 
 func (v *TreeStore) Prepend(iter *TreeIter, parent *TreeIter) {
+	iter.ready()
 	if parent == nil {
-		C.gtk_tree_store_prepend(v.GTreeStore, &iter.GTreeIter, nil)
+		C.gtk_tree_store_prepend(v.GTreeStore, iter.GTreeIter, nil)
 	} else {
-		C.gtk_tree_store_prepend(v.GTreeStore, &iter.GTreeIter, &parent.GTreeIter)
+		parent.ready()
+		C.gtk_tree_store_prepend(v.GTreeStore, iter.GTreeIter, parent.GTreeIter)
 	}
 }
 func (v *TreeStore) Append(iter *TreeIter, parent *TreeIter) {
+	iter.ready()
 	if parent == nil {
-		C.gtk_tree_store_append(v.GTreeStore, &iter.GTreeIter, nil)
+		C.gtk_tree_store_append(v.GTreeStore, iter.GTreeIter, nil)
 	} else {
-		C.gtk_tree_store_append(v.GTreeStore, &iter.GTreeIter, &parent.GTreeIter)
+		parent.ready()
+		C.gtk_tree_store_append(v.GTreeStore, iter.GTreeIter, parent.GTreeIter)
 	}
 }
 
@@ -5276,28 +5332,37 @@ func (v *TreeStore) ToTreeModel() *TreeModel {
 	return &TreeModel{C.toGTreeModelFromTreeStore(v.GTreeStore)}
 }
 func (v *TreeStore) IterDepth(iter *TreeIter) int {
-	return int(C.gtk_tree_store_iter_depth(v.GTreeStore, &iter.GTreeIter))
+	iter.ready()
+	return int(C.gtk_tree_store_iter_depth(v.GTreeStore, iter.GTreeIter))
 }
 func (v *TreeStore) Clear() {
 	C.gtk_tree_store_clear(v.GTreeStore)
 }
 func (v *TreeStore) IterIsValid(iter *TreeIter) bool {
 	log.Println("Warning: TreeStore.IterIsValid: This function is slow. Only use it for debugging and/or testing purposes.")
-	return gobool(C.gtk_tree_store_iter_is_valid(v.GTreeStore, &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_tree_store_iter_is_valid(v.GTreeStore, iter.GTreeIter))
 }
 func (v *TreeStore) Reorder(iter *TreeIter, i *int) {
 	gi := gint(*i)
-	C.gtk_tree_store_reorder(v.GTreeStore, &iter.GTreeIter, &gi)
+	iter.ready()
+	C.gtk_tree_store_reorder(v.GTreeStore, iter.GTreeIter, &gi)
 	*i = int(gi)
 }
 func (v *TreeStore) Swap(a *TreeIter, b *TreeIter) {
-	C.gtk_tree_store_swap(v.GTreeStore, &a.GTreeIter, &b.GTreeIter)
+	a.ready()
+	b.ready()
+	C.gtk_tree_store_swap(v.GTreeStore, a.GTreeIter, b.GTreeIter)
 }
 func (v *TreeStore) MoveBefore(iter *TreeIter, position *TreeIter) {
-	C.gtk_tree_store_move_before(v.GTreeStore, &iter.GTreeIter, &position.GTreeIter)
+	iter.ready()
+	position.ready()
+	C.gtk_tree_store_move_before(v.GTreeStore, iter.GTreeIter, position.GTreeIter)
 }
 func (v *TreeStore) MoveAfter(iter *TreeIter, position *TreeIter) {
-	C.gtk_tree_store_move_after(v.GTreeStore, &iter.GTreeIter, &position.GTreeIter)
+	iter.ready()
+	position.ready()
+	C.gtk_tree_store_move_after(v.GTreeStore, iter.GTreeIter, position.GTreeIter)
 }
 
 //-----------------------------------------------------------------------
@@ -5346,10 +5411,12 @@ func (v *ComboBox) SetActive(width int) {
 	C.gtk_combo_box_set_active(COMBO_BOX(v), gint(width))
 }
 func (v *ComboBox) GetActiveIter(iter *TreeIter) bool {
-	return gobool(C.gtk_combo_box_get_active_iter(COMBO_BOX(v), &iter.GTreeIter))
+	iter.ready()
+	return gobool(C.gtk_combo_box_get_active_iter(COMBO_BOX(v), iter.GTreeIter))
 }
 func (v *ComboBox) SetActiveIter(iter *TreeIter) {
-	C.gtk_combo_box_set_active_iter(COMBO_BOX(v), &iter.GTreeIter)
+	iter.ready()
+	C.gtk_combo_box_set_active_iter(COMBO_BOX(v), iter.GTreeIter)
 }
 func (v *ComboBox) GetModel() *TreeModel {
 	return &TreeModel{

@@ -140,6 +140,10 @@ static void _gtk_tree_store_set_addr(GtkTreeStore* tree_store, GtkTreeIter* iter
 //	*value = gtk_range_get_value(range);
 //}
 
+static GtkTreeIter* _gtk_tree_iter_new() {
+	return (GtkTreeIter*)malloc(sizeof(GtkTreeIter));
+}
+
 typedef struct {
 	GtkTreeModel* model;
 	GtkTreeIter* a;
