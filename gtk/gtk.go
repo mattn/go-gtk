@@ -4022,7 +4022,7 @@ func NewTreePathFromString(path string) *TreePath {
 	return &TreePath{C.gtk_tree_path_new_from_string(gstring(ptr))}
 }
 func TreePathFromNative(value unsafe.Pointer) *TreePath {
-	return &TreePath{C.to_GTreePath(value)}
+	return &TreePath{C.to_GTreePath((C.gpointer)(value))}
 }
 func NewTreePathNewFirst() *TreePath {
 	return &TreePath{C.gtk_tree_path_new_first()}
@@ -4873,7 +4873,7 @@ func (ts *TreeSortable) SetSortColumnId(id int, order SortType) {
 
 func (ts *TreeSortable) SetSortFunc(col int, fun SortFunc) {
 	ts.sortFuncs[col] = fun
-	C._gtk_tree_sortable_set_sort_func(ts.GTreeSortable, gint(col), unsafe.Pointer(ts))
+	C._gtk_tree_sortable_set_sort_func(ts.GTreeSortable, gint(col), pointer.Save(&ts))
 }
 
 //export _go_call_sort_func
@@ -4881,7 +4881,7 @@ func _go_call_sort_func(gsfi *C._gtk_sort_func_info) {
 	if gsfi == nil {
 		return
 	}
-	gots := (*TreeSortable)(gsfi.gots)
+	gots := pointer.Restore(unsafe.Pointer(gsfi.gots)).(*TreeSortable)
 	if gots.sortFuncs[int(gsfi.columnNum)] == nil {
 		return
 	}
