@@ -4368,8 +4368,24 @@ func NewTreeViewColumn() *TreeViewColumn {
 	return newTreeViewColumn(C.gtk_tree_view_column_new())
 }
 
-//TODO test
-func NewTreeViewColumnWithAttributes2(title string, cell ICellRenderer, attributes ...interface{}) *TreeViewColumn {
+func NewTreeViewColumnWithAttribute(title string, cell ICellRenderer) *TreeViewColumn {
+	ptitle := C.CString(title)
+	defer cfree(ptitle)
+	return newTreeViewColumn(
+		C._gtk_tree_view_column_new_with_attribute(gstring(ptitle), cell.ToCellRenderer()))
+}
+
+/*
+func NewTreeViewColumnWithAttributes(title string, cell ICellRenderer, attribute string, column int) *TreeViewColumn {
+	ptitle := C.CString(title)
+	defer cfree(ptitle)
+	pattribute := C.CString(attribute)
+	defer cfree(pattribute)
+	return newTreeViewColumn(
+		C._gtk_tree_view_column_new_with_attributes(gstring(ptitle), cell.ToCellRenderer(), gstring(pattribute), gint(column)))
+}
+*/
+func NewTreeViewColumnWithAttributes(title string, cell ICellRenderer, attributes ...interface{}) *TreeViewColumn {
 	if len(attributes)%2 != 0 {
 		log.Panic("Error in gtk.TreeViewColumnWithAttributes: last attribute isn't associated to a value, len(attributes) must be even")
 	}
@@ -4387,26 +4403,13 @@ func NewTreeViewColumnWithAttributes2(title string, cell ICellRenderer, attribut
 		if !ok {
 			log.Panic("Error calling gtk.TreeViewColumnWithAttributes: attributes column must be an int")
 		}
+		println(attribute, column)
 		C.gtk_tree_view_column_add_attribute(ret.GTreeViewColumn,
 			cell.ToCellRenderer(), gstring(ptrAttribute), gint(column))
 	}
 	return ret
 }
 
-func NewTreeViewColumnWithAttribute(title string, cell ICellRenderer) *TreeViewColumn {
-	ptitle := C.CString(title)
-	defer cfree(ptitle)
-	return newTreeViewColumn(
-		C._gtk_tree_view_column_new_with_attribute(gstring(ptitle), cell.ToCellRenderer()))
-}
-func NewTreeViewColumnWithAttributes(title string, cell ICellRenderer, attribute string, column int) *TreeViewColumn {
-	ptitle := C.CString(title)
-	defer cfree(ptitle)
-	pattribute := C.CString(attribute)
-	defer cfree(pattribute)
-	return newTreeViewColumn(
-		C._gtk_tree_view_column_new_with_attributes(gstring(ptitle), cell.ToCellRenderer(), gstring(pattribute), gint(column)))
-}
 func (v *TreeViewColumn) PackStart(cell ICellRenderer, expand bool) {
 	C.gtk_tree_view_column_pack_start(v.GTreeViewColumn, cell.ToCellRenderer(), gbool(expand))
 }
