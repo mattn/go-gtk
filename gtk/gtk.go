@@ -732,7 +732,7 @@ func RCParse(file string) {
 }
 
 func RCParseString(style string) {
-	C.gtk_rc_parse_string((*C.gchar)(C.CString(syle)))
+	C.gtk_rc_parse_string((*C.gchar)(C.CString(style)))
 }
 
 func RCReparseAll() bool {
