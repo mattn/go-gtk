@@ -731,7 +731,9 @@ func RCParse(file string) {
 	C.gtk_rc_parse((*C.gchar)(C.CString(file)))
 }
 
-// gtk_rc_parse_string
+func RCParseString(style string) {
+	C.gtk_rc_parse_string((*C.gchar)(C.CString(syle)))
+}
 
 func RCReparseAll() bool {
 	return gobool(C.gtk_rc_reparse_all())
