@@ -67,6 +67,11 @@ func (v *SourceBuffer) BeginNotUndoableAction() {
 func (v *SourceBuffer) EndNotUndoableAction() {
 	C.gtk_source_buffer_end_not_undoable_action(v.GSourceBuffer)
 }
+func (v *SourceBuffer) SetStyleScheme(name string) {
+	sm := C.gtk_source_style_scheme_manager_new()
+	scheme := C.gtk_source_style_scheme_manager_get_scheme(unsafe.Pointer(sm), gstring(C.CString(name)))
+	C.gtk_source_buffer_set_style_scheme(v.GSourceBuffer, scheme)
+}
 
 //-----------------------------------------------------------------------
 // GtkSourceView
