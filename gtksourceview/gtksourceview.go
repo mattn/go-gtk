@@ -327,6 +327,13 @@ type SourceStyleScheme struct {
 	GSourceStyleScheme *C.GtkSourceStyleScheme
 }
 
+// gtk_source_style_scheme_get_id
+// gtk_source_style_scheme_get_name
+// gtk_source_style_scheme_get_description
+// gtk_source_style_scheme_get_authors
+// gtk_source_style_scheme_get_filename
+// gtk_source_style_scheme_get_style
+
 //-----------------------------------------------------------------------
 // GtkSourceStyleSchemeManager
 //-----------------------------------------------------------------------
@@ -342,3 +349,11 @@ func (v *SourceStyleSchemeManager) GetScheme(scheme_id string) *SourceStyleSchem
 	defer cfree(cscheme_id)
 	return &SourceStyleScheme{C.gtk_source_style_scheme_manager_get_scheme(unsafe.Pointer(v.GSourceStyleSchemeManager), gstring(cscheme_id))}
 }
+
+// gtk_source_style_scheme_manager_get_default
+// gtk_source_style_scheme_manager_set_search_path
+// gtk_source_style_scheme_manager_append_search_path
+// gtk_source_style_scheme_manager_prepend_search_path
+// gtk_source_style_scheme_manager_get_search_path
+// gtk_source_style_scheme_manager_get_scheme_ids
+// gtk_source_style_scheme_manager_force_rescan
