@@ -5,8 +5,11 @@ package gtksourceview
 // #include "gtksourceview.go.h"
 // #cgo pkg-config: gtksourceview-2.0
 import "C"
-import "github.com/mattn/go-gtk/gtk"
-import "unsafe"
+import (
+	"unsafe"
+
+	"github.com/mattn/go-gtk/gtk"
+)
 
 func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
 func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
@@ -67,10 +70,8 @@ func (v *SourceBuffer) BeginNotUndoableAction() {
 func (v *SourceBuffer) EndNotUndoableAction() {
 	C.gtk_source_buffer_end_not_undoable_action(v.GSourceBuffer)
 }
-func (v *SourceBuffer) SetStyleScheme(name string) {
-	sm := C.gtk_source_style_scheme_manager_new()
-	scheme := C.gtk_source_style_scheme_manager_get_scheme(unsafe.Pointer(sm), gstring(C.CString(name)))
-	C.gtk_source_buffer_set_style_scheme(v.GSourceBuffer, scheme)
+func (v *SourceBuffer) SetStyleScheme(scheme *SourceStyleScheme) {
+	C.gtk_source_buffer_set_style_scheme(v.GSourceBuffer, scheme.GSourceStyleScheme)
 }
 
 //-----------------------------------------------------------------------
@@ -318,3 +319,26 @@ func (v *SourceLanguageManager) GuessLanguage(filename string, contentType strin
 }
 
 //FINISH
+
+//-----------------------------------------------------------------------
+// GtkSourceStyle
+//-----------------------------------------------------------------------
+type SourceStyleScheme struct {
+	GSourceStyleScheme *C.GtkSourceStyleScheme
+}
+
+//-----------------------------------------------------------------------
+// GtkSourceStyleSchemeManager
+//-----------------------------------------------------------------------
+type SourceStyleSchemeManager struct {
+	GSourceStyleSchemeManager *C.GtkSourceStyleSchemeManager
+}
+
+func NewSourceStyleSchemeManager() *SourceStyleSchemeManager {
+	return &SourceStyleSchemeManager{C.gtk_source_style_scheme_manager_new()}
+}
+func (v *SourceStyleSchemeManager) GetScheme(scheme_id string) *SourceStyleScheme {
+	cscheme_id := C.CString(scheme_id)
+	defer cfree(cscheme_id)
+	return &SourceStyleScheme{C.gtk_source_style_scheme_manager_get_scheme(unsafe.Pointer(v.GSourceStyleSchemeManager), gstring(cscheme_id))}
+}
