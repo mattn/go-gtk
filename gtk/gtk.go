@@ -865,13 +865,12 @@ func (v *Style) SetBackground(window *Window, state StateType) {
 
 // gtk_style_apply_default_background
 
-func (v *Style) LookupColor(colorName string, color *gdk.Color) bool {
+func (v *Style) LookupColor(colorName string) (*gdk.Color, bool) {
 	color_name := C.CString(colorName)
 	defer cfree(color_name)
-	// color := new(gdk.Color)
+	color := new(gdk.Color)
 	b := C.gtk_style_lookup_color(v.GStyle, gstring(color_name), (*C.GdkColor)(unsafe.Pointer(&color.GColor)))
-	return gobool(b)
-	// return color
+	return color, gobool(b)
 }
 
 // gtk_style_lookup_icon_set
