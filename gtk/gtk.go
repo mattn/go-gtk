@@ -864,10 +864,19 @@ func (v *Style) SetBackground(window *Window, state StateType) {
 }
 
 // gtk_style_apply_default_background
-// gtk_style_lookup_color
+
+func (v *Style) LookupColor(colorName string) (*gdk.Color, bool) {
+	color_name := C.CString(colorName)
+	defer cfree(color_name)
+	color := new(gdk.Color)
+	b := C.gtk_style_lookup_color(v.GStyle, gstring(color_name), (*C.GdkColor)(unsafe.Pointer(&color.GColor)))
+	return color, gobool(b)
+}
+
 // gtk_style_lookup_icon_set
 // gtk_style_render_icon
 // gtk_style_get_style_property
+
 // gtk_style_get_valist
 // gtk_style_get
 // gtk_paint_arrow
@@ -9663,7 +9672,11 @@ func (v *Widget) HideOnDelete() {
 
 // gtk_widget_set_style
 // gtk_widget_ensure_style
-// gtk_widget_get_style
+
+func (v *Widget) GetStyle() *Style {
+	return &Style{C.gtk_rc_get_style(v.GWidget)}
+}
+
 // gtk_widget_reset_rc_styles
 // gtk_widget_push_colormap
 // gtk_widget_pop_colormap
