@@ -222,18 +222,25 @@ func SetLocale() {
 
 func Init(args *[]string) {
 	if args != nil {
-		var argc C.int = C.int(len(*args))
-		ptr := uintptr(C.malloc(C.size_t(int(unsafe.Sizeof((*C.char)(nil))) * len(*args))))
+		argc := C.int(len(*args))
+		argv := C.make_strings(argc)
+		defer C.destroy_strings(argv)
+
 		for i, arg := range *args {
-			(*(*[1 << 22]*C.char)(unsafe.Pointer(&ptr)))[i] = C.CString(arg)
+			cstr := C.CString(arg)
+			C.set_string(argv, C.int(i), (*C.gchar)(cstr))
 		}
-		C.gtk_init(&argc, (***C.char)(unsafe.Pointer(&ptr)))
-		goargs := make([]string, int(argc))
+
+		C.gtk_init((*C.int)(unsafe.Pointer(&argc)),
+			(***C.char)(unsafe.Pointer(&argv)))
+
+		unhandled := make([]string, argc)
 		for i := 0; i < int(argc); i++ {
-			goargs[i] = C.GoString((*(*[1 << 22]*C.char)(unsafe.Pointer(&ptr)))[i])
+			cstr := C.get_string(argv, C.int(i))
+			unhandled[i] = C.GoString((*C.char)(cstr))
+			C.free(unsafe.Pointer(cstr))
 		}
-		C.free(unsafe.Pointer(ptr))
-		*args = goargs
+		*args = unhandled
 	} else {
 		C.gtk_init(nil, nil)
 	}
