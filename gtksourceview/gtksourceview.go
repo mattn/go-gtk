@@ -347,7 +347,7 @@ func NewSourceStyleSchemeManager() *SourceStyleSchemeManager {
 func (v *SourceStyleSchemeManager) GetScheme(scheme_id string) *SourceStyleScheme {
 	cscheme_id := C.CString(scheme_id)
 	defer cfree(cscheme_id)
-	return &SourceStyleScheme{C.gtk_source_style_scheme_manager_get_scheme(unsafe.Pointer(v.GSourceStyleSchemeManager), gstring(cscheme_id))}
+	return &SourceStyleScheme{C.gtk_source_style_scheme_manager_get_scheme(v.GSourceStyleSchemeManager, gstring(cscheme_id))}
 }
 
 // gtk_source_style_scheme_manager_get_default
