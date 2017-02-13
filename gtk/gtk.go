@@ -1372,12 +1372,14 @@ func (v *Window) SetTypeHint(hint gdk.WindowTypeHint) {
 // gtk_window_set_frame_dimensions //deprecated since 2.24
 // gtk_window_set_has_frame  //deprecated since 2.24
 // gtk_window_set_mnemonic_modifier
-// gtk_window_set_skip_taskbar_hint
 // gtk_window_set_skip_pager_hint
 // gtk_window_set_urgency_hint
 
 func (v *Window) SetAcceptFocus(setting bool) {
 	C.gtk_window_set_accept_focus(WINDOW(v), gbool(setting))
+}
+func (v *Window) SetSkipTaskbarHint(setting bool) {
+	C.gtk_window_set_skip_taskbar_hint(WINDOW(v), gbool(setting))
 }
 
 // gtk_window_set_focus_on_map
@@ -1430,18 +1432,19 @@ func (v *Window) GetSize(width *int, height *int) {
 func (v *Window) GetTitle() string {
 	return gostring(C.gtk_window_get_title(WINDOW(v)))
 }
-
 func (v *Window) GetTypeHint() gdk.WindowTypeHint {
 	return gdk.WindowTypeHint(C.gtk_window_get_type_hint(WINDOW(v)))
 }
 
 // gtk_window_get_transient_for
-// gtk_window_get_skip_taskbar_hint
 // gtk_window_get_skip_pager_hint
 // gtk_window_get_urgency_hint
 
 func (v *Window) GetAcceptFocus() bool {
 	return gobool(C.gtk_window_get_accept_focus(WINDOW(v)))
+}
+func (v *Window) GetSkipTaskbarHint() bool {
+	return gobool(C.gtk_window_get_skip_taskbar_hint(WINDOW(v)))
 }
 
 // gtk_window_get_focus_on_map
