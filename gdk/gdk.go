@@ -22,6 +22,7 @@ func gbool(b bool) C.gboolean {
 	}
 	return C.gboolean(0)
 }
+
 func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
@@ -280,6 +281,7 @@ func NewGC(drawable *Drawable) *GC {
 func (v *GC) SetForeground(color *Color) {
 	C.gdk_gc_set_foreground(v.GGC, &color.GColor)
 }
+
 func (v *GC) SetBackground(color *Color) {
 	C.gdk_gc_set_background(v.GGC, &color.GColor)
 }
@@ -317,6 +319,7 @@ func (v *GC) GetColormap() *Colormap {
 func (v *GC) SetRgbFgColor(color *Color) {
 	C.gdk_gc_set_rgb_fg_color(v.GGC, &color.GColor)
 }
+
 func (v *GC) SetRgbBgColor(color *Color) {
 	C.gdk_gc_set_rgb_bg_color(v.GGC, &color.GColor)
 }
@@ -352,12 +355,15 @@ type Drawable struct {
 func (v *Drawable) DrawPoint(gc *GC, x int, y int) {
 	C.gdk_draw_point(v.GDrawable, gc.GGC, gint(x), gint(y))
 }
+
 func (v *Drawable) DrawLine(gc *GC, x1 int, y1 int, x2 int, y2 int) {
 	C.gdk_draw_line(v.GDrawable, gc.GGC, gint(x1), gint(y1), gint(x2), gint(y2))
 }
+
 func (v *Drawable) DrawRectangle(gc *GC, filled bool, x int, y int, width int, height int) {
 	C.gdk_draw_rectangle(v.GDrawable, gc.GGC, gbool(filled), gint(x), gint(y), gint(width), gint(height))
 }
+
 func (v *Drawable) DrawArc(gc *GC, filled bool, x int, y int, width int, height int, angle1 int, angle2 int) {
 	C.gdk_draw_arc(v.GDrawable, gc.GGC, gbool(filled), gint(x), gint(y), gint(width), gint(height), gint(angle1), gint(angle2))
 }
@@ -651,9 +657,11 @@ func NewPixmap(drawable *Drawable, width int, height int, depth int) *Pixmap {
 func (v *Pixmap) Ref() {
 	C.g_object_ref(C.gpointer(v.GPixmap))
 }
+
 func (v *Pixmap) Unref() {
 	C.g_object_unref(C.gpointer(v.GPixmap))
 }
+
 func (v *Pixmap) GetDrawable() *Drawable {
 	return &Drawable{(*C.GdkDrawable)(v.GPixmap)}
 }

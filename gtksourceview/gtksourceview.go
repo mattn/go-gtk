@@ -21,6 +21,7 @@ func gbool(b bool) C.gboolean {
 	}
 	return C.gboolean(0)
 }
+
 func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
@@ -42,34 +43,44 @@ func NewSourceBuffer() *SourceBuffer {
 	v := C.gtk_source_buffer_new(nil)
 	return &SourceBuffer{v, gtk.NewTextBufferFromPointer(unsafe.Pointer(v))}
 }
+
 func NewSourceBufferWithLanguage(lang *SourceLanguage) *SourceBuffer {
 	v := C.gtk_source_buffer_new_with_language(lang.GSourceLanguage)
 	return &SourceBuffer{v, gtk.NewTextBufferFromPointer(unsafe.Pointer(v))}
 }
+
 func (v *SourceBuffer) GetNativeBuffer() unsafe.Pointer {
 	return unsafe.Pointer(v.GSourceBuffer)
 }
+
 func (v *SourceBuffer) SetHighlightSyntax(highlight bool) {
 	C.gtk_source_buffer_set_highlight_syntax(v.GSourceBuffer, gbool(highlight))
 }
+
 func (v *SourceBuffer) GetHighlightSyntax() bool {
 	return gobool(C.gtk_source_buffer_get_highlight_syntax(v.GSourceBuffer))
 }
+
 func (v *SourceBuffer) SetHighlightMatchingBrackets(hl bool) {
 	C.gtk_source_buffer_set_highlight_matching_brackets(v.GSourceBuffer, gbool(hl))
 }
+
 func (v *SourceBuffer) SetLanguage(lang *SourceLanguage) {
 	C.gtk_source_buffer_set_language(v.GSourceBuffer, lang.GSourceLanguage)
 }
+
 func (v *SourceBuffer) GetLanguage() *SourceLanguage {
 	return &SourceLanguage{C.gtk_source_buffer_get_language(v.GSourceBuffer)}
 }
+
 func (v *SourceBuffer) BeginNotUndoableAction() {
 	C.gtk_source_buffer_begin_not_undoable_action(v.GSourceBuffer)
 }
+
 func (v *SourceBuffer) EndNotUndoableAction() {
 	C.gtk_source_buffer_end_not_undoable_action(v.GSourceBuffer)
 }
+
 func (v *SourceBuffer) SetStyleScheme(scheme *SourceStyleScheme) {
 	C.gtk_source_buffer_set_style_scheme(v.GSourceBuffer, scheme.GSourceStyleScheme)
 }
@@ -85,52 +96,68 @@ func NewSourceView() *SourceView {
 	return &SourceView{gtk.TextView{gtk.Container{
 		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new()))}}}
 }
+
 func NewSourceViewWithBuffer(buf *SourceBuffer) *SourceView {
 	return &SourceView{gtk.TextView{gtk.Container{
 		*gtk.WidgetFromNative(unsafe.Pointer(C.gtk_source_view_new_with_buffer(buf.GSourceBuffer)))}}}
 }
+
 func (v *SourceView) ToNativeSourceView() *C.GtkSourceView {
 	return C.toGtkSourceView(unsafe.Pointer(v.GWidget))
 }
+
 func (v *SourceView) SetAutoIndent(enable bool) {
 	C.gtk_source_view_set_auto_indent(v.ToNativeSourceView(), gbool(enable))
 }
+
 func (v *SourceView) GetAutoIndent() bool {
 	return gobool(C.gtk_source_view_get_auto_indent(v.ToNativeSourceView()))
 }
+
 func (v *SourceView) SetHighlightCurrentLine(enable bool) {
 	C.gtk_source_view_set_highlight_current_line(v.ToNativeSourceView(), gbool(enable))
 }
+
 func (v *SourceView) GetHighlightCurrentLine() bool {
 	return gobool(C.gtk_source_view_get_highlight_current_line(v.ToNativeSourceView()))
 }
+
 func (v *SourceView) SetShowLineNumbers(enable bool) {
 	C.gtk_source_view_set_show_line_numbers(v.ToNativeSourceView(), gbool(enable))
 }
+
 func (v *SourceView) GetShowLineNumbers() bool {
 	return gobool(C.gtk_source_view_get_show_line_numbers(v.ToNativeSourceView()))
 }
+
 func (v *SourceView) SetRightMarginPosition(pos uint) {
 	C.gtk_source_view_set_right_margin_position(v.ToNativeSourceView(), C.guint(pos))
 }
+
 func (v *SourceView) GetRightMarginPosition() uint {
 	return uint(C.gtk_source_view_get_right_margin_position(v.ToNativeSourceView()))
 }
+
 func (v *SourceView) SetIndentWidth(width int) {
 	C.gtk_source_view_set_indent_width(v.ToNativeSourceView(), C.gint(width))
 }
+
 func (v *SourceView) GetIndentWidth() int {
 	return int(C.gtk_source_view_get_indent_width(v.ToNativeSourceView()))
 }
+
 func (v *SourceView) SetShowRightMargin(enable bool) {
 	C.gtk_source_view_set_show_right_margin(v.ToNativeSourceView(), gbool(enable))
 }
+
 func (v *SourceView) GetShowRightMargin() bool {
 	return gobool(C.gtk_source_view_get_show_right_margin(v.ToNativeSourceView()))
 }
+
 func (v *SourceView) SetInsertSpacesInsteadOfTabs(enable bool) {
 	C.gtk_source_view_set_insert_spaces_instead_of_tabs(v.ToNativeSourceView(), gbool(enable))
 }
+
 func (v *SourceView) GetInsertSpacesInsteadOfTabs() bool {
 	return gobool(C.gtk_source_view_get_insert_spaces_instead_of_tabs(v.ToNativeSourceView()))
 }
@@ -158,13 +185,16 @@ func (v *SourceView) SetDrawSpaces(flags SourceDrawSpacesFlags) {
 	C.gtk_source_view_set_draw_spaces(v.ToNativeSourceView(),
 		C.GtkSourceDrawSpacesFlags(flags))
 }
+
 func (v *SourceView) GetDrawSpaces() SourceDrawSpacesFlags {
 	return SourceDrawSpacesFlags(C.gtk_source_view_get_draw_spaces(v.ToNativeSourceView()))
 }
+
 func (v *SourceView) SetTabWidth(width uint) {
 	C.gtk_source_view_set_tab_width(v.ToNativeSourceView(),
 		C.guint(width))
 }
+
 func (v *SourceView) GetTabWidth() uint {
 	return uint(C.gtk_source_view_get_tab_width(v.ToNativeSourceView()))
 }
@@ -182,6 +212,7 @@ func (v *SourceView) SetSmartHomeEnd(flags SourceSmartHomeEndType) {
 	C.gtk_source_view_set_smart_home_end(v.ToNativeSourceView(),
 		C.GtkSourceSmartHomeEndType(flags))
 }
+
 func (v *SourceView) GetSmartHomeEnd() SourceSmartHomeEndType {
 	return SourceSmartHomeEndType(C.gtk_source_view_get_smart_home_end(v.ToNativeSourceView()))
 }
@@ -196,20 +227,25 @@ type SourceLanguage struct {
 func (v *SourceLanguage) GetId() string {
 	return gostring(C.gtk_source_language_get_id(v.GSourceLanguage))
 }
+
 func (v *SourceLanguage) GetName() string {
 	return gostring(C.gtk_source_language_get_name(v.GSourceLanguage))
 }
+
 func (v *SourceLanguage) GetSection() string {
 	return gostring(C.gtk_source_language_get_section(v.GSourceLanguage))
 }
+
 func (v *SourceLanguage) GetHidden() bool {
 	return gobool(C.gtk_source_language_get_hidden(v.GSourceLanguage))
 }
+
 func (v *SourceLanguage) GetMetadata(name string) string {
 	cname := C.CString(name)
 	defer cfree(cname)
 	return gostring(C.gtk_source_language_get_metadata(v.GSourceLanguage, gstring(cname)))
 }
+
 func (v *SourceLanguage) GetMimeTypes() []string {
 	var types []string
 	ctypes := C.gtk_source_language_get_mime_types(v.GSourceLanguage)
@@ -222,6 +258,7 @@ func (v *SourceLanguage) GetMimeTypes() []string {
 	}
 	return types
 }
+
 func (v *SourceLanguage) GetGlobs() []string {
 	var globs []string
 	cglobs := C.gtk_source_language_get_globs(v.GSourceLanguage)
@@ -234,11 +271,13 @@ func (v *SourceLanguage) GetGlobs() []string {
 	}
 	return globs
 }
+
 func (v *SourceLanguage) GetStyleName(styleId string) string {
 	cstyleId := C.CString(styleId)
 	defer cfree(cstyleId)
 	return gostring(C.gtk_source_language_get_metadata(v.GSourceLanguage, gstring(cstyleId)))
 }
+
 func (v *SourceLanguage) GetStyleIds() []string {
 	var ids []string
 	cids := C.gtk_source_language_get_globs(v.GSourceLanguage)
@@ -264,9 +303,11 @@ type SourceLanguageManager struct {
 func NewSourceLanguageManager() *SourceLanguageManager {
 	return &SourceLanguageManager{C.gtk_source_language_manager_new()}
 }
+
 func SourceLanguageManagerGetDefault() *SourceLanguageManager {
 	return &SourceLanguageManager{C.gtk_source_language_manager_get_default()}
 }
+
 func (v *SourceLanguageManager) SetSearchPath(paths []string) {
 	cpaths := C.make_strings(C.int(len(paths) + 1))
 	for i, path := range paths {
@@ -278,6 +319,7 @@ func (v *SourceLanguageManager) SetSearchPath(paths []string) {
 	C.gtk_source_language_manager_set_search_path(v.GSourceLanguageManager, cpaths)
 	C.destroy_strings(cpaths)
 }
+
 func (v *SourceLanguageManager) GetSearchPath() []string {
 	var dirs []string
 	cdirs := C.gtk_source_language_manager_get_search_path(v.GSourceLanguageManager)
@@ -290,6 +332,7 @@ func (v *SourceLanguageManager) GetSearchPath() []string {
 	}
 	return dirs
 }
+
 func (v *SourceLanguageManager) GetLanguageIds() []string {
 	var ids []string
 	cids := C.gtk_source_language_manager_get_language_ids(v.GSourceLanguageManager)
@@ -302,11 +345,13 @@ func (v *SourceLanguageManager) GetLanguageIds() []string {
 	}
 	return ids
 }
+
 func (v *SourceLanguageManager) GetLanguage(id string) *SourceLanguage {
 	cid := C.CString(id)
 	defer cfree(cid)
 	return &SourceLanguage{C.gtk_source_language_manager_get_language(v.GSourceLanguageManager, gstring(cid))}
 }
+
 func (v *SourceLanguageManager) GuessLanguage(filename string, contentType string) *SourceLanguage {
 	if filename == "" {
 		cct := C.CString(contentType)
@@ -344,6 +389,7 @@ type SourceStyleSchemeManager struct {
 func NewSourceStyleSchemeManager() *SourceStyleSchemeManager {
 	return &SourceStyleSchemeManager{C.gtk_source_style_scheme_manager_new()}
 }
+
 func (v *SourceStyleSchemeManager) GetScheme(scheme_id string) *SourceStyleScheme {
 	cscheme_id := C.CString(scheme_id)
 	defer cfree(cscheme_id)

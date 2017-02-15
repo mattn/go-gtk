@@ -17,6 +17,7 @@ func bool2gboolean(b bool) C.gboolean {
 	}
 	return C.gboolean(0)
 }
+
 func gboolean2bool(b C.gboolean) bool {
 	if b != 0 {
 		return true

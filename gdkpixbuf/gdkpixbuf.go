@@ -417,6 +417,7 @@ func NewLoader() *Loader {
 	return &Loader{
 		C.gdk_pixbuf_loader_new()}
 }
+
 func NewLoaderWithType(image_type string) (loader *Loader, err *glib.Error) {
 	var gerr *C.GError
 	ptr := C.CString(image_type)
@@ -428,6 +429,7 @@ func NewLoaderWithType(image_type string) (loader *Loader, err *glib.Error) {
 	}
 	return
 }
+
 func NewLoaderWithMimeType(mime_type string) (loader *Loader, err *glib.Error) {
 	var error *C.GError
 	ptr := C.CString(mime_type)
@@ -437,6 +439,7 @@ func NewLoaderWithMimeType(mime_type string) (loader *Loader, err *glib.Error) {
 	err = glib.ErrorFromNative(unsafe.Pointer(error))
 	return
 }
+
 func (v Loader) GetPixbuf() *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_loader_get_pixbuf(v.GPixbufLoader)
 	return &Pixbuf{
@@ -444,6 +447,7 @@ func (v Loader) GetPixbuf() *Pixbuf {
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
 	}
 }
+
 func (v Loader) Write(buf []byte) (bool, *glib.Error) {
 	var err *C.GError
 	var pbuf *byte
@@ -454,6 +458,7 @@ func (v Loader) Write(buf []byte) (bool, *glib.Error) {
 	}
 	return ret, nil
 }
+
 func (v Loader) Close() (bool, *glib.Error) {
 	var err *C.GError
 	ret := gobool(C.gdk_pixbuf_loader_close(v.GPixbufLoader, &err))
@@ -470,6 +475,7 @@ func (v Loader) Close() (bool, *glib.Error) {
 func (v Loader) SetSize(width int, height int) {
 	C.gdk_pixbuf_loader_set_size(v.GPixbufLoader, C.int(width), C.int(height))
 }
+
 func (v Loader) GetFormat() *Format {
 	return &Format{
 		C.gdk_pixbuf_loader_get_format(v.GPixbufLoader)}

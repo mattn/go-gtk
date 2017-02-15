@@ -61,6 +61,7 @@ func gbool(b bool) C.gboolean {
 	}
 	return C.gboolean(0)
 }
+
 func gobool(b C.gboolean) bool {
 	if b != 0 {
 		return true
@@ -287,18 +288,23 @@ func ListFromNative(l unsafe.Pointer) *List {
 	return &List{
 		C.to_list(l)}
 }
+
 func (v List) Data() interface{} {
 	return v.GList.data
 }
+
 func (v List) Append(data unsafe.Pointer) *List {
 	return &List{C.g_list_append(v.GList, C.gpointer(data))}
 }
+
 func (v List) Prepend(data unsafe.Pointer) *List {
 	return &List{C.g_list_prepend(v.GList, C.gpointer(data))}
 }
+
 func (v List) Insert(data unsafe.Pointer, pos int) *List {
 	return &List{C.g_list_insert(v.GList, C.gpointer(data), C.gint(pos))}
 }
+
 func (v List) InsertBefore(sib List, data unsafe.Pointer) *List {
 	return &List{C.g_list_insert_before(v.GList, sib.GList, C.gpointer(data))}
 }
@@ -309,30 +315,39 @@ func (v List) InsertBefore(sib List, data unsafe.Pointer) *List {
 func (v List) Remove(data unsafe.Pointer) *List {
 	return &List{C.g_list_remove(v.GList, C.gconstpointer(data))}
 }
+
 func (v List) RemoveLink(link List) *List {
 	return &List{C.g_list_remove_link(v.GList, link.GList)}
 }
+
 func (v List) DeleteLink(link List) *List {
 	return &List{C.g_list_delete_link(v.GList, link.GList)}
 }
+
 func (v List) RemoveAll(data unsafe.Pointer) *List {
 	return &List{C.g_list_remove_all(v.GList, C.gconstpointer(data))}
 }
+
 func (v List) Free() {
 	C.g_list_free(v.GList)
 }
+
 func GListAlloc() *List {
 	return &List{C.g_list_alloc()}
 }
+
 func (v List) Free1() {
 	C.g_list_free_1(v.GList)
 }
+
 func (v List) Length() uint {
 	return uint(C.g_list_length(v.GList))
 }
+
 func (v List) Copy() *List {
 	return &List{C.g_list_copy(v.GList)}
 }
+
 func (v List) Reverse() *List {
 	return &List{C.g_list_reverse(v.GList)}
 }
@@ -354,6 +369,7 @@ func (v List) Reverse() *List {
 func (v List) Concat(link List) *List {
 	return &List{C.g_list_concat(v.GList, link.GList)}
 }
+
 func (v List) ForEach(callback func(unsafe.Pointer, interface{}), user_datas ...interface{}) {
 	var user_data interface{}
 	if len(user_datas) > 0 {
@@ -364,21 +380,27 @@ func (v List) ForEach(callback func(unsafe.Pointer, interface{}), user_datas ...
 		callback(l.NthData(n), user_data)
 	}
 }
+
 func (v List) First() *List {
 	return &List{C.g_list_first(v.GList)}
 }
+
 func (v List) Last() *List {
 	return &List{C.g_list_last(v.GList)}
 }
+
 func (v List) Nth(n uint) *List {
 	return &List{C.g_list_nth(v.GList, C.guint(n))}
 }
+
 func (v List) NthData(n uint) unsafe.Pointer {
 	return unsafe.Pointer(C.g_list_nth_data(v.GList, C.guint(n)))
 }
+
 func (v List) NthPrev(n uint) *List {
 	return &List{C.g_list_nth_prev(v.GList, C.guint(n))}
 }
+
 func (v List) Find(data unsafe.Pointer) *List {
 	return &List{C.g_list_find(v.GList, C.gconstpointer(data))}
 }
@@ -389,6 +411,7 @@ func (v List) Find(data unsafe.Pointer) *List {
 func (v List) Position(link List) int {
 	return int(C.g_list_position(v.GList, link.GList))
 }
+
 func (v List) Index(data unsafe.Pointer) int {
 	return int(C.g_list_index(v.GList, C.gconstpointer(data)))
 }
@@ -404,24 +427,31 @@ func SListFromNative(sl unsafe.Pointer) *SList {
 	return &SList{
 		C.to_slist(sl)}
 }
+
 func (v SList) ToSList() *C.GSList {
 	return v.GSList
 }
+
 func (v SList) Data() unsafe.Pointer {
 	return unsafe.Pointer(v.GSList.data)
 }
+
 func GSListAlloc() *SList {
 	return &SList{C.g_slist_alloc()}
 }
+
 func (v SList) Free() {
 	C.g_slist_free(v.GSList)
 }
+
 func (v SList) Free1() {
 	C.g_slist_free1(v.GSList)
 }
+
 func (v SList) Append(data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_append(v.GSList, C.gpointer(data))}
 }
+
 func (v SList) Prepend(data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_prepend(v.GSList, C.gpointer(data))}
 }
@@ -432,30 +462,39 @@ func (v SList) Prepend(data unsafe.Pointer) *SList {
 func (v SList) InsertBefore(sibling SList, data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_insert_before(v.GSList, sibling.GSList, C.gpointer(data))}
 }
+
 func (v SList) Concat(llink SList) *SList {
 	return &SList{C.g_slist_concat(v.GSList, llink.GSList)}
 }
+
 func (v SList) Remove(data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_remove(v.GSList, C.gconstpointer(data))}
 }
+
 func (v SList) RemoveAll(data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_remove_all(v.GSList, C.gconstpointer(data))}
 }
+
 func (v SList) RemoveLink(llink SList) *SList {
 	return &SList{C.g_slist_delete_link(v.GSList, llink.GSList)}
 }
+
 func (v SList) DeleteLink(llink SList) *SList {
 	return &SList{C.g_slist_delete_link(v.GSList, llink.GSList)}
 }
+
 func (v SList) Reverse() *SList {
 	return &SList{C.g_slist_reverse(v.GSList)}
 }
+
 func (v SList) Copy() *SList {
 	return &SList{C.g_slist_copy(v.GSList)}
 }
+
 func (v SList) Nth(n uint) *SList {
 	return &SList{C.g_slist_nth(v.GSList, C.guint(n))}
 }
+
 func (v SList) Find(data unsafe.Pointer) *SList {
 	return &SList{C.g_slist_find(v.GSList, C.gconstpointer(data))}
 }
@@ -464,15 +503,19 @@ func (v SList) Find(data unsafe.Pointer) *SList {
 func (v SList) Position(llink SList) int {
 	return int(C.g_slist_position(v.GSList, llink.GSList))
 }
+
 func (v SList) Index(data unsafe.Pointer) int {
 	return int(C.g_slist_index(v.GSList, C.gconstpointer(data)))
 }
+
 func (v SList) Last() *SList {
 	return &SList{C.g_slist_last(v.GSList)}
 }
+
 func (v SList) Length() uint {
 	return uint(C.g_slist_length(v.GSList))
 }
+
 func (v SList) ForEach(callback func(unsafe.Pointer, interface{}), user_datas ...interface{}) {
 	var user_data interface{}
 	if len(user_datas) > 0 {
@@ -534,6 +577,7 @@ func ObjectFromNative(object unsafe.Pointer) *GObject {
 func (v *GObject) Ref() {
 	C.g_object_ref(C.gpointer(v.Object))
 }
+
 func (v *GObject) Unref() {
 	C.g_object_unref(C.gpointer(v.Object))
 }
@@ -607,6 +651,7 @@ func (v *GObject) Set(name string, value interface{}) {
 		}
 	}
 }
+
 func (v *GObject) SetProperty(name string, val *GValue) {
 	str := C.CString(name)
 	defer C.free_string(str)
@@ -664,6 +709,7 @@ func GValueFromNative(value interface{}) *C.GValue {
 	}
 	return gv
 }
+
 func ValueFromNative(val interface{}) *GValue {
 	return &GValue{*GValueFromNative(val)}
 }
