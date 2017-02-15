@@ -2950,15 +2950,8 @@ func (v *Entry) SetCompletion(completion *EntryCompletion) {
 	C.gtk_entry_set_completion(ENTRY(v), completion.GEntryCompletion)
 }
 
-var g_Entry_EntryCompletion *EntryCompletion
-
 func (v *Entry) GetCompletion() *EntryCompletion {
-	if g_Entry_EntryCompletion == nil {
-		g_Entry_EntryCompletion = &EntryCompletion{C.gtk_entry_get_completion(ENTRY(v))}
-	} else {
-		g_Entry_EntryCompletion.GEntryCompletion = C.gtk_entry_get_completion(ENTRY(v))
-	}
-	return g_Entry_EntryCompletion
+	return &EntryCompletion{C.gtk_entry_get_completion(ENTRY(v))}
 }
 
 // gtk_entry_set_cursor_hadjustment
