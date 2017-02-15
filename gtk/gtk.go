@@ -2951,7 +2951,7 @@ func (v *Entry) SetCompletion(completion *EntryCompletion) {
 }
 
 func (v *Entry) GetCompletion() *EntryCompletion {
-	return &EntryCompletion{C.gtk_entry_get_completion(ENTRY(v))}
+	return newEntryCompletion(C.gtk_entry_get_completion(ENTRY(v)))
 }
 
 // gtk_entry_set_cursor_hadjustment
@@ -3055,10 +3055,18 @@ func (v *EntryBuffer) DeleteText(position uint, nChars int) uint {
 
 type EntryCompletion struct {
 	GEntryCompletion *C.GtkEntryCompletion
+	*glib.GObject
+}
+
+func newEntryCompletion(entryCompletion *C.GtkEntryCompletion) *EntryCompletion { // TODO
+	return &EntryCompletion{
+		GEntryCompletion: entryCompletion,
+		GObject:          glib.ObjectFromNative(unsafe.Pointer(entryCompletion)),
+	}
 }
 
 func NewEntryCompletion() *EntryCompletion {
-	return &EntryCompletion{C.gtk_entry_completion_new()}
+	return newEntryCompletion(C.gtk_entry_completion_new())
 }
 func (v *EntryCompletion) GetEntry() *Widget {
 	return &Widget{C.gtk_entry_completion_get_entry(v.GEntryCompletion)}
