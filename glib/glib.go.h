@@ -88,7 +88,7 @@ typedef struct {
 	void* target;
 	uintptr_t* args;
 	int args_no;
-	gboolean ret;
+	void* ret;
 	gulong id;
 } callback_info;
 
@@ -96,7 +96,7 @@ static uintptr_t callback_info_get_arg(callback_info* cbi, int idx) {
 	return cbi->args[idx];
 }
 extern void _go_glib_callback(callback_info* cbi);
-static gboolean _glib_callback(void *data, ...) {
+static uintptr_t _glib_callback(void *data, ...) {
 	va_list ap;
 	callback_info *cbi = (callback_info*) data;
 
@@ -112,7 +112,7 @@ static gboolean _glib_callback(void *data, ...) {
 
 	free(cbi->args);
 
-	return cbi->ret;
+	return *(uintptr_t*)(&cbi->ret);
 }
 
 static void free_callback_info(gpointer data, GClosure *closure) {
@@ -131,8 +131,7 @@ static callback_info* _g_signal_connect(void* obj, gchar* name, int func_no, int
 	cbi->target = obj;
 	cbi->args_no = query.n_params;
 	if (((GConnectFlags)flags) == G_CONNECT_AFTER)
-		//cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), (gpointer)cbi, free_callback_info, G_CONNECT_AFTER);
-		cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), (gpointer)cbi, free_callback_info, G_CONNECT_SWAPPED);
+		cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), (gpointer)cbi, free_callback_info, G_CONNECT_AFTER);
 	else
 		cbi->id = g_signal_connect_data((gpointer)obj, name, G_CALLBACK(_glib_callback), (gpointer)cbi, free_callback_info, G_CONNECT_SWAPPED);
 	return cbi;

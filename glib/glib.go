@@ -810,8 +810,42 @@ func _go_glib_callback(cbi *C.callback_info) {
 	}
 	ret := context.f.Call(fargs)
 	if len(ret) > 0 {
-		bret, _ := ret[0].Interface().(bool)
-		cbi.ret = gbool(bret)
+		value := ret[0].Interface()
+		switch value.(type) {
+		case bool:
+			bval := gbool(value.(bool))
+			cbi.ret = unsafe.Pointer(&bval)
+		case byte:
+			bval := C.gchar(value.(byte))
+			cbi.ret = unsafe.Pointer(&bval)
+		case int:
+			ival := C.int(value.(int))
+			cbi.ret = unsafe.Pointer(&ival)
+		case uint:
+			uval := C.guint(value.(uint))
+			cbi.ret = unsafe.Pointer(&uval)
+		case float32:
+			f32val := C.gfloat(value.(float32))
+			cbi.ret = unsafe.Pointer(&f32val)
+		case float64:
+			f64val := C.gfloat(value.(float64))
+			cbi.ret = unsafe.Pointer(&f64val)
+		case string:
+			cbi.ret = unsafe.Pointer(C.CString(value.(string)))
+		default:
+			if pv, ok := value.(*[0]uint8); ok {
+				cbi.ret = unsafe.Pointer(pv)
+			} else {
+				av := reflect.ValueOf(value)
+				if av.Kind() == reflect.Ptr {
+					cbi.ret = unsafe.Pointer(av.Pointer())
+				} else if av.CanAddr() {
+					cbi.ret = unsafe.Pointer(av.UnsafeAddr())
+				} else {
+					cbi.ret = unsafe.Pointer(&value)
+				}
+			}
+		}
 	}
 }
 
@@ -983,9 +1017,6 @@ func _go_glib_sourcefunc(sfi *C.sourcefunc_info) {
 	if len(ret) > 0 {
 		bret, _ := ret[0].Interface().(bool)
 		sfi.ret = gbool(bret)
-	}
-	if !gobool(sfi.ret) {
-		sourcefunc_contexts.Remove(id)
 	}
 }
 

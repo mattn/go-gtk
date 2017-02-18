@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/mattn/go-gtk/glib"
 	"time"
+
+	"github.com/mattn/go-gtk/glib"
 )
 
 func main() {
