@@ -783,6 +783,9 @@ func (c *CallbackContext) Target() interface{} {
 }
 
 func (c *CallbackContext) Data() interface{} {
+	if !c.data.IsValid() {
+		return nil
+	}
 	return c.data.Interface()
 }
 
