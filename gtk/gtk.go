@@ -6312,8 +6312,18 @@ func (v *MenuItem) GetRightJustified() bool {
 	return gobool(C.gtk_menu_item_get_right_justified(MENU_ITEM(v)))
 }
 
-// G_CONST_RETURN gchar *gtk_menu_item_get_label(GtkMenuItem *menu_item);
-// void gtk_menu_item_set_label(GtkMenuItem *menu_item, const gchar *label);
+func (v *MenuItem) GetLabel() string {
+	return gostring(C.gtk_menu_item_get_label(MENU_ITEM(v)))
+}
+
+func (v *MenuItem) SetLabel(label string) {
+	var ptr *C.char
+	if len(label) > 0 {
+		ptr = C.CString(label)
+		defer cfree(ptr)
+	}
+	C.gtk_menu_item_set_label(MENU_ITEM(v), gstring(ptr))
+}
 
 func (v *MenuItem) GetUseUnderline() bool {
 	return gobool(C.gtk_menu_item_get_use_underline(MENU_ITEM(v)))
