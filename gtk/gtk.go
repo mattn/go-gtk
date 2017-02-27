@@ -5042,7 +5042,6 @@ func (v *TreeView) AppendColumn(c *TreeViewColumn) int {
 	return int(C.gtk_tree_view_append_column(TREE_VIEW(v), c.GTreeViewColumn))
 }
 
-//gint gtk_tree_view_remove_column (GtkTreeView *tree_view, GtkTreeViewColumn *column);
 //gint gtk_tree_view_insert_column (GtkTreeView *tree_view, GtkTreeViewColumn *column, gint position);
 //gint gtk_tree_view_insert_column_with_attributes (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, ...) G_GNUC_NULL_TERMINATED;
 //gint gtk_tree_view_insert_column_with_data_func (GtkTreeView *tree_view, gint position, const gchar *title, GtkCellRenderer *cell, GtkTreeCellDataFunc func, gpointer data, GDestroyNotify dnotify);
@@ -5058,6 +5057,11 @@ func (v *TreeView) GetColumns() []*TreeViewColumn {
 		columns = append(columns, newTreeViewColumn((*C.GtkTreeViewColumn)(unsafe.Pointer(uintptr(p)))))
 	})
 	return columns
+}
+
+// Remove column from TreeView and return number of existing columns
+func (v *TreeView) RemoveColumn(c *TreeViewColumn) int {
+	return int(C.gtk_tree_view_remove_column(TREE_VIEW(v), c.GTreeViewColumn))
 }
 
 //void gtk_tree_view_move_column_after (GtkTreeView *tree_view, GtkTreeViewColumn *column, GtkTreeViewColumn *base_column);
