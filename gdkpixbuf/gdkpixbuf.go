@@ -159,6 +159,24 @@ func NewPixbufFromData(buffer []byte) (*Pixbuf, *glib.Error) {
 	}, nil
 }
 
+// NewPixbufFromBytes creates a Pixbuf from image data in a byte array
+//
+// Can be used for reading Base64 encoded images easily with the output from base64.StdEncoding.DecodeString("...")
+func NewPixbufFromBytes(buffer []byte) (*Pixbuf, *glib.Error) {
+	var err *C.GError
+	loader := C.gdk_pixbuf_loader_new()
+	C.gdk_pixbuf_loader_write(loader, C.to_gucharptr(unsafe.Pointer(&buffer[0])), C.gsize(len(buffer)), &err)
+	gpixbuf := C.gdk_pixbuf_loader_get_pixbuf(loader)
+
+	if err != nil {
+		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
+	}
+	return &Pixbuf{
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}, nil
+}
+
 func NewPixbufFromXpmData(data **byte) (*Pixbuf, *glib.Error) {
 	var err *C.GError
 	gpixbuf := C.gdk_pixbuf_new_from_xpm_data(
