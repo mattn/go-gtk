@@ -1118,6 +1118,10 @@ func (v *Dialog) Run() ResponseType {
 }
 
 func (v *Dialog) Response(response interface{}, datas ...interface{}) {
+	if id, ok := response.(ResponseType); ok {
+		C.gtk_dialog_response(DIALOG(v), gint(int(id)))
+		return
+	}
 	v.Connect("response", response, datas...)
 }
 
