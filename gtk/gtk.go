@@ -4835,7 +4835,6 @@ func NewTreeViewColumnWithAttributes(title string, cell ICellRenderer, attribute
 		if !ok {
 			log.Panic("Error calling gtk.TreeViewColumnWithAttributes: attributes column must be an int")
 		}
-		println(attribute, column)
 		C.gtk_tree_view_column_add_attribute(ret.GTreeViewColumn,
 			cell.ToCellRenderer(), gstring(ptrAttribute), gint(column))
 	}
