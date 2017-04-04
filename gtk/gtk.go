@@ -1532,9 +1532,18 @@ func (v *Window) SetIconName(name string) {
 	C.gtk_window_set_icon_name(WINDOW(v), gstring(ptr))
 }
 
-// gtk_window_set_auto_startup_notification
-// gtk_window_get_opacity
-// gtk_window_set_opacity
+func (v *Window) SetAutoStartupNotification(setting bool) {
+	C.gtk_window_set_auto_startup_notification(gbool(setting))
+}
+
+func (v *Window) GetOpacity() float64 {
+	return float64(C.gtk_window_get_opacity(WINDOW(v)))
+}
+
+func (v *Window) SetOpacity(opacity float64) {
+	C.gtk_window_set_opacity(WINDOW(v), gdouble(opacity))
+}
+
 // gtk_window_get_mnemonics_visible //since 2.20
 // gtk_window_set_mnemonics_visible //since 2.20
 
