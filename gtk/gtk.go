@@ -1287,10 +1287,10 @@ func (v *Window) SetTitle(title string) {
 	C.gtk_window_set_title(WINDOW(v), gstring(ptr))
 }
 
-func (v *Window) SetWMClass(wmclass_name string, wmclass_class string) {
-	ptr1 := C.CString(wmclass_name)
+func (v *Window) SetWMClass(name string, class string) {
+	ptr1 := C.CString(name)
 	defer cfree(ptr1)
-	ptr2 := C.CString(wmclass_class)
+	ptr2 := C.CString(class)
 	defer cfree(ptr2)
 	C.gtk_window_set_wmclass(WINDOW(v), gstring(ptr1), gstring(ptr2))
 }
@@ -1303,12 +1303,12 @@ func (v *Window) GetResizable() bool {
 	return gobool(C.gtk_window_get_resizable(WINDOW(v)))
 }
 
-func (v *Window) AddAccelGroup(group *AccelGroup) {
-	C.gtk_window_add_accel_group(WINDOW(v), group.GAccelGroup)
+func (v *Window) AddAccelGroup(agroup *AccelGroup) {
+	C.gtk_window_add_accel_group(WINDOW(v), agroup.GAccelGroup)
 }
 
-func (v *Window) RemoveAccelGroup(accel_group *AccelGroup) {
-	C.gtk_window_remove_accel_group(WINDOW(v), accel_group.GAccelGroup)
+func (v *Window) RemoveAccelGroup(agroup *AccelGroup) {
+	C.gtk_window_remove_accel_group(WINDOW(v), agroup.GAccelGroup)
 }
 
 func (v *Window) ActivateFocus() bool {
