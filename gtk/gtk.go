@@ -1287,7 +1287,13 @@ func (v *Window) SetTitle(title string) {
 	C.gtk_window_set_title(WINDOW(v), gstring(ptr))
 }
 
-// gtk_window_set_wmclass
+func (v *Window) SetWMClass(name string, class string) {
+	ptr1 := C.CString(name)
+	defer cfree(ptr1)
+	ptr2 := C.CString(class)
+	defer cfree(ptr2)
+	C.gtk_window_set_wmclass(WINDOW(v), gstring(ptr1), gstring(ptr2))
+}
 
 func (v *Window) SetResizable(resizable bool) {
 	C.gtk_window_set_resizable(WINDOW(v), gbool(resizable))
@@ -1297,13 +1303,21 @@ func (v *Window) GetResizable() bool {
 	return gobool(C.gtk_window_get_resizable(WINDOW(v)))
 }
 
-func (v *Window) AddAccelGroup(group *AccelGroup) {
-	C.gtk_window_add_accel_group(WINDOW(v), group.GAccelGroup)
+func (v *Window) AddAccelGroup(agroup *AccelGroup) {
+	C.gtk_window_add_accel_group(WINDOW(v), agroup.GAccelGroup)
 }
 
-// gtk_window_remove_accel_group
-// gtk_window_activate_focus
-// gtk_window_activate_default
+func (v *Window) RemoveAccelGroup(agroup *AccelGroup) {
+	C.gtk_window_remove_accel_group(WINDOW(v), agroup.GAccelGroup)
+}
+
+func (v *Window) ActivateFocus() bool {
+	return gobool(C.gtk_window_activate_focus(WINDOW(v)))
+}
+
+func (v *Window) ActivateDefault() bool {
+	return gobool(C.gtk_window_activate_default(WINDOW(v)))
+}
 
 func (v *Window) SetModal(modal bool) {
 	C.gtk_window_set_modal(WINDOW(v), gbool(modal))
