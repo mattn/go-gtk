@@ -2303,7 +2303,9 @@ func (v *ProgressBar) SetOrientation(i ProgressBarOrientation) {
 	C.gtk_progress_bar_set_orientation(PROGRESS_BAR(v), C.GtkProgressBarOrientation(i))
 }
 
-// gtk_progress_bar_set_ellipsize
+func (v *ProgressBar) SetEllipsize(ellipsize pango.EllipsizeMode) {
+	C.gtk_progress_bar_set_ellipsize(PROGRESS_BAR(v), C.PangoEllipsizeMode(ellipsize))
+}
 
 func (v *ProgressBar) GetText() string {
 	return gostring(C.gtk_progress_bar_get_text(PROGRESS_BAR(v)))
@@ -2323,7 +2325,9 @@ func (v *ProgressBar) GetOrientation() ProgressBarOrientation {
 	return ProgressBarOrientation(C.gtk_progress_bar_get_orientation(PROGRESS_BAR(v)))
 }
 
-// gtk_progress_bar_get_ellipsize
+func (v *ProgressBar) GetEllipsize() pango.EllipsizeMode {
+	return pango.EllipsizeMode(C.gtk_progress_bar_get_ellipsize(PROGRESS_BAR(v)))
+}
 
 //-----------------------------------------------------------------------
 // GtkStatusbar
