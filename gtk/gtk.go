@@ -2782,9 +2782,17 @@ func (v *Button) GetImage() *Image {
 	return &Image{Misc{Widget{C.gtk_button_get_image(BUTTON(v))}}}
 }
 
-// gtk_button_set_image_position
-// gtk_button_get_image_position
-// gtk_button_get_event_window
+func (v *Button) SetImagePosition(pos PositionType) {
+	C.gtk_button_set_image_position(BUTTON(v), C.GtkPositionType(pos))
+}
+
+func (v *Button) GetImagePosition() PositionType {
+	return PositionType(C.gtk_button_get_image_position(BUTTON(v)))
+}
+
+func (v *Button) GetEventWindow() *gdk.Window {
+	return gdk.WindowFromUnsafe(unsafe.Pointer(C.gtk_button_get_event_window(BUTTON(v))))
+}
 
 //-----------------------------------------------------------------------
 // GtkCheckButton
