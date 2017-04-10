@@ -8271,10 +8271,23 @@ func (v *FontSelectionDialog) SetFontName(font string) {
 	C.gtk_font_selection_dialog_set_font_name(FONT_SELECTION_DIALOG(v), gstring(pfont))
 }
 
-// gtk_font_selection_dialog_get_preview_text
-// gtk_font_selection_dialog_set_preview_text
-// gtk_font_selection_dialog_get_cancel_button
-// gtk_font_selection_dialog_get_ok_button
+func (v *FontSelectionDialog) GetPreviewText() string {
+	return gostring(C.gtk_font_selection_dialog_get_preview_text(FONT_SELECTION_DIALOG(v)))
+}
+
+func (v *FontSelectionDialog) SetPreviewText(text string) {
+	ptr := C.CString(text)
+	defer cfree(ptr)
+	C.gtk_font_selection_dialog_set_preview_text(FONT_SELECTION_DIALOG(v), gstring(ptr))
+}
+
+func (v *FontSelectionDialog) GetCancelButton() *Widget {
+	return &Widget{C.gtk_font_selection_dialog_get_cancel_button(FONT_SELECTION_DIALOG(v))}
+}
+
+func (v *FontSelectionDialog) GetOkButton() *Widget {
+	return &Widget{C.gtk_font_selection_dialog_get_ok_button(FONT_SELECTION_DIALOG(v))}
+}
 // gtk_font_selection_dialog_get_font_selection //since 2.22
 
 //-----------------------------------------------------------------------
