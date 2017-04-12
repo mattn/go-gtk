@@ -153,7 +153,7 @@ func ACTION_GROUP(p *ActionGroup) *C.GtkActionGroup        { return C.toGActionG
 func ACTIVATABLE(p *Activatable) *C.GtkActivatable         { return C.toGActivatable(p.GWidget) }
 func AS_GWIDGET(p unsafe.Pointer) *C.GtkWidget             { return C.toGWidget(p) }
 func UI_MANAGER(p *UIManager) *C.GtkUIManager              { return C.toGUIManager(p.Object) }
-
+func FONT_SELECTION(p *FontSelection) *C.GtkFontSelection  { return C.toGFontSelection(p.GWidget) }
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
 func panic_if_version_older(major int, minor int, micro int, function string) {
@@ -8231,11 +8231,27 @@ func (v *FontButton) GetTitle() string {
 //-----------------------------------------------------------------------
 // GtkFontSelection
 //-----------------------------------------------------------------------
+type FontSelection struct {
+	VBox
+}
 
-// gtk_font_selection_new
-// gtk_font_selection_get_font
-// gtk_font_selection_get_font_name
-// gtk_font_selection_set_font_name
+func NewFontSelection() *FontSelection {
+	return &FontSelection{VBox{Box{Container{Widget{C.gtk_font_selection_new()}}}}}
+}
+
+func (v *FontSelection) GetFont() *gdk.Font {
+	return &gdk.Font{C.gtk_font_selection_get_font(FONT_SELECTION(v))}
+}
+
+func (v *FontSelection) GetFontName() string {
+	return gostring(C.gtk_font_selection_get_font_name(FONT_SELECTION(v)))
+}
+
+func (v *FontSelection) SetFontName(name string) {
+	ptr := C.CString(name)
+	defer cfree(ptr)
+	C.gtk_font_selection_set_font_name(FONT_SELECTION(v), gstring(ptr))
+}
 // gtk_font_selection_get_preview_text
 // gtk_font_selection_set_preview_text
 // gtk_font_selection_get_face
