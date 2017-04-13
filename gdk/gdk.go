@@ -224,6 +224,10 @@ type Font struct {
 	GFont *C.GdkFont
 }
 
+func FontFromUnsafe(window unsafe.Pointer) *Font {
+	return &Font{C.toGdkFont(window)}
+}
+
 func FontLoad(name string) *Font {
 	ptr := C.CString(name)
 	defer cfree(ptr)

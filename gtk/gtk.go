@@ -8240,7 +8240,7 @@ func NewFontSelection() *FontSelection {
 }
 
 func (v *FontSelection) GetFont() *gdk.Font {
-	return &gdk.Font{C.gtk_font_selection_get_font(FONT_SELECTION(v))}
+	return gdk.FontFromUnsafe(unsafe.Pointer(C.gtk_font_selection_get_font(FONT_SELECTION(v))))
 }
 
 func (v *FontSelection) GetFontName() string {
