@@ -744,11 +744,15 @@ func StockListIDs() *glib.SList {
 // gtk_rc_add_class_style
 
 func RCParse(file string) {
-	C.gtk_rc_parse((*C.gchar)(C.CString(file)))
+	ptr := C.CString(file)
+	defer cfree(ptr)
+	C.gtk_rc_parse((*C.gchar)(ptr))
 }
 
 func RCParseString(style string) {
-	C.gtk_rc_parse_string((*C.gchar)(C.CString(style)))
+	ptr := C.CString(style)
+	defer cfree(ptr)
+	C.gtk_rc_parse_string((*C.gchar)(ptr))
 }
 
 func RCReparseAll() bool {
