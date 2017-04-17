@@ -154,6 +154,7 @@ func ACTIVATABLE(p *Activatable) *C.GtkActivatable         { return C.toGActivat
 func AS_GWIDGET(p unsafe.Pointer) *C.GtkWidget             { return C.toGWidget(p) }
 func UI_MANAGER(p *UIManager) *C.GtkUIManager              { return C.toGUIManager(p.Object) }
 func FONT_SELECTION(p *FontSelection) *C.GtkFontSelection  { return C.toGFontSelection(p.GWidget) }
+
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
 func panic_if_version_older(major int, minor int, micro int, function string) {
@@ -8258,6 +8259,7 @@ func (v *FontSelection) SetFontName(name string) {
 	defer cfree(ptr)
 	C.gtk_font_selection_set_font_name(FONT_SELECTION(v), gstring(ptr))
 }
+
 // gtk_font_selection_get_preview_text
 // gtk_font_selection_set_preview_text
 // gtk_font_selection_get_face
@@ -8310,6 +8312,7 @@ func (v *FontSelectionDialog) GetCancelButton() *Widget {
 func (v *FontSelectionDialog) GetOkButton() *Widget {
 	return &Widget{C.gtk_font_selection_dialog_get_ok_button(FONT_SELECTION_DIALOG(v))}
 }
+
 // gtk_font_selection_dialog_get_font_selection //since 2.22
 
 //-----------------------------------------------------------------------
@@ -9990,7 +9993,20 @@ func (v *Container) GetChildren() *glib.List {
 // gtk_container_resize_children
 // gtk_container_child_type
 // gtk_container_child_get
-// gtk_container_child_set
+
+func (v *Container) ChildSet(w IWidget, propName string, value interface{}) {
+
+	ptr := C.CString(propName)
+	defer cfree(ptr)
+
+	switch value.(type) {
+	case bool:
+		C._gtk_container_child_set_bool(CONTAINER(v), ToNative(w), gstring(ptr), gbool(value.(bool)))
+	case int:
+		C._gtk_container_child_set_int(CONTAINER(v), ToNative(w), gstring(ptr), gint(value.(int)))
+	}
+}
+
 // gtk_container_child_get_property
 // gtk_container_child_set_property
 // gtk_container_child_get_valist
