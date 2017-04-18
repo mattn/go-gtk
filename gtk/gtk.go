@@ -9983,13 +9983,33 @@ func (v *Container) GetChildren() *glib.List {
 	return glib.ListFromNative(unsafe.Pointer(C.gtk_container_get_children(CONTAINER(v))))
 }
 
-// gtk_container_set_reallocate_redraws
-// gtk_container_get_focus_child
-// gtk_container_set_focus_child
-// gtk_container_get_focus_vadjustment
-// gtk_container_set_focus_vadjustment
-// gtk_container_get_focus_hadjustment
-// gtk_container_set_focus_hadjustment
+func (v *Container) SetReallocateRedraws(redraws bool) {
+	C.gtk_container_set_reallocate_redraws(CONTAINER(v), gbool(redraws))
+}
+
+func (v *Container) GetFocusChild() *Widget {
+	return &Widget{C.gtk_container_get_focus_child(CONTAINER(v))}
+}
+
+func (v *Container) SetFocusChild(child *Widget) {
+	C.gtk_container_set_focus_child(CONTAINER(v), child.GWidget)
+} 
+
+func (v *Container) GetFocusVAdjustment() *Adjustment {
+	return &Adjustment{C.gtk_container_get_focus_vadjustment(CONTAINER(v))}
+}
+
+func (v *Container) SetFocusVAdjustment(adjustment *Adjustment) {
+	C.gtk_container_set_focus_vadjustment(CONTAINER(v), adjustment.GAdjustment)
+}
+
+func (v *Container) GetFocusHAdjustment() *Adjustment {
+	return &Adjustment{C.gtk_container_get_focus_hadjustment(CONTAINER(v))}
+}
+
+func (v *Container) SetFocusHAdjustment(adjustment *Adjustment) {
+	C.gtk_container_set_focus_hadjustment(CONTAINER(v), adjustment.GAdjustment)
+}
 // gtk_container_resize_children
 // gtk_container_child_type
 // gtk_container_child_get
