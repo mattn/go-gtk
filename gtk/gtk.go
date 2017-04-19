@@ -8203,8 +8203,13 @@ func (v *FontButton) GetFontName() string {
 	return gostring(C.gtk_font_button_get_font_name(FONT_BUTTON(v)))
 }
 
-// gtk_font_button_set_show_style
-// gtk_font_button_get_show_style
+func (v *FontButton) SetShowStyle(show bool) {
+	C.gtk_font_button_set_show_style(FONT_BUTTON(v), gbool(show))
+}
+
+func (v *FontButton) GetShowStyle() bool {
+	return gobool(C.gtk_font_button_get_show_style(FONT_BUTTON(v)))
+}
 
 func (v *FontButton) SetShowSize(show_size bool) {
 	C.gtk_font_button_set_show_size(FONT_BUTTON(v), gbool(show_size))
@@ -8214,8 +8219,13 @@ func (v *FontButton) GetShowSize() bool {
 	return gobool(C.gtk_font_button_get_show_size(FONT_BUTTON(v)))
 }
 
-// gtk_font_button_set_use_font
-// gtk_font_button_get_use_font
+func (v *FontButton) SetUseFont(use bool) {
+	C.gtk_font_button_set_use_font(FONT_BUTTON(v), gbool(use))
+}
+
+func (v *FontButton) GetUseFont() bool {
+	return gobool(C.gtk_font_button_get_use_font(FONT_BUTTON(v)))
+}
 
 func (v *FontButton) SetUseSize(use_size bool) {
 	C.gtk_font_button_set_use_size(FONT_BUTTON(v), gbool(use_size))
@@ -8313,7 +8323,10 @@ func (v *FontSelectionDialog) GetOkButton() *Widget {
 	return &Widget{C.gtk_font_selection_dialog_get_ok_button(FONT_SELECTION_DIALOG(v))}
 }
 
-// gtk_font_selection_dialog_get_font_selection //since 2.22
+func (v *FontSelectionDialog) GetFontSelection() *FontSelection {
+	return &FontSelection{VBox{Box{Container{Widget{
+		C.gtk_font_selection_dialog_get_font_selection(FONT_SELECTION_DIALOG(v))}}}}}
+}
 
 //-----------------------------------------------------------------------
 // GtkInputDialog
