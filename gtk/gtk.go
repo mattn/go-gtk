@@ -1353,11 +1353,27 @@ func (v *Window) SetDestroyWithParent(setting bool) {
 	C.gtk_window_set_destroy_with_parent(WINDOW(v), gbool(setting))
 }
 
-// gtk_window_set_screen
-// gtk_window_get_screen
-// gtk_window_is_active
-// gtk_window_has_toplevel_focus
-// gtk_window_list_toplevels
+func (v *Window) SetScreen(screen *gdk.Screen) {
+	gScreen := C.toGdkScreen(unsafe.Pointer(screen.GScreen))
+	C.gtk_window_set_screen(WINDOW(v), gScreen)
+}
+
+func (v *Window) GetScreen() *gdk.Screen {
+	return &gdk.Screen{C.gtk_window_get_screen(WINDOW(v))}
+}
+
+func (v *Window) IsActive() bool {
+	return gobool(C.gtk_window_is_active(WINDOW(v)))
+}
+
+func (v *Window) HasToplevelFocus() bool {
+	return gobool(C.gtk_window_has_toplevel_focus(WINDOW(v)))
+}
+
+func (v *Window) ListToplevels() *glib.List {
+	return glib.ListFromNative(unsafe.Pointer(C.gtk_window_list_toplevels()))
+}
+
 // gtk_window_add_mnemonic
 // gtk_window_remove_mnemonic
 // gtk_window_mnemonic_activate
