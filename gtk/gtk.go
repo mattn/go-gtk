@@ -1359,7 +1359,7 @@ func (v *Window) SetScreen(screen *gdk.Screen) {
 }
 
 func (v *Window) GetScreen() *gdk.Screen {
-	return &gdk.Screen{C.gtk_window_get_screen(WINDOW(v))}
+	return gdk.ScreenFromUnsafe(unsafe.Pointer(C.gtk_window_get_screen(WINDOW(v))))
 }
 
 func (v *Window) IsActive() bool {

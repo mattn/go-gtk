@@ -337,6 +337,10 @@ type Screen struct {
 
 // GdkScreen * gdk_gc_get_screen (GdkGC *gc);
 
+func ScreenFromUnsafe(screen unsafe.Pointer) *Screen {
+	return &Screen{(*C.GdkScreen)(screen)}
+}
+
 func GetDefaultScreen() (screen *Screen) {
 	return &Screen{GScreen: C.gdk_screen_get_default()}
 }
