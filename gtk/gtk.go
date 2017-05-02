@@ -3460,6 +3460,9 @@ func (v *EntryCompletion) SetPopupSingleMatch(popupSingleMatch bool) {
 func (v *EntryCompletion) GetPopupSingleMatch() bool {
 	return gobool(C.gtk_entry_completion_get_popup_single_match(v.GEntryCompletion))
 }
+func (v *EntryCompletion) Connect(s string, f interface{}, datas ...interface{}) int {
+	return glib.ObjectFromNative(unsafe.Pointer(v.GEntryCompletion)).Connect(s, f, datas)
+}
 
 //-----------------------------------------------------------------------
 // GtkHScale
