@@ -378,6 +378,14 @@ func (p *Pixbuf) Save(filename, savetype string, options ...string) *glib.Error 
 	return nil
 }
 
+func (p *Pixbuf) Ref() {
+	C.g_object_ref(C.gpointer(p.GPixbuf))
+}
+
+func (p *Pixbuf) Unref() {
+	C.g_object_unref(C.gpointer(p.GPixbuf))
+}
+
 //-----------------------------------------------------------------------
 // Animation
 //-----------------------------------------------------------------------
