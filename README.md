@@ -72,7 +72,7 @@
     Main Loop and Events          :  30% (  8/ 26)
     GtkAccelGroup                 :  15% (  3/ 19)
     GtkAccelMap                   :   0% (  0/ 14)
-    GtkClipboard                  :  25% (  8/ 31)
+    GtkClipboard                  :  29% (  9/ 31)
     Drag and Drop                 :  11% (  4/ 35)
     GtkIconTheme                  :   0% (  0/ 31)
     GtkStockItem                  :  66% (  4/  6)
