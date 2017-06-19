@@ -394,7 +394,7 @@ func (v *Clipboard) Store() {
 }
 
 func (v *Clipboard) WaitForContents(target gdk.Atom) *SelectionData {
-	gsel := C._gtk_clipboard_wait_for_contents(v.GClipboard, unsafe.Pointer(target))
+	gsel := C.gtk_clipboard_wait_for_contents(v.GClipboard, unsafe.Pointer(target))
 	return NewSelectionDataFromNative(unsafe.Pointer(gsel))
 }
 
