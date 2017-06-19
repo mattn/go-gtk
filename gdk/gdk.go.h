@@ -20,8 +20,4 @@ static void* _gdk_display_get_default() {
 	return (void*) gdk_display_get_default();
 }
 
-static void* _gdk_atom_intern(gchar const* atom_name, gboolean only_if_exists) {
-	return (void*) gdk_atom_intern(atom_name, only_if_exists);
-}
-
 #endif
