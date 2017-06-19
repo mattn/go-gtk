@@ -26,6 +26,10 @@ static GtkClipboard* _gtk_clipboard_get_for_display(void* display, void* selecti
 	return gtk_clipboard_get_for_display((GdkDisplay*)display, (GdkAtom)selection);
 }
 
+static GtkSelectionData* _gtk_clipboard_wait_for_contents(GtkClipboard* self, void* target) {
+	return gtk_clipboard_wait_for_contents(self, target);
+}
+
 static int _gtk_selection_data_get_length(void* selection_data) {
 	return (int) gtk_selection_data_get_length((GtkSelectionData*)selection_data);
 }
