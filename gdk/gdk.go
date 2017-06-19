@@ -2996,6 +2996,12 @@ func DragContextFromNative(l unsafe.Pointer) *DragContext {
 //-----------------------------------------------------------------------
 type Atom uintptr
 
+func AtomIntern(atom_name string, only_if_exists bool) Atom {
+	ptr := C.CString(atom_name)
+	defer cfree(ptr)
+	return Atom(unsafe.Pointer(C.gdk_atom_intern(gstring(ptr), gbool(only_if_exists))))
+}
+
 //-----------------------------------------------------------------------
 // GdkDisplay
 //-----------------------------------------------------------------------

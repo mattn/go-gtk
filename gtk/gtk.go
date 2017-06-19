@@ -393,6 +393,11 @@ func (v *Clipboard) Store() {
 	C.gtk_clipboard_store(v.GClipboard)
 }
 
+func (v *Clipboard) WaitForContents(target gdk.Atom) *SelectionData {
+	gsel := C.gtk_clipboard_wait_for_contents(v.GClipboard, unsafe.Pointer(target))
+	return NewSelectionDataFromNative(unsafe.Pointer(gsel))
+}
+
 func (v *Clipboard) WaitForImage() *gdkpixbuf.Pixbuf {
 	gpixbuf := C.gtk_clipboard_wait_for_image(v.GClipboard)
 	return &gdkpixbuf.Pixbuf{
@@ -420,7 +425,6 @@ func (v *Clipboard) Connect(s string, f interface{}, datas ...interface{}) int {
 // gtk_clipboard_request_targets
 // gtk_clipboard_request_rich_text
 // gtk_clipboard_request_uris
-// gtk_clipboard_wait_for_contents
 // gtk_clipboard_wait_for_text
 // gtk_clipboard_wait_for_image
 // gtk_clipboard_wait_for_rich_text
@@ -10022,7 +10026,7 @@ func (v *Container) GetFocusChild() *Widget {
 
 func (v *Container) SetFocusChild(child *Widget) {
 	C.gtk_container_set_focus_child(CONTAINER(v), child.GWidget)
-} 
+}
 
 func (v *Container) GetFocusVAdjustment() *Adjustment {
 	return &Adjustment{C.gtk_container_get_focus_vadjustment(CONTAINER(v))}
@@ -10039,6 +10043,7 @@ func (v *Container) GetFocusHAdjustment() *Adjustment {
 func (v *Container) SetFocusHAdjustment(adjustment *Adjustment) {
 	C.gtk_container_set_focus_hadjustment(CONTAINER(v), adjustment.GAdjustment)
 }
+
 // gtk_container_resize_children
 // gtk_container_child_type
 // gtk_container_child_get
