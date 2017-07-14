@@ -1,4 +1,0 @@
-[submodule "docs"]
-	path = docs
-	url = git@github.com:mattn/go-gtk.git
-	branch = gh-pages
