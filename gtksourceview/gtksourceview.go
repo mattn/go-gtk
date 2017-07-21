@@ -390,16 +390,67 @@ func NewSourceStyleSchemeManager() *SourceStyleSchemeManager {
 	return &SourceStyleSchemeManager{C.gtk_source_style_scheme_manager_new()}
 }
 
+func SourceStyleSchemeManagerGetDefault() *SourceStyleSchemeManager {
+	return &SourceStyleSchemeManager{C.gtk_source_style_scheme_manager_get_default()}
+}
+
 func (v *SourceStyleSchemeManager) GetScheme(scheme_id string) *SourceStyleScheme {
 	cscheme_id := C.CString(scheme_id)
 	defer cfree(cscheme_id)
 	return &SourceStyleScheme{C.gtk_source_style_scheme_manager_get_scheme(v.GSourceStyleSchemeManager, gstring(cscheme_id))}
 }
 
-// gtk_source_style_scheme_manager_get_default
-// gtk_source_style_scheme_manager_set_search_path
-// gtk_source_style_scheme_manager_append_search_path
-// gtk_source_style_scheme_manager_prepend_search_path
-// gtk_source_style_scheme_manager_get_search_path
-// gtk_source_style_scheme_manager_get_scheme_ids
-// gtk_source_style_scheme_manager_force_rescan
+func (v *SourceStyleSchemeManager) SetSearchPath(paths []string) {
+	cpaths := C.make_strings(C.int(len(paths) + 1))
+	for i, path := range paths {
+		ptr := C.CString(path)
+		defer cfree(ptr)
+		C.set_string(cpaths, C.int(i), gstring(ptr))
+	}
+	C.set_string(cpaths, C.int(len(paths)), nil)
+	C.gtk_source_style_scheme_manager_set_search_path(v.GSourceStyleSchemeManager, cpaths)
+}
+
+func (v *SourceStyleSchemeManager) GetSearchPath() []string {
+	var dirs []string
+	cdirs := C.gtk_source_style_scheme_manager_get_search_path(v.GSourceStyleSchemeManager)
+	for {
+		dirs = append(dirs, gostring(*cdirs))
+		cdirs = C.nextGstr(cdirs)
+		if *cdirs == nil {
+			break
+		}
+	}
+	return dirs
+}
+
+func (v *SourceStyleSchemeManager) AppendSearchPath(path string) {
+	cpath := C.CString(path)
+	defer cfree(cpath)
+	C.gtk_source_style_scheme_manager_append_search_path(v.GSourceStyleSchemeManager, gstring(cpath))
+}
+
+func (v *SourceStyleSchemeManager) PrepandSearchPath(path string) {
+	cpath := C.CString(path)
+	defer cfree(cpath)
+	C.gtk_source_style_scheme_manager_prepend_search_path(v.GSourceStyleSchemeManager, gstring(cpath))
+}
+
+func (v *SourceStyleSchemeManager) GetSchemeIds() []string {
+	var ids []string
+	cids := C.gtk_source_style_scheme_manager_get_scheme_ids(v.GSourceStyleSchemeManager)
+	for {
+		ids = append(ids, gostring(*cids))
+		cids = C.nextGstr(cids)
+		if *cids == nil {
+			break
+		}
+	}
+	return ids
+}
+
+func (v *SourceStyleSchemeManager) ForseRescan() {
+	C.gtk_source_style_scheme_manager_force_rescan(v.GSourceStyleSchemeManager)
+}
+
+//FINISH
