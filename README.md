@@ -34,6 +34,18 @@
 
   * http://www.gtk.org/download/windows.php
 
+## EMBEDDING
+
+  It is possible to embed a pixbuf image with:
+  ```sh
+  $ go run tools/make_inline_pixbuf/make_inline_pixbuf.go logoPNG data/go-gtk-logo.png > logo.gen.go
+  ```
+  
+  And then load it with:
+  ```go
+	pb := gdkpixbuf.NewPixbufFromData(logoPNG)
+  ```
+
 ## LICENSE
 
   The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (GNU Lesser General Public License). The idea is that if you can use Go (and Gtk) in a project, you should also be able to use go-gtk.
@@ -62,6 +74,7 @@
   * matiaslina
   * Dag Robøle
   * Denis Dyakov
+  * Giuseppe Mazzotta
 
 ## GOAL
 
