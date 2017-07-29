@@ -12,6 +12,14 @@ import (
 	"unsafe"
 )
 
+// PixbufData is an inline/embedded image data object for usage with NewPixbufFromData.
+type PixbufData struct {
+	Data []byte
+	Colorspace Colorspace
+	HasAlpha bool
+	BitsPerSample, Width, Height, RowStride int
+}
+
 func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
 func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
 func gostring(s *C.gchar) string { return C.GoString(cstring(s)) }
@@ -142,15 +150,15 @@ func NewPixbufFromFileAtScale(filename string, width, height int, preserve_aspec
 }
 
 // NewPixbufFromData creates a Pixbuf from image data in a byte array
-func NewPixbufFromData(data []byte, colorspace Colorspace, hasAlpha bool, bitsPerSample, width, height, rowStride int) *Pixbuf {
+func NewPixbufFromData(pbd PixbufData) *Pixbuf {
 	gpixbuf := C.gdk_pixbuf_new_from_data(
-		C.to_gucharptr(unsafe.Pointer(&data[0])),
-		C.GdkColorspace(colorspace),
-		gbool(hasAlpha),
-		C.int(bitsPerSample),
-		C.int(width),
-		C.int(height),
-		C.int(rowStride),
+		C.to_gucharptr(unsafe.Pointer(&pbd.Data[0])),
+		C.GdkColorspace(pbd.Colorspace),
+		gbool(pbd.HasAlpha),
+		C.int(pbd.BitsPerSample),
+		C.int(pbd.Width),
+		C.int(pbd.Height),
+		C.int(pbd.RowStride),
 		nil, nil)
 	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},
