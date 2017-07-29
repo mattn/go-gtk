@@ -142,21 +142,20 @@ func NewPixbufFromFileAtScale(filename string, width, height int, preserve_aspec
 }
 
 // NewPixbufFromData creates a Pixbuf from image data in a byte array
-//
-// Can be used for reading Base64 encoded images easily with the output from base64.StdEncoding.DecodeString("...")
-func NewPixbufFromData(buffer []byte) (*Pixbuf, *glib.Error) {
-	var err *C.GError
-	loader := C.gdk_pixbuf_loader_new()
-	C.gdk_pixbuf_loader_write(loader, C.to_gucharptr(unsafe.Pointer(&buffer[0])), C.gsize(len(buffer)), &err)
-	gpixbuf := C.gdk_pixbuf_loader_get_pixbuf(loader)
-
-	if err != nil {
-		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
-	}
+func NewPixbufFromData(data []byte, colorspace Colorspace, hasAlpha bool, bitsPerSample, width, height, rowStride int) *Pixbuf {
+	gpixbuf := C.gdk_pixbuf_new_from_data(
+		C.to_gucharptr(unsafe.Pointer(&data[0])),
+		C.GdkColorspace(colorspace),
+		gbool(hasAlpha),
+		C.int(bitsPerSample),
+		C.int(width),
+		C.int(height),
+		C.int(rowStride),
+		nil, nil)
 	return &Pixbuf{
 		GdkPixbuf: &GdkPixbuf{gpixbuf},
 		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
-	}, nil
+	}
 }
 
 // NewPixbufFromBytes creates a Pixbuf from image data in a byte array
