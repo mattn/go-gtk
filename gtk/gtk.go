@@ -18,6 +18,7 @@ import (
 
 	"github.com/mattn/go-gtk/gdk"
 	"github.com/mattn/go-gtk/gdkpixbuf"
+	"github.com/mattn/go-gtk/gio"
 	"github.com/mattn/go-gtk/glib"
 	"github.com/mattn/go-gtk/pango"
 	"github.com/mattn/go-pointer"
@@ -523,8 +524,17 @@ func (v *Widget) DragDestAddUriTargets() {
 // GtkIconTheme
 //-----------------------------------------------------------------------
 
+type IconTheme struct {
+	GtkIconTheme *C.GtkIconTheme
+}
+
 // gtk_icon_theme_new
+
 // gtk_icon_theme_get_default
+func GetDefaultIconTheme() *IconTheme {
+	return &IconTheme{C.gtk_icon_theme_get_default()}
+}
+
 // gtk_icon_theme_get_for_screen
 // gtk_icon_theme_set_screen
 // gtk_icon_theme_set_search_path
@@ -533,23 +543,59 @@ func (v *Widget) DragDestAddUriTargets() {
 // gtk_icon_theme_prepend_search_path
 // gtk_icon_theme_set_custom_theme
 // gtk_icon_theme_has_icon
+
+type IconLookupFlags C.GtkIconLookupFlags
+
+var (
+	IconLookupNoSVG      IconLookupFlags = C.GTK_ICON_LOOKUP_NO_SVG
+	IconLookupForceSVG   IconLookupFlags = C.GTK_ICON_LOOKUP_FORCE_SVG
+	IconLookupUseBuiltin IconLookupFlags = C.GTK_ICON_LOOKUP_USE_BUILTIN
+)
+
 // gtk_icon_theme_lookup_icon
 // gtk_icon_theme_choose_icon
+
 // gtk_icon_theme_lookup_by_gicon
-// gtk_icon_theme_load_icon
+func (it *IconTheme) LookupByGIcon(icon *gio.GIcon, width int) *IconInfo {
+
+	return &IconInfo{C.gtk_icon_theme_lookup_by_gicon(
+		it.GtkIconTheme,
+		(*C.GIcon)(unsafe.Pointer(icon.GIcon)),
+		gint(width),
+		C.GtkIconLookupFlags(IconLookupUseBuiltin),
+	)}
+}
+
 // gtk_icon_theme_list_contexts
 // gtk_icon_theme_list_icons
 // gtk_icon_theme_get_icon_sizes
 // gtk_icon_theme_get_example_icon_name
 // gtk_icon_theme_rescan_if_needed
 // gtk_icon_theme_add_builtin_icon
+
+type IconInfo struct {
+	GtkIconInfo *C.GtkIconInfo
+}
+
 // gtk_icon_info_copy
 // gtk_icon_info_free
 // gtk_icon_info_new_for_pixbuf
 // gtk_icon_info_get_base_size
 // gtk_icon_info_get_filename
 // gtk_icon_info_get_builtin_pixbuf
+
 // gtk_icon_info_load_icon
+func (ii *IconInfo) LoadIcon() (*gdkpixbuf.GdkPixbuf, error) {
+	var gerror *C.GError
+	pixbuf := C.gtk_icon_info_load_icon(ii.GtkIconInfo, &gerror)
+
+	if gerror != nil {
+		return nil, glib.ErrorFromNative(unsafe.Pointer(gerror))
+	}
+
+	return gdkpixbuf.NewGdkPixbuf(unsafe.Pointer(pixbuf)), nil
+}
+
 // gtk_icon_info_set_raw_coordinates
 // gtk_icon_info_get_embedded_rect
 // gtk_icon_info_get_attach_points
@@ -710,7 +756,15 @@ func StockListIDs() *glib.SList {
 // gtk_icon_set_ref
 // gtk_icon_set_render_icon
 // gtk_icon_set_unref
+
 // gtk_icon_size_lookup
+func IconSizeLookup(size IconSize) (width int, height int) {
+	var _width, _height C.gint
+	C.gtk_icon_size_lookup(C.GtkIconSize(size), &_width, &_height)
+
+	return int(_width), int(_height)
+}
+
 // gtk_icon_size_lookup_for_settings
 // gtk_icon_size_register
 // gtk_icon_size_register_alias
