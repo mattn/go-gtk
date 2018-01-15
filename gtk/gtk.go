@@ -547,9 +547,11 @@ func GetDefaultIconTheme() *IconTheme {
 type IconLookupFlags C.GtkIconLookupFlags
 
 var (
-	IconLookupNoSVG      IconLookupFlags = C.GTK_ICON_LOOKUP_NO_SVG
-	IconLookupForceSVG   IconLookupFlags = C.GTK_ICON_LOOKUP_FORCE_SVG
-	IconLookupUseBuiltin IconLookupFlags = C.GTK_ICON_LOOKUP_USE_BUILTIN
+	IconLookupNoSVG           IconLookupFlags = C.GTK_ICON_LOOKUP_NO_SVG
+	IconLookupForceSVG        IconLookupFlags = C.GTK_ICON_LOOKUP_FORCE_SVG
+	IconLookupUseBuiltin      IconLookupFlags = C.GTK_ICON_LOOKUP_USE_BUILTIN
+	IconLookupGenericFallback IconLookupFlags = C.GTK_ICON_LOOKUP_GENERIC_FALLBACK
+	IconLookupForceSize       IconLookupFlags = C.GTK_ICON_LOOKUP_FORCE_SIZE
 )
 
 // gtk_icon_theme_lookup_icon
