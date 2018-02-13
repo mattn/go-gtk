@@ -1232,7 +1232,11 @@ func (v *Dialog) GetWidgetForResponse(id int) *Widget {
 }
 
 // gtk_dialog_get_action_area
-// gtk_dialog_get_content_area
+
+func (v *Dialog) GetContentArea() *VBox {
+	return &VBox{Box{Container{Widget{C._gtk_dialog_get_content_area(v.GWidget)}}}}
+}
+
 // gtk_alternative_dialog_button_order
 // gtk_dialog_set_alternative_button_order
 // gtk_dialog_set_alternative_button_order_from_array
