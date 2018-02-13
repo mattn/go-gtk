@@ -275,6 +275,10 @@ static GtkWidget* _gtk_dialog_get_vbox(GtkWidget* w) {
   return GTK_DIALOG(w)->vbox;
 }
 
+static GtkWidget* _gtk_dialog_get_content_area(GtkWidget* w) {
+  return GTK_DIALOG(w)->action_area;
+}
+
 //////////////////////////////////////////////
 // ############# Version Control #############
 //////////////////////////////////////////////
