@@ -1185,11 +1185,10 @@ const (
 
 type Dialog struct {
 	Window
-	wfr *Widget // WidgetForResponse
 }
 
 func NewDialog() *Dialog {
-	return &Dialog{Window{Bin{Container{Widget{C.gtk_dialog_new()}}}}, nil}
+	return &Dialog{Window{Bin{Container{Widget{C.gtk_dialog_new()}}}}}
 }
 
 // gtk_dialog_new_with_buttons
@@ -1234,15 +1233,10 @@ func (v *Dialog) GetResponseForWidget(w *Widget) ResponseType {
 	return ResponseType(int(C.gtk_dialog_get_response_for_widget(DIALOG(v), w.GWidget)))
 }
 
-func (v *Dialog) GetWidgetForResponse(id int) *Widget {
+func (v *Dialog) GetWidgetForResponse(id ResponseType) *Widget {
 	panic_if_version_older(2, 20, 0, "gtk_dialog_get_widget_for_response()")
-	w := C._gtk_dialog_get_widget_for_response(DIALOG(v), gint(id))
-	if v.wfr == nil {
-		v.wfr = &Widget{w}
-	} else {
-		v.wfr.GWidget = w
-	}
-	return v.wfr
+	w := C._gtk_dialog_get_widget_for_response(DIALOG(v), gint(int(id)))
+	return &Widget{w}
 }
 
 // gtk_dialog_get_action_area
@@ -1297,7 +1291,7 @@ func NewMessageDialog(parent *Window, flag DialogFlags, t MessageType, buttons B
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(buttons),
-			gstring(ptr))}}}}, nil}}
+			gstring(ptr))}}}}}}
 }
 
 func NewMessageDialogWithMarkup(parent *Window, flag DialogFlags, t MessageType, buttons ButtonsType, format string, args ...interface{}) *MessageDialog {
@@ -1307,7 +1301,7 @@ func NewMessageDialogWithMarkup(parent *Window, flag DialogFlags, t MessageType,
 			C.GtkDialogFlags(flag),
 			C.GtkMessageType(t),
 			C.GtkButtonsType(buttons),
-			nil)}}}}, nil}}
+			nil)}}}}}}
 	r.SetMarkup(fmt.Sprintf(format, args...))
 	return r
 }
@@ -1680,7 +1674,7 @@ type AboutDialog struct {
 }
 
 func NewAboutDialog() *AboutDialog {
-	return &AboutDialog{Dialog{Window{Bin{Container{Widget{C.gtk_about_dialog_new()}}}}, nil}}
+	return &AboutDialog{Dialog{Window{Bin{Container{Widget{C.gtk_about_dialog_new()}}}}}}
 }
 
 func (v *AboutDialog) GetProgramName() string {
@@ -8203,7 +8197,7 @@ func NewFileChooserDialog(title string, parent *Window, file_chooser_action File
 			C.int(file_chooser_action),
 			C.int(button_action),
 			gstring(pbutton))}
-	ret := &FileChooserDialog{Dialog{Window{Bin{Container{widget}}}, nil}, FileChooser{FILE_CHOOSER(&widget)}}
+	ret := &FileChooserDialog{Dialog{Window{Bin{Container{widget}}}}, FileChooser{FILE_CHOOSER(&widget)}}
 	text, res := variadicButtonsToArrays(buttons)
 	for i := range text {
 		ret.AddButton(text[i], res[i])
@@ -8384,7 +8378,7 @@ func NewFontSelectionDialog(title string) *FontSelectionDialog {
 	ptitle := C.CString(title)
 	defer cfree(ptitle)
 	return &FontSelectionDialog{Dialog{Window{Bin{Container{Widget{
-		C.gtk_font_selection_dialog_new(gstring(ptitle))}}}}, nil}}
+		C.gtk_font_selection_dialog_new(gstring(ptitle))}}}}}}
 }
 
 func (v *FontSelectionDialog) GetFontName() string {

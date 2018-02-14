@@ -2,17 +2,18 @@ package gtk
 
 import (
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAboutDialog_GetAuthors(t *testing.T) {
 	Init(nil)
-	dialog := NewAboutDialog();
-	assert.Equal(t, len(dialog.GetAuthors()), 0);
+	dialog := NewAboutDialog()
+	assert.Equal(t, len(dialog.GetAuthors()), 0)
 	dialog.SetAuthors([]string{"a", ""})
-	assert.Equal(t, len(dialog.GetAuthors()), 2);
+	assert.Equal(t, len(dialog.GetAuthors()), 2)
 	dialog.SetAuthors(nil)
-	assert.Equal(t, len(dialog.GetAuthors()), 0);
+	assert.Equal(t, len(dialog.GetAuthors()), 0)
 }
 
 func TestUpdateTreeViewColumns(t *testing.T) {
@@ -66,4 +67,14 @@ func TestUpdateTreeViewColumns(t *testing.T) {
 	if count := len(tw.GetColumns()); count != 0 {
 		t.Error("Wrong number of the columns:", count)
 	}
+}
+
+func TestDialog_GetWidgetForResponse(t *testing.T) {
+	dialog := NewDialog()
+	dialog.AddButton("A", RESPONSE_ACCEPT)
+	dialog.AddButton("B", RESPONSE_CANCEL)
+	accept := dialog.GetWidgetForResponse(RESPONSE_ACCEPT)
+	cancel := dialog.GetWidgetForResponse(RESPONSE_CANCEL)
+	assert.Equal(t, newButtonInternal(accept.GWidget).GetLabel(), "A")
+	assert.Equal(t, newButtonInternal(cancel.GWidget).GetLabel(), "B")
 }
