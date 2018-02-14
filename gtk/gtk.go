@@ -98,8 +98,7 @@ func TEXT_BUFFER(p unsafe.Pointer) *C.GtkTextBuffer        { return C.toGTextBuf
 func TEXT_TAG(p unsafe.Pointer) *C.GtkTextTag              { return C.toGTextTag(p) }
 func MENU(p *Menu) *C.GtkMenu                              { return C.toGMenu(p.GWidget) }
 func MENU_BAR(p *MenuBar) *C.GtkMenuBar                    { return C.toGMenuBar(p.GWidget) }
-func MENU_SHELL(p *Menu) *C.GtkMenuShell                   { return C.toGMenuShell(p.GWidget) } // TODO (GtkMenuShell receiver)
-func MENU_BAR_SHELL(p *MenuBar) *C.GtkMenuShell            { return C.toGMenuShell(p.GWidget) } // TODO
+func MENU_SHELL(p *MenuShell) *C.GtkMenuShell              { return C.toGMenuShell(p.GWidget) }
 func MENU_ITEM(p *MenuItem) *C.GtkMenuItem                 { return C.toGMenuItem(p.GWidget) }
 func ITEM(p *Item) *C.GtkItem                              { return C.toGItem(p.GWidget) }
 func TOOLBAR(p *Toolbar) *C.GtkToolbar                     { return C.toGToolbar(p.GWidget) }
@@ -6264,31 +6263,14 @@ func (v *ComboBoxEntry) SetTextColumn(text_column int) {
 // GtkMenu
 //-----------------------------------------------------------------------
 type Menu struct {
-	Container
-	//TODO GtkMenuShell
+	MenuShell
 }
 
 func NewMenu() *Menu {
-	return &Menu{Container{Widget{C.gtk_menu_new()}}}
+	return &Menu{MenuShell{Container{Widget{C.gtk_menu_new()}}}}
 }
 
 // void gtk_menu_set_screen (GtkMenu *menu, GdkScreen *screen);
-
-//TODO remove when GtkMenuShell is done
-func (v *Menu) Append(child IWidget) {
-	C.gtk_menu_shell_append(MENU_SHELL(v), ToNative(child))
-}
-
-//TODO remove when GtkMenuShell is done
-func (v *Menu) Prepend(child IWidget) {
-	C.gtk_menu_shell_prepend(MENU_SHELL(v), ToNative(child))
-}
-
-//TODO remove when GtkMenuShell is done
-func (v *Menu) Insert(child IWidget, position int) {
-	C.gtk_menu_shell_insert(MENU_SHELL(v), ToNative(child), gint(position))
-}
-
 // void gtk_menu_reorder_child(GtkMenu *menu, GtkWidget *child, gint position);
 // void gtk_menu_attach(GtkMenu *menu, GtkWidget *child, guint left_attach, guint right_attach, guint top_attach, guint bottom_attach);
 
@@ -6400,11 +6382,11 @@ const (
 )
 
 type MenuBar struct {
-	Widget
+	MenuShell
 }
 
 func NewMenuBar() *MenuBar {
-	return &MenuBar{Widget{C.gtk_menu_bar_new()}}
+	return &MenuBar{MenuShell{Container{Widget{C.gtk_menu_bar_new()}}}}
 }
 
 func (v *MenuBar) SetPackDirection(pack_dir PackDirection) {
@@ -6421,21 +6403,6 @@ func (v *MenuBar) SetChildPackDirection(pack_dir PackDirection) {
 
 func (v *MenuBar) GetChildPackDirection() PackDirection {
 	return PackDirection(C.gtk_menu_bar_get_child_pack_direction(MENU_BAR(v)))
-}
-
-//TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
-func (v *MenuBar) Append(child IWidget) {
-	C.gtk_menu_shell_append(MENU_BAR_SHELL(v), ToNative(child))
-}
-
-//TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
-func (v *MenuBar) Prepend(child IWidget) {
-	C.gtk_menu_shell_prepend(MENU_BAR_SHELL(v), ToNative(child))
-}
-
-//TODO da rimuovere, creare GtkMenuShell e usarlo come anonymous field per GtkMenu
-func (v *MenuBar) Insert(child IWidget, position int) {
-	C.gtk_menu_shell_insert(MENU_BAR_SHELL(v), ToNative(child), gint(position))
 }
 
 //-----------------------------------------------------------------------
@@ -10222,9 +10189,22 @@ func (v *Item) Toggle() {
 // GtkMenuShell
 //-----------------------------------------------------------------------
 
-// gtk_menu_shell_append
-// gtk_menu_shell_prepend
-// gtk_menu_shell_insert
+type MenuShell struct {
+	Container
+}
+
+func (v *MenuShell) Append(child IWidget) {
+	C.gtk_menu_shell_append(MENU_SHELL(v), ToNative(child))
+}
+
+func (v *MenuShell) Prepend(child IWidget) {
+	C.gtk_menu_shell_prepend(MENU_SHELL(v), ToNative(child))
+}
+
+func (v *MenuShell) Insert(child IWidget, position int) {
+	C.gtk_menu_shell_insert(MENU_SHELL(v), ToNative(child), gint(position))
+}
+
 // gtk_menu_shell_deactivate
 // gtk_menu_shell_select_item
 // gtk_menu_shell_select_first
