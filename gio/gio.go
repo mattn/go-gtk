@@ -1,7 +1,7 @@
 package gio
 
 // #include "gio.go.h"
-// #cgo pkg-config: gtk+-2.0
+// #cgo pkg-config: gio-2.0
 import "C"
 import (
 	"unsafe"
