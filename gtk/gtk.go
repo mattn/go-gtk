@@ -213,6 +213,20 @@ func argumentPanic(message string) {
 	}
 }
 
+func native2StringArray(native **C.gchar) []string{
+	if native == nil {
+		return nil
+	}
+
+	var res []string
+	for *native != nil {
+		res = append(res, gostring(*native))
+		native = C.nextGstr(native)
+	}
+	return res
+}
+
+
 //-----------------------------------------------------------------------
 // Main Loop and Events
 //-----------------------------------------------------------------------
@@ -1751,16 +1765,7 @@ func (v *AboutDialog) SetWebsiteLabel(website_label string) {
 }
 
 func (v *AboutDialog) GetAuthors() []string {
-	var authors []string
-	cauthors := C.gtk_about_dialog_get_authors(ABOUT_DIALOG(v))
-	for {
-		authors = append(authors, gostring(*cauthors))
-		cauthors = C.nextGstr(cauthors)
-		if *cauthors == nil {
-			break
-		}
-	}
-	return authors
+	return native2StringArray(C.gtk_about_dialog_get_authors(ABOUT_DIALOG(v)))
 }
 
 func (v *AboutDialog) SetAuthors(authors []string) {
@@ -1776,16 +1781,7 @@ func (v *AboutDialog) SetAuthors(authors []string) {
 }
 
 func (v *AboutDialog) GetArtists() []string {
-	var artists []string
-	cartists := C.gtk_about_dialog_get_artists(ABOUT_DIALOG(v))
-	for {
-		artists = append(artists, gostring(*cartists))
-		cartists = C.nextGstr(cartists)
-		if *cartists == nil {
-			break
-		}
-	}
-	return artists
+	return native2StringArray(C.gtk_about_dialog_get_artists(ABOUT_DIALOG(v)))
 }
 
 func (v *AboutDialog) SetArtists(artists []string) {
@@ -1801,16 +1797,7 @@ func (v *AboutDialog) SetArtists(artists []string) {
 }
 
 func (v *AboutDialog) GetDocumenters() []string {
-	var documenters []string
-	cdocumenters := C.gtk_about_dialog_get_documenters(ABOUT_DIALOG(v))
-	for {
-		documenters = append(documenters, gostring(*cdocumenters))
-		cdocumenters = C.nextGstr(cdocumenters)
-		if *cdocumenters == nil {
-			break
-		}
-	}
-	return documenters
+	return native2StringArray(C.gtk_about_dialog_get_documenters(ABOUT_DIALOG(v)))
 }
 
 func (v *AboutDialog) SetDocumenters(documenters []string) {

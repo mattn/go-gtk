@@ -2,7 +2,18 @@ package gtk
 
 import (
 	"testing"
+	"github.com/stretchr/testify/assert"
 )
+
+func TestAboutDialog_GetAuthors(t *testing.T) {
+	Init(nil)
+	dialog := NewAboutDialog();
+	assert.Equal(t, len(dialog.GetAuthors()), 0);
+	dialog.SetAuthors([]string{"a", ""})
+	assert.Equal(t, len(dialog.GetAuthors()), 2);
+	dialog.SetAuthors(nil)
+	assert.Equal(t, len(dialog.GetAuthors()), 0);
+}
 
 func TestUpdateTreeViewColumns(t *testing.T) {
 	Init(nil)

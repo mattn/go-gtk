@@ -13,7 +13,7 @@
   You can experiment with go-gtk
   by running the various example programs:
 
-    git clone  https://github.com/mattn/go-gtk
+    git clone https://github.com/mattn/go-gtk
     cd go-gtk
     make example
     ./example/demo/demo
