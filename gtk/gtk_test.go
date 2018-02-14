@@ -70,6 +70,7 @@ func TestUpdateTreeViewColumns(t *testing.T) {
 }
 
 func TestDialog_GetWidgetForResponse(t *testing.T) {
+	Init(nil)
 	dialog := NewDialog()
 	dialog.AddButton("A", RESPONSE_ACCEPT)
 	dialog.AddButton("B", RESPONSE_CANCEL)
@@ -77,4 +78,16 @@ func TestDialog_GetWidgetForResponse(t *testing.T) {
 	cancel := dialog.GetWidgetForResponse(RESPONSE_CANCEL)
 	assert.Equal(t, newButtonInternal(accept.GWidget).GetLabel(), "A")
 	assert.Equal(t, newButtonInternal(cancel.GWidget).GetLabel(), "B")
+}
+
+func TestEntry_SetInnerBorder(t *testing.T) {
+	Init(nil)
+	e := NewEntry()
+	assert.Nil(t, e.GetInnerBorder())
+	e.SetInnerBorder(&Border{1,2,3,4,})
+	border := e.GetInnerBorder()
+	assert.NotNil(t, border)
+	assert.Equal(t, *border, Border{1,2,3,4,})
+	e.SetInnerBorder(nil)
+	assert.Nil(t, e.GetInnerBorder())
 }

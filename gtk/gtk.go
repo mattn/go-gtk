@@ -1006,6 +1006,14 @@ func (v *Style) LookupColor(colorName string) (*gdk.Color, bool) {
 // gtk_paint_layout
 // gtk_paint_resize_grip
 // gtk_draw_insertion_cursor
+
+type Border struct {
+	Left int
+	Right int
+	Top int
+	Bottom int
+}
+
 // gtk_border_new
 // gtk_border_copy
 // gtk_border_free
@@ -1214,7 +1222,12 @@ func (v *Dialog) AddButton(button_text string, response_id ResponseType) *Button
 
 // gtk_dialog_add_buttons
 // gtk_dialog_add_action_widget
-// gtk_dialog_get_has_separator //deprecated since 2.22
+
+//Deprecated since 2.22.
+func (v *Dialog) GetHasSeparator() bool {
+	deprecated_since(2, 22, 0, "gtk_dialog_get_has_separator()")
+	return gobool(C.gtk_dialog_get_has_separator(DIALOG(v)))
+}
 
 //Deprecated since 2.22.
 func (v *Dialog) SetHasSeparator(f bool) {
@@ -1226,8 +1239,9 @@ func (v *Dialog) SetDefaultResponse(id ResponseType) {
 	C.gtk_dialog_set_default_response(DIALOG(v), gint(int(id)))
 }
 
-// gtk_dialog_set_has_separator //deprecated since 2.22
-// gtk_dialog_set_response_sensitive
+func (v *Dialog) SetResponseSensitive(id ResponseType, setting bool) {
+	C.gtk_dialog_set_response_sensitive(DIALOG(v), gint(int(id)), gbool(setting))
+}
 
 func (v *Dialog) GetResponseForWidget(w *Widget) ResponseType {
 	return ResponseType(int(C.gtk_dialog_get_response_for_widget(DIALOG(v), w.GWidget)))
@@ -3218,7 +3232,18 @@ func (v *Entry) GetHasFrame() bool {
 	return gobool(C.gtk_entry_get_has_frame(ENTRY(v)))
 }
 
-// gtk_entry_get_inner_border
+func (v *Entry) GetInnerBorder() *Border {
+	b := C.gtk_entry_get_inner_border(ENTRY(v))
+	if b == nil {
+		return nil
+	}
+	return &Border{
+		Left: int(b.left),
+		Right: int(b.right),
+		Top: int(b.top),
+		Bottom: int(b.bottom),
+	}
+}
 
 func (v *Entry) GetWidthChars() int {
 	return int(C.gtk_entry_get_width_chars(ENTRY(v)))
@@ -3232,7 +3257,19 @@ func (v *Entry) SetHasFrame(setting bool) {
 	C.gtk_entry_set_has_frame(ENTRY(v), gbool(setting))
 }
 
-// gtk_entry_set_inner_border
+func (v *Entry) SetInnerBorder(border *Border) {
+	if(border == nil) {
+		C.gtk_entry_set_inner_border(ENTRY(v), nil)
+		return
+	}
+	nborder := C.struct__GtkBorder{
+		left:   gint(border.Left),
+		right:  gint(border.Right),
+		top:    gint(border.Top),
+		bottom: gint(border.Bottom),
+	}
+	C.gtk_entry_set_inner_border(ENTRY(v), &nborder)
+}
 
 func (v *Entry) SetWidthChars(i int) {
 	C.gtk_entry_set_width_chars(ENTRY(v), gint(i))
@@ -5438,7 +5475,7 @@ func (v *IconView) ScrollToPath(path *TreePath, use bool, ra float64, ca float64
 // GtkTreeSortable
 //-----------------------------------------------------------------------
 type SortType int
-type SortFunc func(m *TreeModel, a *TreeIter, b *TreeIter) int
+type SortFunc func(m *TreeModel, a *TreeIter, b *TreeIter, userData interface{}) int
 
 const (
 	SORT_ASCENDING SortType = iota
@@ -5450,9 +5487,14 @@ const (
 	TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID int = -2
 )
 
+type sortFuncInfo struct {
+	fun SortFunc
+	userData interface{}
+}
+
 type TreeSortable struct {
 	GTreeSortable *C.GtkTreeSortable
-	sortFuncs     map[int]SortFunc
+	sortFuncs     map[int]sortFuncInfo
 }
 
 func NewTreeSortable(model ITreeModel) *TreeSortable {
@@ -5460,7 +5502,7 @@ func NewTreeSortable(model ITreeModel) *TreeSortable {
 	if model != nil {
 		tm = model.cTreeModel()
 	}
-	return &TreeSortable{C.toGTreeSortable(tm), make(map[int]SortFunc)}
+	return &TreeSortable{C.toGTreeSortable(tm), make(map[int]sortFuncInfo)}
 }
 
 // gtk_tree_sortable_sort_column_changed
@@ -5475,8 +5517,8 @@ func (ts *TreeSortable) SetSortColumnId(id int, order SortType) {
 	C.gtk_tree_sortable_set_sort_column_id(ts.GTreeSortable, gint(id), C.GtkSortType(order))
 }
 
-func (ts *TreeSortable) SetSortFunc(col int, fun SortFunc) {
-	ts.sortFuncs[col] = fun
+func (ts *TreeSortable) SetSortFunc(col int, fun SortFunc, userData interface{}) {
+	ts.sortFuncs[col] = sortFuncInfo{fun, userData}
 	C._gtk_tree_sortable_set_sort_func(ts.GTreeSortable, gint(col), pointer.Save(&ts))
 }
 
@@ -5486,17 +5528,25 @@ func _go_call_sort_func(gsfi *C._gtk_sort_func_info) {
 		return
 	}
 	gots := *(pointer.Restore(unsafe.Pointer(gsfi.gots)).(**TreeSortable))
-	if gots.sortFuncs[int(gsfi.columnNum)] == nil {
+	if gots.sortFuncs[int(gsfi.columnNum)].fun == nil {
 		return
 	}
 	var a, b TreeIter
 	a.GTreeIter = gsfi.a
 	b.GTreeIter = gsfi.b
-	gsfi.ret = C.int(gots.sortFuncs[int(gsfi.columnNum)](&TreeModel{gsfi.model}, &a, &b))
+	fun := gots.sortFuncs[int(gsfi.columnNum)].fun
+	userData := gots.sortFuncs[int(gsfi.columnNum)].userData
+	gsfi.ret = C.int(fun(&TreeModel{gsfi.model}, &a, &b, userData))
 }
 
-// gtk_tree_sortable_set_default_sort_func
-// gtk_tree_sortable_has_default_sort_func
+func (ts *TreeSortable) SetDefaultSortFunc(fun SortFunc, userData interface{}) {
+	ts.sortFuncs[TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID] = sortFuncInfo{fun, userData}
+	C._gtk_tree_sortable_set_default_sort_func(ts.GTreeSortable, pointer.Save(&ts))
+}
+
+func (ts *TreeSortable) HasDefaultSortFunc() bool {
+	return gobool(C.gtk_tree_sortable_has_default_sort_func(ts.GTreeSortable))
+}
 
 //-----------------------------------------------------------------------
 // GtkTreeModelSort
@@ -8024,8 +8074,14 @@ func (v *FileChooser) GetLocalOnly() bool {
 	return gobool(C.gtk_file_chooser_get_local_only(v.GFileChooser))
 }
 
-// void gtk_file_chooser_set_select_multiple(GtkFileChooser* chooser, gboolean select_multiple);
-// gboolean gtk_file_chooser_get_select_multiple(GtkFileChooser* chooser);
+func (v *FileChooser) SetSelectMultiple(b bool) {
+	C.gtk_file_chooser_set_select_multiple(v.GFileChooser, gbool(b))
+}
+
+func (v *FileChooser) GetSelectMultiple() bool {
+	return gobool(C.gtk_file_chooser_get_select_multiple(v.GFileChooser))
+}
+
 // void gtk_file_chooser_set_show_hidden(GtkFileChooser* chooser, gboolean show_hidden);
 // gboolean gtk_file_chooser_get_show_hidden(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_do_overwrite_confirmation(GtkFileChooser* chooser, gboolean do_overwrite_confirmation);
@@ -8048,7 +8104,10 @@ func (v *FileChooser) SetFilename(filename string) {
 // void gtk_file_chooser_unselect_filename(GtkFileChooser* chooser, const char* filename);
 // void gtk_file_chooser_select_all(GtkFileChooser* chooser);
 // void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
-// GSList*  gtk_file_chooser_get_filenames(GtkFileChooser* chooser);
+
+func (v *FileChooser) GetFilenames() *glib.SList {
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_file_chooser_get_filenames(v.GFileChooser)))
+}
 
 func (v *FileChooser) SetCurrentFolder(f string) bool {
 	cf := C.CString(f)
