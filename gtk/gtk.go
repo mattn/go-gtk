@@ -8080,17 +8080,8 @@ func (v *FileChooser) SetFilename(filename string) {
 // void gtk_file_chooser_select_all(GtkFileChooser* chooser);
 // void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
 
-func (v *FileChooser) GetFilenames() []string {
-	var filenames []string
-	cfilenames := C.gtk_file_chooser_get_filenames(v.GFileChooser)
-	for {
-		filenames = append(filenames, gostring(*cfilenames))
-		cfilenames = C.nextGstr(cfilenames)
-		if *cfilenames == nil {
-			break
-		}
-	}
-	return filenames
+func (v *FileChooser) GetFilenames() *glib.SList {
+	return glib.SListFromNative(unsafe.Pointer(C.gtk_file_chooser_get_filenames(v.GFileChooser)))
 }
 
 func (v *FileChooser) SetCurrentFolder(f string) bool {
