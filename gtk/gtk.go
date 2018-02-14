@@ -8049,8 +8049,14 @@ func (v *FileChooser) GetLocalOnly() bool {
 	return gobool(C.gtk_file_chooser_get_local_only(v.GFileChooser))
 }
 
-// void gtk_file_chooser_set_select_multiple(GtkFileChooser* chooser, gboolean select_multiple);
-// gboolean gtk_file_chooser_get_select_multiple(GtkFileChooser* chooser);
+func (v *FileChooser) SetSelectMultiple(b bool) {
+	C.gtk_file_chooser_set_select_multiple(v.GFileChooser, gbool(b))
+}
+
+func (v *FileChooser) GetSelectMultiple() {
+	return gobool(C.gtk_file_chooser_get_select_multiple(v.GFileChooser))
+}
+
 // void gtk_file_chooser_set_show_hidden(GtkFileChooser* chooser, gboolean show_hidden);
 // gboolean gtk_file_chooser_get_show_hidden(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_do_overwrite_confirmation(GtkFileChooser* chooser, gboolean do_overwrite_confirmation);
