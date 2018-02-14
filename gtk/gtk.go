@@ -1232,7 +1232,11 @@ func (v *Dialog) GetWidgetForResponse(id int) *Widget {
 }
 
 // gtk_dialog_get_action_area
-// gtk_dialog_get_content_area
+
+func (v *Dialog) GetContentArea() *VBox {
+	return &VBox{Box{Container{Widget{C.gtk_dialog_get_content_area(DIALOG(v))}}}}
+}
+
 // gtk_alternative_dialog_button_order
 // gtk_dialog_set_alternative_button_order
 // gtk_dialog_set_alternative_button_order_from_array
@@ -5291,7 +5295,11 @@ func (v *TreeView) RowExpanded(path *TreePath) bool {
 //GtkTreeViewRowSeparatorFunc gtk_tree_view_get_row_separator_func (GtkTreeView *tree_view);
 //void gtk_tree_view_set_row_separator_func (GtkTreeView *tree_view, GtkTreeViewRowSeparatorFunc func, gpointer data, GDestroyNotify destroy);
 //gboolean gtk_tree_view_get_rubber_banding (GtkTreeView *tree_view);
-//void gtk_tree_view_set_rubber_banding (GtkTreeView *tree_view, gboolean enable);
+
+func (v *TreeView) SetRubberBanding(enable bool) {
+	C.gtk_tree_view_set_rubber_banding(TREE_VIEW(v), gbool(enable))
+}
+
 //gboolean gtk_tree_view_is_rubber_banding_active (GtkTreeView *tree_view);
 //gboolean gtk_tree_view_get_enable_tree_lines (GtkTreeView *tree_view);
 //void gtk_tree_view_set_enable_tree_lines (GtkTreeView *tree_view, gboolean enabled);
@@ -6268,7 +6276,13 @@ func (v *Menu) Popup(parent_menu_shell, parent_menu_item IWidget, f MenuPosition
 // GtkAccelGroup* gtk_menu_get_accel_group (GtkMenu *menu);
 // void gtk_menu_set_accel_path(GtkMenu *menu, const gchar *accel_path);
 // const gchar* gtk_menu_get_accel_path(GtkMenu *menu);
-// void gtk_menu_set_title(GtkMenu *menu, const gchar *title);
+
+func (v *Menu) SetTitle(title string) {
+	ptr := C.CString(title)
+	defer cfree(ptr)
+	C.gtk_menu_set_title(MENU(v), gstring(ptr))
+}
+
 // G_CONST_RETURN gchar *gtk_menu_get_title(GtkMenu *menu);
 // void gtk_menu_set_monitor(GtkMenu *menu, gint monitor_num);
 // gint gtk_menu_get_monitor(GtkMenu *menu);

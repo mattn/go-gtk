@@ -5,6 +5,7 @@ _cgo_*
 main
 *.exe
 tags
+.idea
 
 # example binaries
 example/action/action
