@@ -1214,7 +1214,12 @@ func (v *Dialog) AddButton(button_text string, response_id ResponseType) *Button
 
 // gtk_dialog_add_buttons
 // gtk_dialog_add_action_widget
-// gtk_dialog_get_has_separator //deprecated since 2.22
+
+//Deprecated since 2.22.
+func (v *Dialog) GetHasSeparator() bool {
+	deprecated_since(2, 22, 0, "gtk_dialog_get_has_separator()")
+	return gobool(C.gtk_dialog_get_has_separator(DIALOG(v)))
+}
 
 //Deprecated since 2.22.
 func (v *Dialog) SetHasSeparator(f bool) {
@@ -1226,8 +1231,9 @@ func (v *Dialog) SetDefaultResponse(id ResponseType) {
 	C.gtk_dialog_set_default_response(DIALOG(v), gint(int(id)))
 }
 
-// gtk_dialog_set_has_separator //deprecated since 2.22
-// gtk_dialog_set_response_sensitive
+func (v *Dialog) SetResponseSensitive(id ResponseType, setting bool) {
+	C.gtk_dialog_set_response_sensitive(DIALOG(v), gint(int(id)), gbool(setting))
+}
 
 func (v *Dialog) GetResponseForWidget(w *Widget) ResponseType {
 	return ResponseType(int(C.gtk_dialog_get_response_for_widget(DIALOG(v), w.GWidget)))
