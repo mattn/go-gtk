@@ -5475,7 +5475,7 @@ func (v *IconView) ScrollToPath(path *TreePath, use bool, ra float64, ca float64
 // GtkTreeSortable
 //-----------------------------------------------------------------------
 type SortType int
-type SortFunc func(m *TreeModel, a *TreeIter, b *TreeIter) int
+type SortFunc func(m *TreeModel, a *TreeIter, b *TreeIter, userData interface{}) int
 
 const (
 	SORT_ASCENDING SortType = iota
@@ -5487,9 +5487,14 @@ const (
 	TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID int = -2
 )
 
+type sortFuncInfo struct {
+	fun SortFunc
+	userData interface{}
+}
+
 type TreeSortable struct {
 	GTreeSortable *C.GtkTreeSortable
-	sortFuncs     map[int]SortFunc
+	sortFuncs     map[int]sortFuncInfo
 }
 
 func NewTreeSortable(model ITreeModel) *TreeSortable {
@@ -5497,7 +5502,7 @@ func NewTreeSortable(model ITreeModel) *TreeSortable {
 	if model != nil {
 		tm = model.cTreeModel()
 	}
-	return &TreeSortable{C.toGTreeSortable(tm), make(map[int]SortFunc)}
+	return &TreeSortable{C.toGTreeSortable(tm), make(map[int]sortFuncInfo)}
 }
 
 // gtk_tree_sortable_sort_column_changed
@@ -5512,8 +5517,8 @@ func (ts *TreeSortable) SetSortColumnId(id int, order SortType) {
 	C.gtk_tree_sortable_set_sort_column_id(ts.GTreeSortable, gint(id), C.GtkSortType(order))
 }
 
-func (ts *TreeSortable) SetSortFunc(col int, fun SortFunc) {
-	ts.sortFuncs[col] = fun
+func (ts *TreeSortable) SetSortFunc(col int, fun SortFunc, userData interface{}) {
+	ts.sortFuncs[col] = sortFuncInfo{fun, userData}
 	C._gtk_tree_sortable_set_sort_func(ts.GTreeSortable, gint(col), pointer.Save(&ts))
 }
 
@@ -5523,17 +5528,19 @@ func _go_call_sort_func(gsfi *C._gtk_sort_func_info) {
 		return
 	}
 	gots := *(pointer.Restore(unsafe.Pointer(gsfi.gots)).(**TreeSortable))
-	if gots.sortFuncs[int(gsfi.columnNum)] == nil {
+	if gots.sortFuncs[int(gsfi.columnNum)].fun == nil {
 		return
 	}
 	var a, b TreeIter
 	a.GTreeIter = gsfi.a
 	b.GTreeIter = gsfi.b
-	gsfi.ret = C.int(gots.sortFuncs[int(gsfi.columnNum)](&TreeModel{gsfi.model}, &a, &b))
+	fun := gots.sortFuncs[int(gsfi.columnNum)].fun
+	userData := gots.sortFuncs[int(gsfi.columnNum)].userData
+	gsfi.ret = C.int(fun(&TreeModel{gsfi.model}, &a, &b, userData))
 }
 
-func (ts *TreeSortable) SetDefaultSortFunc(fun SortFunc) {
-	ts.sortFuncs[TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID] = fun
+func (ts *TreeSortable) SetDefaultSortFunc(fun SortFunc, userData interface{}) {
+	ts.sortFuncs[TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID] = sortFuncInfo{fun, userData}
 	C._gtk_tree_sortable_set_default_sort_func(ts.GTreeSortable, pointer.Save(&ts))
 }
 
