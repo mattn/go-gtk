@@ -8053,7 +8053,7 @@ func (v *FileChooser) SetSelectMultiple(b bool) {
 	C.gtk_file_chooser_set_select_multiple(v.GFileChooser, gbool(b))
 }
 
-func (v *FileChooser) GetSelectMultiple() {
+func (v *FileChooser) GetSelectMultiple() bool {
 	return gobool(C.gtk_file_chooser_get_select_multiple(v.GFileChooser))
 }
 
