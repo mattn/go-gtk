@@ -5514,8 +5514,14 @@ func _go_call_sort_func(gsfi *C._gtk_sort_func_info) {
 	gsfi.ret = C.int(gots.sortFuncs[int(gsfi.columnNum)](&TreeModel{gsfi.model}, &a, &b))
 }
 
-// gtk_tree_sortable_set_default_sort_func
-// gtk_tree_sortable_has_default_sort_func
+func (ts *TreeSortable) SetDefaultSortFunc(fun SortFunc) {
+	ts.sortFuncs[TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID] = fun
+	C._gtk_tree_sortable_set_default_sort_func(ts.GTreeSortable, pointer.Save(&ts))
+}
+
+func (ts *TreeSortable) HasDefaultSortFunc() bool {
+	return gobool(C.gtk_tree_sortable_has_default_sort_func(ts.GTreeSortable))
+}
 
 //-----------------------------------------------------------------------
 // GtkTreeModelSort
