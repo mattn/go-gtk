@@ -1006,6 +1006,14 @@ func (v *Style) LookupColor(colorName string) (*gdk.Color, bool) {
 // gtk_paint_layout
 // gtk_paint_resize_grip
 // gtk_draw_insertion_cursor
+
+type Border struct {
+	Left int
+	Right int
+	Top int
+	Bottom int
+}
+
 // gtk_border_new
 // gtk_border_copy
 // gtk_border_free
@@ -3224,7 +3232,18 @@ func (v *Entry) GetHasFrame() bool {
 	return gobool(C.gtk_entry_get_has_frame(ENTRY(v)))
 }
 
-// gtk_entry_get_inner_border
+func (v *Entry) GetInnerBorder() *Border {
+	b := C.gtk_entry_get_inner_border(ENTRY(v))
+	if b == nil {
+		return nil
+	}
+	return &Border{
+		Left: int(b.left),
+		Right: int(b.right),
+		Top: int(b.top),
+		Bottom: int(b.bottom),
+	}
+}
 
 func (v *Entry) GetWidthChars() int {
 	return int(C.gtk_entry_get_width_chars(ENTRY(v)))
@@ -3238,7 +3257,19 @@ func (v *Entry) SetHasFrame(setting bool) {
 	C.gtk_entry_set_has_frame(ENTRY(v), gbool(setting))
 }
 
-// gtk_entry_set_inner_border
+func (v *Entry) SetInnerBorder(border *Border) {
+	if(border == nil) {
+		C.gtk_entry_set_inner_border(ENTRY(v), nil)
+		return
+	}
+	nborder := C.struct__GtkBorder{
+		left:   gint(border.Left),
+		right:  gint(border.Right),
+		top:    gint(border.Top),
+		bottom: gint(border.Bottom),
+	}
+	C.gtk_entry_set_inner_border(ENTRY(v), &nborder)
+}
 
 func (v *Entry) SetWidthChars(i int) {
 	C.gtk_entry_set_width_chars(ENTRY(v), gint(i))
