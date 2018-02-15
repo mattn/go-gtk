@@ -270,6 +270,13 @@ static GSList* to_gslist(void* gs) {
 	return (GSList*)gs;
 }
 
+static void _g_slist_string_full_free(GSList* gs) {
+    for(GSList* l = gs; l != NULL; l = l->next) {
+        g_free(l->data);
+    }
+    g_slist_free(gs);
+}
+
 static int _check_version(int major, int minor, int micro) {
 	return GTK_CHECK_VERSION(major, minor, micro);
 }

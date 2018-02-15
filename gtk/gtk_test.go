@@ -61,6 +61,15 @@ func TestFILE_CHOOSER(t *testing.T) {
 
 	assert.True(t, d.SelectUri("file://"+f1.Name()))
 	d.UnselectUri("file://"+f1.Name())
+
+	d.UnselectAll()
+	gtkRun()
+	assert.Equal(t, []string{f1.Name()}, d.GetFilenames())
+	assert.Equal(t, []string{"file://" + f1.Name()}, d.GetUris())
+
+	d.SelectFilename(f2.Name())
+	assert.Equal(t, []string{f2.Name()}, d.GetFilenames())
+	assert.Equal(t, []string{"file://" + f2.Name()}, d.GetUris())
 }
 
 func TestFileChooser_SetCurrentName(t *testing.T) {

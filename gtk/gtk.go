@@ -42,6 +42,22 @@ func gostringAndFree(s *C.gchar) string {
 	return gos
 }
 
+func gslist2StringArray(ss *C.GSList) []string {
+	slist := glib.SListFromNative(unsafe.Pointer(ss))
+	res := make([]string, slist.Length())
+	for i := uint(0); i < slist.Length(); i++ {
+		res[i] = C.GoString((*C.char)(slist.NthData(i)))
+	}
+	return res
+}
+
+func gslist2StringArrayAndFree(ss *C.GSList) []string {
+	res := gslist2StringArray(ss)
+	C._g_slist_string_full_free(ss)
+	return res
+}
+
+
 func gslist(l *glib.SList) *C.GSList {
 	if l == nil {
 		return nil
@@ -8109,8 +8125,8 @@ func (v *FileChooser) UnselectAll() {
 	C.gtk_file_chooser_unselect_all(v.GFileChooser)
 }
 
-func (v *FileChooser) GetFilenames() *glib.SList {
-	return glib.SListFromNative(unsafe.Pointer(C.gtk_file_chooser_get_filenames(v.GFileChooser)))
+func (v *FileChooser) GetFilenames() []string {
+	return gslist2StringArrayAndFree(C.gtk_file_chooser_get_filenames(v.GFileChooser))
 }
 
 func (v *FileChooser) SetCurrentFolder(f string) bool {
@@ -8146,7 +8162,10 @@ func (v *FileChooser) UnselectUri(uri string) {
 	C.gtk_file_chooser_unselect_uri(v.GFileChooser, ptr)
 }
 
-// GSList*  gtk_file_chooser_get_uris(GtkFileChooser* chooser);
+func (v *FileChooser) GetUris() []string {
+	return gslist2StringArrayAndFree(C.gtk_file_chooser_get_uris(v.GFileChooser))
+}
+
 // gboolean gtk_file_chooser_set_current_folder_uri(GtkFileChooser* chooser, const gchar* uri);
 // gchar*  gtk_file_chooser_get_current_folder_uri(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_preview_widget(GtkFileChooser* chooser, GtkWidget* preview_widget);
