@@ -21,6 +21,11 @@ func TestFILE_CHOOSER(t *testing.T) {
 	assert.False(t, d.GetDoOverwriteConfirmation())
 	d.SetDoOverwriteConfirmation(true)
 	assert.True(t, d.GetDoOverwriteConfirmation())
+
+	d.SetCreateFolders(false)
+	assert.False(t, d.GetCreateFolders())
+	d.SetCreateFolders(true)
+	assert.True(t, d.GetCreateFolders())
 }
 
 func TestMisc_GetPadding(t *testing.T) {

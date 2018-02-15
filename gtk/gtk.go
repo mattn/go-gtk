@@ -8056,8 +8056,16 @@ func (v *FileChooser) GetDoOverwriteConfirmation() bool {
 	return gobool(C.gtk_file_chooser_get_do_overwrite_confirmation(v.GFileChooser))
 }
 
-// void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders); //since 2.18
-// gboolean gtk_file_chooser_get_create_folders(GtkFileChooser* chooser); //since 2.18
+func (v *FileChooser) SetCreateFolders(b bool) {
+	panic_if_version_older_auto(2, 18, 0)
+	C.gtk_file_chooser_set_create_folders(v.GFileChooser, gbool(b))
+}
+
+func (v *FileChooser) GetCreateFolders() bool {
+	panic_if_version_older_auto(2, 18, 0)
+	return gobool(C.gtk_file_chooser_get_create_folders(v.GFileChooser))
+}
+
 // void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);
 
 func (v *FileChooser) GetFilename() string {
