@@ -8134,8 +8134,18 @@ func (v *FileChooser) GetUri() string {
 	return gostringAndFree(C.gtk_file_chooser_get_uri(v.GFileChooser))
 }
 
-// gboolean gtk_file_chooser_select_uri(GtkFileChooser* chooser, const char* uri);
-// void gtk_file_chooser_unselect_uri(GtkFileChooser* chooser, const char* uri);
+func (v *FileChooser) SelectUri(uri string) bool {
+	ptr := C.CString(uri)
+	defer cfree(ptr)
+	return gobool(C.gtk_file_chooser_select_uri(v.GFileChooser, ptr))
+}
+
+func (v *FileChooser) UnselectUri(uri string) bool {
+	ptr := C.CString(uri)
+	defer cfree(ptr)
+	return gobool(C.gtk_file_chooser_unselect_uri(v.GFileChooser, ptr))
+}
+
 // GSList*  gtk_file_chooser_get_uris(GtkFileChooser* chooser);
 // gboolean gtk_file_chooser_set_current_folder_uri(GtkFileChooser* chooser, const gchar* uri);
 // gchar*  gtk_file_chooser_get_current_folder_uri(GtkFileChooser* chooser);

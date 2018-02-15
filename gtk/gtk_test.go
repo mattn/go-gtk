@@ -61,6 +61,9 @@ func TestFILE_CHOOSER(t *testing.T) {
 	assert.Equal(t, "file://"+f1.Name(), d.GetUri())
 	d.SetUri("file://" + f2.Name())
 	assert.Equal(t, "file://"+f2.Name(), d.GetUri())
+
+	assert.True(t, d.SelectUri("file://"+f1.Name()))
+	d.UnselectUri("file://"+f1.Name())
 }
 
 func TestMisc_GetPadding(t *testing.T) {
