@@ -96,9 +96,7 @@ func TestMisc_GetPadding(t *testing.T) {
 	Init(nil)
 	m := NewImage()
 	m.SetPadding(1, 2)
-	x := 0
-	y := 0
-	m.GetPadding(&x, &y)
+	x, y := m.GetPadding()
 	assert.Equal(t, x, 1)
 	assert.Equal(t, y, 2)
 }
