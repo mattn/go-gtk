@@ -19,7 +19,7 @@ before_install:
 install:
   - dep ensure
 
-script: xvfb-run go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+script: xvfb-run go test -v -race -coverprofile=coverage.txt -covermode=atomic ./gtk
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
