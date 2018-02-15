@@ -8047,8 +8047,15 @@ func (v *FileChooser) SetShowHidden(showHidden bool) {
 func (v *FileChooser) GetShowHidden() bool {
 	return gobool(C.gtk_file_chooser_get_show_hidden(v.GFileChooser))
 }
-// void gtk_file_chooser_set_do_overwrite_confirmation(GtkFileChooser* chooser, gboolean do_overwrite_confirmation);
-// gboolean gtk_file_chooser_get_do_overwrite_confirmation(GtkFileChooser* chooser);
+
+func (v *FileChooser) SetDoOverwriteConfirmation(b bool) {
+	C.gtk_file_chooser_set_do_overwrite_confirmation(v.GFileChooser, gbool(b))
+}
+
+func (v *FileChooser) GetDoOverwriteConfirmation() bool {
+	return gobool(C.gtk_file_chooser_get_do_overwrite_confirmation(v.GFileChooser))
+}
+
 // void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders); //since 2.18
 // gboolean gtk_file_chooser_get_create_folders(GtkFileChooser* chooser); //since 2.18
 // void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);

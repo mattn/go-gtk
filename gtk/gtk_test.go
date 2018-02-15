@@ -2,7 +2,7 @@ package gtk_test
 
 import (
 	"testing"
-	
+
 	"github.com/mattn/go-gtk/gtk"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,6 +16,11 @@ func TestFILE_CHOOSER(t *testing.T) {
 	assert.False(t, d.GetShowHidden())
 	d.SetShowHidden(true)
 	assert.True(t, d.GetShowHidden())
+
+	d.SetDoOverwriteConfirmation(false)
+	assert.False(t, d.GetDoOverwriteConfirmation())
+	d.SetDoOverwriteConfirmation(true)
+	assert.True(t, d.GetDoOverwriteConfirmation())
 }
 
 func TestMisc_GetPadding(t *testing.T) {
