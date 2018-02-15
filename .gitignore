@@ -6,6 +6,7 @@ main
 *.exe
 tags
 .idea
+vendor
 
 # example binaries
 example/action/action
