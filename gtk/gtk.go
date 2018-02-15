@@ -8045,8 +8045,13 @@ func (v *FileChooser) GetSelectMultiple() bool {
 	return gobool(C.gtk_file_chooser_get_select_multiple(v.GFileChooser))
 }
 
-// void gtk_file_chooser_set_show_hidden(GtkFileChooser* chooser, gboolean show_hidden);
-// gboolean gtk_file_chooser_get_show_hidden(GtkFileChooser* chooser);
+func (v *FileChooser) SetShowHidden(showHidden bool) {
+	C.gtk_file_chooser_set_show_hidden(v.GFileChooser, gbool(showHidden))
+}
+
+func (v *FileChooser) GetShowHidden() bool {
+	return gobool(C.gtk_file_chooser_get_show_hidden(v.GFileChooser))
+}
 // void gtk_file_chooser_set_do_overwrite_confirmation(GtkFileChooser* chooser, gboolean do_overwrite_confirmation);
 // gboolean gtk_file_chooser_get_do_overwrite_confirmation(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders); //since 2.18
