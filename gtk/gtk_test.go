@@ -26,6 +26,9 @@ func TestFILE_CHOOSER(t *testing.T) {
 	assert.False(t, d.GetCreateFolders())
 	d.SetCreateFolders(true)
 	assert.True(t, d.GetCreateFolders())
+
+	d.SetCurrentName("foobar")
+	// no way to check this until GTK+ 3.10
 }
 
 func TestMisc_GetPadding(t *testing.T) {

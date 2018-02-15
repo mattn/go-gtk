@@ -8066,7 +8066,11 @@ func (v *FileChooser) GetCreateFolders() bool {
 	return gobool(C.gtk_file_chooser_get_create_folders(v.GFileChooser))
 }
 
-// void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);
+func (v *FileChooser) SetCurrentName(name string) {
+	ptr := C.CString(name)
+	defer cfree(ptr)
+	C.gtk_file_chooser_set_current_name(v.GFileChooser, ptr)
+}
 
 func (v *FileChooser) GetFilename() string {
 	return gostring(C.gtk_file_chooser_get_filename(v.GFileChooser))
