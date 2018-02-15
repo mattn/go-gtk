@@ -1564,11 +1564,10 @@ func (v *Window) SetSkipTaskbarHint(setting bool) {
 // gtk_window_get_default_icon_list
 // gtk_window_get_default_icon_name
 
-func (v *Window) GetDefaultSize(width *int, height *int) {
+func (v *Window) GetDefaultSize() (width int, height int) {
 	var cwidth, cheight C.gint
 	C.gtk_window_get_default_size(WINDOW(v), &cwidth, &cheight)
-	*width = int(cwidth)
-	*height = int(cheight)
+	return int(cwidth), int(cheight)
 }
 
 func (v *Window) GetDestroyWithParent() bool {
@@ -1590,20 +1589,18 @@ func (v *Window) GetModal() bool {
 	return gobool(C.gtk_window_get_modal(WINDOW(v)))
 }
 
-func (v *Window) GetPosition(root_x *int, root_y *int) {
+func (v *Window) GetPosition() (root_x int, root_y int) {
 	var croot_x, croot_y C.gint
 	C.gtk_window_get_position(WINDOW(v), &croot_x, &croot_y)
-	*root_x = int(croot_x)
-	*root_y = int(croot_y)
+	return int(croot_x), int(croot_y)
 }
 
 // gtk_window_get_role
 
-func (v *Window) GetSize(width *int, height *int) {
+func (v *Window) GetSize() (width int, height int) {
 	var cwidth, cheight C.gint
 	C.gtk_window_get_size(WINDOW(v), &cwidth, &cheight)
-	*width = int(cwidth)
-	*height = int(cheight)
+	return int(cwidth), int(cheight)
 }
 
 func (v *Window) GetTitle() string {
@@ -2271,11 +2268,10 @@ func (v *Label) GetLineWrapMode() pango.WrapMode {
 }
 
 // gtk_label_get_mnemonic_widget
-func (v *Label) GetSelectionBounds(start *int, end *int) {
+func (v *Label) GetSelectionBounds() (start int, end int) {
 	var cstart, cend C.gint
 	C.gtk_label_get_selection_bounds(LABEL(v), &cstart, &cend)
-	*start = int(cstart)
-	*end = int(cend)
+	return int(cstart), int(cend)
 }
 
 func (v *Label) GetUseMarkup() bool {
@@ -4435,11 +4431,10 @@ func (v *TextView) ScrollToIter(iter *TextIter, wm float64, ua bool, xa float64,
 // void gtk_text_view_get_iter_location(GtkTextView* text_view, const GtkTextIter* iter, GdkRectangle* location);
 // void gtk_text_view_get_line_at_y(GtkTextView* text_view, GtkTextIter* target_iter, gint y, gint* line_top);
 
-func (v *TextView) GetLineYrange(iter *TextIter, y *int, h *int) {
+func (v *TextView) GetLineYrange(iter *TextIter) (y int, height int) {
 	var yy, hh C.gint
 	C.gtk_text_view_get_line_yrange(TEXT_VIEW(v), &iter.GTextIter, &yy, &hh)
-	*y = int(yy)
-	*h = int(hh)
+	return int(yy), int(hh)
 }
 
 func (v *TextView) GetIterAtLocation(iter *TextIter, x int, y int) {
@@ -8623,11 +8618,10 @@ func (v *Layout) Thaw() {
 	C.gtk_layout_thaw(LAYOUT(v))
 }
 
-func (v *Layout) GetSize(width *int, height *int) {
+func (v *Layout) GetSize() (width int, height int) {
 	var cwidth, cheight C.guint
 	C.gtk_layout_get_size(LAYOUT(v), &cwidth, &cheight)
-	*width = int(cwidth)
-	*height = int(cheight)
+	return int(cwidth), int(cheight)
 }
 
 func (v *Layout) GetBinWindow() *Window {
@@ -9729,8 +9723,8 @@ func NewDrawingArea() *DrawingArea {
 	return &DrawingArea{Widget{C.gtk_drawing_area_new()}}
 }
 
-//Deprecated. Use GtkWidget.SetSizeRequest() instead.
-func (v *DrawingArea) GetSizeRequest(width, height int) {
+//Deprecated: Use GtkWidget.SetSizeRequest() instead.
+func (v *DrawingArea) Size(width, height int) {
 	deprecated_since(2, 0, 0, "gtk_drawing_area_size()")
 	C.gtk_drawing_area_size(DRAWING_AREA(v), gint(width), gint(height))
 }
@@ -10238,11 +10232,10 @@ func (m *Misc) GetAlignment(xalign, yalign *float64) {
 	*yalign = float64(gyalign)
 }
 
-func (m *Misc) GetPadding(xpad, ypad *int) {
+func (m *Misc) GetPadding() (xpad, ypad int) {
 	var gxpad, gypad C.gint
 	C.gtk_misc_get_padding(MISC(m), &gxpad, &gypad)
-	*xpad = int(gxpad)
-	*ypad = int(gypad)
+	return int(gxpad), int(gypad)
 }
 
 //-----------------------------------------------------------------------
@@ -10447,11 +10440,10 @@ func (v *Scale) GetValuePos() PositionType {
 
 // PangoLayout * gtk_scale_get_layout (GtkScale *scale);
 
-func (v *Scale) GetLayoutOffsets(x *int, y *int) {
+func (v *Scale) GetLayoutOffsets() (x int, y int) {
 	var xx, yy C.gint
 	C.gtk_scale_get_layout_offsets(SCALE(v), &xx, &yy)
-	*x = int(xx)
-	*y = int(yy)
+	return int(xx), int(yy)
 }
 
 func (v *Scale) AddMark(value float64, position PositionType, markup string) {
@@ -10855,12 +10847,10 @@ func (v *Widget) GetSettings() *Settings {
 // gtk_widget_get_screen
 // gtk_widget_has_screen
 
-//TODO go can have multiple return, adapt the function!
-func (v *Widget) GetSizeRequest(width *int, height *int) {
+func (v *Widget) GetSizeRequest() (width int, height int) {
 	var w, h C.gint
 	C.gtk_widget_get_size_request(v.GWidget, &w, &h)
-	*width = int(w)
-	*height = int(h)
+	return int(w), int(h)
 }
 
 func (v *Widget) SetChildVisible(setting bool) {
