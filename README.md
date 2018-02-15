@@ -1,5 +1,8 @@
 # go-gtk
 
+[![Build Status](https://travis-ci.org/mattn/go-gtk.png?branch=master)](https://travis-ci.org/mattn/go-gtk)
+[![Codecov](https://codecov.io/gh/mattn/go-gtk/branch/master/graph/badge.svg)](https://codecov.io/gh/mattn/go-gtk)
+
 ## WHATS
 
   Go bindings for GTK
@@ -40,7 +43,7 @@
   ```sh
   $ go run tools/make_inline_pixbuf/make_inline_pixbuf.go logoPNG data/go-gtk-logo.png > logo.gen.go
   ```
-  
+
   And then load it with:
   ```go
 	pb := gdkpixbuf.NewPixbufFromData(logoPNG)
