@@ -7,8 +7,9 @@ go:
   - 1.9.3
 
 env:
-  - DEP_VERSION="0.4.1"
-  - secure: "ByVmoy5LqIJf/hn3G/eNasDasbTkG5jud7ZumMTUP+gdBE98/olKffQXkrfFKq1e6My5G/XVp9tTEB7fz1hKxFpOwOAr/OwTTGqXRieNZhV/YQKKepAUvQE5XxAxbiV9RqsaLCcErlvAJgidn9cJAtnjvtvSncy/k1r5DIUsZIM="
+  global:
+    - DEP_VERSION="0.4.1"
+    - secure: "ByVmoy5LqIJf/hn3G/eNasDasbTkG5jud7ZumMTUP+gdBE98/olKffQXkrfFKq1e6My5G/XVp9tTEB7fz1hKxFpOwOAr/OwTTGqXRieNZhV/YQKKepAUvQE5XxAxbiV9RqsaLCcErlvAJgidn9cJAtnjvtvSncy/k1r5DIUsZIM="
 
 before_install:
   # Download the binary to bin folder in $GOPATH
