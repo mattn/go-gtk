@@ -8069,7 +8069,7 @@ func (v *FileChooser) GetCreateFolders() bool {
 func (v *FileChooser) SetCurrentName(name string) {
 	ptr := C.CString(name)
 	defer cfree(ptr)
-	C.gtk_file_chooser_set_current_name(v.GFileChooser, ptr)
+	C.gtk_file_chooser_set_current_name(v.GFileChooser, gstring(ptr))
 }
 
 func (v *FileChooser) GetFilename() string {
