@@ -28,6 +28,10 @@ func TestFILE_CHOOSER(t *testing.T) {
 	assert.True(t, d.GetCreateFolders())
 
 	d.SetCurrentName("foobar")
+
+	d.SelectFilename("foobar")
+	d.UnselectFilename("foobar")
+
 	// no way to check this until GTK+ 3.10
 }
 

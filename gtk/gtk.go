@@ -8082,8 +8082,19 @@ func (v *FileChooser) SetFilename(filename string) {
 	C.gtk_file_chooser_set_filename(v.GFileChooser, ptr)
 }
 
-// gboolean gtk_file_chooser_select_filename(GtkFileChooser* chooser, const char* filename);
-// void gtk_file_chooser_unselect_filename(GtkFileChooser* chooser, const char* filename);
+// GTK doc said the return value is "Not useful".
+func (v *FileChooser) SelectFilename(filename string) bool {
+	ptr := C.CString(filename)
+	defer cfree(ptr)
+	return gobool(C.gtk_file_chooser_select_filename(v.GFileChooser, ptr))
+}
+
+func (v *FileChooser) UnselectFilename(filename string) {
+	ptr := C.CString(filename)
+	defer cfree(ptr)
+	C.gtk_file_chooser_unselect_filename(v.GFileChooser, ptr)
+}
+
 // void gtk_file_chooser_select_all(GtkFileChooser* chooser);
 // void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
 
