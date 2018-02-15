@@ -28,11 +28,17 @@ func TestFILE_CHOOSER(t *testing.T) {
 	assert.True(t, d.GetCreateFolders())
 
 	d.SetCurrentName("foobar")
+	// no way to check this until GTK+ 3.10
 
 	d.SelectFilename("foobar")
 	d.UnselectFilename("foobar")
 
-	// no way to check this until GTK+ 3.10
+	d.SelectAll()
+	d.UnselectAll()
+
+	for gtk.EventsPending() {
+		gtk.MainIterationDo(false)
+	}
 }
 
 func TestMisc_GetPadding(t *testing.T) {

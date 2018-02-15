@@ -8095,8 +8095,13 @@ func (v *FileChooser) UnselectFilename(filename string) {
 	C.gtk_file_chooser_unselect_filename(v.GFileChooser, ptr)
 }
 
-// void gtk_file_chooser_select_all(GtkFileChooser* chooser);
-// void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
+func (v *FileChooser) SelectAll() {
+	C.gtk_file_chooser_select_all(v.GFileChooser)
+}
+
+func (v *FileChooser) UnselectAll() {
+	C.gtk_file_chooser_unselect_all(v.GFileChooser)
+}
 
 func (v *FileChooser) GetFilenames() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_file_chooser_get_filenames(v.GFileChooser)))
