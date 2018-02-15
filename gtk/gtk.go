@@ -9718,8 +9718,8 @@ func NewDrawingArea() *DrawingArea {
 	return &DrawingArea{Widget{C.gtk_drawing_area_new()}}
 }
 
-//Deprecated. Use GtkWidget.SetSizeRequest() instead.
-func (v *DrawingArea) GetSizeRequest(width, height int) {
+//Deprecated: Use GtkWidget.SetSizeRequest() instead.
+func (v *DrawingArea) Size(width, height int) {
 	deprecated_since(2, 0, 0, "gtk_drawing_area_size()")
 	C.gtk_drawing_area_size(DRAWING_AREA(v), gint(width), gint(height))
 }
