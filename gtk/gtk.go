@@ -8140,10 +8140,10 @@ func (v *FileChooser) SelectUri(uri string) bool {
 	return gobool(C.gtk_file_chooser_select_uri(v.GFileChooser, ptr))
 }
 
-func (v *FileChooser) UnselectUri(uri string) bool {
+func (v *FileChooser) UnselectUri(uri string) {
 	ptr := C.CString(uri)
 	defer cfree(ptr)
-	return gobool(C.gtk_file_chooser_unselect_uri(v.GFileChooser, ptr))
+	C.gtk_file_chooser_unselect_uri(v.GFileChooser, ptr)
 }
 
 // GSList*  gtk_file_chooser_get_uris(GtkFileChooser* chooser);
