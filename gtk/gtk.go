@@ -225,6 +225,17 @@ func native2StringArray(native **C.gchar) []string{
 	return res
 }
 
+// use C.destroy_strings to free the result
+func stringArray2Native(ss []string) **C.gchar{
+	css := C.make_strings(C.int(len(ss) + 1))
+	for i, s := range ss {
+		ptr := C.CString(s)
+		defer cfree(ptr)
+		C.set_string(css, C.int(i), gstring(ptr))
+	}
+	C.set_string(css, C.int(len(ss)), nil)
+	return css
+}
 
 //-----------------------------------------------------------------------
 // Main Loop and Events
@@ -1776,15 +1787,9 @@ func (v *AboutDialog) GetAuthors() []string {
 }
 
 func (v *AboutDialog) SetAuthors(authors []string) {
-	cauthors := C.make_strings(C.int(len(authors) + 1))
-	for i, author := range authors {
-		ptr := C.CString(author)
-		defer cfree(ptr)
-		C.set_string(cauthors, C.int(i), gstring(ptr))
-	}
-	C.set_string(cauthors, C.int(len(authors)), nil)
+	cauthors := stringArray2Native(authors)
+	defer C.destroy_strings(cauthors)
 	C.gtk_about_dialog_set_authors(ABOUT_DIALOG(v), cauthors)
-	C.destroy_strings(cauthors)
 }
 
 func (v *AboutDialog) GetArtists() []string {
@@ -1792,15 +1797,9 @@ func (v *AboutDialog) GetArtists() []string {
 }
 
 func (v *AboutDialog) SetArtists(artists []string) {
-	cartists := C.make_strings(C.int(len(artists)) + 1)
-	for i, author := range artists {
-		ptr := C.CString(author)
-		defer cfree(ptr)
-		C.set_string(cartists, C.int(i), gstring(ptr))
-	}
-	C.set_string(cartists, C.int(len(artists)), nil)
+	cartists := stringArray2Native(artists)
+	defer C.destroy_strings(cartists)
 	C.gtk_about_dialog_set_artists(ABOUT_DIALOG(v), cartists)
-	C.destroy_strings(cartists)
 }
 
 func (v *AboutDialog) GetDocumenters() []string {
@@ -1808,15 +1807,9 @@ func (v *AboutDialog) GetDocumenters() []string {
 }
 
 func (v *AboutDialog) SetDocumenters(documenters []string) {
-	cdocumenters := C.make_strings(C.int(len(documenters)) + 1)
-	for i, author := range documenters {
-		ptr := C.CString(author)
-		defer cfree(ptr)
-		C.set_string(cdocumenters, C.int(i), gstring(ptr))
-	}
-	C.set_string(cdocumenters, C.int(len(documenters)), nil)
+	cdocumenters := stringArray2Native(documenters)
+	defer C.destroy_strings(cdocumenters)
 	C.gtk_about_dialog_set_documenters(ABOUT_DIALOG(v), cdocumenters)
-	C.destroy_strings(cdocumenters)
 }
 
 func (v *AboutDialog) GetTranslatorCredits() string {
@@ -3109,17 +3102,21 @@ type ScaleButton struct {
 }
 
 // TODO: wrapper around icons** C.gchar
-func NewScaleButton(size IconSize, min, max, step float64, icons **C.gchar) *ScaleButton {
+func NewScaleButton(size IconSize, min, max, step float64, icons []string) *ScaleButton {
+	cicons := stringArray2Native(icons)
+	defer C.destroy_strings(cicons)
 	return &ScaleButton{Bin{Container{Widget{
-		C.gtk_scale_button_new(C.GtkIconSize(size), gdouble(min), gdouble(max), gdouble(step), icons)}}}}
+		C.gtk_scale_button_new(C.GtkIconSize(size), gdouble(min), gdouble(max), gdouble(step), cicons)}}}}
 }
 
 func (v *ScaleButton) SetAdjustment(a *Adjustment) {
 	C.gtk_scale_button_set_adjustment(SCALEBUTTON(v), a.GAdjustment)
 }
 
-func (v *ScaleButton) SetIcons(icons **C.gchar) {
-	C.gtk_scale_button_set_icons(SCALEBUTTON(v), icons)
+func (v *ScaleButton) SetIcons(icons []string) {
+	cicons := stringArray2Native(icons)
+	defer C.destroy_strings(cicons)
+	C.gtk_scale_button_set_icons(SCALEBUTTON(v), cicons)
 }
 
 func (v *ScaleButton) SetValue(value float64) {
