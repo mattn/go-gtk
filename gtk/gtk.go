@@ -10227,17 +10227,17 @@ func (m *Misc) SetPadding(xpad, ypad int) {
 }
 
 func (m *Misc) GetAlignment(xalign, yalign *float64) {
-	var gxalign, gyalign *C.gfloat
-	C.gtk_misc_get_alignment(MISC(m), gxalign, gyalign)
-	*xalign = float64(*gxalign)
-	*yalign = float64(*gyalign)
+	var gxalign, gyalign C.gfloat
+	C.gtk_misc_get_alignment(MISC(m), &gxalign, &gyalign)
+	*xalign = float64(gxalign)
+	*yalign = float64(gyalign)
 }
 
 func (m *Misc) GetPadding(xpad, ypad *int) {
-	var gxpad, gypad *C.gint
-	C.gtk_misc_get_padding(MISC(m), gxpad, gypad)
-	*xpad = int(*gxpad)
-	*ypad = int(*gypad)
+	var gxpad, gypad C.gint
+	C.gtk_misc_get_padding(MISC(m), &gxpad, &gypad)
+	*xpad = int(gxpad)
+	*ypad = int(gypad)
 }
 
 //-----------------------------------------------------------------------
