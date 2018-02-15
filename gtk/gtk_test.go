@@ -1,15 +1,23 @@
 package gtk_test
 
 import (
+	"io/ioutil"
 	"testing"
 
 	"github.com/mattn/go-gtk/gtk"
 	"github.com/stretchr/testify/assert"
+	"os"
 )
+
+func gtkRun() {
+	for gtk.EventsPending() {
+		gtk.MainIterationDo(false)
+	}
+}
 
 func TestFILE_CHOOSER(t *testing.T) {
 	gtk.Init(nil)
-	d := gtk.NewFileChooserWidget(gtk.FILE_CHOOSER_ACTION_OPEN)
+	d := gtk.NewFileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
 	assert.NotNil(t, d)
 
 	d.SetShowHidden(false)
@@ -36,9 +44,23 @@ func TestFILE_CHOOSER(t *testing.T) {
 	d.SelectAll()
 	d.UnselectAll()
 
-	for gtk.EventsPending() {
-		gtk.MainIterationDo(false)
-	}
+	f1, err := ioutil.TempFile("/tmp", "go-gtk")
+	assert.NoError(t, err)
+	f1.Close()
+	defer os.Remove(f1.Name())
+
+	f2, err := ioutil.TempFile("/tmp", "go-gtk")
+	assert.NoError(t, err)
+	f2.Close()
+	defer os.Remove(f2.Name())
+
+	d.SetFilename(f1.Name())
+	gtkRun()
+	assert.Equal(t, f1.Name(), d.GetFilename())
+
+	assert.Equal(t, "file://"+f1.Name(), d.GetUri())
+	d.SetUri("file://" + f2.Name())
+	assert.Equal(t, "file://"+f2.Name(), d.GetUri())
 }
 
 func TestMisc_GetPadding(t *testing.T) {

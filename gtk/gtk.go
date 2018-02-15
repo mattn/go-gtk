@@ -36,6 +36,12 @@ func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
 func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
 func gostring(s *C.gchar) string { return C.GoString(cstring(s)) }
 
+func gostringAndFree(s *C.gchar) string {
+	gos := C.GoString(cstring(s))
+	C.g_free(C.gpointer(s))
+	return gos
+}
+
 func gslist(l *glib.SList) *C.GSList {
 	if l == nil {
 		return nil
@@ -8073,7 +8079,7 @@ func (v *FileChooser) SetCurrentName(name string) {
 }
 
 func (v *FileChooser) GetFilename() string {
-	return gostring(C.gtk_file_chooser_get_filename(v.GFileChooser))
+	return gostringAndFree(C.gtk_file_chooser_get_filename(v.GFileChooser))
 }
 
 func (v *FileChooser) SetFilename(filename string) {
@@ -8118,8 +8124,16 @@ func (v *FileChooser) GetCurrentFolder() string {
 	return gostring(C.gtk_file_chooser_get_current_folder(v.GFileChooser))
 }
 
-// gchar*  gtk_file_chooser_get_uri(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_uri(GtkFileChooser* chooser, const char* uri);
+func (v *FileChooser) SetUri(uri string) bool {
+	ptr := C.CString(uri)
+	defer cfree(ptr)
+	return gobool(C.gtk_file_chooser_set_uri(v.GFileChooser, ptr))
+}
+
+func (v *FileChooser) GetUri() string {
+	return gostringAndFree(C.gtk_file_chooser_get_uri(v.GFileChooser))
+}
+
 // gboolean gtk_file_chooser_select_uri(GtkFileChooser* chooser, const char* uri);
 // void gtk_file_chooser_unselect_uri(GtkFileChooser* chooser, const char* uri);
 // GSList*  gtk_file_chooser_get_uris(GtkFileChooser* chooser);
