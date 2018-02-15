@@ -35,9 +35,6 @@ func TestFILE_CHOOSER(t *testing.T) {
 	d.SetCreateFolders(true)
 	assert.True(t, d.GetCreateFolders())
 
-	d.SetCurrentName("foobar")
-	// no way to check this until GTK+ 3.10
-
 	d.SelectFilename("foobar")
 	d.UnselectFilename("foobar")
 
@@ -65,6 +62,14 @@ func TestFILE_CHOOSER(t *testing.T) {
 	assert.True(t, d.SelectUri("file://"+f1.Name()))
 	d.UnselectUri("file://"+f1.Name())
 }
+
+func TestFileChooser_SetCurrentName(t *testing.T) {
+	gtk.Init(nil)
+	d := gtk.NewFileChooserWidget(gtk.FILE_CHOOSER_ACTION_SAVE)
+	d.SetCurrentName("foobar")
+	// no way to check this until GTK+ 3.10
+}
+
 
 func TestMisc_GetPadding(t *testing.T) {
 	gtk.Init(nil)
