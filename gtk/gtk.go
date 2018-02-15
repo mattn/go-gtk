@@ -8040,13 +8040,37 @@ func (v *FileChooser) GetSelectMultiple() bool {
 	return gobool(C.gtk_file_chooser_get_select_multiple(v.GFileChooser))
 }
 
-// void gtk_file_chooser_set_show_hidden(GtkFileChooser* chooser, gboolean show_hidden);
-// gboolean gtk_file_chooser_get_show_hidden(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_do_overwrite_confirmation(GtkFileChooser* chooser, gboolean do_overwrite_confirmation);
-// gboolean gtk_file_chooser_get_do_overwrite_confirmation(GtkFileChooser* chooser);
-// void gtk_file_chooser_set_create_folders(GtkFileChooser* chooser, gboolean create_folders); //since 2.18
-// gboolean gtk_file_chooser_get_create_folders(GtkFileChooser* chooser); //since 2.18
-// void gtk_file_chooser_set_current_name(GtkFileChooser* chooser, const gchar* name);
+func (v *FileChooser) SetShowHidden(showHidden bool) {
+	C.gtk_file_chooser_set_show_hidden(v.GFileChooser, gbool(showHidden))
+}
+
+func (v *FileChooser) GetShowHidden() bool {
+	return gobool(C.gtk_file_chooser_get_show_hidden(v.GFileChooser))
+}
+
+func (v *FileChooser) SetDoOverwriteConfirmation(b bool) {
+	C.gtk_file_chooser_set_do_overwrite_confirmation(v.GFileChooser, gbool(b))
+}
+
+func (v *FileChooser) GetDoOverwriteConfirmation() bool {
+	return gobool(C.gtk_file_chooser_get_do_overwrite_confirmation(v.GFileChooser))
+}
+
+func (v *FileChooser) SetCreateFolders(b bool) {
+	panic_if_version_older_auto(2, 18, 0)
+	C.gtk_file_chooser_set_create_folders(v.GFileChooser, gbool(b))
+}
+
+func (v *FileChooser) GetCreateFolders() bool {
+	panic_if_version_older_auto(2, 18, 0)
+	return gobool(C.gtk_file_chooser_get_create_folders(v.GFileChooser))
+}
+
+func (v *FileChooser) SetCurrentName(name string) {
+	ptr := C.CString(name)
+	defer cfree(ptr)
+	C.gtk_file_chooser_set_current_name(v.GFileChooser, gstring(ptr))
+}
 
 func (v *FileChooser) GetFilename() string {
 	return gostring(C.gtk_file_chooser_get_filename(v.GFileChooser))
@@ -8058,10 +8082,26 @@ func (v *FileChooser) SetFilename(filename string) {
 	C.gtk_file_chooser_set_filename(v.GFileChooser, ptr)
 }
 
-// gboolean gtk_file_chooser_select_filename(GtkFileChooser* chooser, const char* filename);
-// void gtk_file_chooser_unselect_filename(GtkFileChooser* chooser, const char* filename);
-// void gtk_file_chooser_select_all(GtkFileChooser* chooser);
-// void gtk_file_chooser_unselect_all(GtkFileChooser* chooser);
+// GTK doc said the return value is "Not useful".
+func (v *FileChooser) SelectFilename(filename string) bool {
+	ptr := C.CString(filename)
+	defer cfree(ptr)
+	return gobool(C.gtk_file_chooser_select_filename(v.GFileChooser, ptr))
+}
+
+func (v *FileChooser) UnselectFilename(filename string) {
+	ptr := C.CString(filename)
+	defer cfree(ptr)
+	C.gtk_file_chooser_unselect_filename(v.GFileChooser, ptr)
+}
+
+func (v *FileChooser) SelectAll() {
+	C.gtk_file_chooser_select_all(v.GFileChooser)
+}
+
+func (v *FileChooser) UnselectAll() {
+	C.gtk_file_chooser_unselect_all(v.GFileChooser)
+}
 
 func (v *FileChooser) GetFilenames() *glib.SList {
 	return glib.SListFromNative(unsafe.Pointer(C.gtk_file_chooser_get_filenames(v.GFileChooser)))
