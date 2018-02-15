@@ -91,14 +91,3 @@ func TestEntry_SetInnerBorder(t *testing.T) {
 	e.SetInnerBorder(nil)
 	assert.Nil(t, e.GetInnerBorder())
 }
-
-func TestMisc_GetPadding(t *testing.T) {
-	Init(nil)
-	m := NewImage()
-	m.SetPadding(1, 2)
-	x := 0
-	y := 0
-	m.GetPadding(&x, &y)
-	assert.Equal(t, x, 1)
-	assert.Equal(t, y, 2)
-}
