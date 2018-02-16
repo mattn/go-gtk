@@ -36,6 +36,28 @@ func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
 func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
 func gostring(s *C.gchar) string { return C.GoString(cstring(s)) }
 
+func gostringAndFree(s *C.gchar) string {
+	gos := C.GoString(cstring(s))
+	C.g_free(C.gpointer(s))
+	return gos
+}
+
+func gslist2StringArray(ss *C.GSList) []string {
+	slist := glib.SListFromNative(unsafe.Pointer(ss))
+	res := make([]string, slist.Length())
+	for i := uint(0); i < slist.Length(); i++ {
+		res[i] = C.GoString((*C.char)(slist.NthData(i)))
+	}
+	return res
+}
+
+func gslist2StringArrayAndFree(ss *C.GSList) []string {
+	res := gslist2StringArray(ss)
+	C._g_slist_string_full_free(ss)
+	return res
+}
+
+
 func gslist(l *glib.SList) *C.GSList {
 	if l == nil {
 		return nil
@@ -8073,7 +8095,7 @@ func (v *FileChooser) SetCurrentName(name string) {
 }
 
 func (v *FileChooser) GetFilename() string {
-	return gostring(C.gtk_file_chooser_get_filename(v.GFileChooser))
+	return gostringAndFree(C.gtk_file_chooser_get_filename(v.GFileChooser))
 }
 
 func (v *FileChooser) SetFilename(filename string) {
@@ -8103,8 +8125,8 @@ func (v *FileChooser) UnselectAll() {
 	C.gtk_file_chooser_unselect_all(v.GFileChooser)
 }
 
-func (v *FileChooser) GetFilenames() *glib.SList {
-	return glib.SListFromNative(unsafe.Pointer(C.gtk_file_chooser_get_filenames(v.GFileChooser)))
+func (v *FileChooser) GetFilenames() []string {
+	return gslist2StringArrayAndFree(C.gtk_file_chooser_get_filenames(v.GFileChooser))
 }
 
 func (v *FileChooser) SetCurrentFolder(f string) bool {
@@ -8118,11 +8140,32 @@ func (v *FileChooser) GetCurrentFolder() string {
 	return gostring(C.gtk_file_chooser_get_current_folder(v.GFileChooser))
 }
 
-// gchar*  gtk_file_chooser_get_uri(GtkFileChooser* chooser);
-// gboolean gtk_file_chooser_set_uri(GtkFileChooser* chooser, const char* uri);
-// gboolean gtk_file_chooser_select_uri(GtkFileChooser* chooser, const char* uri);
-// void gtk_file_chooser_unselect_uri(GtkFileChooser* chooser, const char* uri);
-// GSList*  gtk_file_chooser_get_uris(GtkFileChooser* chooser);
+func (v *FileChooser) SetUri(uri string) bool {
+	ptr := C.CString(uri)
+	defer cfree(ptr)
+	return gobool(C.gtk_file_chooser_set_uri(v.GFileChooser, ptr))
+}
+
+func (v *FileChooser) GetUri() string {
+	return gostringAndFree(C.gtk_file_chooser_get_uri(v.GFileChooser))
+}
+
+func (v *FileChooser) SelectUri(uri string) bool {
+	ptr := C.CString(uri)
+	defer cfree(ptr)
+	return gobool(C.gtk_file_chooser_select_uri(v.GFileChooser, ptr))
+}
+
+func (v *FileChooser) UnselectUri(uri string) {
+	ptr := C.CString(uri)
+	defer cfree(ptr)
+	C.gtk_file_chooser_unselect_uri(v.GFileChooser, ptr)
+}
+
+func (v *FileChooser) GetUris() []string {
+	return gslist2StringArrayAndFree(C.gtk_file_chooser_get_uris(v.GFileChooser))
+}
+
 // gboolean gtk_file_chooser_set_current_folder_uri(GtkFileChooser* chooser, const gchar* uri);
 // gchar*  gtk_file_chooser_get_current_folder_uri(GtkFileChooser* chooser);
 // void gtk_file_chooser_set_preview_widget(GtkFileChooser* chooser, GtkWidget* preview_widget);
