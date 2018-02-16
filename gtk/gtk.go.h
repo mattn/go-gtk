@@ -272,7 +272,7 @@ static GSList* to_gslist(void* gs) {
 
 static void _g_slist_string_full_free(GSList* gs) {
     GSList* l;
-    
+
     for(l = gs; l != NULL; l = l->next) {
         g_free(l->data);
     }
