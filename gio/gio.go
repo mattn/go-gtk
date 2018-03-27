@@ -84,3 +84,19 @@ type GIcon struct {
 func (icon *GIcon) ToString() string {
 	return gostring(C.g_icon_to_string(icon.GIcon))
 }
+
+type GInputStream struct {
+	GInputStream *C.GInputStream
+}
+
+func NewMemoryInputStreamFromBytes(buffer []byte) *GInputStream {
+	pbyt := &buffer[0]
+	gbytes := C.g_bytes_new_take(C.gpointer(unsafe.Pointer(pbyt)), C.gsize(len(buffer)))
+
+	stream := C.g_memory_input_stream_new_from_bytes(gbytes)
+	return &GInputStream{stream}
+}
+
+func NewCancellable() *C.GCancellable {
+	return C.g_cancellable_new()
+}
