@@ -5889,10 +5889,11 @@ func (v *ListStore) MoveAfter(iter *TreeIter, position *TreeIter) {
 
 //TODO instead of using this methods to change between treemodel and liststore, is better to usa an interface ITreeModel
 //nb: ListStore e TreeStore sono un TreeModel (implementano GtkTreeModel!)
-/*func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
+func (v *ListStore) ToTreeModel() *TreeModel {
 	return &TreeModel{
 		C.toGTreeModelFromListStore(v.GListStore)}
-}*/
+}
+
 /*func (v *GtkTreeModel) ToListStore() *GtkListStore {
 	return &ListStore{
 		C.toGListStoreFromTreeModel(v.GTreeModel)}
