@@ -6244,6 +6244,11 @@ func (v *ComboBoxText) GetActiveText() string {
 	return gostring(C._gtk_combo_box_text_get_active_text(COMBO_BOX_TEXT(v)))
 }
 
+func (v *ComboBoxText) GetEntry() *Entry {
+	w := v.GetChild()
+	return &Entry{*w, Editable{C.toGEditable(w.GWidget)}}
+}
+
 //-----------------------------------------------------------------------
 // GtkComboBoxEntry
 //-----------------------------------------------------------------------
