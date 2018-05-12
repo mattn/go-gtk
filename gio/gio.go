@@ -28,6 +28,14 @@ func NewGFileForPath(filename string) *GFile {
 	return &GFile{C.g_file_new_for_path(ptrFilename)}
 }
 
+// NewGFileForURI is g_file_new_for_uri
+func NewGFileForURI(uriFilename string) *GFile {
+	ptrFilename := C.CString(uriFilename)
+	defer cfree(ptrFilename)
+
+	return &GFile{C.g_file_new_for_uri(ptrFilename)}
+}
+
 type GFileQueryInfoFlags C.GFileQueryInfoFlags
 
 var (
@@ -54,6 +62,11 @@ func (f *GFile) QueryInfo(attributes string, flags GFileQueryInfoFlags) (*GFileI
 	}
 
 	return &GFileInfo{gfileinfo}, nil
+}
+
+//GetPath is `g_file_get_path`, return real, absolute, canonical path. It might contain symlinks.
+func (f *GFile) GetPath() string {
+	return gostring(C.g_file_get_path(f.GFile))
 }
 
 //-----------------------------------------------------------------------
