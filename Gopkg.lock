@@ -9,12 +9,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/garyburd/go-oauth"
-  packages = ["oauth"]
-  revision = "bca2e7f09a178fd36b034107a00e2323bca6a82e"
-
-[[projects]]
-  branch = "master"
   name = "github.com/mattn/go-pointer"
   packages = ["."]
   revision = "1d30dc4b6f28271a3bd126071d4d0363e618415b"
@@ -34,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4b1e469b9610b908d64ed76d133d3ab30b332f45757e422ca2737b75866e7704"
+  inputs-digest = "a295491a6204f7afbbd0d9296cb3f5e4878c06352e31b9afdea4a19ba26aa083"
   solver-name = "gps-cdcl"
   solver-version = 1
