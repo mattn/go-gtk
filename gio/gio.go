@@ -28,6 +28,14 @@ func NewGFileForPath(filename string) *GFile {
 	return &GFile{C.g_file_new_for_path(ptrFilename)}
 }
 
+// NewGFileForURI is g_file_new_for_uri
+func NewGFileForURI(uriFilename string) *GFile {
+	ptrFilename := C.CString(uriFilename)
+	defer cfree(ptrFilename)
+
+	return &GFile{C.g_file_new_for_uri(ptrFilename)}
+}
+
 type GFileQueryInfoFlags C.GFileQueryInfoFlags
 
 var (
@@ -54,6 +62,11 @@ func (f *GFile) QueryInfo(attributes string, flags GFileQueryInfoFlags) (*GFileI
 	}
 
 	return &GFileInfo{gfileinfo}, nil
+}
+
+//GetPath is `g_file_get_path`, return real, absolute, canonical path. It might contain symlinks.
+func (f *GFile) GetPath() string {
+	return gostring(C.g_file_get_path(f.GFile))
 }
 
 //-----------------------------------------------------------------------
@@ -83,4 +96,20 @@ type GIcon struct {
 //ToString is g_icon_to_string
 func (icon *GIcon) ToString() string {
 	return gostring(C.g_icon_to_string(icon.GIcon))
+}
+
+type GInputStream struct {
+	GInputStream *C.GInputStream
+}
+
+func NewMemoryInputStreamFromBytes(buffer []byte) *GInputStream {
+	pbyt := &buffer[0]
+	gbytes := C.g_bytes_new_take(C.gpointer(unsafe.Pointer(pbyt)), C.gsize(len(buffer)))
+
+	stream := C.g_memory_input_stream_new_from_bytes(gbytes)
+	return &GInputStream{stream}
+}
+
+func NewCancellable() *C.GCancellable {
+	return C.g_cancellable_new()
 }

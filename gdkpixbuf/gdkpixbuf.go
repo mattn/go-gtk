@@ -5,18 +5,20 @@ package gdkpixbuf
 // #include "gdkpixbuf.go.h"
 // #cgo pkg-config: gdk-pixbuf-2.0
 import "C"
-import "github.com/mattn/go-gtk/glib"
 import (
 	"log"
 	"runtime"
 	"unsafe"
+
+	"github.com/mattn/go-gtk/gio"
+	"github.com/mattn/go-gtk/glib"
 )
 
 // PixbufData is an inline/embedded image data object for usage with NewPixbufFromData.
 type PixbufData struct {
-	Data []byte
-	Colorspace Colorspace
-	HasAlpha bool
+	Data                                    []byte
+	Colorspace                              Colorspace
+	HasAlpha                                bool
 	BitsPerSample, Width, Height, RowStride int
 }
 
@@ -175,6 +177,20 @@ func NewPixbufFromBytes(buffer []byte) (*Pixbuf, *glib.Error) {
 	C.gdk_pixbuf_loader_write(loader, C.to_gucharptr(unsafe.Pointer(&buffer[0])), C.gsize(len(buffer)), &err)
 	gpixbuf := C.gdk_pixbuf_loader_get_pixbuf(loader)
 
+	if err != nil {
+		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
+	}
+	return &Pixbuf{
+		GdkPixbuf: &GdkPixbuf{gpixbuf},
+		GObject:   glib.ObjectFromNative(unsafe.Pointer(gpixbuf)),
+	}, nil
+}
+
+func NewPixbufFromStream(stream *gio.GInputStream) (*Pixbuf, *glib.Error) {
+	ptr := (*C.GInputStream)(unsafe.Pointer(stream.GInputStream))
+
+	var err *C.GError
+	gpixbuf := C.gdk_pixbuf_new_from_stream(ptr, nil, &err)
 	if err != nil {
 		return nil, glib.ErrorFromNative(unsafe.Pointer(err))
 	}
