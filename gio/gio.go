@@ -10,6 +10,7 @@ import (
 )
 
 func cfree(s *C.char)            { C.freeCstr(s) }
+func gstring(s *C.char) *C.gchar { return C.toGstr(s) }
 func cstring(s *C.gchar) *C.char { return C.toCstr(s) }
 func gostring(s *C.gchar) string { return C.GoString(cstring(s)) }
 
@@ -64,9 +65,9 @@ func (f *GFile) QueryInfo(attributes string, flags GFileQueryInfoFlags) (*GFileI
 	return &GFileInfo{gfileinfo}, nil
 }
 
-//GetPath is `g_file_get_path`, return real, absolute, canonical path. It might contain symlinks.
+// GetPath is `g_file_get_path`, return real, absolute, canonical path. It might contain symlinks.
 func (f *GFile) GetPath() string {
-	return gostring(C.g_file_get_path(f.GFile))
+	return gostring(gstring(C.g_file_get_path(f.GFile)))
 }
 
 //-----------------------------------------------------------------------
