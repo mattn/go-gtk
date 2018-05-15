@@ -5889,10 +5889,11 @@ func (v *ListStore) MoveAfter(iter *TreeIter, position *TreeIter) {
 
 //TODO instead of using this methods to change between treemodel and liststore, is better to usa an interface ITreeModel
 //nb: ListStore e TreeStore sono un TreeModel (implementano GtkTreeModel!)
-/*func (v *GtkListStore) ToTreeModel() *GtkTreeModel {
+func (v *ListStore) ToTreeModel() *TreeModel {
 	return &TreeModel{
 		C.toGTreeModelFromListStore(v.GListStore)}
-}*/
+}
+
 /*func (v *GtkTreeModel) ToListStore() *GtkListStore {
 	return &ListStore{
 		C.toGListStoreFromTreeModel(v.GTreeModel)}
@@ -6241,6 +6242,11 @@ func (v *ComboBoxText) Remove(position int) {
 
 func (v *ComboBoxText) GetActiveText() string {
 	return gostring(C._gtk_combo_box_text_get_active_text(COMBO_BOX_TEXT(v)))
+}
+
+func (v *ComboBoxText) GetEntry() *Entry {
+	w := v.GetChild()
+	return &Entry{*w, Editable{C.toGEditable(w.GWidget)}}
 }
 
 //-----------------------------------------------------------------------
