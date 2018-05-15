@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/mattn/go-gtk/example/builder/callback"
+	"github.com/mattn/go-gtk/_example/builder/callback"
 	"github.com/mattn/go-gtk/gtk"
 )
 
