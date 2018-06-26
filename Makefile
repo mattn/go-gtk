@@ -1,4 +1,4 @@
-include example/example.mk
+include _example/example.mk
 
 .DEFAULT_GOAL := all
 .PHONY: all
