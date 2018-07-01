@@ -230,6 +230,18 @@ static void _go_gtk_tree_selection_set_select_function(GtkTreeSelection *sel, vo
   gtk_tree_selection_set_select_function(sel, _c_gtk_tree_selection_select_func, payload, NULL);
 }
 
+static gint _gtk_container_child_get_int(GtkContainer* container, GtkWidget* child, const gchar* propname) {
+    gint value;
+    gtk_container_child_get(container, child, propname, &value, NULL);
+    return value;
+}
+
+static gboolean _gtk_container_child_get_bool(GtkContainer* container, GtkWidget* child, const gchar* propname) {
+    gboolean value;
+    gtk_container_child_get(container, child, propname, &value, NULL);
+    return value;
+}
+
 static void _gtk_container_child_set_bool(GtkContainer* container, GtkWidget* child, const gchar* propname, gboolean value) {
 	gtk_container_child_set(container, child, propname, value, NULL);
 }
