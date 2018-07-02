@@ -13,6 +13,7 @@ import (
 	"log"
 	"reflect"
 	"runtime"
+	"strconv"
 	"strings"
 	"unsafe"
 
@@ -4216,7 +4217,11 @@ func (v *TextBuffer) CreateTag(tag_name string, props map[string]string) *TextTa
 	for prop, val := range props {
 		pprop := C.CString(prop)
 		pval := C.CString(val)
-		C._apply_property(unsafe.Pointer(tag), gstring(pprop), gstring(pval))
+		intval, err := strconv.Atoi(val)
+		if err != nil {
+			intval = 0
+		}
+		C._apply_property(unsafe.Pointer(tag), gstring(pprop), gstring(pval), gint(intval))
 		cfree(pprop)
 		cfree(pval)
 	}

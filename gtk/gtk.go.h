@@ -97,7 +97,7 @@ static void _gtk_text_iter_assign(GtkTextIter* one, GtkTextIter* two) {
 	*one = *two;
 }
 
-static void _apply_property(void* obj, const gchar* prop, const gchar* val) {
+static void _apply_property(void* obj, const gchar* prop, const gchar* val, const gint intval) {
 	GParamSpec *pspec;
 	GValue fromvalue = { 0, };
 	GValue tovalue = { 0, };
@@ -105,8 +105,13 @@ static void _apply_property(void* obj, const gchar* prop, const gchar* val) {
 	if (!pspec) return;
 	g_value_init(&fromvalue, G_TYPE_STRING);
 	g_value_set_string(&fromvalue, val);
-	g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
-	g_value_transform(&fromvalue, &tovalue);
+	if (intval) {
+		g_value_init(&tovalue, G_TYPE_INT);
+		g_value_set_int(&tovalue, intval);
+	} else {
+		g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
+		g_value_transform(&fromvalue, &tovalue);
+	}
 	g_object_set_property((GObject *)obj, prop, &tovalue);
 	g_value_unset(&fromvalue);
 	g_value_unset(&tovalue);
