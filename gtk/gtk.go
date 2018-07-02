@@ -176,6 +176,8 @@ func AS_GWIDGET(p unsafe.Pointer) *C.GtkWidget             { return C.toGWidget(
 func UI_MANAGER(p *UIManager) *C.GtkUIManager              { return C.toGUIManager(p.Object) }
 func FONT_SELECTION(p *FontSelection) *C.GtkFontSelection  { return C.toGFontSelection(p.GWidget) }
 
+func CALENDAR(p *Calendar) *C.GtkCalendar { return C.toGCalendar(p.GWidget) }
+
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
 func panic_if_version_older(major int, minor int, micro int, function string) {
@@ -9777,7 +9779,14 @@ func (a *Arrow) Set(at ArrowType, st ShadowType) {
 // GtkCalendar
 //-----------------------------------------------------------------------
 
-// gtk_calendar_new
+type Calendar struct {
+	Container
+}
+
+func NewCalendar() *Calendar {
+	return &Calendar{Container{Widget{C.gtk_calendar_new()}}}
+}
+
 // gtk_calendar_select_month
 // gtk_calendar_select_day
 // gtk_calendar_mark_day
@@ -9785,7 +9794,13 @@ func (a *Arrow) Set(at ArrowType, st ShadowType) {
 // gtk_calendar_clear_marks
 // gtk_calendar_get_display_options
 // gtk_calendar_set_display_options
-// gtk_calendar_get_date
+
+func (c *Calendar) GetDate() (year, month, date uint) {
+	var y, m, d C.guint
+	C.gtk_calendar_get_date(CALENDAR(c), &y, &m, &d)
+	return uint(y), uint(m), uint(d)
+}
+
 // gtk_calendar_set_detail_func
 // gtk_calendar_get_detail_width_chars
 // gtk_calendar_set_detail_width_chars

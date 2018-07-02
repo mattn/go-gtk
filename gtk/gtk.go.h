@@ -802,6 +802,7 @@ static inline char* toCstr(const gchar* s) { return (char*)s; }
 //static inline char* toCstrU(const guchar* s) { return (char*)s; }
 //static inline char* toCstrV(const void* s) { return (char*)s; }
 
+static inline GtkCalendar* toGCalendar(GtkWidget* w) { return GTK_CALENDAR(w); }
 static inline GObject* toGObject(void* o) { return G_OBJECT(o); }
 static inline GValue* toGValue(void* s) { return (GValue*)s; }
 static inline GtkWindow* toGWindow(GtkWidget* w) { return GTK_WINDOW(w); }
