@@ -13,7 +13,6 @@ import (
 	"log"
 	"reflect"
 	"runtime"
-	"strconv"
 	"strings"
 	"unsafe"
 
@@ -4210,20 +4209,61 @@ func (v *TextBuffer) RemoveAllTags(start *TextIter, end *TextIter) {
 	C.gtk_text_buffer_remove_all_tags(v.GTextBuffer, &start.GTextIter, &end.GTextIter)
 }
 
-func (v *TextBuffer) CreateTag(tag_name string, props map[string]string) *TextTag {
+func (v *TextBuffer) CreateTag(tag_name string, props map[string]interface{}) *TextTag {
+	toInt := func(val interface{}) int {
+		switch v := val.(type) {
+		case uint:
+			return int(v)
+		case uintptr:
+			return int(v)
+		case uint8:
+			return int(v)
+		case uint16:
+			return int(v)
+		case uint32:
+			return int(v)
+		case uint64:
+			return int(v)
+		case int:
+			return int(v)
+		case int8:
+			return int(v)
+		case int16:
+			return int(v)
+		case int32:
+			return int(v)
+		case int64:
+			return int(v)
+		}
+		return 0
+	}
+	toFloat := func(val interface{}) float64 {
+		switch v := val.(type) {
+		case float32:
+			return float64(v)
+		case float64:
+			return float64(v)
+		}
+		return 0
+	}
 	ptr := C.CString(tag_name)
 	defer cfree(ptr)
 	tag := C._gtk_text_buffer_create_tag(v.GTextBuffer, gstring(ptr))
 	for prop, val := range props {
 		pprop := C.CString(prop)
-		pval := C.CString(val)
-		intval, err := strconv.Atoi(val)
-		if err != nil {
-			intval = 0
+		switch v := val.(type) {
+		case bool:
+			C._apply_property_bool(unsafe.Pointer(tag), gstring(pprop), gbool(v))
+		case uint, uintptr, uint8, uint16, uint32, uint64, int, int8, int16, int32, int64:
+			C._apply_property_int(unsafe.Pointer(tag), gstring(pprop), gint(toInt(v)))
+		case float32, float64:
+			C._apply_property_float(unsafe.Pointer(tag), gstring(pprop), gdouble(toFloat(v)))
+		case string:
+			pval := C.CString(v)
+			C._apply_property_string(unsafe.Pointer(tag), gstring(pprop), gstring(pval))
+			cfree(pval)
 		}
-		C._apply_property(unsafe.Pointer(tag), gstring(pprop), gstring(pval), gint(intval))
 		cfree(pprop)
-		cfree(pval)
 	}
 	return newTextTag(tag)
 }

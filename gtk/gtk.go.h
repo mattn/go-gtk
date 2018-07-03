@@ -97,24 +97,36 @@ static void _gtk_text_iter_assign(GtkTextIter* one, GtkTextIter* two) {
 	*one = *two;
 }
 
-static void _apply_property(void* obj, const gchar* prop, const gchar* val, const gint intval) {
-	GParamSpec *pspec;
-	GValue fromvalue = { 0, };
-	GValue tovalue = { 0, };
-	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(obj), prop);
-	if (!pspec) return;
-	g_value_init(&fromvalue, G_TYPE_STRING);
-	g_value_set_string(&fromvalue, val);
-	if (intval) {
-		g_value_init(&tovalue, G_TYPE_INT);
-		g_value_set_int(&tovalue, intval);
-	} else {
-		g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
-		g_value_transform(&fromvalue, &tovalue);
-	}
-	g_object_set_property((GObject *)obj, prop, &tovalue);
-	g_value_unset(&fromvalue);
-	g_value_unset(&tovalue);
+static void _apply_property_bool(void* obj, const gchar* prop, const gboolean val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
+}
+
+static void _apply_property_int(void* obj, const gchar* prop, const gint val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_INT);
+	g_value_set_int(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
+}
+
+static void _apply_property_float(void* obj, const gchar* prop, const gdouble val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_DOUBLE);
+	g_value_set_double(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
+}
+
+static void _apply_property_string(void* obj, const gchar* prop, const gchar* val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_STRING);
+	g_value_set_string(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
 }
 
 static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attribute(gchar* title, GtkCellRenderer* cell) {
