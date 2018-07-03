@@ -57,7 +57,6 @@ func gslist2StringArrayAndFree(ss *C.GSList) []string {
 	return res
 }
 
-
 func gslist(l *glib.SList) *C.GSList {
 	if l == nil {
 		return nil
@@ -177,6 +176,8 @@ func AS_GWIDGET(p unsafe.Pointer) *C.GtkWidget             { return C.toGWidget(
 func UI_MANAGER(p *UIManager) *C.GtkUIManager              { return C.toGUIManager(p.Object) }
 func FONT_SELECTION(p *FontSelection) *C.GtkFontSelection  { return C.toGFontSelection(p.GWidget) }
 
+func CALENDAR(p *Calendar) *C.GtkCalendar { return C.toGCalendar(p.GWidget) }
+
 //static inline GtkFileFilter* toGFileFilter(gpointer p) { return GTK_FILE_FILTER(p); }
 
 func panic_if_version_older(major int, minor int, micro int, function string) {
@@ -234,7 +235,7 @@ func argumentPanic(message string) {
 	}
 }
 
-func native2StringArray(native **C.gchar) []string{
+func native2StringArray(native **C.gchar) []string {
 	if native == nil {
 		return nil
 	}
@@ -248,7 +249,7 @@ func native2StringArray(native **C.gchar) []string{
 }
 
 // use C.g_strfreev to free the result
-func stringArray2Native(ss []string) **C.gchar{
+func stringArray2Native(ss []string) **C.gchar {
 	css := C.make_strings(C.int(len(ss) + 1))
 	for i, s := range ss {
 		ptr := C.CString(s)
@@ -1039,9 +1040,9 @@ func (v *Style) LookupColor(colorName string) (*gdk.Color, bool) {
 // gtk_draw_insertion_cursor
 
 type Border struct {
-	Left int
-	Right int
-	Top int
+	Left   int
+	Right  int
+	Top    int
 	Bottom int
 }
 
@@ -3251,9 +3252,9 @@ func (v *Entry) GetInnerBorder() *Border {
 		return nil
 	}
 	return &Border{
-		Left: int(b.left),
-		Right: int(b.right),
-		Top: int(b.top),
+		Left:   int(b.left),
+		Right:  int(b.right),
+		Top:    int(b.top),
 		Bottom: int(b.bottom),
 	}
 }
@@ -3271,7 +3272,7 @@ func (v *Entry) SetHasFrame(setting bool) {
 }
 
 func (v *Entry) SetInnerBorder(border *Border) {
-	if(border == nil) {
+	if border == nil {
 		C.gtk_entry_set_inner_border(ENTRY(v), nil)
 		return
 	}
@@ -4208,16 +4209,61 @@ func (v *TextBuffer) RemoveAllTags(start *TextIter, end *TextIter) {
 	C.gtk_text_buffer_remove_all_tags(v.GTextBuffer, &start.GTextIter, &end.GTextIter)
 }
 
-func (v *TextBuffer) CreateTag(tag_name string, props map[string]string) *TextTag {
+func (v *TextBuffer) CreateTag(tag_name string, props map[string]interface{}) *TextTag {
+	toInt := func(val interface{}) int {
+		switch v := val.(type) {
+		case uint:
+			return int(v)
+		case uintptr:
+			return int(v)
+		case uint8:
+			return int(v)
+		case uint16:
+			return int(v)
+		case uint32:
+			return int(v)
+		case uint64:
+			return int(v)
+		case int:
+			return int(v)
+		case int8:
+			return int(v)
+		case int16:
+			return int(v)
+		case int32:
+			return int(v)
+		case int64:
+			return int(v)
+		}
+		return 0
+	}
+	toFloat := func(val interface{}) float64 {
+		switch v := val.(type) {
+		case float32:
+			return float64(v)
+		case float64:
+			return float64(v)
+		}
+		return 0
+	}
 	ptr := C.CString(tag_name)
 	defer cfree(ptr)
 	tag := C._gtk_text_buffer_create_tag(v.GTextBuffer, gstring(ptr))
 	for prop, val := range props {
 		pprop := C.CString(prop)
-		pval := C.CString(val)
-		C._apply_property(unsafe.Pointer(tag), gstring(pprop), gstring(pval))
+		switch v := val.(type) {
+		case bool:
+			C._apply_property_bool(unsafe.Pointer(tag), gstring(pprop), gbool(v))
+		case uint, uintptr, uint8, uint16, uint32, uint64, int, int8, int16, int32, int64:
+			C._apply_property_int(unsafe.Pointer(tag), gstring(pprop), gint(toInt(v)))
+		case float32, float64:
+			C._apply_property_float(unsafe.Pointer(tag), gstring(pprop), gdouble(toFloat(v)))
+		case string:
+			pval := C.CString(v)
+			C._apply_property_string(unsafe.Pointer(tag), gstring(pprop), gstring(pval))
+			cfree(pval)
+		}
 		cfree(pprop)
-		cfree(pval)
 	}
 	return newTextTag(tag)
 }
@@ -5500,7 +5546,7 @@ const (
 )
 
 type sortFuncInfo struct {
-	fun SortFunc
+	fun      SortFunc
 	userData interface{}
 }
 
@@ -9778,7 +9824,14 @@ func (a *Arrow) Set(at ArrowType, st ShadowType) {
 // GtkCalendar
 //-----------------------------------------------------------------------
 
-// gtk_calendar_new
+type Calendar struct {
+	Container
+}
+
+func NewCalendar() *Calendar {
+	return &Calendar{Container{Widget{C.gtk_calendar_new()}}}
+}
+
 // gtk_calendar_select_month
 // gtk_calendar_select_day
 // gtk_calendar_mark_day
@@ -9786,7 +9839,13 @@ func (a *Arrow) Set(at ArrowType, st ShadowType) {
 // gtk_calendar_clear_marks
 // gtk_calendar_get_display_options
 // gtk_calendar_set_display_options
-// gtk_calendar_get_date
+
+func (c *Calendar) GetDate() (year, month, date uint) {
+	var y, m, d C.guint
+	C.gtk_calendar_get_date(CALENDAR(c), &y, &m, &d)
+	return uint(y), uint(m), uint(d)
+}
+
 // gtk_calendar_set_detail_func
 // gtk_calendar_get_detail_width_chars
 // gtk_calendar_set_detail_width_chars
@@ -10202,7 +10261,20 @@ func (v *Container) SetFocusHAdjustment(adjustment *Adjustment) {
 
 // gtk_container_resize_children
 // gtk_container_child_type
-// gtk_container_child_get
+
+// value must be pointer to int or bool
+func (v *Container) ChildGet(w IWidget, propName string, value interface{}) {
+
+	ptr := C.CString(propName)
+	defer cfree(ptr)
+
+	switch value.(type) {
+	case *bool:
+		*(value.(*bool)) = int(C._gtk_container_child_get_bool(CONTAINER(v), ToNative(w), gstring(ptr))) != 0
+	case *int:
+		*(value.(*int)) = int(C._gtk_container_child_get_int(CONTAINER(v), ToNative(w), gstring(ptr)))
+	}
+}
 
 func (v *Container) ChildSet(w IWidget, propName string, value interface{}) {
 
