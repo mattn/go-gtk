@@ -4852,7 +4852,7 @@ type GtkTreeSelecter interface {
 
 //export _go_gtk_tree_selection_select_func
 func _go_gtk_tree_selection_select_func(selection unsafe.Pointer, model unsafe.Pointer, path unsafe.Pointer, selected C.gboolean, payload unsafe.Pointer) C.gboolean {
-	cb := (*GtkTreeSelecter)(payload)
+	cb := pointer.Restore(payload).(*GtkTreeSelecter)
 	rv := (*cb).Select(&TreeSelection{C.to_GTreeSelection(selection)},
 		&TreeModel{C.to_GTreeModel(model)},
 		&TreePath{C.to_GTreePath((C.gpointer)(path))},
@@ -4864,7 +4864,7 @@ func _go_gtk_tree_selection_select_func(selection unsafe.Pointer, model unsafe.P
 // by garbage collection during the time that gtk maintains a reference to
 // it (e.g. pass the address of a package global variable).
 func (v *TreeSelection) SetSelectFunction(selecter *GtkTreeSelecter) {
-	C._go_gtk_tree_selection_set_select_function(v.GTreeSelection, unsafe.Pointer(selecter))
+	C._go_gtk_tree_selection_set_select_function(v.GTreeSelection, pointer.Save(selecter))
 }
 
 func (v *TreeSelection) GetSelected(iter *TreeIter) bool {
