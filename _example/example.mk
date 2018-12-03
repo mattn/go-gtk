@@ -1,27 +1,27 @@
 EXAMPLES := \
-	example/action/action \
-	example/alignment/alignment \
-	example/builder/builder \
-	example/clipboard/clipboard \
-	example/demo/demo \
-	example/arrow/arrow \
-	example/dnd/dnd \
-	example/drawable/drawable \
-	example/event/event \
-	example/expander/expander \
-	example/iconview/iconview \
-	example/listview/listview \
-	example/locale/locale \
-	example/notebook/notebook \
-	example/number/number \
-	example/sourceview/sourceview \
-	example/spinbutton/spinbutton \
-	example/statusicon/statusicon \
-	example/table/table \
-	example/thread/thread \
-	example/toolbar/toolbar \
-	example/treeview/treeview \
-	example/twitterstream/twitterstream
+	_example/action/action \
+	_example/alignment/alignment \
+	_example/builder/builder \
+	_example/clipboard/clipboard \
+	_example/demo/demo \
+	_example/arrow/arrow \
+	_example/dnd/dnd \
+	_example/drawable/drawable \
+	_example/event/event \
+	_example/expander/expander \
+	_example/iconview/iconview \
+	_example/listview/listview \
+	_example/locale/locale \
+	_example/notebook/notebook \
+	_example/number/number \
+	_example/sourceview/sourceview \
+	_example/spinbutton/spinbutton \
+	_example/statusicon/statusicon \
+	_example/table/table \
+	_example/thread/thread \
+	_example/toolbar/toolbar \
+	_example/treeview/treeview \
+	_example/twitterstream/twitterstream
 
 .PHONY: example
 example: $(EXAMPLES)
