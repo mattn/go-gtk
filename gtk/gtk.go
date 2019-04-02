@@ -57,7 +57,6 @@ func gslist2StringArrayAndFree(ss *C.GSList) []string {
 	return res
 }
 
-
 func gslist(l *glib.SList) *C.GSList {
 	if l == nil {
 		return nil
@@ -234,7 +233,7 @@ func argumentPanic(message string) {
 	}
 }
 
-func native2StringArray(native **C.gchar) []string{
+func native2StringArray(native **C.gchar) []string {
 	if native == nil {
 		return nil
 	}
@@ -248,7 +247,7 @@ func native2StringArray(native **C.gchar) []string{
 }
 
 // use C.g_strfreev to free the result
-func stringArray2Native(ss []string) **C.gchar{
+func stringArray2Native(ss []string) **C.gchar {
 	css := C.make_strings(C.int(len(ss) + 1))
 	for i, s := range ss {
 		ptr := C.CString(s)
@@ -1039,9 +1038,9 @@ func (v *Style) LookupColor(colorName string) (*gdk.Color, bool) {
 // gtk_draw_insertion_cursor
 
 type Border struct {
-	Left int
-	Right int
-	Top int
+	Left   int
+	Right  int
+	Top    int
 	Bottom int
 }
 
@@ -3251,9 +3250,9 @@ func (v *Entry) GetInnerBorder() *Border {
 		return nil
 	}
 	return &Border{
-		Left: int(b.left),
-		Right: int(b.right),
-		Top: int(b.top),
+		Left:   int(b.left),
+		Right:  int(b.right),
+		Top:    int(b.top),
 		Bottom: int(b.bottom),
 	}
 }
@@ -3271,7 +3270,7 @@ func (v *Entry) SetHasFrame(setting bool) {
 }
 
 func (v *Entry) SetInnerBorder(border *Border) {
-	if(border == nil) {
+	if border == nil {
 		C.gtk_entry_set_inner_border(ENTRY(v), nil)
 		return
 	}
@@ -5500,7 +5499,7 @@ const (
 )
 
 type sortFuncInfo struct {
-	fun SortFunc
+	fun      SortFunc
 	userData interface{}
 }
 
@@ -9822,6 +9821,11 @@ type EventBox struct {
 
 func NewEventBox() *EventBox {
 	return &EventBox{Bin{Container{Widget{C.gtk_event_box_new()}}}}
+}
+
+//add by xtlx2000
+func EventBoxFromObject(object *glib.GObject) *EventBox {
+	return &EventBox{Bin{Container{Widget{C.toGWidget(object.Object)}}}}
 }
 
 // void gtk_event_box_set_above_child (GtkEventBox *event_box, gboolean above_child);
