@@ -97,19 +97,36 @@ static void _gtk_text_iter_assign(GtkTextIter* one, GtkTextIter* two) {
 	*one = *two;
 }
 
-static void _apply_property(void* obj, const gchar* prop, const gchar* val) {
-	GParamSpec *pspec;
-	GValue fromvalue = { 0, };
-	GValue tovalue = { 0, };
-	pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(obj), prop);
-	if (!pspec) return;
-	g_value_init(&fromvalue, G_TYPE_STRING);
-	g_value_set_string(&fromvalue, val);
-	g_value_init(&tovalue, G_PARAM_SPEC_VALUE_TYPE(pspec));
-	g_value_transform(&fromvalue, &tovalue);
-	g_object_set_property((GObject *)obj, prop, &tovalue);
-	g_value_unset(&fromvalue);
-	g_value_unset(&tovalue);
+static void _apply_property_bool(void* obj, const gchar* prop, const gboolean val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
+}
+
+static void _apply_property_int(void* obj, const gchar* prop, const gint val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_INT);
+	g_value_set_int(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
+}
+
+static void _apply_property_float(void* obj, const gchar* prop, const gdouble val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_DOUBLE);
+	g_value_set_double(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
+}
+
+static void _apply_property_string(void* obj, const gchar* prop, const gchar* val) {
+	GValue value = { 0, };
+	g_value_init(&value, G_TYPE_STRING);
+	g_value_set_string(&value, val);
+	g_object_set_property((GObject *)obj, prop, &value);
+	g_value_unset(&value);
 }
 
 static GtkTreeViewColumn* _gtk_tree_view_column_new_with_attribute(gchar* title, GtkCellRenderer* cell) {
@@ -228,6 +245,18 @@ static gboolean _c_gtk_tree_selection_select_func(GtkTreeSelection *sel, GtkTree
 
 static void _go_gtk_tree_selection_set_select_function(GtkTreeSelection *sel, void * payload) {
   gtk_tree_selection_set_select_function(sel, _c_gtk_tree_selection_select_func, payload, NULL);
+}
+
+static gint _gtk_container_child_get_int(GtkContainer* container, GtkWidget* child, const gchar* propname) {
+    gint value;
+    gtk_container_child_get(container, child, propname, &value, NULL);
+    return value;
+}
+
+static gboolean _gtk_container_child_get_bool(GtkContainer* container, GtkWidget* child, const gchar* propname) {
+    gboolean value;
+    gtk_container_child_get(container, child, propname, &value, NULL);
+    return value;
 }
 
 static void _gtk_container_child_set_bool(GtkContainer* container, GtkWidget* child, const gchar* propname, gboolean value) {
@@ -790,6 +819,7 @@ static inline char* toCstr(const gchar* s) { return (char*)s; }
 //static inline char* toCstrU(const guchar* s) { return (char*)s; }
 //static inline char* toCstrV(const void* s) { return (char*)s; }
 
+static inline GtkCalendar* toGCalendar(GtkWidget* w) { return GTK_CALENDAR(w); }
 static inline GObject* toGObject(void* o) { return G_OBJECT(o); }
 static inline GValue* toGValue(void* s) { return (GValue*)s; }
 static inline GtkWindow* toGWindow(GtkWidget* w) { return GTK_WINDOW(w); }
