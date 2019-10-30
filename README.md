@@ -18,6 +18,7 @@
 
     git clone https://github.com/mattn/go-gtk
     cd go-gtk
+    go get ...
     make example
     ./example/demo/demo
 
