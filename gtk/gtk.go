@@ -1150,13 +1150,29 @@ func (v *SelectionData) GetText() string {
 //-----------------------------------------------------------------------
 // Version Information
 //-----------------------------------------------------------------------
+func MajorVersion() uint {
+	return uint(C.gtk_major_version)
+}
 
-// gtk_major_version
-// gtk_minor_version
-// gtk_micro_version
-// gtk_binary_age
-// gtk_interface_age
-// gtk_check_version
+func MinorVersion() uint {
+	return uint(C.gtk_minor_version)
+}
+
+func MicroVersion() uint {
+	return uint(C.gtk_micro_version)
+}
+
+func BinaryAge() uint {
+	return uint(C.gtk_binary_age)
+}
+
+func InterfaceAge() uint {
+	return uint(C.gtk_interface_age)
+}
+
+func CheckVersion(major uint, minor uint, micro uint) string {
+	return gostring(C.gtk_check_version(guint(major), guint(minor), guint(micro)))
+}
 
 //-----------------------------------------------------------------------
 // Testing
