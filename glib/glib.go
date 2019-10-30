@@ -1033,14 +1033,22 @@ func IdleAdd(f interface{}, datas ...interface{}) {
 	C._g_idle_add(C.int(id))
 }
 
-func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) {
+// return id for remove timeout
+func TimeoutAdd(interval uint, f interface{}, datas ...interface{}) (id int) {
 	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
 	}
 	ctx := &SourcefuncContext{reflect.ValueOf(f), reflect.ValueOf(data)}
-	id := sourcefunc_contexts.Add(ctx)
+	id = sourcefunc_contexts.Add(ctx)
 	C._g_timeout_add(C.guint(interval), C.int(id))
+
+	return
+}
+
+//remove timeout
+func TimeoutRemove(id int) {
+	sourcefunc_contexts.Remove(id)
 }
 
 //-----------------------------------------------------------------------
