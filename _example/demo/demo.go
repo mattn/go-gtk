@@ -262,7 +262,7 @@ func main() {
 	buffer.Insert(&start, "Hello ")
 	buffer.GetEndIter(&end)
 	buffer.Insert(&end, "World!")
-	tag := buffer.CreateTag("bold", map[string]string{
+	tag := buffer.CreateTag("bold", map[string]interface{}{
 		"background": "#FF0000", "weight": "700"})
 	buffer.GetStartIter(&start)
 	buffer.GetEndIter(&end)
