@@ -36,7 +36,7 @@
 
   If you use windows, find gtk binary packages from here:
 
-  * http://www.gtk.org/download/windows.php
+  * [https://www.gtk.org/docs/installations/windows](https://www.gtk.org/docs/installations/windows)
 
 ## EMBEDDING
 
