@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/mattn/go-gtk/gdkpixbuf"
-	"github.com/mattn/go-gtk/glib"
-	"github.com/mattn/go-gtk/gtk"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/mattn/go-gtk/gdkpixbuf"
+	"github.com/mattn/go-gtk/glib"
+	"github.com/mattn/go-gtk/gtk"
 )
 
 func uniq(strings []string) (ret []string) {
@@ -262,7 +263,7 @@ func main() {
 	buffer.Insert(&start, "Hello ")
 	buffer.GetEndIter(&end)
 	buffer.Insert(&end, "World!")
-	tag := buffer.CreateTag("bold", map[string]string{
+	tag := buffer.CreateTag("bold", map[string]interface{}{
 		"background": "#FF0000", "weight": "700"})
 	buffer.GetStartIter(&start)
 	buffer.GetEndIter(&end)
